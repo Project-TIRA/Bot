@@ -20,11 +20,8 @@ namespace TestBot.Bot
         /// Increments the conversation to the next dialog
         /// </summary>
         /// <returns>The new dialog name</returns>
-        public async Task<string> Step(Accessors accessors, ITurnContext context, CancellationToken cancellationToken)
+        public string Step(ref int currentIndex)
         {
-            // Get the current index.
-            var currentIndex = await accessors.ConversationFlowIndex.GetAsync(context, () => 0, cancellationToken);
-
             if (currentIndex >= this.Steps.Count - 1)
             {
                 // Reached the end.
@@ -32,9 +29,7 @@ namespace TestBot.Bot
             }
             else
             {
-                // Increment the index and set it before returning the next step.
-                await accessors.ConversationFlowIndex.SetAsync(context, ++currentIndex, cancellationToken);
-                return this.Steps[currentIndex].Name;
+                return this.Steps[++currentIndex].Name;
             }
         }
 

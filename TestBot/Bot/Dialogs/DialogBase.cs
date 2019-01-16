@@ -21,8 +21,14 @@ namespace TestBot.Bot.Dialogs
 
         public async Task<DialogTurnResult> HandleNextConversationStep(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            // Get the current index.
+            var currentIndex = await accessors.ConversationFlowIndex.GetAsync(stepContext.Context, () => 0, cancellationToken);
+
             var conversationFlow = (ConversationFlow)stepContext.Options;
-            var nextDialog = await conversationFlow.Step(this.accessors, stepContext.Context, cancellationToken);
+            var nextDialog = conversationFlow.Step(ref currentIndex);
+
+            // Save the index if stepping updated it.
+            await accessors.ConversationFlowIndex.SetAsync(stepContext.Context, currentIndex, cancellationToken);
 
             return string.IsNullOrEmpty(nextDialog) ?
                 await stepContext.EndDialogAsync(cancellationToken) :
