@@ -21,41 +21,56 @@ namespace TestBot.Bot
         /// </summary>
         /// <param name="conversationState">The state object that stores the conversation state.</param>
         /// <param name="userState">The state object that stores the user state.</param>
-        public Accessors(ConversationState conversationState, UserState userState)
+        public Accessors(ConversationState conversationState, UserState organizationProfile)
         {
             ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
-            UserState = userState ?? throw new ArgumentNullException(nameof(userState));
+            OrganizationState = organizationProfile ?? throw new ArgumentNullException(nameof(organizationProfile));
         }
 
         /// <summary>
-        /// Gets the accessor name for the dialog state property.
+        /// Gets the accessor name for the dialog context property.
         /// </summary>
         /// <value>The accessor name for the dialog state property.</value>
-        /// <remarks>Accessors require a unique name.</remarks>
-        public static string DialogStateName { get; } = "DialogState";
+        /// <remarks>Accessors require a unique name.</remarks
+        public static string DialogContextName { get; } = "DialogContext";
 
         /// <summary>
-        /// Gets the accessor name for the user profile property accessor.
+        /// Gets the accessor name for the conversation flow index property.
+        /// </summary>
+        /// <value>The accessor name for the conversation flow property.</value>
+        /// <remarks>Accessors require a unique name.</remarks>
+        public static string ConversationFlowIndexName { get; } = "ConversationFlowIndex";
+
+        /// <summary>
+        /// Gets the accessor name for the organization profile property accessor.
         /// </summary>
         /// <value>The accessor name for the user profile property accessor.</value>
         /// <remarks>Accessors require a unique name.</remarks>
-        public static string UserProfileName { get; } = "UserProfile";
+        public static string OrganizationProfileName { get; } = "OrganizationProfile";
 
         /// <summary>
-        /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for ConversationDialogState.
+        /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for DialogContext.
         /// </summary>
         /// <value>
-        /// The accessor stores the dialog state for the conversation.
+        /// The accessor stores the dialog context for the conversation.
         /// </value>
-        public IStatePropertyAccessor<DialogState> ConversationDialogState { get; set; }
+        public IStatePropertyAccessor<DialogState> DialogContext { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for CounterState.
+        /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for ConversationFlowIndex.
+        /// </summary>
+        /// <value>
+        /// The accessor stores the conversation flow for the conversation.
+        /// </value>
+        public IStatePropertyAccessor<int> ConversationFlowIndex { get; set; }
+
+        /// <summary>
+        /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for OrganizationProfile.
         /// </summary>
         /// <value>
         /// The accessor stores user data.
         /// </value>
-        public IStatePropertyAccessor<UserProfile> UserProfile { get; set; }
+        public IStatePropertyAccessor<OrganizationProfile> OrganizationProfile { get; set; }
 
         /// <summary>
         /// Gets the <see cref="ConversationState"/> object for the conversation.
@@ -64,9 +79,9 @@ namespace TestBot.Bot
         public ConversationState ConversationState { get; }
 
         /// <summary>
-        /// Gets the <see cref="UserState"/> object for the conversation.
+        /// Gets the <see cref="OrganizationState"/> object for the conversation.
         /// </summary>
-        /// <value>The <see cref="UserState"/> object.</value>
-        public UserState UserState { get; }
+        /// <value>The <see cref="OrganizationState"/> object.</value>
+        public UserState OrganizationState { get; }
     }
 }

@@ -8,13 +8,15 @@ namespace TestBot.Bot.Dialogs
 {
     public sealed class UpdateOrgDialog : DialogBase
     {
-        private const string AgePrompt = "Age";
+        // TODO! Move the prompts into the Base class
+
+        private const string AgePrompt = "AgePrompt";
 
         public override string Name { get { return "UpdateOrg"; } }
 
         public UpdateOrgDialog(Accessors accessors, DialogSet globalDialogSet) : base(accessors)
         {
-            // Only gets when the bot is initialized.
+            // Only set when the bot is initialized.
             if (globalDialogSet != null)
             {
                 // The steps this dialog will take.
@@ -49,13 +51,13 @@ namespace TestBot.Bot.Dialogs
         /// <returns>A <see cref="DialogTurnResult"/> to communicate some flow control back to the containing WaterfallDialog.</returns>
         private async Task<DialogTurnResult> CleanupAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // Get the current profile object from user state.
-            var userProfile = await this.accessors.UserProfile.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+            // Get the current profile object.
+            var profile = await this.accessors.OrganizationProfile.GetAsync(stepContext.Context, () => new OrganizationProfile(), cancellationToken);
 
             // Update the profile.
-            userProfile.Age = (int)stepContext.Result;
+            // profile.Age = (int)stepContext.Result;
 
-            return await HandleNextStep(stepContext, cancellationToken);
+            return await HandleNextConversationStep(stepContext, cancellationToken);
         }
     }
 }

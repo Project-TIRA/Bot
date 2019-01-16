@@ -19,20 +19,14 @@ namespace TestBot.Bot.Dialogs
             this.accessors = accessors;
         }
 
-        public static async Task<DialogTurnResult> HandleNextStep(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        public async Task<DialogTurnResult> HandleNextConversationStep(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var conversationFlow = (ConversationFlow)stepContext.Options;
-            conversationFlow.CurrentIndex++;
+            var nextDialog = await conversationFlow.Step(this.accessors, stepContext.Context, cancellationToken);
 
-            if (conversationFlow.CurrentIndex >= conversationFlow.Dialogs.Count)
-            {
-                return await stepContext.EndDialogAsync(cancellationToken);
-            }
-            else
-            {
-                var nextDialog = conversationFlow.Dialogs[conversationFlow.CurrentIndex].Name;
-                return await stepContext.ReplaceDialogAsync(nextDialog, conversationFlow, cancellationToken);
-            }
+            return string.IsNullOrEmpty(nextDialog) ?
+                await stepContext.EndDialogAsync(cancellationToken) :
+                await stepContext.ReplaceDialogAsync(nextDialog, conversationFlow, cancellationToken);
         }
     }
 }

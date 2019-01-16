@@ -13,7 +13,7 @@ namespace TestBot.Bot.Dialogs
 
         public MasterDialog(Accessors accessors, DialogSet globalDialogSet) : base(accessors)
         {
-            // Only gets when the bot is initialized.
+            // Only set when the bot is initialized.
             if (globalDialogSet != null)
             {
                 // The steps this dialog will take.
@@ -42,13 +42,13 @@ namespace TestBot.Bot.Dialogs
                 throw new ArgumentNullException(nameof(conversationFlow));
             }
 
-            if (conversationFlow.Dialogs.Count == 0)
+            if (conversationFlow.Steps.Count == 0)
             {
                 throw new InvalidOperationException(nameof(conversationFlow));
             }
 
             // Start the first dialog in the conversation flow.
-            return await stepContext.BeginDialogAsync(conversationFlow.Dialogs[0].Name, conversationFlow, cancellationToken);
+            return await stepContext.BeginDialogAsync(conversationFlow.Steps[0].Name, conversationFlow, cancellationToken);
         }
 
         /// <summary>
@@ -59,10 +59,12 @@ namespace TestBot.Bot.Dialogs
         /// <returns>A <see cref="DialogTurnResult"/> to communicate some flow control back to the containing WaterfallDialog.</returns>
         private async Task<DialogTurnResult> EndAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // Dump some info
-            var userProfile = await this.accessors.UserProfile.GetAsync(stepContext.Context, () => new UserProfile(), cancellationToken);
+            // Get the current profile object.
+            var profile = await this.accessors.OrganizationProfile.GetAsync(stepContext.Context, () => new OrganizationProfile(), cancellationToken);
+
+            // Output the profile.
             await stepContext.Context.SendActivityAsync(
-                MessageFactory.Text($"Name: {userProfile.Name}, Age: {userProfile.Age}"), cancellationToken);
+                MessageFactory.Text(profile.ToString()), cancellationToken);
 
             return await stepContext.EndDialogAsync(cancellationToken);
         }

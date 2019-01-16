@@ -29,6 +29,25 @@ namespace TestBot
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(configuration);
+
+            // Create the state management with in-memory storage provider.
+            IStorage storage = new MemoryStorage();
+            ConversationState conversationState = new Microsoft.Bot.Builder.ConversationState(storage);
+            UserState organizationProfile = new UserState(storage);
+
+            // Create and register state accessors.
+            // Accessors created here are passed into the IBot-derived class on every turn.
+            services.AddSingleton<Accessors>(sp =>
+            {
+                return new Accessors(conversationState, organizationProfile)
+                {
+                    DialogContext = conversationState.CreateProperty<DialogState>(Accessors.DialogContextName),
+                    ConversationFlowIndex = conversationState.CreateProperty<int>(Accessors.ConversationFlowIndexName),
+                    OrganizationProfile = organizationProfile.CreateProperty<OrganizationProfile>(Accessors.OrganizationProfileName),
+                };
+            });
+
+            // Configure the bot.
             services.AddBot<MyBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(configuration);
@@ -38,23 +57,10 @@ namespace TestBot
                 {
                     await context.SendActivityAsync("Sorry, it looks like something went wrong.");
                 };
-            });
 
-            // Create conversation and user state with in-memory storage provider.
-            IStorage storage = new MemoryStorage();
-            ConversationState conversationState = new ConversationState(storage);
-            UserState userState = new UserState(storage);
-
-            // Create and register state accessors.
-            // Accessors created here are passed into the IBot-derived class on every turn.
-            services.AddSingleton<Accessors>(sp =>
-            {
-                // Create the custom state accessor.
-                return new Accessors(conversationState, userState)
-                {
-                    ConversationDialogState = conversationState.CreateProperty<DialogState>(Accessors.DialogStateName),
-                    UserProfile = userState.CreateProperty<UserProfile>(Accessors.UserProfileName),
-                };
+                // Auto-save the state after each turn.
+                options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
+                options.Middleware.Add(new AutoSaveStateMiddleware(organizationProfile));
             });
         }
 
