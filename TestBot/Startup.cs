@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TestBot.Bot;
+using TestBot.Bot.Models;
 
 namespace TestBot
 {
@@ -42,7 +43,6 @@ namespace TestBot
                 return new Accessors(conversationState, organizationProfile)
                 {
                     DialogContext = conversationState.CreateProperty<DialogState>(Accessors.DialogContextName),
-                    ConversationFlowIndex = conversationState.CreateProperty<int>(Accessors.ConversationFlowIndexName),
                     OrganizationProfile = organizationProfile.CreateProperty<OrganizationProfile>(Accessors.OrganizationProfileName),
                 };
             });

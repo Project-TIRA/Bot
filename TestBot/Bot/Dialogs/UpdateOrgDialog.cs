@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using TestBot.Bot.Models;
 using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs
 {
     public sealed class UpdateOrgDialog : DialogBase
     {
-        public override string Name { get { return "UpdateOrg"; } }
+        public static string Name = "UpdateOrgDialog";
 
         public UpdateOrgDialog(Accessors accessors, DialogSet globalDialogSet) : base(accessors, globalDialogSet)
         {
@@ -22,8 +23,8 @@ namespace TestBot.Bot.Dialogs
                     CleanupAsync
                 };
 
-                // Add each dialog to the global dialog set.
-                globalDialogSet.Add(new WaterfallDialog(this.Name, waterfallSteps));
+                // Add the dialog to the global dialog set.
+                globalDialogSet.Add(new WaterfallDialog(Name, waterfallSteps));
             }
         }
 
@@ -52,7 +53,8 @@ namespace TestBot.Bot.Dialogs
             // Update the profile.
             // profile.Age = (int)stepContext.Result;
 
-            return await HandleNextConversationStep(stepContext, cancellationToken);
+            // End this dialog to pop it off the stack.
+            return await stepContext.EndDialogAsync(cancellationToken);
         }
     }
 }

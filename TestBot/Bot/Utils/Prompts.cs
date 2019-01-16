@@ -8,9 +8,14 @@ namespace TestBot.Bot.Utils
         public static string IntPrompt = "IntPrompt";
         public static string TextPrompt = "TextPrompt";
 
-        public static void AddGlobalPrompts(DialogSet globalDialogSet)
+        /// <summary>
+        /// Adds globally used prompts to the global dialog set
+        /// </summary>
+        public static void Init(DialogSet globalDialogSet)
         {
+            globalDialogSet.Add(new ConfirmPrompt(ConfirmPrompt));
             globalDialogSet.Add(new NumberPrompt<int>(IntPrompt));
+            globalDialogSet.Add(new TextPrompt(TextPrompt));
         }
     }
 }

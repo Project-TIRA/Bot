@@ -2,16 +2,14 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using TestBot.Bot.Models;
 using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs.NewOrg
 {
     public sealed class AgeRangeDialog : DialogBase
     {
-        private const string AgeRangeStartPrompt = "AgeRangeStartPrompt";
-        private const string AgeRangeEndPrompt = "AgeRangeEndPrompt";
-
-        public override string Name { get { return "AgeRange"; } }
+        public static string Name = "AgeRangeDialog";
 
         public AgeRangeDialog(Accessors accessors, DialogSet globalDialogSet) : base(accessors, globalDialogSet)
         {
@@ -26,10 +24,8 @@ namespace TestBot.Bot.Dialogs.NewOrg
                     CleanupAsync
                 };
 
-                // Add each dialog to the global dialog set.
-                globalDialogSet.Add(new WaterfallDialog(this.Name, waterfallSteps));
-                globalDialogSet.Add(new NumberPrompt<int>(AgeRangeStartPrompt));
-                globalDialogSet.Add(new NumberPrompt<int>(AgeRangeEndPrompt));
+                // Add the dialog to the global dialog set.
+                globalDialogSet.Add(new WaterfallDialog(Name, waterfallSteps));
             }
         }
 
@@ -62,7 +58,7 @@ namespace TestBot.Bot.Dialogs.NewOrg
             var profile = await this.accessors.OrganizationProfile.GetAsync(stepContext.Context, () => new OrganizationProfile(), cancellationToken);
 
             // Update the profile with the result of the previous step.
-            profile.AgeRangeStart = (int)stepContext.Result;
+            profile.Demographic.AgeRange.Start = (int)stepContext.Result;
 
             // Prompt for the next step.
             return await stepContext.PromptAsync(
@@ -86,10 +82,10 @@ namespace TestBot.Bot.Dialogs.NewOrg
             var profile = await this.accessors.OrganizationProfile.GetAsync(stepContext.Context, () => new OrganizationProfile(), cancellationToken);
 
             // Update the profile with the result of the previous step.
-            profile.AgeRangeEnd = (int)stepContext.Result;
+            profile.Demographic.AgeRange.End = (int)stepContext.Result;
 
-            // Go to the next dialog in the conversation.
-            return await HandleNextConversationStep(stepContext, cancellationToken);
+            // End this dialog to pop it off the stack.
+            return await stepContext.EndDialogAsync(cancellationToken);
         }
     }
 }

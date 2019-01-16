@@ -2,13 +2,14 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using TestBot.Bot.Models;
 using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs.NewOrg
 {
     public sealed class NewOrgDialog : DialogBase
     {
-        public override string Name { get { return "NewOrg"; } }
+        public static string Name = "NewOrgDialog";
 
         public NewOrgDialog(Accessors accessors, DialogSet globalDialogSet) : base(accessors, globalDialogSet)
         {
@@ -19,14 +20,15 @@ namespace TestBot.Bot.Dialogs.NewOrg
                 WaterfallStep[] waterfallSteps =
                 {
                     NameStepAsync,
-                    SizeStepAsync,
+                    DemographicStepAsync,
+                    DemographicConfirmStepAsync,
                     AgeRangeStepAsync,
                     AgeRangeConfirmStepAsync,
                     CleanupAsync
                 };
 
-                // Add each dialog to the global dialog set.
-                globalDialogSet.Add(new WaterfallDialog(this.Name, waterfallSteps));
+                // Add the dialog to the global dialog set.
+                globalDialogSet.Add(new WaterfallDialog(Name, waterfallSteps));
             }
         }
 
@@ -53,7 +55,7 @@ namespace TestBot.Bot.Dialogs.NewOrg
         /// <param name="stepContext">The <see cref="WaterfallStepContext"/> gives access to the executing dialog runtime.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
         /// <returns>A <see cref="DialogTurnResult"/> to communicate some flow control back to the containing WaterfallDialog.</returns>
-        private async Task<DialogTurnResult> SizeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> DemographicStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // Get the current profile object.
             var profile = await this.accessors.OrganizationProfile.GetAsync(stepContext.Context, () => new OrganizationProfile(), cancellationToken);
@@ -63,11 +65,10 @@ namespace TestBot.Bot.Dialogs.NewOrg
 
             // Prompt for the next step.
             return await stepContext.PromptAsync(
-                Prompts.IntPrompt,
-                new PromptOptions 
+                Prompts.ConfirmPrompt,
+                new PromptOptions
                 {
-                    Prompt = MessageFactory.Text("What is the size of your organization?"),
-                    RetryPrompt = MessageFactory.Text("How many people work for your organization?")
+                    Prompt = MessageFactory.Text("Does your organization work with a specific demographic?")
                 },
                 cancellationToken);
         }
@@ -78,15 +79,28 @@ namespace TestBot.Bot.Dialogs.NewOrg
         /// <param name="stepContext">The <see cref="WaterfallStepContext"/> gives access to the executing dialog runtime.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
         /// <returns>A <see cref="DialogTurnResult"/> to communicate some flow control back to the containing WaterfallDialog.</returns>
+        private async Task<DialogTurnResult> DemographicConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            if ((bool)stepContext.Result)
+            {
+                // Push the age range dialog onto the stack.
+                return await stepContext.BeginDialogAsync(DemographicsDialog.Name, null, cancellationToken);
+            }
+            else
+            {
+                // Skip this step.
+                return await stepContext.NextAsync();
+            }
+        }
+
+        /// <summary>
+        /// One of the functions that make up the <see cref="WaterfallDialog"/>.
+        /// </summary>
+        /// <param name="stepContext">The <see cref="WaterfallStepContext"/> gives access to the executing dialog runtime.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
+        /// <returns>A <see cref="DialogTurnResult"/> to communicate some flow control back to the containing WaterfallDialog.</returns>
         private async Task<DialogTurnResult> AgeRangeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // Get the current profile object.
-            var profile = await this.accessors.OrganizationProfile.GetAsync(stepContext.Context, () => new OrganizationProfile(), cancellationToken);
-
-            // Update the profile with the result of the previous step.
-            profile.Size = (int)stepContext.Result;
-
-            // Prompt for the next step.
             return await stepContext.PromptAsync(
                 Prompts.ConfirmPrompt,
                 new PromptOptions
@@ -107,11 +121,7 @@ namespace TestBot.Bot.Dialogs.NewOrg
             if ((bool)stepContext.Result)
             {
                 // Push the age range dialog onto the stack.
-                var conversationFlow = (ConversationFlow)stepContext.Options;
-                //conversationFlow.AddStep(new NewOrgDialog(this.accessors, this.globalDialogSet));
-
-                // TODO: Need to begin this rather than replace
-                return await stepContext.NextAsync();
+                return await stepContext.BeginDialogAsync(AgeRangeDialog.Name, null, cancellationToken);
             }
             else
             {
@@ -128,14 +138,8 @@ namespace TestBot.Bot.Dialogs.NewOrg
         /// <returns>A <see cref="DialogTurnResult"/> to communicate some flow control back to the containing WaterfallDialog.</returns>
         private async Task<DialogTurnResult> CleanupAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // Get the current profile object.
-            var profile = await this.accessors.OrganizationProfile.GetAsync(stepContext.Context, () => new OrganizationProfile(), cancellationToken);
-
-            // Update the profile with the result of the previous step.
-            profile.Size = (int)stepContext.Result;
-
-            // Go to the next dialog in the conversation.
-            return await HandleNextConversationStep(stepContext, cancellationToken);
+            // End this dialog to pop it off the stack.
+            return await stepContext.EndDialogAsync(cancellationToken);
         }
     }
 }

@@ -10,6 +10,7 @@
     <Folder Include="Bot\Dialogs\" />
     <Folder Include="Bot\Dialogs\NewOrg\" />
     <Folder Include="Bot\Utils\" />
+    <Folder Include="Bot\Models\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,4 +19,7 @@
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Bot\Dialogs\MasterDialog.cs" />
+  </ItemGroup>
 </Project>

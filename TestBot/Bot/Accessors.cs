@@ -4,6 +4,7 @@
 using System;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using TestBot.Bot.Models;
 
 namespace TestBot.Bot
 {
@@ -35,13 +36,6 @@ namespace TestBot.Bot
         public static string DialogContextName { get; } = "DialogContext";
 
         /// <summary>
-        /// Gets the accessor name for the conversation flow index property.
-        /// </summary>
-        /// <value>The accessor name for the conversation flow property.</value>
-        /// <remarks>Accessors require a unique name.</remarks>
-        public static string ConversationFlowIndexName { get; } = "ConversationFlowIndex";
-
-        /// <summary>
         /// Gets the accessor name for the organization profile property accessor.
         /// </summary>
         /// <value>The accessor name for the user profile property accessor.</value>
@@ -55,14 +49,6 @@ namespace TestBot.Bot
         /// The accessor stores the dialog context for the conversation.
         /// </value>
         public IStatePropertyAccessor<DialogState> DialogContext { get; set; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for ConversationFlowIndex.
-        /// </summary>
-        /// <value>
-        /// The accessor stores the conversation flow for the conversation.
-        /// </value>
-        public IStatePropertyAccessor<int> ConversationFlowIndex { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for OrganizationProfile.

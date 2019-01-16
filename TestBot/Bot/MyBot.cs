@@ -1,21 +1,17 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using TestBot.Bot.Dialogs;
 using TestBot.Bot.Dialogs.NewOrg;
+using TestBot.Bot.Models;
 
 namespace TestBot.Bot
 {
     public class MyBot : IBot
     {
-        private readonly Accessors _accessors;
-        private readonly DialogSet _dialogs;
-
-        private MasterDialog _masterDialog;
-        private ConversationFlow _conversationFlow;
+        private readonly Accessors accessors;
+        private readonly DialogSet dialogs;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MyBot"/> class.
@@ -23,16 +19,12 @@ namespace TestBot.Bot
         /// <param name="accessors">A class containing <see cref="IStatePropertyAccessor{T}"/>Used to manage state</param>
         public MyBot(Accessors accessors)
         {
-            _accessors = accessors ?? throw new System.ArgumentNullException(nameof(accessors));
-            _dialogs = new DialogSet(accessors.DialogContext);
+            this.accessors = accessors ?? throw new System.ArgumentNullException(nameof(accessors));
+            this.dialogs = new DialogSet(accessors.DialogContext);
 
-            _masterDialog = new MasterDialog(_accessors, _dialogs);
-
-            _conversationFlow = new ConversationFlow(new List<DialogBase>
-            {
-                new NewOrgDialog(_accessors, _dialogs),
-                new UpdateOrgDialog(_accessors, _dialogs)
-            });
+            // Initialize global dialogs.
+            Utils.Dialogs.Init(accessors, dialogs);
+            Utils.Prompts.Init(dialogs);
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -49,7 +41,7 @@ namespace TestBot.Bot
             {
                 // Run the DialogSet - let the framework identify the current state of the dialog from
                 // the dialog stack and figure out what (if any) is the active dialog.
-                DialogContext dialogContext = await _dialogs.CreateContextAsync(turnContext, cancellationToken);
+                DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
                 DialogTurnResult results = await dialogContext.ContinueDialogAsync(cancellationToken);
 
                 switch (results.Status)
@@ -57,14 +49,18 @@ namespace TestBot.Bot
                     case DialogTurnStatus.Cancelled:
                     case DialogTurnStatus.Empty:
                         {
-                            // If there is no active dialog, we should clear the data and start a new dialog.
-                            await _accessors.ConversationFlowIndex.SetAsync(turnContext, 0, cancellationToken);
-                            await dialogContext.BeginDialogAsync(_masterDialog.Name, _conversationFlow, cancellationToken);
+                            // Start a new conversation if there is none.
+                            await dialogContext.BeginDialogAsync(NewOrgDialog.Name, null, cancellationToken);
                             break;
                         }
                     case DialogTurnStatus.Complete:
                         {
-                            await SendMessageAsync("Finished!", turnContext, cancellationToken);
+                            // Get the current profile object.
+                            var profile = await this.accessors.OrganizationProfile.GetAsync(turnContext, () => new OrganizationProfile(), cancellationToken);
+
+                            // Output the profile.
+                            await SendMessageAsync(profile.ToString(), turnContext, cancellationToken);
+
                             break;
                         }
                     case DialogTurnStatus.Waiting:
@@ -78,12 +74,6 @@ namespace TestBot.Bot
             {
                 await turnContext.SendActivityAsync($"{turnContext.Activity.Type} event detected", cancellationToken: cancellationToken);
             }
-
-            // Save the dialog state into the conversation state.
-            //await _accessors.ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
-
-            // Save the profile updates into the user state.
-            //await _accessors.OrganizationState.SaveChangesAsync(turnContext, false, cancellationToken);
         }
 
         /// <summary>
@@ -115,8 +105,7 @@ namespace TestBot.Bot
         /// <returns>A <see cref="Task"/> that represents the work queued to execute.</returns>
         private static async Task SendMessageAsync(string message, ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            var reply = turnContext.Activity.CreateReply(message);
-            await turnContext.SendActivityAsync(reply, cancellationToken);
+            await turnContext.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
         }
     }
 }
