@@ -8,13 +8,14 @@ namespace TestBot.Bot.Dialogs
     public abstract class DialogBase
     {
         protected readonly Accessors accessors;
+        protected readonly DialogSet globalDialogSet;
 
         /// <summary>
         /// Gets the name
         /// </summary>
         public virtual string Name { get; }
 
-        protected DialogBase(Accessors accessors)
+        protected DialogBase(Accessors accessors, DialogSet globalDialogSet)
         {
             this.accessors = accessors;
         }
@@ -24,6 +25,7 @@ namespace TestBot.Bot.Dialogs
             // Get the current index.
             var currentIndex = await accessors.ConversationFlowIndex.GetAsync(stepContext.Context, () => 0, cancellationToken);
 
+            // Get the next dialog.
             var conversationFlow = (ConversationFlow)stepContext.Options;
             var nextDialog = conversationFlow.Step(ref currentIndex);
 

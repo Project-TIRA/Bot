@@ -11,7 +11,7 @@ namespace TestBot.Bot.Dialogs
     {
         public override string Name { get { return "Master"; } }
 
-        public MasterDialog(Accessors accessors, DialogSet globalDialogSet) : base(accessors)
+        public MasterDialog(Accessors accessors, DialogSet globalDialogSet) : base(accessors, globalDialogSet)
         {
             // Only set when the bot is initialized.
             if (globalDialogSet != null)

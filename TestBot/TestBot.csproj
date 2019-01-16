@@ -8,6 +8,8 @@
     <Folder Include="wwwroot\" />
     <Folder Include="Bot\" />
     <Folder Include="Bot\Dialogs\" />
+    <Folder Include="Bot\Dialogs\NewOrg\" />
+    <Folder Include="Bot\Utils\" />
   </ItemGroup>
 
   <ItemGroup>

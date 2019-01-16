@@ -1,20 +1,16 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs
 {
     public sealed class UpdateOrgDialog : DialogBase
     {
-        // TODO! Move the prompts into the Base class
-
-        private const string AgePrompt = "AgePrompt";
-
         public override string Name { get { return "UpdateOrg"; } }
 
-        public UpdateOrgDialog(Accessors accessors, DialogSet globalDialogSet) : base(accessors)
+        public UpdateOrgDialog(Accessors accessors, DialogSet globalDialogSet) : base(accessors, globalDialogSet)
         {
             // Only set when the bot is initialized.
             if (globalDialogSet != null)
@@ -28,7 +24,6 @@ namespace TestBot.Bot.Dialogs
 
                 // Add each dialog to the global dialog set.
                 globalDialogSet.Add(new WaterfallDialog(this.Name, waterfallSteps));
-                globalDialogSet.Add(new NumberPrompt<int>(AgePrompt));
             }
         }
 
@@ -40,7 +35,7 @@ namespace TestBot.Bot.Dialogs
         /// <returns>A <see cref="DialogTurnResult"/> to communicate some flow control back to the containing WaterfallDialog.</returns>
         private async Task<DialogTurnResult> AgeStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            return await stepContext.PromptAsync(AgePrompt, new PromptOptions { Prompt = MessageFactory.Text("Please enter your age.") }, cancellationToken);
+            return await stepContext.PromptAsync(Prompts.IntPrompt, new PromptOptions { Prompt = MessageFactory.Text("Please enter your age.") }, cancellationToken);
         }
 
         /// <summary>
