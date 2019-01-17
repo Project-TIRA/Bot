@@ -57,8 +57,9 @@ namespace TestBot.Bot.Dialogs.NewOrg
             // Get the current profile object.
             var profile = await this.accessors.OrganizationProfile.GetAsync(stepContext.Context, () => new OrganizationProfile(), cancellationToken);
 
+            // TODO
             // Update the profile with the result of the previous step.
-            profile.Demographic.AgeRange.Start = (int)stepContext.Result;
+            //profile.Demographic.AgeRange.Start = (int)stepContext.Result;
 
             // Prompt for the next step.
             return await stepContext.PromptAsync(
@@ -81,8 +82,9 @@ namespace TestBot.Bot.Dialogs.NewOrg
             // Get the current profile object.
             var profile = await this.accessors.OrganizationProfile.GetAsync(stepContext.Context, () => new OrganizationProfile(), cancellationToken);
 
+            // TODO
             // Update the profile with the result of the previous step.
-            profile.Demographic.AgeRange.End = (int)stepContext.Result;
+            // profile.Demographic.AgeRange.End = (int)stepContext.Result;
 
             // End this dialog to pop it off the stack.
             return await stepContext.EndDialogAsync(cancellationToken);
