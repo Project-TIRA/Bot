@@ -7,14 +7,13 @@ namespace TestBot.Bot.Utils
     public static class Dialogs
     {
         /// <summary>
-        /// Adds each dialog to the global dialog set
+        /// Adds each dialog to the master dialog set
         /// </summary>
-        public static void Init(Accessors accessors, DialogSet globalDialogSet)
+        public static void Register(DialogSet dialogs, StateAccessors accessors)
         {
-            var ageRange = new AgeRangeDialog(accessors, globalDialogSet);
-            var demographics = new DemographicsDialog(accessors, globalDialogSet);
-            var newOrg = new NewOrgDialog(accessors, globalDialogSet);
-            var updateOrg = new UpdateOrgDialog(accessors, globalDialogSet);
+            dialogs.Add(AgeRangeDialog.Create(accessors));
+            dialogs.Add(DemographicsDialog.Create(accessors));
+            dialogs.Add(NewOrgDialog.Create(accessors));
         }
     }
 }

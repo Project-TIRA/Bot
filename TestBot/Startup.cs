@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.BotFramework;
@@ -38,12 +39,12 @@ namespace TestBot
 
             // Create and register state accessors.
             // Accessors created here are passed into the IBot-derived class on every turn.
-            services.AddSingleton<Accessors>(sp =>
+            services.AddSingleton<StateAccessors>(sp =>
             {
-                return new Accessors(conversationState, organizationProfile)
+                return new StateAccessors(conversationState, organizationProfile)
                 {
-                    DialogContext = conversationState.CreateProperty<DialogState>(Accessors.DialogContextName),
-                    OrganizationProfile = organizationProfile.CreateProperty<OrganizationProfile>(Accessors.OrganizationProfileName),
+                    DialogContextAccessor = conversationState.CreateProperty<DialogState>(StateAccessors.DialogContextName),
+                    OrganizationProfileAccessor = organizationProfile.CreateProperty<OrganizationProfile>(StateAccessors.OrganizationProfileName),
                 };
             });
 
@@ -55,6 +56,7 @@ namespace TestBot
                 // Catches any errors that occur during a conversation turn and logs them.
                 options.OnTurnError = async (context, exception) =>
                 {
+                    Debug.WriteLine(exception.Message);
                     await context.SendActivityAsync("Sorry, it looks like something went wrong.");
                 };
 

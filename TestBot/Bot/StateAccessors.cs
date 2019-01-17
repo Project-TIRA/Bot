@@ -2,6 +2,8 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Models;
@@ -10,22 +12,22 @@ namespace TestBot.Bot
 {
     /// <summary>
     /// This class is created as a Singleton and passed into the IBot-derived constructor.
-    ///  - See <see cref="Accessors"/> constructor for how that is injected.
+    ///  - See <see cref="StateAccessors"/> constructor for how that is injected.
     ///  - See the Startup.cs file for more details on creating the Singleton that gets
     ///    injected into the constructor.
     /// </summary>
-    public class Accessors
+    public class StateAccessors
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Accessors"/> class.
+        /// Initializes a new instance of the <see cref="StateAccessors"/> class.
         /// Contains the state management and associated accessor objects.
         /// </summary>
         /// <param name="conversationState">The state object that stores the conversation state.</param>
-        /// <param name="userState">The state object that stores the user state.</param>
-        public Accessors(ConversationState conversationState, UserState organizationProfile)
+        /// <param name="organizationState">The state object that stores the organization state.</param>
+        public StateAccessors(ConversationState conversationState, UserState organizationState)
         {
             ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
-            OrganizationState = organizationProfile ?? throw new ArgumentNullException(nameof(organizationProfile));
+            OrganizationState = organizationState ?? throw new ArgumentNullException(nameof(organizationState));
         }
 
         /// <summary>
@@ -48,7 +50,7 @@ namespace TestBot.Bot
         /// <value>
         /// The accessor stores the dialog context for the conversation.
         /// </value>
-        public IStatePropertyAccessor<DialogState> DialogContext { get; set; }
+        public IStatePropertyAccessor<DialogState> DialogContextAccessor { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for OrganizationProfile.
@@ -56,7 +58,7 @@ namespace TestBot.Bot
         /// <value>
         /// The accessor stores user data.
         /// </value>
-        public IStatePropertyAccessor<OrganizationProfile> OrganizationProfile { get; set; }
+        public IStatePropertyAccessor<OrganizationProfile> OrganizationProfileAccessor { get; set; }
 
         /// <summary>
         /// Gets the <see cref="ConversationState"/> object for the conversation.
@@ -69,5 +71,13 @@ namespace TestBot.Bot
         /// </summary>
         /// <value>The <see cref="OrganizationState"/> object.</value>
         public UserState OrganizationState { get; }
+
+        /// <summary>
+        /// Gets the <see cref="OrganizationProfile"/> object for the conversation.
+        /// </summary>
+        public async Task<OrganizationProfile> GetOrganizationProfile(ITurnContext context, CancellationToken cancellationToken)
+        {
+            return await this.OrganizationProfileAccessor.GetAsync(context, () => new OrganizationProfile(), cancellationToken);
+        }
     }
 }

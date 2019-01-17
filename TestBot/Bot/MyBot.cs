@@ -3,6 +3,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using System.Threading;
 using System.Threading.Tasks;
+using TestBot.Bot.Dialogs;
 using TestBot.Bot.Dialogs.NewOrg;
 using TestBot.Bot.Models;
 
@@ -10,21 +11,18 @@ namespace TestBot.Bot
 {
     public class MyBot : IBot
     {
-        private readonly Accessors accessors;
-        private readonly DialogSet dialogs;
+        private readonly StateAccessors state;
+
+        private MasterDialog masterDialog { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MyBot"/> class.
         /// </summary>
-        /// <param name="accessors">A class containing <see cref="IStatePropertyAccessor{T}"/>Used to manage state</param>
-        public MyBot(Accessors accessors)
+        /// <param name="state">A class containing <see cref="IStatePropertyAccessor{T}"/> used to manage state</param>
+        public MyBot(StateAccessors state)
         {
-            this.accessors = accessors ?? throw new System.ArgumentNullException(nameof(accessors));
-            this.dialogs = new DialogSet(accessors.DialogContext);
-
-            // Initialize global dialogs.
-            Utils.Dialogs.Init(accessors, dialogs);
-            Utils.Prompts.Init(dialogs);
+            this.state = state ?? throw new System.ArgumentNullException(nameof(state));
+            this.masterDialog = new MasterDialog(state);
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -39,9 +37,8 @@ namespace TestBot.Bot
             }
             else if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                // Run the DialogSet - let the framework identify the current state of the dialog from
-                // the dialog stack and figure out what (if any) is the active dialog.
-                DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
+                // Establish context for our dialog from the turn context.
+                DialogContext dialogContext = await this.masterDialog.CreateContextAsync(turnContext, cancellationToken);
                 DialogTurnResult results = await dialogContext.ContinueDialogAsync(cancellationToken);
 
                 switch (results.Status)
@@ -50,16 +47,16 @@ namespace TestBot.Bot
                     case DialogTurnStatus.Empty:
                         {
                             // Start a new conversation if there is none.
-                            await dialogContext.BeginDialogAsync(NewOrgDialog.Name, null, cancellationToken);
+                            await dialogContext.BeginDialogAsync(MasterDialog.Name, null, cancellationToken);
                             break;
                         }
                     case DialogTurnStatus.Complete:
                         {
                             // Get the current profile object.
-                            var profile = await this.accessors.OrganizationProfile.GetAsync(turnContext, () => new OrganizationProfile(), cancellationToken);
+                            var profile = await this.state.GetOrganizationProfile(turnContext, cancellationToken);
 
                             // Output the profile.
-                            await SendMessageAsync(profile.ToString(), turnContext, cancellationToken);
+                            await Utils.Messages.SendAsync(profile.ToString(), turnContext, cancellationToken);
 
                             break;
                         }
@@ -90,22 +87,9 @@ namespace TestBot.Bot
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    await SendMessageAsync("Welcome!", turnContext, cancellationToken);
+                    await Utils.Messages.SendAsync("Welcome!", turnContext, cancellationToken);
                 }
             }
-        }
-
-        /// <summary>
-        /// Sends a message to the user.
-        /// </summary>
-        /// <param name="turnContext">A <see cref="ITurnContext"/> containing all the data needed
-        /// for processing this conversation turn.</param>
-        /// <param name="cancellationToken">(Optional) A <see cref="CancellationToken"/> that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/> that represents the work queued to execute.</returns>
-        private static async Task SendMessageAsync(string message, ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            await turnContext.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
         }
     }
 }

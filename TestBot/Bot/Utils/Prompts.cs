@@ -1,4 +1,7 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using System.Collections.Generic;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 
 namespace TestBot.Bot.Utils
 {
@@ -9,13 +12,13 @@ namespace TestBot.Bot.Utils
         public static string TextPrompt = "TextPrompt";
 
         /// <summary>
-        /// Adds globally used prompts to the global dialog set
+        /// Adds each prompt to the master dialog set
         /// </summary>
-        public static void Init(DialogSet globalDialogSet)
+        public static void Register(DialogSet dialogs)
         {
-            globalDialogSet.Add(new ConfirmPrompt(ConfirmPrompt));
-            globalDialogSet.Add(new NumberPrompt<int>(IntPrompt));
-            globalDialogSet.Add(new TextPrompt(TextPrompt));
+            dialogs.Add(new ConfirmPrompt(ConfirmPrompt));
+            dialogs.Add(new NumberPrompt<int>(IntPrompt));
+            dialogs.Add(new TextPrompt(TextPrompt));
         }
     }
 }

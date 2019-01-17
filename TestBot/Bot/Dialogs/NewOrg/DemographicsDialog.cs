@@ -1,68 +1,88 @@
 ﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Models;
-using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs.NewOrg
 {
-    public sealed class DemographicsDialog : DialogBase
+    public static class DemographicsDialog
     {
         public static string Name = "DemographicsDialog";
 
-        public DemographicsDialog(Accessors accessors, DialogSet globalDialogSet) : base(accessors, globalDialogSet)
+        /// <summary>Creates a dialog for adding a new organization.</summary>
+        /// <param name="accessors">The state accessors.</param>
+        public static Dialog Create(StateAccessors accessors)
         {
-            // Only set when the bot is initialized.
-            if (globalDialogSet != null)
+            // Define the dialog and add it to the set.
+            return new WaterfallDialog(Name, new WaterfallStep[]
             {
-                // The steps this dialog will take.
-                WaterfallStep[] waterfallSteps =
+                async (stepContext, cancellationToken) =>
                 {
-                    DemographicStepAsync,
-                    CleanupAsync
-                };
-
-                // Add the dialog to the global dialog set.
-                globalDialogSet.Add(new WaterfallDialog(Name, waterfallSteps));
-            }
-        }
-
-        /// <summary>
-        /// One of the functions that make up the <see cref="WaterfallDialog"/>.
-        /// </summary>
-        /// <param name="stepContext">The <see cref="WaterfallStepContext"/> gives access to the executing dialog runtime.</param>
-        /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
-        /// <returns>A <see cref="DialogTurnResult"/> to communicate some flow control back to the containing WaterfallDialog.</returns>
-        private async Task<DialogTurnResult> DemographicStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            return await stepContext.PromptAsync(
-                Prompts.TextPrompt,
-                new PromptOptions
-                {
-                    Prompt = MessageFactory.Text("What demographic does your organization work with?")
+                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text("Does your organization work with men?")
+                    },
+                    cancellationToken);
                 },
-                cancellationToken);
-        }
+                async (stepContext, cancellationToken) =>
+                {
+                    // Update the profile with the result of the previous step.
+                    var profile = await accessors.GetOrganizationProfile(stepContext.Context, cancellationToken);
 
-        /// <summary>
-        /// One of the functions that make up the <see cref="WaterfallDialog"/>.
-        /// </summary>
-        /// <param name="stepContext">The <see cref="WaterfallStepContext"/> gives access to the executing dialog runtime.</param>
-        /// <param name="cancellationToken">A <see cref="CancellationToken"/>.</param>
-        /// <returns>A <see cref="DialogTurnResult"/> to communicate some flow control back to the containing WaterfallDialog.</returns>
-        private async Task<DialogTurnResult> CleanupAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            // Get the current profile object.
-            var profile = await this.accessors.OrganizationProfile.GetAsync(stepContext.Context, () => new OrganizationProfile(), cancellationToken);
+                    if ((bool)stepContext.Result)
+                    {
+                        profile.Demographic.Gender |= Gender.Male;
+                    }
+                    else
+                    {
+                         profile.Demographic.Gender &= ~Gender.Male;
+                    }
 
-            // Update the profile with the result of the previous step.
-            // TODO: Validate the user input
-            profile.Demographic.Gender = (Gender)Enum.Parse(typeof(Gender), (string)stepContext.Result, true);
+                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text("Does your organization work with women?")
+                    },
+                    cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    // Update the profile with the result of the previous step.
+                    var profile = await accessors.GetOrganizationProfile(stepContext.Context, cancellationToken);
 
-            // End this dialog to pop it off the stack.
-            return await stepContext.EndDialogAsync(cancellationToken);
+                    if ((bool)stepContext.Result)
+                    {
+                        profile.Demographic.Gender |= Gender.Female;
+                    }
+                    else
+                    {
+                         profile.Demographic.Gender &= ~Gender.Female;
+                    }
+
+                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text("Does your organization work with an age range?")
+                    },
+                    cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    if ((bool)stepContext.Result)
+                    {
+                        // Push the age range dialog onto the stack.
+                        return await stepContext.BeginDialogAsync(AgeRangeDialog.Name, null, cancellationToken);
+                    }
+                    else
+                    {
+                        // Skip this step.
+                        return await stepContext.NextAsync();
+                    }
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    // End this dialog to pop it off the stack.
+                    return await stepContext.EndDialogAsync(cancellationToken);
+                }
+            });
         }
     }
 }

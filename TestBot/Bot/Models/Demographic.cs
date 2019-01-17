@@ -1,15 +1,6 @@
 ﻿using System;
 namespace TestBot.Bot.Models
 {
-    [Flags]
-    public enum Gender
-    {
-        Unknown = 0,
-        Male = 1,
-        Female = 2,
-        // Todo
-    }
-
     public class Demographic
     {
         public Gender Gender { get; set; }
@@ -19,6 +10,11 @@ namespace TestBot.Bot.Models
         {
             this.Gender = Gender.Unknown;
             this.AgeRange = new AgeRange { Start = -1, End = -1 };
+        }
+
+        public override string ToString()
+        {
+            return $"Gender: ({this.Gender}), Age Range: ({this.AgeRange})";
         }
     }
 }
