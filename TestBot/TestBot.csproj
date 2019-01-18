@@ -8,10 +8,11 @@
     <Folder Include="wwwroot\" />
     <Folder Include="Bot\" />
     <Folder Include="Bot\Dialogs\" />
-    <Folder Include="Bot\Dialogs\NewOrg\" />
+    <Folder Include="Bot\Dialogs\NewOrganization\" />
     <Folder Include="Bot\Utils\" />
     <Folder Include="Bot\Models\" />
-    <Folder Include="Bot\Dialogs\NewOrg\Capacity\" />
+    <Folder Include="Bot\Dialogs\Shared\" />
+    <Folder Include="Bot\Dialogs\Shared\Capacity\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,5 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Dialogs.NewOrg;
+﻿using Microsoft.Bot.Builder.Dialogs;
+using TestBot.Bot.Dialogs.NewOrganization;
 
 namespace TestBot.Bot.Dialogs
 {
@@ -23,7 +22,7 @@ namespace TestBot.Bot.Dialogs
                 {
                     // Kick off the first dialog.
                     // TODO: This will branch based on the conversation (new org, update existing, etc.)
-                    return await stepContext.BeginDialogAsync(NewOrgDialog.Name, null, cancellationToken);
+                    return await stepContext.BeginDialogAsync(NewOrganizationDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {

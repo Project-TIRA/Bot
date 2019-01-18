@@ -3,11 +3,11 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Models;
 
-namespace TestBot.Bot.Dialogs.NewOrg
+namespace TestBot.Bot.Dialogs.NewOrganization
 {
-    public static class DemographicsDialog
+    public static class DemographicDialog
     {
-        public static string Name = "DemographicsDialog";
+        public static string Name = "DemographicDialog";
 
         /// <summary>Creates a dialog for getting demographics.</summary>
         /// <param name="state">The state accessors.</param>
@@ -18,33 +18,35 @@ namespace TestBot.Bot.Dialogs.NewOrg
             {
                 async (stepContext, cancellationToken) =>
                 {
+                    // Prompt for the age range.
                     return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
                     {
-                        Prompt = MessageFactory.Text("Does your organization work with a specific demographic?")
+                        Prompt = Utils.Phrases.NewOrganization.GetHasDemographicAgeRange
                     },
                     cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    if (!(bool)stepContext.Result)
+                    if ((bool)stepContext.Result)
                     {
-                        // Works with all demographics.
-                        var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-                        profile.Demographic.SetToAll();
-
-                        // End this dialog to pop it off the stack.
-                        return await stepContext.EndDialogAsync(cancellationToken);
+                        // Push the age range dialog onto the stack.
+                        return await stepContext.BeginDialogAsync(DemographicDialog.Name, null, cancellationToken);
                     }
 
+                    // Update the profile with the default age range.
+                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
+                    profile.Demographic.AgeRange.SetToAll();
+
+                    // Prompt for working with men.
                     return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
                     {
-                        Prompt = MessageFactory.Text("Does your organization work with men?")
+                        Prompt = Utils.Phrases.NewOrganization.GetHasDemographicMen
                     },
                     cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    // Update the profile with the result of the previous step.
+                    // Update the profile with the men demographic.
                     var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
 
                     if ((bool)stepContext.Result)
@@ -56,15 +58,16 @@ namespace TestBot.Bot.Dialogs.NewOrg
                          profile.Demographic.Gender &= ~Gender.Male;
                     }
 
+                    // Prompt for working with women.
                     return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
                     {
-                        Prompt = MessageFactory.Text("Does your organization work with women?")
+                        Prompt = Utils.Phrases.NewOrganization.GetHasDemographicWomen
                     },
                     cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    // Update the profile with the result of the previous step.
+                    // Update the profile with the women demographic.
                     var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
 
                     if ((bool)stepContext.Result)

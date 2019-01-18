@@ -1,7 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Dialogs;
-using TestBot.Bot.Dialogs.NewOrg;
-using TestBot.Bot.Dialogs.NewOrg.Capacity;
+using TestBot.Bot.Dialogs.NewOrganization;
+using TestBot.Bot.Dialogs.NewOrganization.Capacity;
 
 namespace TestBot.Bot.Utils
 {
@@ -15,8 +14,8 @@ namespace TestBot.Bot.Utils
             dialogs.Add(AgeRangeDialog.Create(accessors));
             dialogs.Add(HousingDialog.Create(accessors));
             dialogs.Add(CapacityDialog.Create(accessors));
-            dialogs.Add(DemographicsDialog.Create(accessors));
-            dialogs.Add(NewOrgDialog.Create(accessors));
+            dialogs.Add(DemographicDialog.Create(accessors));
+            dialogs.Add(NewOrganizationDialog.Create(accessors));
         }
     }
 }
