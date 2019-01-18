@@ -1,18 +1,31 @@
 ﻿namespace TestBot.Bot.Models
 {
-    public struct AgeRange
+    public class AgeRange
     {
-        public int Start;
-        public int End;
+        private const int Default = -1;
+
+        public int Start { get; set; }
+        public int End { get; set; }
+
+        public AgeRange()
+        {
+            SetToAll();
+        }
 
         public override string ToString()
         {
-            if (this.Start == -1 && this.End == -1)
+            if (this.Start == Default && this.End == Default)
             {
                 return "All";
             }
 
             return $"{this.Start} to {this.End}";
+        }
+
+        public void SetToAll()
+        {
+            this.Start = Default;
+            this.End = Default;
         }
     }
 }

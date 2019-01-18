@@ -30,28 +30,13 @@ namespace TestBot.Bot.Dialogs.NewOrg
                     var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
                     profile.Name = (string)stepContext.Result;
 
-                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
-                    {
-                        Prompt = MessageFactory.Text("Does your organization work with a specific demographic?")
-                    },
-                    cancellationToken);
+                    // Push the demographics dialog onto the stack.
+                    return await stepContext.BeginDialogAsync(DemographicsDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    if ((bool)stepContext.Result)
-                    {
-                        // Push the demographics dialog onto the stack.
-                        return await stepContext.BeginDialogAsync(DemographicsDialog.Name, null, cancellationToken);
-                    }
-                    else
-                    {
-                        // Update the profile with the result of the previous step.
-                        var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-                        profile.Demographic.Gender = Gender.All;
-
-                        // Skip this step.
-                        return await stepContext.NextAsync();
-                    }
+                    // Push the capacity dialog onto the stack.
+                    return await stepContext.BeginDialogAsync(CapacityDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {

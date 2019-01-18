@@ -9,12 +9,18 @@ namespace TestBot.Bot.Models
         public Demographic()
         {
             this.Gender = Gender.Unknown;
-            this.AgeRange = new AgeRange { Start = -1, End = -1 };
+            this.AgeRange = new AgeRange();
+        }
+
+        public void SetToAll()
+        {
+            this.Gender = Gender.All;
+            this.AgeRange.SetToAll();
         }
 
         public override string ToString()
         {
-            return $"Gender: ({this.Gender}), Age Range: ({this.AgeRange})";
+            return $"Gender: {this.Gender}, Age Range: {this.AgeRange}";
         }
     }
 }

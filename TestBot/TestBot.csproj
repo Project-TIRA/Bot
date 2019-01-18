@@ -11,6 +11,7 @@
     <Folder Include="Bot\Dialogs\NewOrg\" />
     <Folder Include="Bot\Utils\" />
     <Folder Include="Bot\Models\" />
+    <Folder Include="Bot\Dialogs\NewOrg\Capacity\" />
   </ItemGroup>
 
   <ItemGroup>

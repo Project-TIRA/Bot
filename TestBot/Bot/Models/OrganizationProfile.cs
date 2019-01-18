@@ -1,4 +1,6 @@
-﻿namespace TestBot.Bot.Models
+﻿using System;
+
+namespace TestBot.Bot.Models
 {
     public class OrganizationProfile
     {
@@ -6,17 +8,20 @@
 
         public Demographic Demographic { get; set; }
 
-        public BedCapacity BedCapacity { get; set; }
+        public Capacity Capacity { get; set; }
 
         public OrganizationProfile()
         {
             this.Demographic = new Demographic();
-            this.BedCapacity = new BedCapacity();
+            this.Capacity = new Capacity();
         }
 
         public override string ToString()
         {
-            return $"Name: ({this.Name}), {this.Demographic.ToString()}";
+            return $"{nameof(OrganizationProfile)}:" + Environment.NewLine +
+                $"  {nameof(Name)}: [ {this.Name} ]" + Environment.NewLine +
+                $"  {nameof(Demographic)}: [ {this.Demographic} ]" + Environment.NewLine +
+                $"  {nameof(Capacity)}: [ {this.Capacity} ]";
         }
     }
 }

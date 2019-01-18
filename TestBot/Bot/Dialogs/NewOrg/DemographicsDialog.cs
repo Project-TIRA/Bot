@@ -9,15 +9,33 @@ namespace TestBot.Bot.Dialogs.NewOrg
     {
         public static string Name = "DemographicsDialog";
 
-        /// <summary>Creates a dialog for adding a new organization.</summary>
-        /// <param name="accessors">The state accessors.</param>
-        public static Dialog Create(StateAccessors accessors)
+        /// <summary>Creates a dialog for getting demographics.</summary>
+        /// <param name="state">The state accessors.</param>
+        public static Dialog Create(StateAccessors state)
         {
             // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>
                 {
+                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
+                    {
+                        Prompt = MessageFactory.Text("Does your organization work with a specific demographic?")
+                    },
+                    cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    if (!(bool)stepContext.Result)
+                    {
+                        // Works with all demographics.
+                        var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
+                        profile.Demographic.SetToAll();
+
+                        // End this dialog to pop it off the stack.
+                        return await stepContext.EndDialogAsync(cancellationToken);
+                    }
+
                     return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
                     {
                         Prompt = MessageFactory.Text("Does your organization work with men?")
@@ -27,7 +45,7 @@ namespace TestBot.Bot.Dialogs.NewOrg
                 async (stepContext, cancellationToken) =>
                 {
                     // Update the profile with the result of the previous step.
-                    var profile = await accessors.GetOrganizationProfile(stepContext.Context, cancellationToken);
+                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
 
                     if ((bool)stepContext.Result)
                     {
@@ -47,7 +65,7 @@ namespace TestBot.Bot.Dialogs.NewOrg
                 async (stepContext, cancellationToken) =>
                 {
                     // Update the profile with the result of the previous step.
-                    var profile = await accessors.GetOrganizationProfile(stepContext.Context, cancellationToken);
+                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
 
                     if ((bool)stepContext.Result)
                     {
@@ -58,24 +76,8 @@ namespace TestBot.Bot.Dialogs.NewOrg
                          profile.Demographic.Gender &= ~Gender.Female;
                     }
 
-                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
-                    {
-                        Prompt = MessageFactory.Text("Does your organization work with an age range?")
-                    },
-                    cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    if ((bool)stepContext.Result)
-                    {
-                        // Push the age range dialog onto the stack.
-                        return await stepContext.BeginDialogAsync(AgeRangeDialog.Name, null, cancellationToken);
-                    }
-                    else
-                    {
-                        // Skip this step.
-                        return await stepContext.NextAsync();
-                    }
+                    // Push the age range dialog onto the stack.
+                    return await stepContext.BeginDialogAsync(AgeRangeDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
