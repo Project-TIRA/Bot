@@ -4,8 +4,6 @@ using Microsoft.Bot.Schema;
 using System.Threading;
 using System.Threading.Tasks;
 using TestBot.Bot.Dialogs;
-using TestBot.Bot.Dialogs.NewOrg;
-using TestBot.Bot.Models;
 
 namespace TestBot.Bot
 {
