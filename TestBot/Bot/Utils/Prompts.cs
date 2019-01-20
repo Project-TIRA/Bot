@@ -4,6 +4,7 @@ namespace TestBot.Bot.Utils
 {
     public static class Prompts
     {
+        public static string ChoicePrompt = "ChoicePrompt";
         public static string ConfirmPrompt = "ConfirmPrompt";
         public static string IntPrompt = "IntPrompt";
         public static string TextPrompt = "TextPrompt";
@@ -13,6 +14,7 @@ namespace TestBot.Bot.Utils
         /// </summary>
         public static void Register(DialogSet dialogs)
         {
+            dialogs.Add(new ChoicePrompt(ChoicePrompt));
             dialogs.Add(new ConfirmPrompt(ConfirmPrompt));
             dialogs.Add(new NumberPrompt<int>(IntPrompt));
             dialogs.Add(new TextPrompt(TextPrompt));

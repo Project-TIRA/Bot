@@ -1,7 +1,4 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Utils;
-using TestBot.Bot.Models;
+﻿using Microsoft.Bot.Builder.Dialogs;
 
 namespace TestBot.Bot.Dialogs.NewOrganization
 {
@@ -19,11 +16,10 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                 async (stepContext, cancellationToken) =>
                 {
                     // Prompt for the name.
-                    return await stepContext.PromptAsync(Utils.Prompts.TextPrompt, new PromptOptions
-                    {
-                        Prompt = Phrases.NewOrganization.GetName
-                    },
-                    cancellationToken);
+                    return await stepContext.PromptAsync(
+                        Utils.Prompts.TextPrompt,
+                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetName },
+                        cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
@@ -32,11 +28,10 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     profile.Name = (string)stepContext.Result;
 
                     // Prompt for the demographics.
-                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
-                    {
-                        Prompt = Utils.Phrases.NewOrganization.GetHasDemographic
-                    },
-                    cancellationToken);
+                    return await stepContext.PromptAsync(
+                        Utils.Prompts.ConfirmPrompt,
+                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetHasDemographic },
+                        cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
@@ -50,6 +45,11 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
                     profile.Demographic.SetToAll();
 
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
                     // Push the capacity dialog onto the stack.
                     return await stepContext.BeginDialogAsync(CapacityDialog.Name, null, cancellationToken);
                 },

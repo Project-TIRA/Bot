@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs;
+﻿using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Models;
 
 namespace TestBot.Bot.Dialogs.NewOrganization
@@ -18,31 +16,11 @@ namespace TestBot.Bot.Dialogs.NewOrganization
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    // Prompt for the age range.
-                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
-                    {
-                        Prompt = Utils.Phrases.NewOrganization.GetHasDemographicAgeRange
-                    },
-                    cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    if ((bool)stepContext.Result)
-                    {
-                        // Push the age range dialog onto the stack.
-                        return await stepContext.BeginDialogAsync(DemographicDialog.Name, null, cancellationToken);
-                    }
-
-                    // Update the profile with the default age range.
-                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-                    profile.Demographic.AgeRange.SetToAll();
-
                     // Prompt for working with men.
-                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
-                    {
-                        Prompt = Utils.Phrases.NewOrganization.GetHasDemographicMen
-                    },
-                    cancellationToken);
+                    return await stepContext.PromptAsync(
+                        Utils.Prompts.ConfirmPrompt,
+                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetHasDemographicMen },
+                        cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
@@ -59,11 +37,10 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     }
 
                     // Prompt for working with women.
-                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
-                    {
-                        Prompt = Utils.Phrases.NewOrganization.GetHasDemographicWomen
-                    },
-                    cancellationToken);
+                    return await stepContext.PromptAsync(
+                        Utils.Prompts.ConfirmPrompt,
+                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetHasDemographicWomen },
+                        cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
@@ -79,8 +56,27 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                          profile.Demographic.Gender &= ~Gender.Female;
                     }
 
-                    // Push the age range dialog onto the stack.
-                    return await stepContext.BeginDialogAsync(AgeRangeDialog.Name, null, cancellationToken);
+                    // Prompt for the age range.
+                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
+                    {
+                        Prompt = Utils.Phrases.NewOrganization.GetHasDemographicAgeRange
+                    },
+                    cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    if ((bool)stepContext.Result)
+                    {
+                        // Push the age range dialog onto the stack.
+                        return await stepContext.BeginDialogAsync(AgeRangeDialog.Name, null, cancellationToken);
+                    }
+
+                    // Update the profile with the default age range.
+                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
+                    profile.Demographic.AgeRange.SetToAll();
+
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {

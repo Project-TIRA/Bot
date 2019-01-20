@@ -19,11 +19,10 @@ namespace TestBot.Bot.Dialogs.Shared.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Prompt for the total beds.
-                    return await stepContext.PromptAsync(Utils.Prompts.IntPrompt, new PromptOptions
-                    {
-                        Prompt = Utils.Phrases.Shared.GetHousingTotal
-                    },
-                    cancellationToken);
+                    return await stepContext.PromptAsync(
+                        Utils.Prompts.IntPrompt,
+                        new PromptOptions { Prompt = Utils.Phrases.Shared.GetHousingTotal },
+                        cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
@@ -32,11 +31,10 @@ namespace TestBot.Bot.Dialogs.Shared.Capacity
                     profile.Capacity.Beds.Total = (int)stepContext.Result;
 
                     // Prompt for the open beds.
-                    return await stepContext.PromptAsync(Utils.Prompts.IntPrompt, new PromptOptions
-                    {
-                        Prompt = Utils.Phrases.Shared.GetHousingOpen
-                    },
-                    cancellationToken);
+                    return await stepContext.PromptAsync(
+                        Utils.Prompts.IntPrompt,
+                        new PromptOptions { Prompt = Utils.Phrases.Shared.GetHousingOpen },
+                        cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
@@ -53,7 +51,6 @@ namespace TestBot.Bot.Dialogs.Shared.Capacity
 
                         // Repeat the dialog.
                         return await stepContext.ReplaceDialogAsync(Name, null, cancellationToken);
-
                     }
 
                     // Update the profile with the open beds.

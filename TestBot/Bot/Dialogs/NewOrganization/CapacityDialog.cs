@@ -1,6 +1,5 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Dialogs.NewOrganization.Capacity;
+﻿using Microsoft.Bot.Builder.Dialogs;
+using TestBot.Bot.Dialogs.Shared.Capacity;
 
 namespace TestBot.Bot.Dialogs.NewOrganization
 {
@@ -18,11 +17,10 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                 async (stepContext, cancellationToken) =>
                 {
                     // Prompt for housing capacity.
-                    return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
-                    {
-                        Prompt = Utils.Phrases.NewOrganization.GetHasHousing
-                    },
-                    cancellationToken);
+                    return await stepContext.PromptAsync(
+                        Utils.Prompts.ConfirmPrompt,
+                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetHasHousing },
+                        cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
@@ -36,6 +34,11 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
                     profile.Capacity.Beds.SetToNone();
 
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
                 }

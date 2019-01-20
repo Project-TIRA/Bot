@@ -13,6 +13,7 @@
     <Folder Include="Bot\Models\" />
     <Folder Include="Bot\Dialogs\Shared\" />
     <Folder Include="Bot\Dialogs\Shared\Capacity\" />
+    <Folder Include="Bot\Prompts\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Bot\Dialogs\DialogBase.cs" />
     <Compile Remove="Bot\Prompts\DemographicPrompt.cs" />
     <Compile Remove="Bot\Prompts\SynonymConfirmPrompt.cs" />
+    <Compile Remove="Bot\Dialogs\DialogBase.cs" />
   </ItemGroup>
 </Project>

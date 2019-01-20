@@ -5,6 +5,13 @@ namespace TestBot.Bot.Utils
 {
     public static class Phrases
     {
+        public static class Greeting
+        {
+            public static Activity GetAction = MessageFactory.Text("Welcome! Please choose an option:");
+            public static Activity GetActionRetry = MessageFactory.Text("Please choose an option:");
+            public static Activity GetClosing = MessageFactory.Text("Thanks!");
+        }
+
         public static class NewOrganization
         {
             public static Activity GetName = MessageFactory.Text("What is the name of your organization?");

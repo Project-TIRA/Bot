@@ -26,8 +26,26 @@ namespace TestBot.Bot
         /// <param name="organizationState">The state object that stores the organization state.</param>
         public StateAccessors(ConversationState conversationState, UserState organizationState)
         {
-            ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
-            OrganizationState = organizationState ?? throw new ArgumentNullException(nameof(organizationState));
+            this.ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
+            this.OrganizationState = organizationState ?? throw new ArgumentNullException(nameof(organizationState));
+
+            this.DialogContextAccessor = conversationState.CreateProperty<DialogState>(DialogContextName);
+            this.OrganizationProfileAccessor = organizationState.CreateProperty<OrganizationProfile>(OrganizationProfileName);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StateAccessors"/> class from in-memory storage.
+        /// Contains the state management and associated accessor objects.
+        /// </summary>
+        public static StateAccessors CreateFromMemoryStorage()
+        {
+            // Create the state management with in-memory storage provider.
+            IStorage storage = new MemoryStorage();
+            ConversationState conversationState = new ConversationState(storage);
+            UserState organizationProfile = new UserState(storage);
+
+            // Create the state accessors.
+            return new StateAccessors(conversationState, organizationProfile);
         }
 
         /// <summary>

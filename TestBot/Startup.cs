@@ -32,21 +32,10 @@ namespace TestBot
         {
             services.AddSingleton(configuration);
 
-            // Create the state management with in-memory storage provider.
-            IStorage storage = new MemoryStorage();
-            ConversationState conversationState = new Microsoft.Bot.Builder.ConversationState(storage);
-            UserState organizationProfile = new UserState(storage);
-
             // Create and register state accessors.
             // Accessors created here are passed into the IBot-derived class on every turn.
-            services.AddSingleton<StateAccessors>(sp =>
-            {
-                return new StateAccessors(conversationState, organizationProfile)
-                {
-                    DialogContextAccessor = conversationState.CreateProperty<DialogState>(StateAccessors.DialogContextName),
-                    OrganizationProfileAccessor = organizationProfile.CreateProperty<OrganizationProfile>(StateAccessors.OrganizationProfileName),
-                };
-            });
+            StateAccessors state = StateAccessors.CreateFromMemoryStorage();
+            services.AddSingleton(state);
 
             // Configure the bot.
             services.AddBot<MyBot>(options =>
@@ -61,8 +50,8 @@ namespace TestBot
                 };
 
                 // Auto-save the state after each turn.
-                options.Middleware.Add(new AutoSaveStateMiddleware(conversationState));
-                options.Middleware.Add(new AutoSaveStateMiddleware(organizationProfile));
+                options.Middleware.Add(new AutoSaveStateMiddleware(state.ConversationState));
+                options.Middleware.Add(new AutoSaveStateMiddleware(state.OrganizationState));
             });
         }
 

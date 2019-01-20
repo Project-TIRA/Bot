@@ -1,6 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Dialogs.NewOrganization;
-using TestBot.Bot.Dialogs.NewOrganization.Capacity;
+using TestBot.Bot.Dialogs.Shared.Capacity;
 
 namespace TestBot.Bot.Utils
 {

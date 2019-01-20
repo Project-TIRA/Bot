@@ -1,10 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Models;
-using TestBot.Bot.Utils;
-
+﻿using Microsoft.Bot.Builder.Dialogs;
 namespace TestBot.Bot.Dialogs.NewOrganization
 {
     public static class AgeRangeDialog
@@ -21,11 +15,10 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                 async (stepContext, cancellationToken) =>
                 {
                     // Prompt for the youngest age.
-                    return await stepContext.PromptAsync(Utils.Prompts.IntPrompt, new PromptOptions
-                    {
-                        Prompt = Utils.Phrases.NewOrganization.GetAgeRangeStart
-                    },
-                    cancellationToken);
+                    return await stepContext.PromptAsync(
+                        Utils.Prompts.IntPrompt,
+                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetAgeRangeStart },
+                        cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {

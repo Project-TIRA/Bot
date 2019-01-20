@@ -4,16 +4,12 @@ using Microsoft.Bot.Schema;
 using System.Threading;
 using System.Threading.Tasks;
 using TestBot.Bot.Dialogs;
-using TestBot.Bot.Dialogs.NewOrganization;
-using TestBot.Bot.Models;
 
 namespace TestBot.Bot
 {
     public class MyBot : IBot
     {
         private readonly StateAccessors state;
-
-        private MasterDialog masterDialog { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MyBot"/> class.
@@ -22,25 +18,23 @@ namespace TestBot.Bot
         public MyBot(StateAccessors state)
         {
             this.state = state ?? throw new System.ArgumentNullException(nameof(state));
-            this.masterDialog = new MasterDialog(state);
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            if (turnContext.Activity.Type == ActivityTypes.ConversationUpdate)
+            // Establish context for our dialog from the turn context.
+            DialogContext dialogContext = await new MasterDialog(state).CreateContextAsync(turnContext, cancellationToken);
+            DialogTurnResult results = await dialogContext.ContinueDialogAsync(cancellationToken);
+
+            if (ShouldBeginConversation(turnContext))
             {
-                // Processes ConversationUpdate activities to welcome the user.
-                if (turnContext.Activity.MembersAdded != null)
-                {
-                    await SendWelcomeMessageAsync(turnContext, cancellationToken);
-                }
+                await dialogContext.BeginDialogAsync(MasterDialog.Name, null, cancellationToken);
             }
+
+            /*
             else if (turnContext.Activity.Type == ActivityTypes.Message)
             {
-                // Establish context for our dialog from the turn context.
-                DialogContext dialogContext = await this.masterDialog.CreateContextAsync(turnContext, cancellationToken);
-                DialogTurnResult results = await dialogContext.ContinueDialogAsync(cancellationToken);
-
+               
                 switch (results.Status)
                 {
                     case DialogTurnStatus.Cancelled:
@@ -67,29 +61,27 @@ namespace TestBot.Bot
                         }
                 }
             }
-            else
-            {
-                await turnContext.SendActivityAsync($"{turnContext.Activity.Type} event detected", cancellationToken: cancellationToken);
-            }
+            */
         }
 
-        /// <summary>
-        /// Sends a welcome message to the user.
-        /// </summary>
-        /// <param name="turnContext">A <see cref="ITurnContext"/> containing all the data needed
-        /// for processing this conversation turn.</param>
-        /// <param name="cancellationToken">(Optional) A <see cref="CancellationToken"/> that can be used by other objects
-        /// or threads to receive notice of cancellation.</param>
-        /// <returns>A <see cref="Task"/> that represents the work queued to execute.</returns>
-        private static async Task SendWelcomeMessageAsync(ITurnContext turnContext, CancellationToken cancellationToken)
+        private bool ShouldBeginConversation(ITurnContext turnContext)
         {
-            foreach (var member in turnContext.Activity.MembersAdded)
+            // Process ConversationUpdate activities to know when to the conversation.
+            if (turnContext.Activity.Type == ActivityTypes.ConversationUpdate)
             {
-                if (member.Id != turnContext.Activity.Recipient.Id)
+                if (turnContext.Activity.MembersAdded != null)
                 {
-                    await Utils.Messages.SendAsync("Welcome!", turnContext, cancellationToken);
+                    foreach (var member in turnContext.Activity.MembersAdded)
+                    {
+                        if (member.Id != turnContext.Activity.Recipient.Id)
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
+
+            return false;
         }
     }
 }
