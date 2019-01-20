@@ -6,6 +6,9 @@ namespace TestBot.Bot.Prompts
 {
     public class WelcomeChoicePrompt : PromptOptions
     {
+        public const int NewOrganizationChoice = 0;
+        public const int UpdateOrganizationChoice = 1;
+
         public WelcomeChoicePrompt()
         {
             this.Prompt = Utils.Phrases.Greeting.GetAction;

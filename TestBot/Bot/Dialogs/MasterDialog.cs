@@ -35,7 +35,7 @@ namespace TestBot.Bot.Dialogs
                     // Branch based on the input.
                     switch (choice.Index)
                     {
-                        case 0:
+                        case WelcomeChoicePrompt.NewOrganizationChoice:
                         {
                             // Push the new organization dialog onto the stack.
                             return await stepContext.BeginDialogAsync(NewOrganizationDialog.Name, null, cancellationToken);
