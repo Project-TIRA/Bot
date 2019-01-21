@@ -38,7 +38,7 @@ namespace Tests.Dialogs.NewOrganization
 
             // Execute the conversation.
             await CreateTestFlow(UpdateOrganizationDialog.Name)
-                .Send("begin")
+                .Test("begin", Phrases.UpdateOrganization.NothingToUpdate)
                 .StartTestAsync();
 
             // Validate the profile.

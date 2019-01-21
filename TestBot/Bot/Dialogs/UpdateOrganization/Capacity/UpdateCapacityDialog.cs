@@ -24,6 +24,9 @@ namespace TestBot.Bot.Dialogs.UpdateOrganization.Capacity
                         return await stepContext.BeginDialogAsync(HousingDialog.Name, null, cancellationToken);
                     }
 
+                    // Nothing to update.
+                    await Utils.Messages.SendAsync(Utils.Phrases.UpdateOrganization.NothingToUpdate, stepContext.Context, cancellationToken);
+
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);
                 },

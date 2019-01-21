@@ -36,7 +36,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
         {
             // Execute the conversation.
             await CreateTestFlow(UpdateCapacityDialog.Name)
-                .Send("begin")
+                .Test("begin", Phrases.UpdateOrganization.NothingToUpdate)
                 .StartTestAsync();
         }
     }

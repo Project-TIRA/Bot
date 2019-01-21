@@ -36,7 +36,7 @@ namespace Tests.Dialogs
                 .Test("new", Phrases.NewOrganization.GetName)
                 .Test("test org", StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
-                .Test("no", Phrases.Greeting.GetClosing)
+                .Test("no", Phrases.Greeting.Closing)
                 .StartTestAsync();
         }
 

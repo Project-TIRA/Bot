@@ -51,7 +51,7 @@ namespace TestBot.Bot.Dialogs
                 async (stepContext, cancellationToken) =>
                 {
                     // Send the closing message.
-                    await Utils.Messages.SendAsync(Utils.Phrases.Greeting.GetClosing, stepContext.Context, cancellationToken);
+                    await Utils.Messages.SendAsync(Utils.Phrases.Greeting.Closing, stepContext.Context, cancellationToken);
 
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
