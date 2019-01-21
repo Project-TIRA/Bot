@@ -1,6 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Dialogs.NewOrganization.Capacity;
 using TestBot.Bot.Dialogs.NewOrganization.Demographic;
+using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs.NewOrganization
 {
@@ -20,7 +21,7 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     // Prompt for the name.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.TextPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetName },
+                        new PromptOptions { Prompt = Phrases.NewOrganization.GetName },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
@@ -32,7 +33,7 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     // Prompt for the demographics.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.ConfirmPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.Demographic.GetHasDemographic },
+                        new PromptOptions { Prompt = Phrases.Demographic.GetHasDemographic },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>

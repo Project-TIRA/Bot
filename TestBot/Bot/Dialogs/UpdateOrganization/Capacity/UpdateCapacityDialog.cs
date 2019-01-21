@@ -1,5 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Dialogs.Shared;
+using TestBot.Bot.Dialogs.Capacity;
+using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
@@ -21,11 +22,11 @@ namespace TestBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (profile.Capacity.Beds.Total > 0)
                     {
                         // Push the update housing dialog onto the stack.
-                        return await stepContext.BeginDialogAsync(HousingDialog.Name, null, cancellationToken);
+                        return await stepContext.BeginDialogAsync(UpdateHousingDialog.Name, null, cancellationToken);
                     }
 
                     // Nothing to update.
-                    await Utils.Messages.SendAsync(Utils.Phrases.UpdateOrganization.NothingToUpdate, stepContext.Context, cancellationToken);
+                    await Utils.Messages.SendAsync(Phrases.UpdateOrganization.NothingToUpdate, stepContext.Context, cancellationToken);
 
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);

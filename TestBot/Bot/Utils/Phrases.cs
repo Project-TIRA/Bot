@@ -18,6 +18,11 @@ namespace TestBot.Bot.Utils
             public static Activity GetHousingTotal = MessageFactory.Text("How many TOTAL beds does your organization have?");
             public static Activity GetHousingOpen = MessageFactory.Text("How many OPEN beds does your organization have?");
             public static Activity GetHousingError = MessageFactory.Text("Oops, the total beds must be greater than the open beds.");
+        
+            public static string GetHousingErrorFormat(int totalBeds)
+            {
+                return string.Format("Oops, the total beds ({0}) must be greater than the open beds.", totalBeds);
+            }
         }
 
         public static class Demographic

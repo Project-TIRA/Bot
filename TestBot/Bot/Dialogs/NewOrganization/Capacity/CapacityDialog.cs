@@ -1,5 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Dialogs.Shared;
+using TestBot.Bot.Dialogs.Capacity;
+using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs.NewOrganization.Capacity
 {
@@ -19,7 +20,7 @@ namespace TestBot.Bot.Dialogs.NewOrganization.Capacity
                     // Prompt for housing capacity.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.ConfirmPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.Capacity.GetHasHousing },
+                        new PromptOptions { Prompt = Phrases.Capacity.GetHasHousing },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>

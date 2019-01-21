@@ -23,7 +23,6 @@
     <Folder Include="Dialogs\NewOrganization\" />
     <Folder Include="Dialogs\NewOrganization\Demographic\" />
     <Folder Include="Dialogs\NewOrganization\Capacity\" />
-    <Folder Include="Dialogs\Shared\" />
     <Folder Include="Dialogs\UpdateOrganization\" />
     <Folder Include="Dialogs\UpdateOrganization\Capacity\" />
   </ItemGroup>

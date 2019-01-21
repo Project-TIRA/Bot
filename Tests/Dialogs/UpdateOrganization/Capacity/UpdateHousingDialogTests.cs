@@ -1,16 +1,17 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using TestBot.Bot.Dialogs.UpdateOrganization.Capacity;
+using TestBot.Bot.Dialogs.Capacity;
 using TestBot.Bot.Models;
 using TestBot.Bot.Utils;
 using Xunit;
 
 namespace Tests.Dialogs.UpdateOrganization.Capacity
 {
-    public class UpdateCapacityDialogTests : DialogTestBase
+    public class UpdateHousingDialogTests : DialogTestBase
     {
+        /*
         [Fact]
-        public async Task UpdateAll()
+        public async Task Valid()
         {
             var expected = new OrganizationProfile();
             expected.Capacity.Beds.Total = 10;
@@ -21,8 +22,8 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             initialProfile.Capacity.Beds.Total = expected.Capacity.Beds.Total;
 
             // Execute the conversation.
-            await CreateTestFlow(UpdateCapacityDialog.Name, initialProfile)
-                .Test("begin", Phrases.Capacity.GetHousingTotal)
+            await CreateTestFlow(UpdateHousingDialog.Name)
+                .Test("begin", Phrases.Capacity.GetHousingOpen)
                 .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
                 .Send(expected.Capacity.Beds.Open.ToString())
                 .StartTestAsync();
@@ -30,13 +31,21 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             // Validate the profile.
             await ValidateProfile(expected);
         }
+        */
 
         [Fact]
-        public async Task NoHousing()
+        public async Task Invalid()
         {
+            // Set an initial profile to trigger updates.
+            var initialProfile = new OrganizationProfile();
+            initialProfile.Capacity.Beds.Total = 0;
+
+            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(initialProfile.Capacity.Beds.Total));
+
             // Execute the conversation.
-            await CreateTestFlow(UpdateCapacityDialog.Name)
-                .Test("begin", Phrases.UpdateOrganization.NothingToUpdate)
+            await CreateTestFlow(UpdateHousingDialog.Name)
+                .Test("begin", Phrases.Capacity.GetHousingOpen)
+                .Test("5", error)
                 .StartTestAsync();
         }
     }
