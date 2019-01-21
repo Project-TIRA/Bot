@@ -36,7 +36,7 @@ namespace Tests.Dialogs
             TestBot.Bot.Utils.Prompts.Register(this.dialogs);
         }
 
-        protected TestFlow CreateTestFlow(string dialogName)
+        protected TestFlow CreateTestFlow(string dialogName, OrganizationProfile initalOrganizationProfile = null)
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
@@ -47,9 +47,16 @@ namespace Tests.Dialogs
                 this.turnContext = turnContext;
                 this.cancellationToken = cancellationToken;
 
+                // Start the dialog if there is no conversation.
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    // Start the dialog if there is no conversation.
+                    if (initalOrganizationProfile != null)
+                    {
+                        // Set the initial organization profile.
+                        await this.state.OrganizationProfileAccessor.SetAsync(
+                            turnContext, initalOrganizationProfile, cancellationToken);
+                    }
+
                     await dialogContext.BeginDialogAsync(dialogName, null, cancellationToken);
                 }
             });
