@@ -17,16 +17,16 @@ namespace Tests.Dialogs
                 .StartTestAsync();
         }
 
-        /*
         [Fact]
         public async Task UpdateOrganization()
         {
+            /*
             await CreateTestFlow(MasterDialog.Name)
                 .Test("hello", StartsWith(Phrases.Greeting.GetAction))
                 .Test("update", "TODO")
                 .StartTestAsync();
+            */               
         }
-        */
 
         [Fact]
         public async Task NewOrganizationNoToAll()

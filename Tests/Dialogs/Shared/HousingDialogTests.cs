@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using TestBot.Bot.Dialogs.Capacity;
+using TestBot.Bot.Dialogs.Shared;
 using TestBot.Bot.Models;
 using TestBot.Bot.Utils;
 using Xunit;
 
-namespace Tests.Dialogs
+namespace Tests.Dialogs.Shared.Capacity
 {
     public class HousingDialogTests : DialogTestBase
     {

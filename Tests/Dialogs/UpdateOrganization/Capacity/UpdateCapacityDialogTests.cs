@@ -1,25 +1,24 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using TestBot.Bot.Dialogs.Capacity;
+using TestBot.Bot.Dialogs.UpdateOrganization.Capacity;
 using TestBot.Bot.Models;
 using TestBot.Bot.Utils;
 using Xunit;
 
-namespace Tests.Dialogs
+namespace Tests.Dialogs.UpdateOrganization.Capacity
 {
-    public class CapacityDialogTests : DialogTestBase
+    public class UpdateCapacityDialogTests : DialogTestBase
     {
         [Fact]
-        public async Task YesToAll()
+        public async Task UpdateAll()
         {
             var expected = new OrganizationProfile();
             expected.Capacity.Beds.Total = 10;
             expected.Capacity.Beds.Open = 5;
 
             // Execute the conversation.
-            await CreateTestFlow(CapacityDialog.Name)
-                .Test("begin", StartsWith(Phrases.Capacity.GetHasHousing))
-                .Test("yes", Phrases.Capacity.GetHousingTotal)
+            await CreateTestFlow(UpdateCapacityDialog.Name)
+                .Test("begin", Phrases.Capacity.GetHousingTotal)
                 .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
                 .Send(expected.Capacity.Beds.Open.ToString())
                 .StartTestAsync();
@@ -32,9 +31,8 @@ namespace Tests.Dialogs
         public async Task NoHousing()
         {
             // Execute the conversation.
-            await CreateTestFlow(CapacityDialog.Name)
-                .Test("begin", StartsWith(Phrases.Capacity.GetHasHousing))
-                .Send("no")
+            await CreateTestFlow(UpdateCapacityDialog.Name)
+                .Send("begin")
                 .StartTestAsync();
         }
     }

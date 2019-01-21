@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using TestBot.Bot.Dialogs.Demographic;
+using TestBot.Bot.Dialogs.NewOrganization.Demographic;
 using TestBot.Bot.Models;
 using TestBot.Bot.Utils;
 using Xunit;
 
-namespace Tests.Dialogs
+namespace Tests.Dialogs.NewOrganization.Demographic
 {
     public class DemographicDialogTests : DialogTestBase
     {

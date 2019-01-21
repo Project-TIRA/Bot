@@ -1,14 +1,14 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Dialogs.Capacity;
-using TestBot.Bot.Dialogs.Demographic;
+using TestBot.Bot.Dialogs.NewOrganization.Capacity;
+using TestBot.Bot.Dialogs.NewOrganization.Demographic;
 
 namespace TestBot.Bot.Dialogs.NewOrganization
 {
     public static class NewOrganizationDialog
     {
-        public static string Name = "NewOrganizationDialog";
+        public static string Name = nameof(NewOrganizationDialog);
 
-        /// <summary>Creates a dialog for adding a new organization.</summary>
+        /// <summary>Creates a dialog for creating an organization.</summary>
         /// <param name="state">The state accessors.</param>
         public static Dialog Create(StateAccessors state)
         {

@@ -1,12 +1,13 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
+using TestBot.Bot.Dialogs.Shared;
 
-namespace TestBot.Bot.Dialogs.Capacity
+namespace TestBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
-    public static class CapacityDialog
+    public static class UpdateCapacityDialog
     {
-        public static string Name = "CapacityDialog";
+        public static string Name = nameof(UpdateCapacityDialog);
 
-        /// <summary>Creates a dialog for getting capacity.</summary>
+        /// <summary>Creates a dialog for updating capacity.</summary>
         /// <param name="state">The state accessors.</param>
         public static Dialog Create(StateAccessors state)
         {
@@ -15,23 +16,13 @@ namespace TestBot.Bot.Dialogs.Capacity
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    // Prompt for housing capacity.
-                    return await stepContext.PromptAsync(
-                        Utils.Prompts.ConfirmPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.Capacity.GetHasHousing },
-                        cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    if ((bool)stepContext.Result)
+                    // Check if the organization has housing.
+                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
+                    if (profile.Capacity.Beds.Total > 0)
                     {
-                        // Push the housing dialog onto the stack.
+                        // Push the update housing dialog onto the stack.
                         return await stepContext.BeginDialogAsync(HousingDialog.Name, null, cancellationToken);
                     }
-
-                    // Update the profile with the default housing capacity.
-                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-                    profile.Capacity.Beds.SetToNone();
 
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);

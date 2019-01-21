@@ -1,11 +1,11 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Models;
 
-namespace TestBot.Bot.Dialogs.Demographic
+namespace TestBot.Bot.Dialogs.NewOrganization.Demographic
 {
     public static class DemographicDialog
     {
-        public static string Name = "DemographicDialog";
+        public static string Name = nameof(DemographicDialog);
 
         /// <summary>Creates a dialog for getting demographics.</summary>
         /// <param name="state">The state accessors.</param>

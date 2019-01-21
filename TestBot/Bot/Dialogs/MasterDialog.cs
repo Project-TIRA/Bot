@@ -1,13 +1,14 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using TestBot.Bot.Dialogs.NewOrganization;
+using TestBot.Bot.Dialogs.UpdateOrganization;
 using TestBot.Bot.Prompts;
 
 namespace TestBot.Bot.Dialogs
 {
     public static class MasterDialog
     {
-        public static string Name = "MasterDialog";
+        public static string Name = nameof(MasterDialog);
 
         /// <summary>Creates a dialog for managing the conversation.</summary>
         /// <param name="state">The state accessors.</param>
@@ -36,9 +37,13 @@ namespace TestBot.Bot.Dialogs
                             // Push the new organization dialog onto the stack.
                             return await stepContext.BeginDialogAsync(NewOrganizationDialog.Name, null, cancellationToken);
                         }
+                        case WelcomeChoicePrompt.UpdateOrganizationChoice:
+                        {
+                            // Push the update organization dialog onto the stack.
+                            return await stepContext.BeginDialogAsync(UpdateOrganizationDialog.Name, null, cancellationToken);
+                        }
                         default:
                         {
-                            // TODO: Update org option.
                             return await stepContext.NextAsync(null, cancellationToken);
                         }
                     }

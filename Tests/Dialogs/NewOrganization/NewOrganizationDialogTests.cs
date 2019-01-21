@@ -5,7 +5,7 @@ using TestBot.Bot.Models;
 using TestBot.Bot.Utils;
 using Xunit;
 
-namespace Tests.Dialogs
+namespace Tests.Dialogs.NewOrganization
 {
     public class NewOrganizationDialogTests : DialogTestBase
     {
