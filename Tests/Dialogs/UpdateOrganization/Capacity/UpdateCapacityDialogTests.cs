@@ -22,8 +22,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
 
             // Execute the conversation.
             await CreateTestFlow(UpdateCapacityDialog.Name, initialProfile)
-                .Test("begin", Phrases.Capacity.GetHousingTotal)
-                .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
+                .Test("begin", Phrases.Capacity.GetHousingOpen)
                 .Send(expected.Capacity.Beds.Open.ToString())
                 .StartTestAsync();
 

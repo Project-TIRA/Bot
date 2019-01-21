@@ -32,7 +32,7 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expected.Demographic.AgeRange.End.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
-                .Send(expected.Capacity.Beds.Open.ToString())
+                .Test(expected.Capacity.Beds.Open.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Validate the profile.
@@ -51,7 +51,7 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
-                .Send("no")
+                .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Validate the profile.
@@ -73,7 +73,7 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
-                .Send(expected.Capacity.Beds.Open.ToString())
+                .Test(expected.Capacity.Beds.Open.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Validate the profile.
@@ -99,7 +99,7 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
-                .Send(expected.Capacity.Beds.Open.ToString())
+                .Test(expected.Capacity.Beds.Open.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Validate the profile.
@@ -125,7 +125,7 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("yes", Phrases.AgeRange.GetAgeRangeStart)
                 .Test(expected.Demographic.AgeRange.Start.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
                 .Test(expected.Demographic.AgeRange.End.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
-                .Send("no")
+                .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Validate the profile.

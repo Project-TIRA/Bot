@@ -37,17 +37,18 @@ namespace TestBot.Bot.Utils
         {
             public static Activity GetAction = MessageFactory.Text("Welcome! Please choose an option:");
             public static Activity GetActionRetry = MessageFactory.Text("Please choose an option:");
-            public static Activity Closing = MessageFactory.Text("Thanks!");
         }
 
         public static class NewOrganization
         {
             public static Activity GetName = MessageFactory.Text("What is the name of your organization?");
+            public static Activity Closing = MessageFactory.Text("Thanks! We will notify you once your organization is verified.");
         }
 
         public static class UpdateOrganization
         {
-            public static Activity NothingToUpdate = MessageFactory.Text("Looks like there isn't anything to update.");
+            public static Activity NothingToUpdate = MessageFactory.Text("Looks like there isn't anything to update!");
+            public static Activity Closing = MessageFactory.Text("Thanks for the update!");
         }
     }
 }

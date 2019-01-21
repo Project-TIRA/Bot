@@ -22,9 +22,8 @@ namespace Tests.Dialogs.NewOrganization
 
             // Execute the conversation.
             await CreateTestFlow(UpdateOrganizationDialog.Name, initialProfile)
-                .Test("begin", Phrases.Capacity.GetHousingTotal)
-                .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
-                .Send(expected.Capacity.Beds.Open.ToString())
+                .Test("begin", Phrases.Capacity.GetHousingOpen)
+                .Test(expected.Capacity.Beds.Open.ToString(), Phrases.UpdateOrganization.Closing)
                 .StartTestAsync();
 
             // Validate the profile.

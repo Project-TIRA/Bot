@@ -58,6 +58,9 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                 },
                 async (stepContext, cancellationToken) =>
                 {
+                    // Send the closing message.
+                    await Utils.Messages.SendAsync(Phrases.NewOrganization.Closing, stepContext.Context, cancellationToken);
+
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
                 }

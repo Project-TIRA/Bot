@@ -1,5 +1,9 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Dialogs.UpdateOrganization.Capacity;
+using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs.UpdateOrganization
 {
@@ -16,15 +20,36 @@ namespace TestBot.Bot.Dialogs.UpdateOrganization
             {
                 async (stepContext, cancellationToken) =>
                 {
+                    var needsUpdate = await NeedsUpdate(state, stepContext.Context, cancellationToken);
+                    if (!needsUpdate)
+                    {
+                        // Nothing to update.
+                        await Utils.Messages.SendAsync(Phrases.UpdateOrganization.NothingToUpdate, stepContext.Context, cancellationToken);
+
+                        // End this dialog to pop it off the stack.
+                        return await stepContext.EndDialogAsync(cancellationToken);
+                    }
+
                     // Push the capacity dialog onto the stack.
                     return await stepContext.BeginDialogAsync(UpdateCapacityDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
+                    // Send the closing message.
+                    await Utils.Messages.SendAsync(Phrases.UpdateOrganization.Closing, stepContext.Context, cancellationToken);
+
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
                 }
             });
+        }
+
+        private static async Task<bool> NeedsUpdate(StateAccessors state, ITurnContext context, CancellationToken cancellationToken)
+        {
+            var profile = await state.GetOrganizationProfile(context, cancellationToken);
+
+            // Currently the only thing to update is the beds.
+            return profile.Capacity.Beds.Total > 0;
         }
     }
 }
