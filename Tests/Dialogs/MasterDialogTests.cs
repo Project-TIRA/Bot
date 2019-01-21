@@ -1,5 +1,6 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
+using TestBot.Bot.Dialogs;
 using TestBot.Bot.Utils;
 using Xunit;
 
@@ -8,66 +9,46 @@ namespace Tests.Dialogs
     public class MasterDialogTests : DialogTestBase
     {
         [Fact]
-        public async Task YesToAll()
+        public async Task NewOrganization()
         {
-            await CreateTestFlow()
-                .Test("hello", Phrases.NewOrganization.GetName)
-                .Test("test org", StartsWith(Phrases.NewOrganization.GetHasDemographic))
-                .Test("yes", StartsWith(Phrases.NewOrganization.GetHasDemographicMen))
-                .Test("yes", StartsWith(Phrases.NewOrganization.GetHasDemographicWomen))
-                .Test("yes", StartsWith(Phrases.NewOrganization.GetHasDemographicAgeRange))
-                .Test("yes", Phrases.NewOrganization.GetAgeRangeStart)
-                .Test("14", Phrases.NewOrganization.GetAgeRangeEnd)
-                .Test("24", StartsWith(Phrases.NewOrganization.GetHasHousing))
-                .Test("yes", Phrases.Shared.GetHousingTotal)
-                .Test("10", Phrases.Shared.GetHousingOpen)
-                .Test("5", Phrases.Shared.GetClosing)
+            await CreateTestFlow(MasterDialog.Name)
+                .Test("begin", StartsWith(Phrases.Greeting.GetAction))
+                .Test("new", Phrases.NewOrganization.GetName)
                 .StartTestAsync();
         }
 
+        /*
         [Fact]
-        public async Task NoDemographic()
+        public async Task UpdateOrganization()
         {
-            await CreateTestFlow()
-                .Test("hello", Phrases.NewOrganization.GetName)
-                .Test("test org", StartsWith(Phrases.NewOrganization.GetHasDemographic))
-                .Test("no", StartsWith(Phrases.NewOrganization.GetHasHousing))
-                .Test("yes", Phrases.Shared.GetHousingTotal)
-                .Test("10", Phrases.Shared.GetHousingOpen)
-                .Test("5", Phrases.Shared.GetClosing)
+            await CreateTestFlow(MasterDialog.Name)
+                .Test("hello", StartsWith(Phrases.Greeting.GetAction))
+                .Test("update", "TODO")
+                .StartTestAsync();
+        }
+        */
+
+        [Fact]
+        public async Task NewOrganizationNoToAll()
+        {
+            await CreateTestFlow(MasterDialog.Name)
+                .Test("begin", StartsWith(Phrases.Greeting.GetAction))
+                .Test("new", Phrases.NewOrganization.GetName)
+                .Test("test org", StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
+                .Test("no", Phrases.Greeting.GetClosing)
                 .StartTestAsync();
         }
 
+        /*
         [Fact]
-        public async Task NoAgeRange()
+        public async Task UpdateOrganizationNoToAll()
         {
-            await CreateTestFlow()
-                .Test("hello", Phrases.NewOrganization.GetName)
-                .Test("test org", StartsWith(Phrases.NewOrganization.GetHasDemographic))
-                .Test("yes", StartsWith(Phrases.NewOrganization.GetHasDemographicMen))
-                .Test("yes", StartsWith(Phrases.NewOrganization.GetHasDemographicWomen))
-                .Test("yes", StartsWith(Phrases.NewOrganization.GetHasDemographicAgeRange))
-                .Test("no", StartsWith(Phrases.NewOrganization.GetHasHousing))
-                .Test("yes", Phrases.Shared.GetHousingTotal)
-                .Test("10", Phrases.Shared.GetHousingOpen)
-                .Test("5", Phrases.Shared.GetClosing)
+            await CreateTestFlow(MasterDialog.Name)
+                .Test("hello", StartsWith(Phrases.Greeting.GetAction))
+                .Test("update", "TODO")
                 .StartTestAsync();
         }
-
-        [Fact]
-        public async Task NoHousing()
-        {
-            await CreateTestFlow()
-                .Test("hello", Phrases.NewOrganization.GetName)
-                .Test("test org", StartsWith(Phrases.NewOrganization.GetHasDemographic))
-                .Test("yes", StartsWith(Phrases.NewOrganization.GetHasDemographicMen))
-                .Test("yes", StartsWith(Phrases.NewOrganization.GetHasDemographicWomen))
-                .Test("yes", StartsWith(Phrases.NewOrganization.GetHasDemographicAgeRange))
-                .Test("yes", Phrases.NewOrganization.GetAgeRangeStart)
-                .Test("14", Phrases.NewOrganization.GetAgeRangeEnd)
-                .Test("24", StartsWith(Phrases.NewOrganization.GetHasHousing))
-                .Test("no", Phrases.Shared.GetClosing)
-                .StartTestAsync();
-        }
+        */
     }
 }

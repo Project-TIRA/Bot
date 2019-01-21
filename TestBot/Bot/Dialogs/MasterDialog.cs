@@ -5,20 +5,16 @@ using TestBot.Bot.Prompts;
 
 namespace TestBot.Bot.Dialogs
 {
-    public class MasterDialog : DialogSet
+    public static class MasterDialog
     {
         public static string Name = "MasterDialog";
 
-        /// <summary>Creates a new instance of this dialog set.</summary>
+        /// <summary>Creates a dialog for managing the conversation.</summary>
         /// <param name="state">The state accessors.</param>
-        public MasterDialog(StateAccessors state) : base(state.DialogContextAccessor)
+        public static Dialog Create(StateAccessors state)
         {
-            // Register dialogs and prompts.
-            Utils.Dialogs.Register(this, state);
-            Utils.Prompts.Register(this);
-
             // Define the dialog and add it to the set.
-            Add(new WaterfallDialog(Name, new WaterfallStep[]
+            return new WaterfallDialog(Name, new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>
                 {
@@ -42,6 +38,7 @@ namespace TestBot.Bot.Dialogs
                         }
                         default:
                         {
+                            // TODO: Update org option.
                             return await stepContext.NextAsync(null, cancellationToken);
                         }
                     }
@@ -54,7 +51,7 @@ namespace TestBot.Bot.Dialogs
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
                 }
-            }));
+            });
         }
     }
 }

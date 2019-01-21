@@ -1,11 +1,15 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
-namespace TestBot.Bot.Dialogs.NewOrganization
-{
-    public static class AgeRangeDialog
-    {
-        public static string Name = "AgeRangeDialog";
+﻿using System;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Dialogs;
+using TestBot.Bot.Models;
 
-        /// <summary>Creates a dialog for adding a new organization.</summary>
+namespace TestBot.Bot.Dialogs.Capacity
+{
+    public static class HousingDialog
+    {
+        public static string Name = "HousingDialog";
+
+        /// <summary>Creates a dialog for getting capacity.</summary>
         /// <param name="state">The state accessors.</param>
         public static Dialog Create(StateAccessors state)
         {
@@ -14,44 +18,43 @@ namespace TestBot.Bot.Dialogs.NewOrganization
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    // Prompt for the youngest age.
+                    // Prompt for the total beds.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.IntPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetAgeRangeStart },
+                        new PromptOptions { Prompt = Utils.Phrases.Capacity.GetHousingTotal },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    // Update the profile with the youngest age.
+                    // Update the profile with the total beds.
                     var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-                    profile.Demographic.AgeRange.Start = (int)stepContext.Result;
+                    profile.Capacity.Beds.Total = (int)stepContext.Result;
 
-                    // Prompt for the oldest age.
-                    return await stepContext.PromptAsync(Utils.Prompts.IntPrompt, new PromptOptions
-                    {
-                        Prompt = Utils.Phrases.NewOrganization.GetAgeRangeEnd
-                    },
-                    cancellationToken);
+                    // Prompt for the open beds.
+                    return await stepContext.PromptAsync(
+                        Utils.Prompts.IntPrompt,
+                        new PromptOptions { Prompt = Utils.Phrases.Capacity.GetHousingOpen },
+                        cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
                     var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
 
                     // Validate the numbers.
-                    var end = (int)stepContext.Result;
-                    if (end < profile.Demographic.AgeRange.Start)
+                    var open = (int)stepContext.Result;
+                    if (open > profile.Capacity.Beds.Total)
                     {
-                        profile.Demographic.AgeRange.SetToAll();
+                        profile.Capacity.Beds.SetToNone();
 
                         // Send error message.
-                        await Utils.Messages.SendAsync(Utils.Phrases.NewOrganization.GetAgeRangeError, stepContext.Context, cancellationToken);
+                        await Utils.Messages.SendAsync(Utils.Phrases.Capacity.GetHousingError, stepContext.Context, cancellationToken);
 
                         // Repeat the dialog.
                         return await stepContext.ReplaceDialogAsync(Name, null, cancellationToken);
                     }
 
-                    // Update the profile with the oldest age.
-                    profile.Demographic.AgeRange.End = (int)stepContext.Result;
+                    // Update the profile with the open beds.
+                    profile.Capacity.Beds.Open = (int)stepContext.Result;
 
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);

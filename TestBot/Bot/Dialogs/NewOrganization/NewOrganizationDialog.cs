@@ -1,4 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
+using TestBot.Bot.Dialogs.Capacity;
+using TestBot.Bot.Dialogs.Demographic;
 
 namespace TestBot.Bot.Dialogs.NewOrganization
 {
@@ -30,7 +32,7 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     // Prompt for the demographics.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.ConfirmPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetHasDemographic },
+                        new PromptOptions { Prompt = Utils.Phrases.Demographic.GetHasDemographic },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>

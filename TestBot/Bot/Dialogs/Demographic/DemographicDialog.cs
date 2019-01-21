@@ -1,7 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Models;
 
-namespace TestBot.Bot.Dialogs.NewOrganization
+namespace TestBot.Bot.Dialogs.Demographic
 {
     public static class DemographicDialog
     {
@@ -19,7 +19,7 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     // Prompt for working with men.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.ConfirmPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetHasDemographicMen },
+                        new PromptOptions { Prompt = Utils.Phrases.Demographic.GetHasDemographicMen },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
@@ -39,7 +39,7 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     // Prompt for working with women.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.ConfirmPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.NewOrganization.GetHasDemographicWomen },
+                        new PromptOptions { Prompt = Utils.Phrases.Demographic.GetHasDemographicWomen },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
@@ -59,7 +59,7 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     // Prompt for the age range.
                     return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
                     {
-                        Prompt = Utils.Phrases.NewOrganization.GetHasDemographicAgeRange
+                        Prompt = Utils.Phrases.Demographic.GetHasDemographicAgeRange
                     },
                     cancellationToken);
                 },

@@ -10,6 +10,7 @@ namespace TestBot.Bot
     public class MyBot : IBot
     {
         private readonly StateAccessors state;
+        private readonly DialogSet dialogs;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MyBot"/> class.
@@ -18,12 +19,17 @@ namespace TestBot.Bot
         public MyBot(StateAccessors state)
         {
             this.state = state ?? throw new System.ArgumentNullException(nameof(state));
+            this.dialogs = new DialogSet(state.DialogContextAccessor);
+
+            // Register dialogs and prompts.
+            Utils.Dialogs.Register(this.dialogs, this.state);
+            Utils.Prompts.Register(this.dialogs);
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Establish context for our dialog from the turn context.
-            DialogContext dialogContext = await new MasterDialog(state).CreateContextAsync(turnContext, cancellationToken);
+            DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
             DialogTurnResult results = await dialogContext.ContinueDialogAsync(cancellationToken);
 
             if (ShouldBeginConversation(turnContext))

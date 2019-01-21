@@ -11,9 +11,9 @@
     <Folder Include="Bot\Dialogs\NewOrganization\" />
     <Folder Include="Bot\Utils\" />
     <Folder Include="Bot\Models\" />
-    <Folder Include="Bot\Dialogs\Shared\" />
-    <Folder Include="Bot\Dialogs\Shared\Capacity\" />
     <Folder Include="Bot\Prompts\" />
+    <Folder Include="Bot\Dialogs\Capacity\" />
+    <Folder Include="Bot\Dialogs\Demographic\" />
   </ItemGroup>
 
   <ItemGroup>
