@@ -6,8 +6,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using TestBot.Bot;
-using TestBot.Bot.Dialogs;
-using TestBot.Bot.Models;
+using TestBot.Bot.Models.OrganizationProfile;
 using Xunit;
 
 namespace Tests.Dialogs

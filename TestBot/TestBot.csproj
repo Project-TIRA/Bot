@@ -17,6 +17,8 @@
     <Folder Include="Bot\Dialogs\NewOrganization\Capacity\" />
     <Folder Include="Bot\Dialogs\UpdateOrganization\Capacity\" />
     <Folder Include="Bot\Dialogs\NewOrganization\Location\" />
+    <Folder Include="Bot\Models\LocationApi\" />
+    <Folder Include="Bot\Models\OrganizationProfile\" />
   </ItemGroup>
 
   <ItemGroup>

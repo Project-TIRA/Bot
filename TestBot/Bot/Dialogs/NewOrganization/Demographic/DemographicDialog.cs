@@ -1,5 +1,5 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Models;
+using TestBot.Bot.Models.OrganizationProfile;
 
 namespace TestBot.Bot.Dialogs.NewOrganization.Demographic
 {

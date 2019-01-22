@@ -1,4 +1,4 @@
-﻿namespace TestBot.Bot.Models
+﻿namespace TestBot.Bot.Models.OrganizationProfile
 {
     public class Capacity
     {

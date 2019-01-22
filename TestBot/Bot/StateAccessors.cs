@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Models;
+using TestBot.Bot.Models.OrganizationProfile;
 
 namespace TestBot.Bot
 {

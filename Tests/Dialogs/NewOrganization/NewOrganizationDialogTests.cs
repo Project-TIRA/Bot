@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using TestBot.Bot.Dialogs.NewOrganization;
-using TestBot.Bot.Models;
+using TestBot.Bot.Models.OrganizationProfile;
 using TestBot.Bot.Utils;
 using Xunit;
 

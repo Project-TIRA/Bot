@@ -1,4 +1,4 @@
-﻿namespace TestBot.Bot.Models
+﻿namespace TestBot.Bot.Models.OrganizationProfile
 {
     public class Location
     {
@@ -8,7 +8,7 @@
 
         public override string ToString()
         {
-            return $"{this.City}, {this.State}, {this.Zip}";
+            return $"{this.City}, {this.State} {this.Zip}";
         }
     }
 }

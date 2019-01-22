@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TestBot.Bot.Models
+namespace TestBot.Bot.Models.OrganizationProfile
 {
     [Flags]
     public enum Gender

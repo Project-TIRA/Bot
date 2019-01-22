@@ -3,8 +3,10 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Newtonsoft.Json;
+using TestBot.Bot.Models.LocationApi;
+using TestBot.Bot.Models.OrganizationProfile;
 using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs.NewOrganization.Location
@@ -41,6 +43,9 @@ namespace TestBot.Bot.Dialogs.NewOrganization.Location
                         return await NotifyErrorAndRepeat(stepContext, cancellationToken);
                     }
 
+                    // TODO: Validate that this is actually a zip code string.
+                    // Idea: Make a zip code prompt that validates.
+
                     // Validate the location.
                     try
                     {
@@ -49,15 +54,26 @@ namespace TestBot.Bot.Dialogs.NewOrganization.Location
                             var queryString = string.Format(MapsApiUriFormat, SubscriptionKey, zipcode);
                             HttpResponseMessage responseMessage = await client.GetAsync(queryString);
 
-                            if (responseMessage.IsSuccessStatusCode)
-                            {
-                                var apiResponse = await responseMessage.Content.ReadAsStringAsync();
-                                int a = 0;
-                            }
-                            else
+                            if (!responseMessage.IsSuccessStatusCode)
                             {
                                 return await NotifyErrorAndRepeat(stepContext, cancellationToken);
                             }
+
+                            var response = await responseMessage.Content.ReadAsStringAsync();
+                            LocationApiResponse result = JsonConvert.DeserializeObject<LocationApiResponse>(response);
+                            LocationApiAddress address = result.GetTopStreetResult();
+
+                            if (address == null || address.PostalCode != zipcode)
+                            {
+                                return await NotifyErrorAndRepeat(stepContext, cancellationToken);
+                            }
+                                
+                            // Update the profile with the location.
+                            var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
+                            profile.Location = new Models.OrganizationProfile.Location();
+                            profile.Location.City = address.Municipality;
+                            profile.Location.State = address.CountrySubdivision;
+                            profile.Location.Zip = address.PostalCode;
                         }
                     }
                     catch (Exception e)
@@ -65,34 +81,9 @@ namespace TestBot.Bot.Dialogs.NewOrganization.Location
                         Debug.WriteLine(e.Message);
                         return await NotifyErrorAndRepeat(stepContext, cancellationToken);
                     }
-
-
-                    /*
-                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-
-                    var open = (int)stepContext.Result;
-                    if (open > profile.Capacity.Beds.Total)
-                    {
-                        profile.Capacity.Beds.SetToNone();
-
-                        // Send error message.
-                        await Utils.Messages.SendAsync(Phrases.Capacity.GetHousingError, stepContext.Context, cancellationToken);
-
-                        // Repeat the dialog.
-                        return await stepContext.ReplaceDialogAsync(Name, null, cancellationToken);
-                    }
-
-                    // Update the profile with the open beds.
-                    profile.Capacity.Beds.Open = (int)stepContext.Result;
-                    */
                      
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);         
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // End this dialog to pop it off the stack.
-                    return await stepContext.EndDialogAsync(cancellationToken);
                 }
             });
         }
