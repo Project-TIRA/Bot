@@ -14,6 +14,9 @@ namespace Tests.Dialogs
     public abstract class DialogTestBase
     {
         protected const string TestOrgName = "Test Org";
+        protected const string TestOrgCity = "Redmond";
+        protected const string TestOrgState = "WA";
+        protected const string TestOrgZip = "98052";
 
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
@@ -59,6 +62,19 @@ namespace Tests.Dialogs
                     await dialogContext.BeginDialogAsync(dialogName, null, cancellationToken);
                 }
             });
+        }
+
+        protected OrganizationProfile CreateDefaultTestProfile()
+        {
+            var profile = new OrganizationProfile();
+            profile.Name = TestOrgName;
+            profile.Location.City = TestOrgCity;
+            profile.Location.State = TestOrgState;
+            profile.Location.Zip = TestOrgZip;
+            profile.Demographic.Gender = Gender.All;
+            profile.Demographic.AgeRange.Start = AgeRange.Default;
+            profile.Demographic.AgeRange.End = AgeRange.Default;
+            return profile;
         }
 
         protected async Task ValidateProfile(OrganizationProfile expected)

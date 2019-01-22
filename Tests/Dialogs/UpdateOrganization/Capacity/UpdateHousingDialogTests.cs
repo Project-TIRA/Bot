@@ -9,7 +9,6 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
 {
     public class UpdateHousingDialogTests : DialogTestBase
     {
-        /*
         [Fact]
         public async Task Valid()
         {
@@ -22,25 +21,19 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             initialProfile.Capacity.Beds.Total = expected.Capacity.Beds.Total;
 
             // Execute the conversation.
-            await CreateTestFlow(UpdateHousingDialog.Name)
+            await CreateTestFlow(UpdateHousingDialog.Name, initialProfile)
                 .Test("begin", Phrases.Capacity.GetHousingOpen)
-                .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
                 .Send(expected.Capacity.Beds.Open.ToString())
                 .StartTestAsync();
 
             // Validate the profile.
             await ValidateProfile(expected);
         }
-        */
 
         [Fact]
         public async Task Invalid()
         {
-            // Set an initial profile to trigger updates.
-            var initialProfile = new OrganizationProfile();
-            initialProfile.Capacity.Beds.Total = 0;
-
-            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(initialProfile.Capacity.Beds.Total));
+            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(0));
 
             // Execute the conversation.
             await CreateTestFlow(UpdateHousingDialog.Name)

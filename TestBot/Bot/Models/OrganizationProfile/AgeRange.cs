@@ -2,7 +2,7 @@
 {
     public class AgeRange
     {
-        private const int Default = -1;
+        public const int Default = -1;
 
         public int Start { get; set; }
         public int End { get; set; }

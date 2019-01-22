@@ -14,6 +14,7 @@ namespace TestBot.Bot.Models.OrganizationProfile
 
         public OrganizationProfile()
         {
+            this.Location = new Location();
             this.Demographic = new Demographic();
             this.Capacity = new Capacity();
         }

@@ -29,14 +29,5 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             // Validate the profile.
             await ValidateProfile(expected);
         }
-
-        [Fact]
-        public async Task NoHousing()
-        {
-            // Execute the conversation.
-            await CreateTestFlow(UpdateCapacityDialog.Name)
-                .Test("begin", Phrases.UpdateOrganization.NothingToUpdate)
-                .StartTestAsync();
-        }
     }
 }

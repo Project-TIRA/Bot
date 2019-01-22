@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
 using TestBot.Bot.Dialogs;
+using TestBot.Bot.Models.OrganizationProfile;
 using TestBot.Bot.Utils;
 using Xunit;
 
@@ -11,38 +12,25 @@ namespace Tests.Dialogs
         [Fact]
         public async Task NewOrganization()
         {
+            var expected = CreateDefaultTestProfile();
+
+            // Execute the conversation.
             await CreateTestFlow(MasterDialog.Name)
                 .Test("begin", StartsWith(Phrases.Greeting.GetAction))
                 .Test("new", Phrases.NewOrganization.GetName)
-                .StartTestAsync();
-        }
-
-        [Fact]
-        public async Task UpdateOrganization()
-        {
-            /*
-            await CreateTestFlow(MasterDialog.Name)
-                .Test("hello", StartsWith(Phrases.Greeting.GetAction))
-                .Test("update", "TODO")
-                .StartTestAsync();
-            */               
-        }
-
-        [Fact]
-        public async Task NewOrganizationNoToAll()
-        {
-            await CreateTestFlow(MasterDialog.Name)
-                .Test("begin", StartsWith(Phrases.Greeting.GetAction))
-                .Test("new", Phrases.NewOrganization.GetName)
-                .Test("test org", StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test(expected.Name, Phrases.Location.GetLocation)
+                .Test(expected.Location.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
+
+            // Validate the profile.
+            await ValidateProfile(expected);
         }
 
         /*
         [Fact]
-        public async Task UpdateOrganizationNoToAll()
+        public async Task UpdateOrganization()
         {
             await CreateTestFlow(MasterDialog.Name)
                 .Test("hello", StartsWith(Phrases.Greeting.GetAction))

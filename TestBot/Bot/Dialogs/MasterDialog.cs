@@ -22,7 +22,7 @@ namespace TestBot.Bot.Dialogs
                     // Prompt for the action.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.ChoicePrompt,
-                        new WelcomeChoicePrompt(),
+                        new GreetingPromptOptions(),
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
@@ -32,12 +32,12 @@ namespace TestBot.Bot.Dialogs
                     // Branch based on the input.
                     switch (choice.Index)
                     {
-                        case WelcomeChoicePrompt.NewOrganizationChoice:
+                        case GreetingPromptOptions.NewOrganizationChoice:
                         {
                             // Push the new organization dialog onto the stack.
                             return await stepContext.BeginDialogAsync(NewOrganizationDialog.Name, null, cancellationToken);
                         }
-                        case WelcomeChoicePrompt.UpdateOrganizationChoice:
+                        case GreetingPromptOptions.UpdateOrganizationChoice:
                         {
                             // Push the update organization dialog onto the stack.
                             return await stepContext.BeginDialogAsync(UpdateOrganizationDialog.Name, null, cancellationToken);

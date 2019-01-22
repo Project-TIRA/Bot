@@ -15,6 +15,7 @@ namespace TestBot.Bot.Dialogs.NewOrganization.Location
     {
         public static string Name = nameof(LocationDialog);
 
+        // TODO: Store this outside of the repo.
         private const string SubscriptionKey = "VHtwi2RwWsjW_xn2M-3Wrn0MPVSWx7aQqseh2HwmNQc";
         private const string MapsApiUriFormat = "https://atlas.microsoft.com/search/fuzzy/json?" +
         	"api-version=1.0&countrySet=US&subscription-key={0}&query={1}";
@@ -30,7 +31,7 @@ namespace TestBot.Bot.Dialogs.NewOrganization.Location
                 {
                     // Prompt for the location.
                     return await stepContext.PromptAsync(
-                        Utils.Prompts.TextPrompt,
+                        Utils.Prompts.LocationTextPrompt,
                         new PromptOptions { Prompt = Phrases.Location.GetLocation },
                         cancellationToken);
                 },
@@ -43,10 +44,7 @@ namespace TestBot.Bot.Dialogs.NewOrganization.Location
                         return await NotifyErrorAndRepeat(stepContext, cancellationToken);
                     }
 
-                    // TODO: Validate that this is actually a zip code string.
-                    // Idea: Make a zip code prompt that validates.
-
-                    // Validate the location.
+                    // Validate the location with the Azure Maps API.
                     try
                     {
                         using (HttpClient client = new HttpClient())

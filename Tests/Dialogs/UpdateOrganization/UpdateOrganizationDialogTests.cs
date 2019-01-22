@@ -31,7 +31,7 @@ namespace Tests.Dialogs.NewOrganization
         }
 
         [Fact]
-        public async Task NoHousing()
+        public async Task NothingToUpdate()
         {
             var expected = new OrganizationProfile();
 
