@@ -14,6 +14,7 @@ namespace TestBot.Bot.Prompts
             this.Prompt = Utils.Phrases.Greeting.GetAction;
             this.RetryPrompt = Utils.Phrases.Greeting.GetActionRetry;
 
+            // TODO: This gets added again if the prompt result is invalid.
             this.Choices = new List<Choice>
             {
                 new Choice
