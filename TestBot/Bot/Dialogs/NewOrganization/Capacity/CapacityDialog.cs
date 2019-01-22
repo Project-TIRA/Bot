@@ -1,5 +1,4 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using TestBot.Bot.Dialogs.Capacity;
 using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs.NewOrganization.Capacity

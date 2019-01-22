@@ -39,6 +39,12 @@ namespace TestBot.Bot.Utils
             public static Activity GetActionRetry = MessageFactory.Text("Please choose an option:");
         }
 
+        public static class Location
+        {
+            public static Activity GetLocation = MessageFactory.Text("In what ZIP code is your oganization?");
+            public static Activity GetLocationError = MessageFactory.Text("Oops, unable to validate location.");
+        }
+
         public static class NewOrganization
         {
             public static Activity GetName = MessageFactory.Text("What is the name of your organization?");

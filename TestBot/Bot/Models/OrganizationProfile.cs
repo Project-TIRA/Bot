@@ -6,6 +6,8 @@ namespace TestBot.Bot.Models
     {
         public string Name { get; set; }
 
+        public Location Location { get; set; }
+
         public Demographic Demographic { get; set; }
 
         public Capacity Capacity { get; set; }
@@ -20,6 +22,7 @@ namespace TestBot.Bot.Models
         {
             return $"{nameof(OrganizationProfile)}:" + Environment.NewLine +
                 $"  {nameof(Name)}: [ {this.Name} ]" + Environment.NewLine +
+                $"  {nameof(Location)}: [ {this.Location} ]" + Environment.NewLine +
                 $"  {nameof(Demographic)}: [ {this.Demographic} ]" + Environment.NewLine +
                 $"  {nameof(Capacity)}: [ {this.Capacity} ]";
         }

@@ -16,6 +16,7 @@
     <Folder Include="Bot\Dialogs\NewOrganization\Demographic\" />
     <Folder Include="Bot\Dialogs\NewOrganization\Capacity\" />
     <Folder Include="Bot\Dialogs\UpdateOrganization\Capacity\" />
+    <Folder Include="Bot\Dialogs\NewOrganization\Location\" />
   </ItemGroup>
 
   <ItemGroup>

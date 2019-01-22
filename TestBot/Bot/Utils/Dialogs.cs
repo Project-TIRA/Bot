@@ -1,9 +1,9 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Dialogs;
-using TestBot.Bot.Dialogs.Capacity;
 using TestBot.Bot.Dialogs.NewOrganization;
 using TestBot.Bot.Dialogs.NewOrganization.Capacity;
 using TestBot.Bot.Dialogs.NewOrganization.Demographic;
+using TestBot.Bot.Dialogs.NewOrganization.Location;
 using TestBot.Bot.Dialogs.UpdateOrganization;
 using TestBot.Bot.Dialogs.UpdateOrganization.Capacity;
 
@@ -20,6 +20,7 @@ namespace TestBot.Bot.Utils
             dialogs.Add(HousingDialog.Create(accessors));
             dialogs.Add(CapacityDialog.Create(accessors));
             dialogs.Add(DemographicDialog.Create(accessors));
+            dialogs.Add(LocationDialog.Create(accessors));
             dialogs.Add(MasterDialog.Create(accessors));
             dialogs.Add(NewOrganizationDialog.Create(accessors));
             dialogs.Add(UpdateOrganizationDialog.Create(accessors));

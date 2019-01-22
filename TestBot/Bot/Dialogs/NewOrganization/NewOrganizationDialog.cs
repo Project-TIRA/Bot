@@ -1,6 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Dialogs.NewOrganization.Capacity;
 using TestBot.Bot.Dialogs.NewOrganization.Demographic;
+using TestBot.Bot.Dialogs.NewOrganization.Location;
 using TestBot.Bot.Utils;
 
 namespace TestBot.Bot.Dialogs.NewOrganization
@@ -30,6 +31,11 @@ namespace TestBot.Bot.Dialogs.NewOrganization
                     var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
                     profile.Name = (string)stepContext.Result;
 
+                    // Push the location dialog onto the stack.
+                    return await stepContext.BeginDialogAsync(LocationDialog.Name, null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
                     // Prompt for the demographics.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.ConfirmPrompt,

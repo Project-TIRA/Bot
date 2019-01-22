@@ -2,8 +2,8 @@
 {
     public class Beds
     {
-        public int Total;
-        public int Open;
+        public int Total { get; set; }
+        public int Open { get; set; }
 
         public override string ToString()
         {

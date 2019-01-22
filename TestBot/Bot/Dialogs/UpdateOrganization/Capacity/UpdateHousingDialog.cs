@@ -1,7 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using TestBot.Bot.Utils;
 
-namespace TestBot.Bot.Dialogs.Capacity
+namespace TestBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
     public static class UpdateHousingDialog
     {

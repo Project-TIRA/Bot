@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using TestBot.Bot.Dialogs.Capacity;
+using TestBot.Bot.Dialogs.UpdateOrganization.Capacity;
 using TestBot.Bot.Models;
 using TestBot.Bot.Utils;
 using Xunit;
