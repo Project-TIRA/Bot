@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using TestBot.Bot.Dialogs;
-using TestBot.Bot.Models.OrganizationProfile;
-using TestBot.Bot.Utils;
+using ServiceProviderBot.Bot.Dialogs;
+using ServiceProviderBot.Bot.Models.OrganizationProfile;
+using ServiceProviderBot.Bot.Utils;
 using Xunit;
 
 namespace Tests.Dialogs

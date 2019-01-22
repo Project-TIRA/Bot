@@ -5,8 +5,8 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using TestBot.Bot;
-using TestBot.Bot.Models.OrganizationProfile;
+using ServiceProviderBot.Bot;
+using ServiceProviderBot.Bot.Models.OrganizationProfile;
 using Xunit;
 
 namespace Tests.Dialogs
@@ -34,8 +34,8 @@ namespace Tests.Dialogs
                 .Use(new AutoSaveStateMiddleware(state.OrganizationState));
 
             // Register dialogs and prompts.
-            TestBot.Bot.Utils.Dialogs.Register(this.dialogs, this.state);
-            TestBot.Bot.Utils.Prompts.Register(this.dialogs);
+            ServiceProviderBot.Bot.Utils.Dialogs.Register(this.dialogs, this.state);
+            ServiceProviderBot.Bot.Utils.Prompts.Register(this.dialogs);
         }
 
         protected TestFlow CreateTestFlow(string dialogName, OrganizationProfile initalOrganizationProfile = null)
