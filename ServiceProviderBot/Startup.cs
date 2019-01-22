@@ -40,7 +40,7 @@ namespace ServiceProviderBot
             services.AddSingleton(state);
 
             // Configure the bot.
-            services.AddBot<MyBot>(options =>
+            services.AddBot<TheBot>(options =>
             {
                 options.CredentialProvider = new ConfigurationCredentialProvider(configuration);
 

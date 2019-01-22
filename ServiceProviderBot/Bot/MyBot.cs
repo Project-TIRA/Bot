@@ -4,19 +4,21 @@ using Microsoft.Bot.Schema;
 using System.Threading;
 using System.Threading.Tasks;
 using ServiceProviderBot.Bot.Dialogs;
+using EntityModel;
 
 namespace ServiceProviderBot.Bot
 {
-    public class MyBot : IBot
+    public class TheBot : IBot
     {
         private readonly StateAccessors state;
         private readonly DialogSet dialogs;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MyBot"/> class.
+        /// Initializes a new instance of the <see cref="TheBot"/> class.
         /// </summary>
+        /// <param name="dbContext">A class containing <see cref="DbModel"/> used to manage DB access</param>
         /// <param name="state">A class containing <see cref="IStatePropertyAccessor{T}"/> used to manage state</param>
-        public MyBot(StateAccessors state)
+        public TheBot(DbModel dbContext, StateAccessors state)
         {
             this.state = state ?? throw new System.ArgumentNullException(nameof(state));
             this.dialogs = new DialogSet(state.DialogContextAccessor);
