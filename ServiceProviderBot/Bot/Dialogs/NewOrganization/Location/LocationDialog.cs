@@ -6,25 +6,21 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 using ServiceProviderBot.Bot.Models.LocationApi;
-using ServiceProviderBot.Bot.Models.OrganizationProfile;
 using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
 {
-    public static class LocationDialog
+    public class LocationDialog : DialogBase
     {
-        public static string Name = nameof(LocationDialog);
+        public static string Name = typeof(LocationDialog).FullName;
 
         // TODO: Store this outside of the repo.
         private const string SubscriptionKey = "VHtwi2RwWsjW_xn2M-3Wrn0MPVSWx7aQqseh2HwmNQc";
         private const string MapsApiUriFormat = "https://atlas.microsoft.com/search/fuzzy/json?" +
-        	"api-version=1.0&countrySet=US&subscription-key={0}&query={1}";
+            "api-version=1.0&countrySet=US&subscription-key={0}&query={1}";
 
-        /// <summary>Creates a dialog for getting location.</summary>
-        /// <param name="state">The state accessors.</param>
-        public static Dialog Create(StateAccessors state)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
-            // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>
@@ -81,12 +77,12 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
                     }
                      
                     // End this dialog to pop it off the stack.
-                    return await stepContext.EndDialogAsync(cancellationToken);         
+                    return await stepContext.EndDialogAsync(cancellationToken);
                 }
             });
         }
 
-        private static async Task<DialogTurnResult> NotifyErrorAndRepeat(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> NotifyErrorAndRepeat(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // Notify about the error.
             await Utils.Messages.SendAsync(Phrases.Location.GetLocationError, stepContext.Context, cancellationToken);
