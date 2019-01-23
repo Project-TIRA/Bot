@@ -2,15 +2,12 @@
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
 {
-    public static class AgeRangeDialog
+    public class AgeRangeDialog : DialogBase
     {
-        public static string Name = nameof(AgeRangeDialog);
+        public static string Name = typeof(AgeRangeDialog).FullName;
 
-        /// <summary>Creates a dialog for adding a new organization.</summary>
-        /// <param name="state">The state accessors.</param>
-        public static Dialog Create(StateAccessors state)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
-            // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>

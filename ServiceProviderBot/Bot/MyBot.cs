@@ -5,11 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using ServiceProviderBot.Bot.Dialogs;
 using EntityModel;
+using System;
 
 namespace ServiceProviderBot.Bot
 {
     public class TheBot : IBot
     {
+        private readonly DbModel dbContext;
         private readonly StateAccessors state;
         private readonly DialogSet dialogs;
 
@@ -20,11 +22,11 @@ namespace ServiceProviderBot.Bot
         /// <param name="state">A class containing <see cref="IStatePropertyAccessor{T}"/> used to manage state</param>
         public TheBot(DbModel dbContext, StateAccessors state)
         {
+            this.dbContext = dbContext ?? throw new System.ArgumentNullException(nameof(dbContext));
             this.state = state ?? throw new System.ArgumentNullException(nameof(state));
             this.dialogs = new DialogSet(state.DialogContextAccessor);
 
-            // Register dialogs and prompts.
-            Utils.Dialogs.Register(this.dialogs, this.state);
+            // Register prompts.
             Utils.Prompts.Register(this.dialogs);
         }
 
@@ -32,44 +34,12 @@ namespace ServiceProviderBot.Bot
         {
             // Establish context for our dialog from the turn context.
             DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
-            DialogTurnResult results = await dialogContext.ContinueDialogAsync(cancellationToken);
+            DialogTurnResult results = await DialogBase.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
 
             if (ShouldBeginConversation(turnContext))
             {
-                await dialogContext.BeginDialogAsync(MasterDialog.Name, null, cancellationToken);
+                await DialogBase.BeginDialogAsync(this.state, this.dialogs, dialogContext, MasterDialog.Name, null, cancellationToken);
             }
-
-            /*
-            else if (turnContext.Activity.Type == ActivityTypes.Message)
-            {
-               
-                switch (results.Status)
-                {
-                    case DialogTurnStatus.Cancelled:
-                    case DialogTurnStatus.Empty:
-                        {
-                            // Start a new conversation if there is none.
-                            await dialogContext.BeginDialogAsync(MasterDialog.Name, null, cancellationToken);
-                            break;
-                        }
-                    case DialogTurnStatus.Complete:
-                        {
-                            // Get the current profile object.
-                            var profile = await this.state.GetOrganizationProfile(turnContext, cancellationToken);
-
-                            // Output the profile.
-                            await Utils.Messages.SendAsync(profile.ToString(), turnContext, cancellationToken);
-
-                            break;
-                        }
-                    case DialogTurnStatus.Waiting:
-                        {
-                            // If there is an active dialog, we don't need to do anything here.
-                            break;
-                        }
-                }
-            }
-            */
         }
 
         private bool ShouldBeginConversation(ITurnContext turnContext)

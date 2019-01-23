@@ -3,15 +3,12 @@ using ServiceProviderBot.Bot.Models.OrganizationProfile;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
 {
-    public static class DemographicDialog
+    public class DemographicDialog : DialogBase
     {
-        public static string Name = nameof(DemographicDialog);
+        public static string Name = typeof(DemographicDialog).FullName;
 
-        /// <summary>Creates a dialog for getting demographics.</summary>
-        /// <param name="state">The state accessors.</param>
-        public static Dialog Create(StateAccessors state)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
-            // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>
@@ -33,7 +30,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     }
                     else
                     {
-                         profile.Demographic.Gender &= ~Gender.Male;
+                        profile.Demographic.Gender &= ~Gender.Male;
                     }
 
                     // Prompt for working with women.
@@ -53,7 +50,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     }
                     else
                     {
-                         profile.Demographic.Gender &= ~Gender.Female;
+                        profile.Demographic.Gender &= ~Gender.Female;
                     }
 
                     // Prompt for the age range.
@@ -68,7 +65,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     if ((bool)stepContext.Result)
                     {
                         // Push the age range dialog onto the stack.
-                        return await stepContext.BeginDialogAsync(AgeRangeDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(state, dialogs, stepContext, AgeRangeDialog.Name, null, cancellationToken);
                     }
 
                     // Update the profile with the default age range.

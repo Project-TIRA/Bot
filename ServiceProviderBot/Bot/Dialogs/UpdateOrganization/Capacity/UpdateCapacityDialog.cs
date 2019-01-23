@@ -2,13 +2,11 @@
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
-    public static class UpdateCapacityDialog
+    public class UpdateCapacityDialog : DialogBase
     {
-        public static string Name = nameof(UpdateCapacityDialog);
+        public static string Name = typeof(UpdateCapacityDialog).FullName;
 
-        /// <summary>Creates a dialog for updating capacity.</summary>
-        /// <param name="state">The state accessors.</param>
-        public static Dialog Create(StateAccessors state)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
             // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
@@ -20,7 +18,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (profile.Capacity.Beds.Total > 0)
                     {
                         // Push the update housing dialog onto the stack.
-                        return await stepContext.BeginDialogAsync(UpdateHousingDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(state, dialogs, stepContext, UpdateHousingDialog.Name, null, cancellationToken);
                     }
 
                     // Skip this step.

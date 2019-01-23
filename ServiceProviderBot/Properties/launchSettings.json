@@ -14,7 +14,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "TestBot": {
+    "ServiceProviderBot": {
       "commandName": "Project",
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5001",

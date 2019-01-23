@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot;
+using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Models.OrganizationProfile;
 using Xunit;
 
@@ -33,8 +34,7 @@ namespace Tests.Dialogs
                 .Use(new AutoSaveStateMiddleware(state.ConversationState))
                 .Use(new AutoSaveStateMiddleware(state.OrganizationState));
 
-            // Register dialogs and prompts.
-            ServiceProviderBot.Bot.Utils.Dialogs.Register(this.dialogs, this.state);
+            // Register prompts.
             ServiceProviderBot.Bot.Utils.Prompts.Register(this.dialogs);
         }
 
@@ -44,7 +44,7 @@ namespace Tests.Dialogs
             {
                 // Initialize the dialog context.
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
-                DialogTurnResult results = await dialogContext.ContinueDialogAsync(cancellationToken);
+                DialogTurnResult results = await DialogBase.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
 
                 this.turnContext = turnContext;
                 this.cancellationToken = cancellationToken;
@@ -59,7 +59,7 @@ namespace Tests.Dialogs
                             turnContext, initalOrganizationProfile, cancellationToken);
                     }
 
-                    await dialogContext.BeginDialogAsync(dialogName, null, cancellationToken);
+                    await DialogBase.BeginDialogAsync(this.state, this.dialogs, dialogContext, dialogName, null, cancellationToken);
                 }
             });
         }

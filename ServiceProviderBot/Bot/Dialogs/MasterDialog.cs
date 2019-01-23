@@ -6,15 +6,12 @@ using ServiceProviderBot.Bot.Prompts;
 
 namespace ServiceProviderBot.Bot.Dialogs
 {
-    public static class MasterDialog
+    public class MasterDialog : DialogBase
     {
-        public static string Name = nameof(MasterDialog);
+        public static string Name = typeof(MasterDialog).FullName;
 
-        /// <summary>Creates a dialog for managing the conversation.</summary>
-        /// <param name="state">The state accessors.</param>
-        public static Dialog Create(StateAccessors state)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
-            // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>
@@ -35,12 +32,12 @@ namespace ServiceProviderBot.Bot.Dialogs
                         case GreetingPromptOptions.NewOrganizationChoice:
                         {
                             // Push the new organization dialog onto the stack.
-                            return await stepContext.BeginDialogAsync(NewOrganizationDialog.Name, null, cancellationToken);
+                            return await BeginDialogAsync(state, dialogs, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                         }
                         case GreetingPromptOptions.UpdateOrganizationChoice:
                         {
                             // Push the update organization dialog onto the stack.
-                            return await stepContext.BeginDialogAsync(UpdateOrganizationDialog.Name, null, cancellationToken);
+                            return await BeginDialogAsync(state, dialogs, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
                         }
                         default:
                         {

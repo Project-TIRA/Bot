@@ -3,15 +3,14 @@ using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
 {
-    public static class HousingDialog
+    public class HousingDialog : DialogBase
     {
-        public static string Name = nameof(HousingDialog);
+        public static string Name = typeof(HousingDialog).FullName;
 
         /// <summary>Creates a dialog for getting housing capacity.</summary>
         /// <param name="state">The state accessors.</param>
-        public static Dialog Create(StateAccessors state)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
-            // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>

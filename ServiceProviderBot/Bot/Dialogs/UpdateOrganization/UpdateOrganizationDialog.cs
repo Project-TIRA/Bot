@@ -7,13 +7,11 @@ using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
 {
-    public static class UpdateOrganizationDialog
+    public class UpdateOrganizationDialog : DialogBase
     {
-        public static string Name = nameof(UpdateOrganizationDialog);
+        public static string Name = typeof(UpdateOrganizationDialog).FullName;
 
-        /// <summary>Creates a dialog for updating an organization.</summary>
-        /// <param name="state">The state accessors.</param>
-        public static Dialog Create(StateAccessors state)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
             // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
@@ -30,8 +28,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
 
-                    // Push the capacity dialog onto the stack.
-                    return await stepContext.BeginDialogAsync(UpdateCapacityDialog.Name, null, cancellationToken);
+                    // Push the update capacity dialog onto the stack.
+                    return await BeginDialogAsync(state, dialogs, stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
