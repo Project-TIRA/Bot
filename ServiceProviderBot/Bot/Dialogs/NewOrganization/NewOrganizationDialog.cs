@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using EntityModel;
+using Microsoft.Bot.Builder.Dialogs;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Location;
@@ -61,8 +62,26 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                     },
                     async (stepContext, cancellationToken) =>
                     {
+                        var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
+
+                        using (var dbContext = new DbModel())
+                        {
+                            // Save the organization to the database.
+                            /*
+                            var organization = new Organization();
+                            organization.Name = profile.Name;
+                            organization.City = profile.Location.City;
+                            organization.State = profile.Location.State;
+                            organization.Zip = profile.Location.Zip;
+                            organization.Gender = profile.Demographic.Gender;
+                            organization.
+                            */
+
+                            // Save the snapshot to the database.
+                        }
+
                         // Send the closing message.
-                        await Utils.Messages.SendAsync(Phrases.NewOrganization.Closing, stepContext.Context, cancellationToken);
+                        await Messages.SendAsync(Phrases.NewOrganization.Closing, stepContext.Context, cancellationToken);
 
                         // End this dialog to pop it off the stack.
                         return await stepContext.EndDialogAsync(cancellationToken);

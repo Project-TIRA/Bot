@@ -85,7 +85,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
         private async Task<DialogTurnResult> NotifyErrorAndRepeat(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             // Notify about the error.
-            await Utils.Messages.SendAsync(Phrases.Location.GetLocationError, stepContext.Context, cancellationToken);
+            await Messages.SendAsync(Phrases.Location.GetLocationError, stepContext.Context, cancellationToken);
 
             // Repeat the dialog.
             return await stepContext.ReplaceDialogAsync(Name, null, cancellationToken);

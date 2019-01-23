@@ -44,7 +44,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
                         profile.Capacity.Beds.SetToNone();
 
                         // Send error message.
-                        await Utils.Messages.SendAsync(Phrases.Capacity.GetHousingError, stepContext.Context, cancellationToken);
+                        await Messages.SendAsync(Phrases.Capacity.GetHousingError, stepContext.Context, cancellationToken);
 
                         // Repeat the dialog.
                         return await stepContext.ReplaceDialogAsync(Name, null, cancellationToken);

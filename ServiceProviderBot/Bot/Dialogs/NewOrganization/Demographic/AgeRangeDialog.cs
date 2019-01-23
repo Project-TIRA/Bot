@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
+using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
 {
@@ -41,7 +42,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                         profile.Demographic.AgeRange.SetToAll();
 
                         // Send error message.
-                        await Utils.Messages.SendAsync(Utils.Phrases.AgeRange.GetAgeRangeError, stepContext.Context, cancellationToken);
+                        await Messages.SendAsync(Utils.Phrases.AgeRange.GetAgeRangeError, stepContext.Context, cancellationToken);
 
                         // Repeat the dialog.
                         return await stepContext.ReplaceDialogAsync(Name, null, cancellationToken);
