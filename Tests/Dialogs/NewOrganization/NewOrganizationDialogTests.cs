@@ -17,8 +17,11 @@ namespace Tests.Dialogs.NewOrganization
             expected.AgeRangeEnd = 24;
             expected.TotalBeds = 10;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(NewOrganizationDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(NewOrganizationDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)
                 .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
@@ -41,8 +44,11 @@ namespace Tests.Dialogs.NewOrganization
         {
             var expected = CreateDefaultOrganization();
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(NewOrganizationDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(NewOrganizationDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)
                 .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
@@ -60,7 +66,11 @@ namespace Tests.Dialogs.NewOrganization
             var expected = CreateDefaultOrganization();
             expected.TotalBeds = 10;
 
-            await CreateTestFlow(NewOrganizationDialog.Name)
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(NewOrganizationDialog.Name);
+
+            // Execute the conversation.
+            await testFlow
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)
                 .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
@@ -79,8 +89,11 @@ namespace Tests.Dialogs.NewOrganization
             var expected = CreateDefaultOrganization();
             expected.TotalBeds = 10;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(NewOrganizationDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(NewOrganizationDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)
                 .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
@@ -103,8 +116,11 @@ namespace Tests.Dialogs.NewOrganization
             expected.AgeRangeStart = 14;
             expected.AgeRangeEnd = 24;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(NewOrganizationDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(NewOrganizationDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)
                 .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))

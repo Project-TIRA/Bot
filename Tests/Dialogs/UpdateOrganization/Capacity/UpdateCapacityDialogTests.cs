@@ -21,8 +21,11 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var initialOrganization = new Organization();
             initialOrganization.TotalBeds = expectedOrganization.TotalBeds;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(UpdateCapacityDialog.Name, initialOrganization);
+
             // Execute the conversation.
-            await CreateTestFlow(UpdateCapacityDialog.Name, initialOrganization)
+            await testFlow
                 .Test("begin", Phrases.Capacity.GetHousingOpen)
                 .Send(expectedSnapshot.OpenBeds.ToString())
                 .StartTestAsync();

@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.EntityFrameworkCore;
 using ServiceProviderBot.Bot;
 using Xunit;
 
@@ -38,8 +39,11 @@ namespace Tests.Dialogs
             ServiceProviderBot.Bot.Utils.Prompts.Register(this.dialogs);
         }
 
-        protected TestFlow CreateTestFlow(string dialogName, Organization initialOrganization = null, Snapshot initialSnapshot = null)
+        protected async Task<TestFlow> CreateTestFlow(string dialogName, Organization initialOrganization = null, Snapshot initialSnapshot = null)
         {
+            // Reset for the test.
+            await ResetDatabase();
+
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
                 // Initialize the dialog context.
@@ -52,7 +56,7 @@ namespace Tests.Dialogs
                 // Start the dialog if there is no conversation.
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    /*
+                    /* TODO!
                     if (initalOrganizationProfile != null)
                     {
                         // Set the initial organization profile.
@@ -105,6 +109,18 @@ namespace Tests.Dialogs
                 Assert.NotNull(received);
                 Assert.StartsWith(expected.Text, received.Text);
             };
+        }
+
+        private async Task ResetDatabase()
+        {
+            var testOrganization = await this.dbContext.Organizations.FirstOrDefaultAsync(o => o.Name == TestOrgName);
+            if (testOrganization != null)
+            {
+                // Remove all snapshots.
+                testOrganization.Snapshots.Clear();
+                this.dbContext.Organizations.Remove(testOrganization);
+                await this.dbContext.SaveChangesAsync();
+            }
         }
     }
 }

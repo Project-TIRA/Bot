@@ -21,8 +21,11 @@ namespace Tests.Dialogs.NewOrganization
             var initialOrganization = new Organization();
             initialOrganization.TotalBeds = expectedOrganization.TotalBeds;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(UpdateOrganizationDialog.Name, initialOrganization);
+
             // Execute the conversation.
-            await CreateTestFlow(UpdateOrganizationDialog.Name, initialOrganization)
+            await testFlow
                 .Test("begin", Phrases.Capacity.GetHousingOpen)
                 .Test(expectedSnapshot.OpenBeds.ToString(), Phrases.UpdateOrganization.Closing)
                 .StartTestAsync();
@@ -36,8 +39,11 @@ namespace Tests.Dialogs.NewOrganization
         {
             var expectedOrganization = new Organization();
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(UpdateOrganizationDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(UpdateOrganizationDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.UpdateOrganization.NothingToUpdate)
                 .StartTestAsync();
 

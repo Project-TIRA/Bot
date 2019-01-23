@@ -13,8 +13,11 @@ namespace Tests.Dialogs
         {
             var expected = CreateDefaultOrganization();
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(MasterDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name)
+            await testFlow
                 .Test("begin", StartsWith(Phrases.Greeting.GetAction))
                 .Test("new", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)

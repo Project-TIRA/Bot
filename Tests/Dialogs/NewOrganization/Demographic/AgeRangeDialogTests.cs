@@ -16,8 +16,11 @@ namespace Tests.Dialogs.NewOrganization.Demographic
             expected.AgeRangeStart = 14;
             expected.AgeRangeEnd = 24;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(AgeRangeDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(AgeRangeDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.AgeRange.GetAgeRangeStart)
                 .Test(expected.AgeRangeStart.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
                 .Send(expected.AgeRangeEnd.ToString())
@@ -30,8 +33,11 @@ namespace Tests.Dialogs.NewOrganization.Demographic
         [Fact]
         public async Task Invalid()
         {
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(AgeRangeDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(AgeRangeDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.AgeRange.GetAgeRangeStart)
                 .Test("14", Phrases.AgeRange.GetAgeRangeEnd)
                 .Test("10", Phrases.AgeRange.GetAgeRangeError)

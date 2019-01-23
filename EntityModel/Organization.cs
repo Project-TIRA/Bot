@@ -37,6 +37,8 @@ namespace EntityModel
             this.Id = Guid.NewGuid();
             this.DateCreated = DateTime.UtcNow;
             this.IsVerified = false;
+
+            this.Snapshots = new List<Snapshot>();
         }
 
         public void UpdateGender(Gender gender, bool add)

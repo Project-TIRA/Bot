@@ -17,8 +17,11 @@ namespace Tests.Dialogs.NewOrganization.Location
             expected.State = TestOrgState;
             expected.Zip = TestOrgZip;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(LocationDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(LocationDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.Location.GetLocation)
                 .Send(expected.Zip)
                 .StartTestAsync();
@@ -30,8 +33,11 @@ namespace Tests.Dialogs.NewOrganization.Location
         [Fact]
         public async Task Invalid()
         {
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(LocationDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(LocationDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.Location.GetLocation)
                 .Test("0000000000", Phrases.Location.GetLocation)
                 .StartTestAsync();
@@ -40,8 +46,11 @@ namespace Tests.Dialogs.NewOrganization.Location
         [Fact]
         public async Task NotFound()
         {
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(LocationDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(LocationDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.Location.GetLocation)
                 .Test("12345", Phrases.Location.GetLocationError)
                 .StartTestAsync();

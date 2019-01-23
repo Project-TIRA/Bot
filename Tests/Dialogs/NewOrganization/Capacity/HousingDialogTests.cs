@@ -15,8 +15,11 @@ namespace Tests.Dialogs.NewOrganization.Capacity
             var expected = new Organization();
             expected.TotalBeds = 10;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(HousingDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(HousingDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.Capacity.GetHousingTotal)
                 .Send(expected.TotalBeds.ToString())
                 .StartTestAsync();
@@ -28,8 +31,11 @@ namespace Tests.Dialogs.NewOrganization.Capacity
         [Fact]
         public async Task Invalid()
         {
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(HousingDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(HousingDialog.Name)
+            await testFlow
                 .Test("begin", Phrases.Capacity.GetHousingTotal)
                 .Test("5", Phrases.Capacity.GetHousingOpen)
                 .Test("10", Phrases.Capacity.GetHousingError)

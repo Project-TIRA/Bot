@@ -15,8 +15,11 @@ namespace Tests.Dialogs.NewOrganization.Demographic
             var expected = new Organization();
             expected.Gender = Gender.Male;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(DemographicDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(DemographicDialog.Name)
+            await testFlow
                 .Test("begin", StartsWith(Phrases.Demographic.GetHasDemographicMen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicWomen))
                 .Test("no", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
@@ -33,8 +36,11 @@ namespace Tests.Dialogs.NewOrganization.Demographic
             var expected = new Organization();
             expected.Gender = Gender.Female;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(DemographicDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(DemographicDialog.Name)
+            await testFlow
                 .Test("begin", StartsWith(Phrases.Demographic.GetHasDemographicMen))
                 .Test("no", StartsWith(Phrases.Demographic.GetHasDemographicWomen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
@@ -51,8 +57,11 @@ namespace Tests.Dialogs.NewOrganization.Demographic
             var expected = new Organization();
             expected.Gender = Gender.Unknown;
 
+            // Create the test flow.
+            var testFlow = await CreateTestFlow(DemographicDialog.Name);
+
             // Execute the conversation.
-            await CreateTestFlow(DemographicDialog.Name)
+            await testFlow
                 .Test("begin", StartsWith(Phrases.Demographic.GetHasDemographicMen))
                 .Test("no", StartsWith(Phrases.Demographic.GetHasDemographicWomen))
                 .Test("no", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
