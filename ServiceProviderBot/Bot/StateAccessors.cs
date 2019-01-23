@@ -2,59 +2,23 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
-using ServiceProviderBot.Bot.Models.OrganizationProfile;
+using Microsoft.EntityFrameworkCore;
 
 namespace ServiceProviderBot.Bot
 {
     public class StateAccessors
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="StateAccessors"/> class.
-        /// Contains the state management and associated accessor objects.
-        /// </summary>
-        /// <param name="conversationState">The state object that stores the conversation state.</param>
-        /// <param name="organizationState">The state object that stores the organization state.</param>
-        public StateAccessors(ConversationState conversationState, UserState organizationState)
-        {
-            this.ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
-            this.OrganizationState = organizationState ?? throw new ArgumentNullException(nameof(organizationState));
-
-            this.DialogContextAccessor = conversationState.CreateProperty<DialogState>(DialogContextName);
-            this.OrganizationProfileAccessor = organizationState.CreateProperty<OrganizationProfile>(OrganizationProfileName);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StateAccessors"/> class from in-memory storage.
-        /// Contains the state management and associated accessor objects.
-        /// </summary>
-        public static StateAccessors CreateFromMemoryStorage()
-        {
-            // Create the state management with in-memory storage provider.
-            IStorage storage = new MemoryStorage();
-            ConversationState conversationState = new ConversationState(storage);
-            UserState organizationProfile = new UserState(storage);
-
-            // Create the state accessors.
-            return new StateAccessors(conversationState, organizationProfile);
-        }
-
-        /// <summary>
         /// Gets the accessor name for the dialog context property.
         /// </summary>
         /// <value>The accessor name for the dialog state property.</value>
         /// <remarks>Accessors require a unique name.</remarks
         public static string DialogContextName { get; } = "DialogContext";
-
-        /// <summary>
-        /// Gets the accessor name for the organization profile property accessor.
-        /// </summary>
-        /// <value>The accessor name for the user profile property accessor.</value>
-        /// <remarks>Accessors require a unique name.</remarks>
-        public static string OrganizationProfileName { get; } = "OrganizationProfile";
 
         /// <summary>
         /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for DialogContext.
@@ -65,31 +29,114 @@ namespace ServiceProviderBot.Bot
         public IStatePropertyAccessor<DialogState> DialogContextAccessor { get; set; }
 
         /// <summary>
-        /// Gets or sets the <see cref="IStatePropertyAccessor{T}"/> for OrganizationProfile.
-        /// </summary>
-        /// <value>
-        /// The accessor stores user data.
-        /// </value>
-        public IStatePropertyAccessor<OrganizationProfile> OrganizationProfileAccessor { get; set; }
-
-        /// <summary>
         /// Gets the <see cref="ConversationState"/> object for the conversation.
         /// </summary>
         /// <value>The <see cref="ConversationState"/> object.</value>
         public ConversationState ConversationState { get; }
 
         /// <summary>
-        /// Gets the <see cref="OrganizationState"/> object for the conversation.
+        /// Gets the <see cref="DbModel"/> for accessing the database.
         /// </summary>
-        /// <value>The <see cref="OrganizationState"/> object.</value>
-        public UserState OrganizationState { get; }
+        /// <value>The <see cref="DbModel"/> object.</value>
+        public DbModel DbContext { get; }
 
         /// <summary>
-        /// Gets the <see cref="OrganizationProfile"/> object for the conversation.
+        /// Initializes a new instance of the <see cref="StateAccessors"/> class.
+        /// Contains the state management and associated accessor objects.
         /// </summary>
-        public async Task<OrganizationProfile> GetOrganizationProfile(ITurnContext context, CancellationToken cancellationToken)
+        /// <param name="conversationState">The state object that stores the conversation state.</param>
+        /// <param name="conversationState">The database object for accessing the database.</param>
+        public StateAccessors(ConversationState conversationState, DbModel dbContext)
         {
-            return await this.OrganizationProfileAccessor.GetAsync(context, () => new OrganizationProfile(), cancellationToken);
+            this.ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
+            this.DialogContextAccessor = conversationState.CreateProperty<DialogState>(DialogContextName);
+
+            this.DbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StateAccessors"/> class from local storage.
+        /// Contains the state management and associated accessor objects.
+        /// </summary>
+        public static StateAccessors CreateFromLocalStorage()
+        {
+            // Create the state management with in-memory storage provider.
+            IStorage storage = new MemoryStorage();
+            ConversationState conversationState = new ConversationState(storage);
+
+            // Create the state accessors.
+            return new StateAccessors(conversationState, new DbModel());
+        }
+
+        public async Task SaveDbContext()
+        {
+            await this.DbContext.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Creates an organization in the database.
+        /// </summary>
+        public async Task<Organization> CreateOrganization(ITurnContext context)
+        {
+            var phoneNumber = context.Activity.From.Id;
+            var organization = await this.DbContext.Organizations.FirstOrDefaultAsync(o => o.PhoneNumber == phoneNumber);
+
+            if (organization == null)
+            {
+                organization = new Organization();
+            }
+
+            organization.PhoneNumber = phoneNumber;
+            await this.DbContext.Organizations.AddAsync(organization);
+            await this.DbContext.SaveChangesAsync();
+
+            return organization;
+        }
+
+        /// <summary>
+        /// Gets the current organization from the database.
+        /// </summary>
+        public async Task<Organization> GetOrganization(ITurnContext context)
+        {
+            var phoneNumber = context.Activity.From.Id;
+            return await this.DbContext.Organizations.FirstOrDefaultAsync(o => o.PhoneNumber == phoneNumber);
+        }
+
+        /// <summary>
+        /// Creates an organization shapshot in the database.
+        /// </summary>
+        public async Task<Snapshot> CreateOrganizationSnapshot(ITurnContext context)
+        {
+            var phoneNumber = context.Activity.From.Id;
+            var organization = await this.DbContext.Organizations.FirstOrDefaultAsync(o => o.PhoneNumber == phoneNumber);
+
+            if (organization == null)
+            {
+                return null;
+            }
+
+            var snapshot = new Snapshot(organization.Id);
+            await this.DbContext.Snapshots.AddAsync(snapshot);
+            await this.DbContext.SaveChangesAsync();
+
+            return snapshot;
+        }
+
+        /// <summary>
+        /// Gets the current organization snapshot from the database.
+        /// </summary>
+        public async Task<Snapshot> GetSnapshot(ITurnContext context)
+        {
+            var phoneNumber = context.Activity.From.Id;
+            var organization = await this.DbContext.Organizations.FirstOrDefaultAsync(o => o.PhoneNumber == phoneNumber);
+
+            if (organization == null)
+            {
+                return null;
+            }
+
+            // Get the most recent snapshot.
+            return organization.Snapshots.OrderByDescending(s => s.Date).FirstOrDefault();
         }
     }
 }
