@@ -29,7 +29,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                     }
 
                     // Push the update capacity dialog onto the stack.
-                    return await BeginDialogAsync(state, dialogs, stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
+                    return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {

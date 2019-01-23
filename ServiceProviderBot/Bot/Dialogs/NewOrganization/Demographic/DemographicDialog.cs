@@ -65,7 +65,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     if ((bool)stepContext.Result)
                     {
                         // Push the age range dialog onto the stack.
-                        return await BeginDialogAsync(state, dialogs, stepContext, AgeRangeDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, AgeRangeDialog.Name, null, cancellationToken);
                     }
 
                     // Update the profile with the default age range.

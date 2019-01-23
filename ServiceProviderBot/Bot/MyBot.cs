@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using ServiceProviderBot.Bot.Dialogs;
 using EntityModel;
-using System;
 
 namespace ServiceProviderBot.Bot
 {
@@ -34,11 +33,11 @@ namespace ServiceProviderBot.Bot
         {
             // Establish context for our dialog from the turn context.
             DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
-            DialogTurnResult results = await DialogBase.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
+            DialogTurnResult results = await Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
 
             if (ShouldBeginConversation(turnContext))
             {
-                await DialogBase.BeginDialogAsync(this.state, this.dialogs, dialogContext, MasterDialog.Name, null, cancellationToken);
+                await Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, dialogContext, MasterDialog.Name, null, cancellationToken);
             }
         }
 

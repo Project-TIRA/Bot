@@ -15,7 +15,6 @@
   <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="Bot\Dialogs\NewOrganization\" />
-    <Folder Include="Bot\Utils\" />
     <Folder Include="Bot\Models\" />
     <Folder Include="Bot\Dialogs\UpdateOrganization\" />
     <Folder Include="Bot\Dialogs\NewOrganization\Demographic\" />

@@ -32,12 +32,12 @@ namespace ServiceProviderBot.Bot.Dialogs
                         case GreetingPromptOptions.NewOrganizationChoice:
                         {
                             // Push the new organization dialog onto the stack.
-                            return await BeginDialogAsync(state, dialogs, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
+                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                         }
                         case GreetingPromptOptions.UpdateOrganizationChoice:
                         {
                             // Push the update organization dialog onto the stack.
-                            return await BeginDialogAsync(state, dialogs, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
+                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
                         }
                         default:
                         {

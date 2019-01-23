@@ -6,7 +6,6 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot;
-using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Models.OrganizationProfile;
 using Xunit;
 
@@ -44,7 +43,7 @@ namespace Tests.Dialogs
             {
                 // Initialize the dialog context.
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
-                DialogTurnResult results = await DialogBase.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
+                DialogTurnResult results = await ServiceProviderBot.Bot.Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
 
                 this.turnContext = turnContext;
                 this.cancellationToken = cancellationToken;
@@ -59,7 +58,7 @@ namespace Tests.Dialogs
                             turnContext, initalOrganizationProfile, cancellationToken);
                     }
 
-                    await DialogBase.BeginDialogAsync(this.state, this.dialogs, dialogContext, dialogName, null, cancellationToken);
+                    await ServiceProviderBot.Bot.Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, dialogContext, dialogName, null, cancellationToken);
                 }
             });
         }

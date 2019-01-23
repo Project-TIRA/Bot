@@ -24,7 +24,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
                     if ((bool)stepContext.Result)
                     {
                         // Push the housing dialog onto the stack.
-                        return await BeginDialogAsync(state, dialogs, stepContext, HousingDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, HousingDialog.Name, null, cancellationToken);
                     }
 
                     // Update the profile with the default housing capacity.

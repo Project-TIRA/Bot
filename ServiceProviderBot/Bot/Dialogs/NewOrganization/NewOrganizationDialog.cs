@@ -29,7 +29,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                         profile.Name = (string)stepContext.Result;
 
                         // Push the location dialog onto the stack.
-                        return await BeginDialogAsync(state, dialogs, stepContext, LocationDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, LocationDialog.Name, null, cancellationToken);
                     },
                     async (stepContext, cancellationToken) =>
                     {
@@ -44,7 +44,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                         if ((bool)stepContext.Result)
                         {
                             // Push the demographic dialog onto the stack.
-                            return await BeginDialogAsync(state, dialogs, stepContext, DemographicDialog.Name, null, cancellationToken);
+                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, DemographicDialog.Name, null, cancellationToken);
                         }
 
                         // Update the profile with the default demographics.
@@ -57,7 +57,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                     async (stepContext, cancellationToken) =>
                     {
                         // Push the capacity dialog onto the stack.
-                        return await BeginDialogAsync(state, dialogs, stepContext, CapacityDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, CapacityDialog.Name, null, cancellationToken);
                     },
                     async (stepContext, cancellationToken) =>
                     {

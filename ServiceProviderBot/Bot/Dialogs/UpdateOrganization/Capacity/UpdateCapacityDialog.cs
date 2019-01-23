@@ -18,7 +18,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (profile.Capacity.Beds.Total > 0)
                     {
                         // Push the update housing dialog onto the stack.
-                        return await BeginDialogAsync(state, dialogs, stepContext, UpdateHousingDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, UpdateHousingDialog.Name, null, cancellationToken);
                     }
 
                     // Skip this step.
