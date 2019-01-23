@@ -10,18 +10,15 @@ namespace ServiceProviderBot.Bot
 {
     public class TheBot : IBot
     {
-        private readonly DbModel dbContext;
         private readonly StateAccessors state;
         private readonly DialogSet dialogs;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TheBot"/> class.
         /// </summary>
-        /// <param name="dbContext">A class containing <see cref="DbModel"/> used to manage DB access</param>
         /// <param name="state">A class containing <see cref="IStatePropertyAccessor{T}"/> used to manage state</param>
-        public TheBot(DbModel dbContext, StateAccessors state)
+        public TheBot(StateAccessors state)
         {
-            this.dbContext = dbContext ?? throw new System.ArgumentNullException(nameof(dbContext));
             this.state = state ?? throw new System.ArgumentNullException(nameof(state));
             this.dialogs = new DialogSet(state.DialogContextAccessor);
 
@@ -33,11 +30,11 @@ namespace ServiceProviderBot.Bot
         {
             // Establish context for our dialog from the turn context.
             DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
-            DialogTurnResult results = await Utils.Dialogs.ContinueDialogAsync(this.dbContext, this.state, this.dialogs, dialogContext, cancellationToken);
+            DialogTurnResult results = await Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
 
             if (ShouldBeginConversation(turnContext))
             {
-                await Utils.Dialogs.BeginDialogAsync(this.dbContext, this.state, this.dialogs, dialogContext, MasterDialog.Name, null, cancellationToken);
+                await Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, dialogContext, MasterDialog.Name, null, cancellationToken);
             }
         }
 

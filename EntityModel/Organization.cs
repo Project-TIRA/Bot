@@ -7,7 +7,7 @@ namespace EntityModel
     public class Organization
     {
         [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public DateTime DateCreated { get; set; }
 
         public string Name { get; set; }
@@ -30,6 +30,31 @@ namespace EntityModel
         public int TotalBeds { get; set; }
 
         // Snapshots
-        public ICollection<OrganizationSnapshot> Snapshots { get; set; }
+        public ICollection<Snapshot> Snapshots { get; set; }
+
+        public Organization()
+        {
+            this.Id = Guid.NewGuid();
+            this.DateCreated = DateTime.UtcNow;
+            this.IsVerified = false;
+        }
+
+        public void UpdateGender(Gender gender, bool add)
+        {
+            if (add)
+            {
+                this.Gender |= gender;
+            }
+            else
+            {
+                this.Gender &= gender;
+            }
+        }
+
+        public void SetDefaultAgeRange()
+        {
+            this.AgeRangeStart = 0;
+            this.AgeRangeEnd = 0;
+        }
     }
 }

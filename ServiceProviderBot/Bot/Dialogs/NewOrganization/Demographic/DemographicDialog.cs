@@ -1,6 +1,5 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
-using ServiceProviderBot.Bot.Models.OrganizationProfile;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
 {
@@ -8,7 +7,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
     {
         public static string Name = typeof(DemographicDialog).FullName;
 
-        public override WaterfallDialog Init(DbModel dbContext, StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -22,17 +21,10 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    // Update the profile with the men demographic.
-                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-
-                    if ((bool)stepContext.Result)
-                    {
-                        profile.Demographic.Gender |= Gender.Male;
-                    }
-                    else
-                    {
-                        profile.Demographic.Gender &= ~Gender.Male;
-                    }
+                    // Update the organization with the male demographic.
+                    var organization = await state.GetOrganization(stepContext.Context);
+                    organization.UpdateGender(Gender.Male, (bool)stepContext.Result);
+                    await state.SaveDbContext();
 
                     // Prompt for working with women.
                     return await stepContext.PromptAsync(
@@ -42,17 +34,10 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    // Update the profile with the women demographic.
-                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-
-                    if ((bool)stepContext.Result)
-                    {
-                        profile.Demographic.Gender |= Gender.Female;
-                    }
-                    else
-                    {
-                        profile.Demographic.Gender &= ~Gender.Female;
-                    }
+                    // Update the organization with the female demographic.
+                    var organization = await state.GetOrganization(stepContext.Context);
+                    organization.UpdateGender(Gender.Female, (bool)stepContext.Result);
+                    await state.SaveDbContext();
 
                     // Prompt for the age range.
                     return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
@@ -66,12 +51,13 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     if ((bool)stepContext.Result)
                     {
                         // Push the age range dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(dbContext, state, dialogs, stepContext, AgeRangeDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, AgeRangeDialog.Name, null, cancellationToken);
                     }
 
-                    // Update the profile with the default age range.
-                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-                    profile.Demographic.AgeRange.SetToAll();
+                    // Update the organization with the default age range.
+                    var organization = await state.GetOrganization(stepContext.Context);
+                    organization.SetDefaultAgeRange();
+                    await state.SaveDbContext();
 
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);

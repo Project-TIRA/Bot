@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EntityModel.Migrations
@@ -12,9 +11,11 @@ namespace EntityModel.Migrations
                 name: "Organizations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<Guid>(nullable: false),
+                    DateCreated = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    IsVerified = table.Column<bool>(nullable: false),
                     City = table.Column<string>(nullable: true),
                     State = table.Column<string>(nullable: true),
                     Zip = table.Column<string>(nullable: true),
@@ -32,9 +33,8 @@ namespace EntityModel.Migrations
                 name: "Snapshots",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    OrganizationId = table.Column<int>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    OrganizationId = table.Column<Guid>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
                     OpenBeds = table.Column<int>(nullable: false)
                 },

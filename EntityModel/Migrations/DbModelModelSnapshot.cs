@@ -21,9 +21,8 @@ namespace EntityModel.Migrations
 
             modelBuilder.Entity("EntityModel.Organization", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("AgeRangeEnd");
 
@@ -52,17 +51,16 @@ namespace EntityModel.Migrations
                     b.ToTable("Organizations");
                 });
 
-            modelBuilder.Entity("EntityModel.OrganizationSnapshot", b =>
+            modelBuilder.Entity("EntityModel.Snapshot", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Date");
 
                     b.Property<int>("OpenBeds");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<Guid>("OrganizationId");
 
                     b.HasKey("Id");
 
@@ -71,7 +69,7 @@ namespace EntityModel.Migrations
                     b.ToTable("Snapshots");
                 });
 
-            modelBuilder.Entity("EntityModel.OrganizationSnapshot", b =>
+            modelBuilder.Entity("EntityModel.Snapshot", b =>
                 {
                     b.HasOne("EntityModel.Organization", "Organization")
                         .WithMany("Snapshots")

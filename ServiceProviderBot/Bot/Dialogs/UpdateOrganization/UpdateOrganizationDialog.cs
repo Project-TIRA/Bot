@@ -12,14 +12,14 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
     {
         public static string Name = typeof(UpdateOrganizationDialog).FullName;
 
-        public override WaterfallDialog Init(DbModel dbContext, StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
             // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    var needsUpdate = await NeedsUpdate(state, stepContext.Context, cancellationToken);
+                    var needsUpdate = await NeedsUpdate(state, stepContext.Context);
                     if (!needsUpdate)
                     {
                         // Nothing to update.
@@ -29,8 +29,11 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
 
+                    // Create a new snapshot to be filled in by UpdateOrganization process.
+                    await state.CreateOrganizationSnapshot(stepContext.Context);
+
                     // Push the update capacity dialog onto the stack.
-                    return await Utils.Dialogs.BeginDialogAsync(dbContext, state, dialogs, stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
+                    return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
@@ -43,12 +46,12 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             });
         }
 
-        private static async Task<bool> NeedsUpdate(StateAccessors state, ITurnContext context, CancellationToken cancellationToken)
+        private static async Task<bool> NeedsUpdate(StateAccessors state, ITurnContext context)
         {
-            var profile = await state.GetOrganizationProfile(context, cancellationToken);
+            var organization = await state.GetOrganization(context);
 
             // Currently the only thing to update is the beds.
-            return profile.Capacity.Beds.Total > 0;
+            return organization.TotalBeds > 0;
         }
     }
 }

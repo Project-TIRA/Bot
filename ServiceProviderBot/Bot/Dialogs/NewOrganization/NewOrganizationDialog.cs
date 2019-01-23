@@ -11,19 +11,15 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
     {
         public static string Name = typeof(NewOrganizationDialog).FullName;
 
-        private readonly DbModel dbContext;
-
-        public NewOrganizationDialog(DbModel dbContext)
-        {
-            this.dbContext = dbContext;
-        }
-
-        public override WaterfallDialog Init(DbModel dbContext, StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
                     async (stepContext, cancellationToken) =>
                     {
+                        // Create a new organization to be filled in by NewOrganization process.
+                        await state.CreateOrganization(stepContext.Context);
+
                         // Prompt for the name.
                         return await stepContext.PromptAsync(
                             Utils.Prompts.TextPrompt,
@@ -33,11 +29,12 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                     async (stepContext, cancellationToken) =>
                     {
                         // Update the profile with the name.
-                        var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-                        profile.Name = (string)stepContext.Result;
+                        var organization = await state.GetOrganization(stepContext.Context);
+                        organization.Name = (string)stepContext.Result;
+                        await state.SaveDbContext();
 
                         // Push the location dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(dbContext, state, dialogs, stepContext, LocationDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, LocationDialog.Name, null, cancellationToken);
                     },
                     async (stepContext, cancellationToken) =>
                     {
@@ -52,12 +49,14 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                         if ((bool)stepContext.Result)
                         {
                             // Push the demographic dialog onto the stack.
-                            return await Utils.Dialogs.BeginDialogAsync(dbContext, state, dialogs, stepContext, DemographicDialog.Name, null, cancellationToken);
+                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, DemographicDialog.Name, null, cancellationToken);
                         }
 
                         // Update the profile with the default demographics.
-                        var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-                        profile.Demographic.SetToAll();
+                        var organization = await state.GetOrganization(stepContext.Context);
+                        organization.Gender = Gender.All;
+                        organization.SetDefaultAgeRange();
+                        await state.SaveDbContext();
 
                         // Skip this step.
                         return await stepContext.NextAsync(null, cancellationToken);
@@ -65,11 +64,11 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                     async (stepContext, cancellationToken) =>
                     {
                         // Push the capacity dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(dbContext, state, dialogs, stepContext, CapacityDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, CapacityDialog.Name, null, cancellationToken);
                     },
                     async (stepContext, cancellationToken) =>
                     {
-                        var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
+                        //var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
 
                             // Save the organization to the database.
                             /*

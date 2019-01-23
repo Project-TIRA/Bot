@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic;
-using ServiceProviderBot.Bot.Models.OrganizationProfile;
 using ServiceProviderBot.Bot.Utils;
 using Xunit;
 
@@ -12,8 +12,8 @@ namespace Tests.Dialogs.NewOrganization.Demographic
         [Fact]
         public async Task MenOnly()
         {
-            var expected = new OrganizationProfile();
-            expected.Demographic.Gender = Gender.Male;
+            var expected = new Organization();
+            expected.Gender = Gender.Male;
 
             // Execute the conversation.
             await CreateTestFlow(DemographicDialog.Name)
@@ -30,8 +30,8 @@ namespace Tests.Dialogs.NewOrganization.Demographic
         [Fact]
         public async Task WomenOnly()
         {
-            var expected = new OrganizationProfile();
-            expected.Demographic.Gender = Gender.Female;
+            var expected = new Organization();
+            expected.Gender = Gender.Female;
 
             // Execute the conversation.
             await CreateTestFlow(DemographicDialog.Name)
@@ -48,8 +48,8 @@ namespace Tests.Dialogs.NewOrganization.Demographic
         [Fact]
         public async Task GenderUnknown()
         {
-            var expected = new OrganizationProfile();
-            expected.Demographic.Gender = Gender.Unknown;
+            var expected = new Organization();
+            expected.Gender = Gender.Unknown;
 
             // Execute the conversation.
             await CreateTestFlow(DemographicDialog.Name)

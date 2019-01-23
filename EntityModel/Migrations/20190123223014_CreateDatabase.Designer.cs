@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityModel.Migrations
 {
     [DbContext(typeof(DbModel))]
-    [Migration("20190122223419_CreateDatabase")]
+    [Migration("20190123223014_CreateDatabase")]
     partial class CreateDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,9 +23,8 @@ namespace EntityModel.Migrations
 
             modelBuilder.Entity("EntityModel.Organization", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("AgeRangeEnd");
 
@@ -33,9 +32,15 @@ namespace EntityModel.Migrations
 
                     b.Property<string>("City");
 
+                    b.Property<DateTime>("DateCreated");
+
                     b.Property<int>("Gender");
 
+                    b.Property<bool>("IsVerified");
+
                     b.Property<string>("Name");
+
+                    b.Property<string>("PhoneNumber");
 
                     b.Property<string>("State");
 
@@ -48,17 +53,16 @@ namespace EntityModel.Migrations
                     b.ToTable("Organizations");
                 });
 
-            modelBuilder.Entity("EntityModel.OrganizationSnapshot", b =>
+            modelBuilder.Entity("EntityModel.Snapshot", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Date");
 
                     b.Property<int>("OpenBeds");
 
-                    b.Property<int>("OrganizationId");
+                    b.Property<Guid>("OrganizationId");
 
                     b.HasKey("Id");
 
@@ -67,7 +71,7 @@ namespace EntityModel.Migrations
                     b.ToTable("Snapshots");
                 });
 
-            modelBuilder.Entity("EntityModel.OrganizationSnapshot", b =>
+            modelBuilder.Entity("EntityModel.Snapshot", b =>
                 {
                     b.HasOne("EntityModel.Organization", "Organization")
                         .WithMany("Snapshots")

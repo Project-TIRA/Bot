@@ -29,14 +29,11 @@ namespace ServiceProviderBot
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add the DB context.
-            services.AddScoped(_ => new DbModel());
-
             // Add the configuration.
             services.AddSingleton(configuration);
 
             // Create and add the state accessors.
-            StateAccessors state = StateAccessors.CreateFromMemoryStorage();
+            StateAccessors state = StateAccessors.CreateFromLocalStorage();
             services.AddSingleton(state);
 
             // Configure the bot.
@@ -53,7 +50,6 @@ namespace ServiceProviderBot
 
                 // Auto-save the state after each turn.
                 options.Middleware.Add(new AutoSaveStateMiddleware(state.ConversationState));
-                options.Middleware.Add(new AutoSaveStateMiddleware(state.OrganizationState));
             });
         }
 

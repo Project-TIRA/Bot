@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Location;
-using ServiceProviderBot.Bot.Models.OrganizationProfile;
 using ServiceProviderBot.Bot.Utils;
 using Xunit;
 
@@ -12,15 +12,15 @@ namespace Tests.Dialogs.NewOrganization.Location
         [Fact]
         public async Task Valid()
         {
-            var expected = new OrganizationProfile();
-            expected.Location.City = TestOrgCity;
-            expected.Location.State = TestOrgState;
-            expected.Location.Zip = TestOrgZip;
+            var expected = new Organization();
+            expected.City = TestOrgCity;
+            expected.State = TestOrgState;
+            expected.Zip = TestOrgZip;
 
             // Execute the conversation.
             await CreateTestFlow(LocationDialog.Name)
                 .Test("begin", Phrases.Location.GetLocation)
-                .Send(expected.Location.Zip)
+                .Send(expected.Zip)
                 .StartTestAsync();
 
             // Validate the profile.

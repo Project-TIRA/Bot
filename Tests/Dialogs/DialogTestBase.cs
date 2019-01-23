@@ -7,7 +7,6 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot;
-using ServiceProviderBot.Bot.Models.OrganizationProfile;
 using Xunit;
 
 namespace Tests.Dialogs
@@ -30,23 +29,22 @@ namespace Tests.Dialogs
         protected DialogTestBase()
         {
             this.dbContext = new DbModel();
-            this.state = StateAccessors.CreateFromMemoryStorage();
+            this.state = StateAccessors.CreateFromLocalStorage();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
             this.adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(state.ConversationState))
-                .Use(new AutoSaveStateMiddleware(state.OrganizationState));
+                .Use(new AutoSaveStateMiddleware(state.ConversationState));
 
             // Register prompts.
             ServiceProviderBot.Bot.Utils.Prompts.Register(this.dialogs);
         }
 
-        protected TestFlow CreateTestFlow(string dialogName, OrganizationProfile initalOrganizationProfile = null)
+        protected TestFlow CreateTestFlow(string dialogName, Organization initialOrganization = null, Snapshot initialSnapshot = null)
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
                 // Initialize the dialog context.
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
-                DialogTurnResult results = await ServiceProviderBot.Bot.Utils.Dialogs.ContinueDialogAsync(this.dbContext, this.state, this.dialogs, dialogContext, cancellationToken);
+                DialogTurnResult results = await ServiceProviderBot.Bot.Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
 
                 this.turnContext = turnContext;
                 this.cancellationToken = cancellationToken;
@@ -54,41 +52,48 @@ namespace Tests.Dialogs
                 // Start the dialog if there is no conversation.
                 if (results.Status == DialogTurnStatus.Empty)
                 {
+                    /*
                     if (initalOrganizationProfile != null)
                     {
                         // Set the initial organization profile.
                         await this.state.OrganizationProfileAccessor.SetAsync(
                             turnContext, initalOrganizationProfile, cancellationToken);
                     }
+                    */
 
-                    await ServiceProviderBot.Bot.Utils.Dialogs.BeginDialogAsync(this.dbContext, this.state, this.dialogs, dialogContext, dialogName, null, cancellationToken);
+                    await ServiceProviderBot.Bot.Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, dialogContext, dialogName, null, cancellationToken);
                 }
             });
         }
 
-        protected OrganizationProfile CreateDefaultTestProfile()
+        protected Organization CreateDefaultOrganization()
         {
-            var profile = new OrganizationProfile();
-            profile.Name = TestOrgName;
-            profile.Location.City = TestOrgCity;
-            profile.Location.State = TestOrgState;
-            profile.Location.Zip = TestOrgZip;
-            profile.Demographic.Gender = Gender.All;
-            profile.Demographic.AgeRange.Start = AgeRange.Default;
-            profile.Demographic.AgeRange.End = AgeRange.Default;
-            return profile;
+            var organization = new Organization();
+            organization.Name = TestOrgName;
+            organization.Gender = Gender.All;
+            organization.City = TestOrgCity;
+            organization.State = TestOrgState;
+            organization.Zip = TestOrgZip;
+            return organization;
         }
 
-        protected async Task ValidateProfile(OrganizationProfile expected)
+        protected async Task ValidateProfile(Organization expectedOrganization = null, Snapshot expectedSnapshot = null)
         {
-            var actual = await this.state.GetOrganizationProfile(this.turnContext, this.cancellationToken);
+            if (expectedOrganization != null)
+            {
+                var actualOrganization = await this.state.GetOrganization(this.turnContext);
+                Assert.Equal(actualOrganization.Name, expectedOrganization.Name);
+                Assert.Equal(actualOrganization.Gender, expectedOrganization.Gender);
+                Assert.Equal(actualOrganization.AgeRangeStart, expectedOrganization.AgeRangeStart);
+                Assert.Equal(actualOrganization.AgeRangeEnd, expectedOrganization.AgeRangeEnd);
+                Assert.Equal(actualOrganization.TotalBeds, expectedOrganization.TotalBeds);
+            }
 
-            Assert.Equal(actual.Name, expected.Name);
-            Assert.Equal(actual.Demographic.Gender, expected.Demographic.Gender);
-            Assert.Equal(actual.Demographic.AgeRange.Start, expected.Demographic.AgeRange.Start);
-            Assert.Equal(actual.Demographic.AgeRange.End, expected.Demographic.AgeRange.End);
-            Assert.Equal(actual.Capacity.Beds.Total, expected.Capacity.Beds.Total);
-            Assert.Equal(actual.Capacity.Beds.Open, expected.Capacity.Beds.Open);
+            if (expectedSnapshot != null)
+            {
+                var actualSnapshot = await this.state.GetSnapshot(this.turnContext);
+                Assert.Equal(actualSnapshot.OpenBeds, expectedSnapshot.OpenBeds);
+            }
         }
 
         protected Action<IActivity> StartsWith(IMessageActivity expected)

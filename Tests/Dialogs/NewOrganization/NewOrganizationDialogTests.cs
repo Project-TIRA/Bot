@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization;
-using ServiceProviderBot.Bot.Models.OrganizationProfile;
 using ServiceProviderBot.Bot.Utils;
 using Xunit;
 
@@ -12,26 +12,24 @@ namespace Tests.Dialogs.NewOrganization
         [Fact]
         public async Task YesToAll()
         {
-            var expected = CreateDefaultTestProfile();
-            expected.Demographic.AgeRange.Start = 14;
-            expected.Demographic.AgeRange.End = 24;
-            expected.Capacity.Beds.Total = 10;
-            expected.Capacity.Beds.Open = 5;
+            var expected = CreateDefaultOrganization();
+            expected.AgeRangeStart = 14;
+            expected.AgeRangeEnd = 24;
+            expected.TotalBeds = 10;
 
             // Execute the conversation.
             await CreateTestFlow(NewOrganizationDialog.Name)
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)
-                .Test(expected.Location.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicMen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicWomen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
                 .Test("yes", Phrases.AgeRange.GetAgeRangeStart)
-                .Test(expected.Demographic.AgeRange.Start.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
-                .Test(expected.Demographic.AgeRange.End.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
+                .Test(expected.AgeRangeStart.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
+                .Test(expected.AgeRangeEnd.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
-                .Test(expected.Capacity.Beds.Open.ToString(), Phrases.NewOrganization.Closing)
+                .Test(expected.TotalBeds.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Validate the profile.
@@ -41,13 +39,13 @@ namespace Tests.Dialogs.NewOrganization
         [Fact]
         public async Task NoToAll()
         {
-            var expected = CreateDefaultTestProfile();
+            var expected = CreateDefaultOrganization();
 
             // Execute the conversation.
             await CreateTestFlow(NewOrganizationDialog.Name)
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)
-                .Test(expected.Location.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
@@ -59,18 +57,16 @@ namespace Tests.Dialogs.NewOrganization
         [Fact]
         public async Task NoDemographic()
         {
-            var expected = CreateDefaultTestProfile();
-            expected.Capacity.Beds.Total = 10;
-            expected.Capacity.Beds.Open = 5;
+            var expected = CreateDefaultOrganization();
+            expected.TotalBeds = 10;
 
             await CreateTestFlow(NewOrganizationDialog.Name)
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)
-                .Test(expected.Location.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
-                .Test(expected.Capacity.Beds.Open.ToString(), Phrases.NewOrganization.Closing)
+                .Test(expected.TotalBeds.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Validate the profile.
@@ -80,22 +76,20 @@ namespace Tests.Dialogs.NewOrganization
         [Fact]
         public async Task NoAgeRange()
         {
-            var expected = CreateDefaultTestProfile();
-            expected.Capacity.Beds.Total = 10;
-            expected.Capacity.Beds.Open = 5;
+            var expected = CreateDefaultOrganization();
+            expected.TotalBeds = 10;
 
             // Execute the conversation.
             await CreateTestFlow(NewOrganizationDialog.Name)
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)
-                .Test(expected.Location.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicMen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicWomen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Test(expected.Capacity.Beds.Total.ToString(), Phrases.Capacity.GetHousingOpen)
-                .Test(expected.Capacity.Beds.Open.ToString(), Phrases.NewOrganization.Closing)
+                .Test(expected.TotalBeds.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Validate the profile.
@@ -105,21 +99,21 @@ namespace Tests.Dialogs.NewOrganization
         [Fact]
         public async Task NoHousing()
         {
-            var expected = CreateDefaultTestProfile();
-            expected.Demographic.AgeRange.Start = 14;
-            expected.Demographic.AgeRange.End = 24;
+            var expected = CreateDefaultOrganization();
+            expected.AgeRangeStart = 14;
+            expected.AgeRangeEnd = 24;
 
             // Execute the conversation.
             await CreateTestFlow(NewOrganizationDialog.Name)
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expected.Name, Phrases.Location.GetLocation)
-                .Test(expected.Location.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicMen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicWomen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
                 .Test("yes", Phrases.AgeRange.GetAgeRangeStart)
-                .Test(expected.Demographic.AgeRange.Start.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
-                .Test(expected.Demographic.AgeRange.End.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
+                .Test(expected.AgeRangeStart.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
+                .Test(expected.AgeRangeEnd.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 

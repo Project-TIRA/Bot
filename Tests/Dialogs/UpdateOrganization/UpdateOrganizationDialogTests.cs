@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
-using ServiceProviderBot.Bot.Models.OrganizationProfile;
 using ServiceProviderBot.Bot.Utils;
 using Xunit;
 
@@ -12,28 +12,29 @@ namespace Tests.Dialogs.NewOrganization
         [Fact]
         public async Task UpdateAll()
         {
-            var expected = new OrganizationProfile();
-            expected.Capacity.Beds.Total = 10;
-            expected.Capacity.Beds.Open = 5;
+            var expectedOrganization = new Organization();
+            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
+            expectedOrganization.TotalBeds = 10;
+            expectedSnapshot.OpenBeds = 5;
 
-            // Set an initial profile to trigger updates.
-            var initialProfile = new OrganizationProfile();
-            initialProfile.Capacity.Beds.Total = expected.Capacity.Beds.Total;
+            // Set an initial organization.
+            var initialOrganization = new Organization();
+            initialOrganization.TotalBeds = expectedOrganization.TotalBeds;
 
             // Execute the conversation.
-            await CreateTestFlow(UpdateOrganizationDialog.Name, initialProfile)
+            await CreateTestFlow(UpdateOrganizationDialog.Name, initialOrganization)
                 .Test("begin", Phrases.Capacity.GetHousingOpen)
-                .Test(expected.Capacity.Beds.Open.ToString(), Phrases.UpdateOrganization.Closing)
+                .Test(expectedSnapshot.OpenBeds.ToString(), Phrases.UpdateOrganization.Closing)
                 .StartTestAsync();
 
             // Validate the profile.
-            await ValidateProfile(expected);
+            await ValidateProfile(expectedOrganization, expectedSnapshot);
         }
 
         [Fact]
         public async Task NothingToUpdate()
         {
-            var expected = new OrganizationProfile();
+            var expectedOrganization = new Organization();
 
             // Execute the conversation.
             await CreateTestFlow(UpdateOrganizationDialog.Name)
@@ -41,7 +42,7 @@ namespace Tests.Dialogs.NewOrganization
                 .StartTestAsync();
 
             // Validate the profile.
-            await ValidateProfile(expected);
+            await ValidateProfile(expectedOrganization);
         }
     }
 }

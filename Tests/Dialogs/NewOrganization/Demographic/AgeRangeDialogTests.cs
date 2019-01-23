@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic;
-using ServiceProviderBot.Bot.Models.OrganizationProfile;
 using ServiceProviderBot.Bot.Utils;
 using Xunit;
 
@@ -12,15 +12,15 @@ namespace Tests.Dialogs.NewOrganization.Demographic
         [Fact]
         public async Task Valid()
         {
-            var expected = new OrganizationProfile();
-            expected.Demographic.AgeRange.Start = 14;
-            expected.Demographic.AgeRange.End = 24;
+            var expected = new Organization();
+            expected.AgeRangeStart = 14;
+            expected.AgeRangeEnd = 24;
 
             // Execute the conversation.
             await CreateTestFlow(AgeRangeDialog.Name)
                 .Test("begin", Phrases.AgeRange.GetAgeRangeStart)
-                .Test(expected.Demographic.AgeRange.Start.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
-                .Send(expected.Demographic.AgeRange.End.ToString())
+                .Test(expected.AgeRangeStart.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
+                .Send(expected.AgeRangeEnd.ToString())
                 .StartTestAsync();
 
             // Validate the profile.

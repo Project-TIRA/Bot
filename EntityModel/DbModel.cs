@@ -5,7 +5,7 @@ namespace EntityModel
     public class DbModel : DbContext
     {
         public DbSet<Organization> Organizations { get; set; }
-        public DbSet<OrganizationSnapshot> Snapshots { get; set; }
+        public DbSet<Snapshot> Snapshots { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

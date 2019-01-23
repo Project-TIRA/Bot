@@ -1,5 +1,4 @@
-﻿using EntityModel;
-using Microsoft.Bot.Builder.Dialogs;
+﻿using Microsoft.Bot.Builder.Dialogs;
 using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
@@ -8,7 +7,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
     {
         public static string Name = typeof(AgeRangeDialog).FullName;
 
-        public override WaterfallDialog Init(DbModel dbContext, StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -17,40 +16,43 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     // Prompt for the youngest age.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.IntPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.AgeRange.GetAgeRangeStart },
+                        new PromptOptions { Prompt = Phrases.AgeRange.GetAgeRangeStart },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
                     // Update the profile with the youngest age.
-                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-                    profile.Demographic.AgeRange.Start = (int)stepContext.Result;
+                    var organization = await state.GetOrganization(stepContext.Context);
+                    organization.AgeRangeStart = (int)stepContext.Result;
+                    await state.SaveDbContext();
 
                     // Prompt for the oldest age.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.IntPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.AgeRange.GetAgeRangeEnd },
+                        new PromptOptions { Prompt = Phrases.AgeRange.GetAgeRangeEnd },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
+                    var organization = await state.GetOrganization(stepContext.Context);
 
                     // Validate the numbers.
                     var end = (int)stepContext.Result;
-                    if (end < profile.Demographic.AgeRange.Start)
+                    if (end < organization.AgeRangeStart)
                     {
-                        profile.Demographic.AgeRange.SetToAll();
+                        organization.SetDefaultAgeRange();
+                        await state.SaveDbContext();
 
                         // Send error message.
-                        await Messages.SendAsync(Utils.Phrases.AgeRange.GetAgeRangeError, stepContext.Context, cancellationToken);
+                        await Messages.SendAsync(Phrases.AgeRange.GetAgeRangeError, stepContext.Context, cancellationToken);
 
                         // Repeat the dialog.
                         return await stepContext.ReplaceDialogAsync(Name, null, cancellationToken);
                     }
 
                     // Update the profile with the oldest age.
-                    profile.Demographic.AgeRange.End = (int)stepContext.Result;
+                    organization.AgeRangeEnd = (int)stepContext.Result;
+                    await state.SaveDbContext();
 
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
