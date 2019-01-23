@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace EntityModel
@@ -7,7 +8,10 @@ namespace EntityModel
     {
         [Key]
         public int Id { get; set; }
+        public DateTime DateCreated { get; set; }
+
         public string Name { get; set; }
+        public string PhoneNumber { get; set; }
 
         // Verification
         public bool IsVerified { get; set; }

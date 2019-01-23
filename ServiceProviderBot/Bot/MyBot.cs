@@ -33,11 +33,11 @@ namespace ServiceProviderBot.Bot
         {
             // Establish context for our dialog from the turn context.
             DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
-            DialogTurnResult results = await Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
+            DialogTurnResult results = await Utils.Dialogs.ContinueDialogAsync(this.dbContext, this.state, this.dialogs, dialogContext, cancellationToken);
 
             if (ShouldBeginConversation(turnContext))
             {
-                await Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, dialogContext, MasterDialog.Name, null, cancellationToken);
+                await Utils.Dialogs.BeginDialogAsync(this.dbContext, this.state, this.dialogs, dialogContext, MasterDialog.Name, null, cancellationToken);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using EntityModel;
+using Microsoft.Bot.Builder.Dialogs;
 using ServiceProviderBot.Bot.Models.OrganizationProfile;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
@@ -7,7 +8,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
     {
         public static string Name = typeof(DemographicDialog).FullName;
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(DbModel dbContext, StateAccessors state, DialogSet dialogs)
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -65,7 +66,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     if ((bool)stepContext.Result)
                     {
                         // Push the age range dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, AgeRangeDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(dbContext, state, dialogs, stepContext, AgeRangeDialog.Name, null, cancellationToken);
                     }
 
                     // Update the profile with the default age range.

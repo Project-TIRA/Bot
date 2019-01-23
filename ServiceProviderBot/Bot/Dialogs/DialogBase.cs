@@ -1,10 +1,11 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using EntityModel;
+using Microsoft.Bot.Builder.Dialogs;
 
 namespace ServiceProviderBot.Bot.Dialogs
 {
     public abstract class DialogBase
     {
-        public virtual WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
+        public virtual WaterfallDialog Init(DbModel dbContext, StateAccessors state, DialogSet dialogs)
         {
             return null;
         }

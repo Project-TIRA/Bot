@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using EntityModel;
+using Microsoft.Bot.Builder.Dialogs;
 using ServiceProviderBot.Bot.Dialogs;
 using System;
 using System.Threading;
@@ -12,7 +13,7 @@ namespace ServiceProviderBot.Bot.Utils
         /// JIT creates the dialog if necessary and begins the dialog.
         /// Type <typeparamref name="T"/> is the type of dialog, deriving from <see cref="DialogBase"/>
         /// </summary>
-        public static async Task<DialogTurnResult> BeginDialogAsync(StateAccessors state, DialogSet dialogs, DialogContext context, string dialogId, object options, CancellationToken cancellationToken)
+        public static async Task<DialogTurnResult> BeginDialogAsync(DbModel dbContext, StateAccessors state, DialogSet dialogs, DialogContext context, string dialogId, object options, CancellationToken cancellationToken)
         {
             // Only create the dialog if it doesn't exist.
             if (dialogs.Find(dialogId) == null)
@@ -20,7 +21,7 @@ namespace ServiceProviderBot.Bot.Utils
                 var dialog = CreateFromDialogId(dialogId);
                 if (dialog != null)
                 {
-                    dialogs.Add(dialog.Init(state, dialogs));
+                    dialogs.Add(dialog.Init(dbContext, state, dialogs));
                 }
             }
 
@@ -31,7 +32,7 @@ namespace ServiceProviderBot.Bot.Utils
         /// JIT creates the dialog stack if necessary and continues the dialog.
         /// Type <typeparamref name="T"/> is the type of dialog, deriving from <see cref="DialogBase"/>
         /// </summary>
-        public static async Task<DialogTurnResult> ContinueDialogAsync(StateAccessors state, DialogSet dialogs, DialogContext context, CancellationToken cancellationToken)
+        public static async Task<DialogTurnResult> ContinueDialogAsync(DbModel dbContext, StateAccessors state, DialogSet dialogs, DialogContext context, CancellationToken cancellationToken)
         {
             // Go through each entry in the context stack.
             foreach (var entry in context.Stack)
@@ -42,7 +43,7 @@ namespace ServiceProviderBot.Bot.Utils
                     var dialog = CreateFromDialogId(entry.Id);
                     if (dialog != null)
                     {
-                        dialogs.Add(dialog.Init(state, dialogs));
+                        dialogs.Add(dialog.Init(dbContext, state, dialogs));
                     }
                 }
             }

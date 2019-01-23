@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
@@ -18,6 +19,7 @@ namespace Tests.Dialogs
         protected const string TestOrgState = "WA";
         protected const string TestOrgZip = "98052";
 
+        protected readonly DbModel dbContext;
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
         protected readonly TestAdapter adapter;
@@ -27,6 +29,7 @@ namespace Tests.Dialogs
 
         protected DialogTestBase()
         {
+            this.dbContext = new DbModel();
             this.state = StateAccessors.CreateFromMemoryStorage();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
             this.adapter = new TestAdapter()
@@ -43,7 +46,7 @@ namespace Tests.Dialogs
             {
                 // Initialize the dialog context.
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
-                DialogTurnResult results = await ServiceProviderBot.Bot.Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
+                DialogTurnResult results = await ServiceProviderBot.Bot.Utils.Dialogs.ContinueDialogAsync(this.dbContext, this.state, this.dialogs, dialogContext, cancellationToken);
 
                 this.turnContext = turnContext;
                 this.cancellationToken = cancellationToken;
@@ -58,7 +61,7 @@ namespace Tests.Dialogs
                             turnContext, initalOrganizationProfile, cancellationToken);
                     }
 
-                    await ServiceProviderBot.Bot.Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, dialogContext, dialogName, null, cancellationToken);
+                    await ServiceProviderBot.Bot.Utils.Dialogs.BeginDialogAsync(this.dbContext, this.state, this.dialogs, dialogContext, dialogName, null, cancellationToken);
                 }
             });
         }

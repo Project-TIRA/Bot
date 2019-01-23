@@ -11,7 +11,14 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
     {
         public static string Name = typeof(NewOrganizationDialog).FullName;
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
+        private readonly DbModel dbContext;
+
+        public NewOrganizationDialog(DbModel dbContext)
+        {
+            this.dbContext = dbContext;
+        }
+
+        public override WaterfallDialog Init(DbModel dbContext, StateAccessors state, DialogSet dialogs)
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -30,7 +37,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                         profile.Name = (string)stepContext.Result;
 
                         // Push the location dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, LocationDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(dbContext, state, dialogs, stepContext, LocationDialog.Name, null, cancellationToken);
                     },
                     async (stepContext, cancellationToken) =>
                     {
@@ -45,7 +52,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                         if ((bool)stepContext.Result)
                         {
                             // Push the demographic dialog onto the stack.
-                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, DemographicDialog.Name, null, cancellationToken);
+                            return await Utils.Dialogs.BeginDialogAsync(dbContext, state, dialogs, stepContext, DemographicDialog.Name, null, cancellationToken);
                         }
 
                         // Update the profile with the default demographics.
@@ -58,14 +65,12 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                     async (stepContext, cancellationToken) =>
                     {
                         // Push the capacity dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, CapacityDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(dbContext, state, dialogs, stepContext, CapacityDialog.Name, null, cancellationToken);
                     },
                     async (stepContext, cancellationToken) =>
                     {
                         var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
 
-                        using (var dbContext = new DbModel())
-                        {
                             // Save the organization to the database.
                             /*
                             var organization = new Organization();
@@ -78,7 +83,6 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                             */
 
                             // Save the snapshot to the database.
-                        }
 
                         // Send the closing message.
                         await Messages.SendAsync(Phrases.NewOrganization.Closing, stepContext.Context, cancellationToken);

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 using ServiceProviderBot.Bot.Models.LocationApi;
@@ -19,7 +20,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
         private const string MapsApiUriFormat = "https://atlas.microsoft.com/search/fuzzy/json?" +
             "api-version=1.0&countrySet=US&subscription-key={0}&query={1}";
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(DbModel dbContext, StateAccessors state, DialogSet dialogs)
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
