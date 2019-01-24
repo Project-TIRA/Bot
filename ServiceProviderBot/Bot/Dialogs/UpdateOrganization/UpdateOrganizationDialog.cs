@@ -30,7 +30,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                     }
 
                     // Create a new snapshot to be filled in by UpdateOrganization process.
-                    await state.CreateOrganizationSnapshot(stepContext.Context);
+                    await state.CreateSnapshot(stepContext.Context);
 
                     // Push the update capacity dialog onto the stack.
                     return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, UpdateCapacityDialog.Name, null, cancellationToken);

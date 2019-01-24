@@ -12,33 +12,28 @@ namespace Tests.Dialogs.NewOrganization.Capacity
         [Fact]
         public async Task Valid()
         {
-            var expected = new Organization();
-            expected.TotalBeds = 10;
-
-            // Create the test flow.
-            var testFlow = await CreateTestFlow(HousingDialog.Name);
+            var expectedOrganization = CreateDefaultTestOrganization();
+            expectedOrganization.TotalBeds = 10;
 
             // Execute the conversation.
-            await testFlow
+            await CreateTestFlow(HousingDialog.Name, expectedOrganization)
                 .Test("begin", Phrases.Capacity.GetHousingTotal)
-                .Send(expected.TotalBeds.ToString())
+                .Send(expectedOrganization.TotalBeds.ToString())
                 .StartTestAsync();
 
-            // Validate the profile.
-            await ValidateProfile(expected);
+            // Validate the results.
+            await ValidateProfile(expectedOrganization);
         }
 
         [Fact]
         public async Task Invalid()
         {
-            // Create the test flow.
-            var testFlow = await CreateTestFlow(HousingDialog.Name);
+            var initialOrganization = CreateDefaultTestOrganization();
 
             // Execute the conversation.
-            await testFlow
+            await CreateTestFlow(HousingDialog.Name, initialOrganization)
                 .Test("begin", Phrases.Capacity.GetHousingTotal)
-                .Test("5", Phrases.Capacity.GetHousingOpen)
-                .Test("10", Phrases.Capacity.GetHousingError)
+                .Test("lots", Phrases.Capacity.GetHousingTotal)
                 .StartTestAsync();
         }
     }

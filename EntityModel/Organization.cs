@@ -49,7 +49,7 @@ namespace EntityModel
             }
             else
             {
-                this.Gender &= gender;
+                this.Gender &= ~gender;
             }
         }
 

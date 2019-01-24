@@ -33,7 +33,7 @@ namespace ServiceProviderBot
             services.AddSingleton(configuration);
 
             // Create and add the state accessors.
-            StateAccessors state = StateAccessors.CreateFromLocalStorage();
+            var state = StateAccessors.Create();
             services.AddSingleton(state);
 
             // Configure the bot.

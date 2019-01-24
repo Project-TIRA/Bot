@@ -55,17 +55,44 @@ namespace ServiceProviderBot.Bot
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="StateAccessors"/> class from local storage.
+        /// Initializes a new instance of the <see cref="StateAccessors"/> class.
         /// Contains the state management and associated accessor objects.
         /// </summary>
-        public static StateAccessors CreateFromLocalStorage()
+        public static StateAccessors Create()
+        {
+            // Create the state management with in-memory storage provider.
+            // TODO: Use CosmosDB
+            IStorage storage = new MemoryStorage();
+            ConversationState conversationState = new ConversationState(storage);
+
+            // Create the database.
+            // TODO: Store the connection string in settings.
+            var dbContext = new DbModel(new DbContextOptionsBuilder<DbModel>()
+                .UseSqlServer("data source=(LocalDb)\\MSSQLLocalDB;initial catalog=BotEntityModel;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
+                .Options);
+
+            // Create the state accessors.
+            return new StateAccessors(conversationState, dbContext);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StateAccessors"/> class from in-memory storage.
+        /// Contains the state management and associated accessor objects.
+        /// </summary>
+        public static StateAccessors CreateFromInMemoryStorage()
         {
             // Create the state management with in-memory storage provider.
             IStorage storage = new MemoryStorage();
             ConversationState conversationState = new ConversationState(storage);
 
+            // Create the database in memory.
+            var dbContext = new DbModel(new DbContextOptionsBuilder<DbModel>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .EnableSensitiveDataLogging()
+                .Options);
+
             // Create the state accessors.
-            return new StateAccessors(conversationState, new DbModel());
+            return new StateAccessors(conversationState, dbContext);
         }
 
         public async Task SaveDbContext()
@@ -79,13 +106,8 @@ namespace ServiceProviderBot.Bot
         public async Task<Organization> CreateOrganization(ITurnContext context)
         {
             var phoneNumber = context.Activity.From.Id;
-            var organization = await this.DbContext.Organizations.FirstOrDefaultAsync(o => o.PhoneNumber == phoneNumber);
 
-            if (organization == null)
-            {
-                organization = new Organization();
-            }
-
+            var organization = new Organization();
             organization.PhoneNumber = phoneNumber;
             await this.DbContext.Organizations.AddAsync(organization);
             await this.DbContext.SaveChangesAsync();
@@ -103,9 +125,9 @@ namespace ServiceProviderBot.Bot
         }
 
         /// <summary>
-        /// Creates an organization shapshot in the database.
+        /// Creates an shapshot in the database.
         /// </summary>
-        public async Task<Snapshot> CreateOrganizationSnapshot(ITurnContext context)
+        public async Task<Snapshot> CreateSnapshot(ITurnContext context)
         {
             var phoneNumber = context.Activity.From.Id;
             var organization = await this.DbContext.Organizations.FirstOrDefaultAsync(o => o.PhoneNumber == phoneNumber);
@@ -123,7 +145,7 @@ namespace ServiceProviderBot.Bot
         }
 
         /// <summary>
-        /// Gets the current organization snapshot from the database.
+        /// Gets the latest snapshot from the database.
         /// </summary>
         public async Task<Snapshot> GetSnapshot(ITurnContext context)
         {

@@ -12,25 +12,19 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
         [Fact]
         public async Task UpdateAll()
         {
-            var expectedOrganization = new Organization();
-            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
+            var expectedOrganization = CreateDefaultTestOrganization();
             expectedOrganization.TotalBeds = 10;
+
+            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
             expectedSnapshot.OpenBeds = 5;
 
-            // Set an initial organization.
-            var initialOrganization = new Organization();
-            initialOrganization.TotalBeds = expectedOrganization.TotalBeds;
-
-            // Create the test flow.
-            var testFlow = await CreateTestFlow(UpdateCapacityDialog.Name, initialOrganization);
-
             // Execute the conversation.
-            await testFlow
+            await CreateTestFlow(UpdateCapacityDialog.Name, expectedOrganization, expectedSnapshot)
                 .Test("begin", Phrases.Capacity.GetHousingOpen)
                 .Send(expectedSnapshot.OpenBeds.ToString())
                 .StartTestAsync();
 
-            // Validate the profile.
+            // Validate the results.
             await ValidateProfile(expectedOrganization, expectedSnapshot);
         }
     }

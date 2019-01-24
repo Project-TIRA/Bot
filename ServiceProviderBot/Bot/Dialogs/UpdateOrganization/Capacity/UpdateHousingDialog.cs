@@ -22,8 +22,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    var organization = await state.GetOrganization(stepContext.Context);
-                    var snapshot = await state.GetSnapshot(stepContext.Context);                   
+                    var organization = await state.GetOrganization(stepContext.Context);              
 
                     // Validate the numbers.
                     var open = (int)stepContext.Result;
@@ -38,6 +37,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     }
 
                     // Update the profile with the open beds.
+                    var snapshot = await state.GetSnapshot(stepContext.Context);
                     snapshot.OpenBeds = (int)stepContext.Result;
                     await state.SaveDbContext();
 

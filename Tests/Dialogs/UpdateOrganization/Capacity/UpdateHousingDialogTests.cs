@@ -12,40 +12,34 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
         [Fact]
         public async Task Valid()
         {
-            var expectedOrganization = new Organization();
-            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
+            var expectedOrganization = CreateDefaultTestOrganization();
             expectedOrganization.TotalBeds = 10;
+
+            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
             expectedSnapshot.OpenBeds = 5;
 
-            // Set an initial organization.
-            var initialOrganization = new Organization();
-            initialOrganization.TotalBeds = expectedOrganization.TotalBeds;
-
-            // Create the test flow.
-            var testFlow = await CreateTestFlow(UpdateHousingDialog.Name, initialOrganization);
-
             // Execute the conversation.
-            await testFlow
+            await CreateTestFlow(UpdateHousingDialog.Name, expectedOrganization, expectedSnapshot)
                 .Test("begin", Phrases.Capacity.GetHousingOpen)
                 .Send(expectedSnapshot.OpenBeds.ToString())
                 .StartTestAsync();
 
-            // Validate the profile.
+            // Validate the results.
             await ValidateProfile(expectedOrganization, expectedSnapshot);
         }
 
         [Fact]
         public async Task Invalid()
         {
-            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(0));
+            var initialOrganization = CreateDefaultTestOrganization();
+            initialOrganization.TotalBeds = 10;
 
-            // Create the test flow.
-            var testFlow = await CreateTestFlow(UpdateHousingDialog.Name);
+            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(initialOrganization.TotalBeds));
 
             // Execute the conversation.
-            await testFlow
+            await CreateTestFlow(UpdateHousingDialog.Name, initialOrganization)
                 .Test("begin", Phrases.Capacity.GetHousingOpen)
-                .Test("5", error)
+                .Test("20", error)
                 .StartTestAsync();
         }
     }

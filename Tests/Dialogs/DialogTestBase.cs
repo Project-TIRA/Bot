@@ -19,7 +19,6 @@ namespace Tests.Dialogs
         protected const string TestOrgState = "WA";
         protected const string TestOrgZip = "98052";
 
-        protected readonly DbModel dbContext;
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
         protected readonly TestAdapter adapter;
@@ -29,8 +28,7 @@ namespace Tests.Dialogs
 
         protected DialogTestBase()
         {
-            this.dbContext = new DbModel();
-            this.state = StateAccessors.CreateFromLocalStorage();
+            this.state = StateAccessors.CreateFromInMemoryStorage();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
             this.adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
@@ -39,11 +37,8 @@ namespace Tests.Dialogs
             ServiceProviderBot.Bot.Utils.Prompts.Register(this.dialogs);
         }
 
-        protected async Task<TestFlow> CreateTestFlow(string dialogName, Organization initialOrganization = null, Snapshot initialSnapshot = null)
+        protected TestFlow CreateTestFlow(string dialogName, Organization initialOrganization = null, Snapshot initialSnapshot = null)
         {
-            // Reset for the test.
-            await ResetDatabase();
-
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
                 // Initialize the dialog context.
@@ -56,21 +51,15 @@ namespace Tests.Dialogs
                 // Start the dialog if there is no conversation.
                 if (results.Status == DialogTurnStatus.Empty)
                 {
-                    /* TODO!
-                    if (initalOrganizationProfile != null)
-                    {
-                        // Set the initial organization profile.
-                        await this.state.OrganizationProfileAccessor.SetAsync(
-                            turnContext, initalOrganizationProfile, cancellationToken);
-                    }
-                    */
+                    // Init at the start of the conversation.
+                    await InitDatabase(turnContext, initialOrganization, initialSnapshot);
 
                     await ServiceProviderBot.Bot.Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, dialogContext, dialogName, null, cancellationToken);
                 }
             });
         }
 
-        protected Organization CreateDefaultOrganization()
+        protected Organization CreateDefaultTestOrganization()
         {
             var organization = new Organization();
             organization.Name = TestOrgName;
@@ -111,15 +100,30 @@ namespace Tests.Dialogs
             };
         }
 
-        private async Task ResetDatabase()
+        private async Task InitDatabase(ITurnContext context, Organization initialOrganization = null, Snapshot initialSnapshot = null)
         {
-            var testOrganization = await this.dbContext.Organizations.FirstOrDefaultAsync(o => o.Name == TestOrgName);
-            if (testOrganization != null)
+            Assert.True(initialSnapshot == null || initialOrganization != null, "Cannot initialize a snapshot without an organization");
+
+            // Create the organization and snapshot if provided.
+            if (initialOrganization != null)
             {
-                // Remove all snapshots.
-                testOrganization.Snapshots.Clear();
-                this.dbContext.Organizations.Remove(testOrganization);
-                await this.dbContext.SaveChangesAsync();
+                var organization = await this.state.CreateOrganization(context);
+                organization.Name = initialOrganization.Name;
+                organization.City = initialOrganization.City;
+                organization.State = initialOrganization.State;
+                organization.Zip = initialOrganization.Zip;
+                organization.Gender = initialOrganization.Gender;
+                organization.AgeRangeStart = initialOrganization.AgeRangeStart;
+                organization.AgeRangeEnd = initialOrganization.AgeRangeEnd;
+                organization.TotalBeds = initialOrganization.TotalBeds;
+
+                if (initialSnapshot != null)
+                {
+                    var snapshot = await this.state.CreateSnapshot(context);
+                    snapshot.OpenBeds = initialSnapshot.OpenBeds;
+                }
+
+                await this.state.SaveDbContext();
             }
         }
     }

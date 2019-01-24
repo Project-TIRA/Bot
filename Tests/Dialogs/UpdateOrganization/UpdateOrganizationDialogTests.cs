@@ -12,42 +12,33 @@ namespace Tests.Dialogs.NewOrganization
         [Fact]
         public async Task UpdateAll()
         {
-            var expectedOrganization = new Organization();
-            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
+            var expectedOrganization = CreateDefaultTestOrganization();
             expectedOrganization.TotalBeds = 10;
+
+            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
             expectedSnapshot.OpenBeds = 5;
 
-            // Set an initial organization.
-            var initialOrganization = new Organization();
-            initialOrganization.TotalBeds = expectedOrganization.TotalBeds;
-
-            // Create the test flow.
-            var testFlow = await CreateTestFlow(UpdateOrganizationDialog.Name, initialOrganization);
-
             // Execute the conversation.
-            await testFlow
+            await CreateTestFlow(UpdateOrganizationDialog.Name, expectedOrganization, expectedSnapshot)
                 .Test("begin", Phrases.Capacity.GetHousingOpen)
                 .Test(expectedSnapshot.OpenBeds.ToString(), Phrases.UpdateOrganization.Closing)
                 .StartTestAsync();
 
-            // Validate the profile.
+            // Validate the results.
             await ValidateProfile(expectedOrganization, expectedSnapshot);
         }
 
         [Fact]
         public async Task NothingToUpdate()
         {
-            var expectedOrganization = new Organization();
-
-            // Create the test flow.
-            var testFlow = await CreateTestFlow(UpdateOrganizationDialog.Name);
+            var expectedOrganization = CreateDefaultTestOrganization();
 
             // Execute the conversation.
-            await testFlow
+            await CreateTestFlow(UpdateOrganizationDialog.Name, expectedOrganization)
                 .Test("begin", Phrases.UpdateOrganization.NothingToUpdate)
                 .StartTestAsync();
 
-            // Validate the profile.
+            // Validate the results.
             await ValidateProfile(expectedOrganization);
         }
     }

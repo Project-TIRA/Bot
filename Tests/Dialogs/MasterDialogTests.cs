@@ -11,23 +11,20 @@ namespace Tests.Dialogs
         [Fact]
         public async Task NewOrganization()
         {
-            var expected = CreateDefaultOrganization();
-
-            // Create the test flow.
-            var testFlow = await CreateTestFlow(MasterDialog.Name);
+            var expectedOrganization = CreateDefaultTestOrganization();
 
             // Execute the conversation.
-            await testFlow
+            await CreateTestFlow(MasterDialog.Name)
                 .Test("begin", StartsWith(Phrases.Greeting.GetAction))
                 .Test("new", Phrases.NewOrganization.GetName)
-                .Test(expected.Name, Phrases.Location.GetLocation)
-                .Test(expected.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
+                .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
-            // Validate the profile.
-            await ValidateProfile(expected);
+            // Validate the results.
+            await ValidateProfile(expectedOrganization);
         }
 
         /*

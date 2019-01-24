@@ -12,34 +12,33 @@ namespace Tests.Dialogs.NewOrganization.Capacity
         [Fact]
         public async Task YesToAll()
         {
-            var expected = new Organization();
-            expected.TotalBeds = 10;
-
-            // Create the test flow.
-            var testFlow = await CreateTestFlow(CapacityDialog.Name);
+            var expectedOrganization = CreateDefaultTestOrganization();
+            expectedOrganization.TotalBeds = 10;
 
             // Execute the conversation.
-            await testFlow
+            await CreateTestFlow(CapacityDialog.Name, expectedOrganization)
                 .Test("begin", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Send(expected.TotalBeds.ToString())
+                .Send(expectedOrganization.TotalBeds.ToString())
                 .StartTestAsync();
 
-            // Validate the profile.
-            await ValidateProfile(expected);
+            // Validate the results.
+            await ValidateProfile(expectedOrganization);
         }
 
         [Fact]
         public async Task NoHousing()
         {
-            // Create the test flow.
-            var testFlow = await CreateTestFlow(CapacityDialog.Name);
+            var expectedOrganization = CreateDefaultTestOrganization();
 
             // Execute the conversation.
-            await testFlow
+            await CreateTestFlow(CapacityDialog.Name, expectedOrganization)
                 .Test("begin", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Send("no")
                 .StartTestAsync();
+
+            // Validate the results.
+            await ValidateProfile(expectedOrganization);
         }
     }
 }
