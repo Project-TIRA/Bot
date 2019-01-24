@@ -32,8 +32,11 @@ namespace ServiceProviderBot
             // Add the configuration.
             services.AddSingleton(configuration);
 
+            // Create the database context.
+            var dbContext = DbModelFactory.Create(configuration.GetConnectionString("DbModel"));
+
             // Create and add the state accessors.
-            var state = StateAccessors.Create();
+            var state = StateAccessors.Create(dbContext);
             services.AddSingleton(state);
 
             // Configure the bot.

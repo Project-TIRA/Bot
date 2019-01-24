@@ -59,39 +59,13 @@ namespace ServiceProviderBot.Bot
         /// Initializes a new instance of the <see cref="StateAccessors"/> class.
         /// Contains the state management and associated accessor objects.
         /// </summary>
-        public static StateAccessors Create(IConfiguration configuration)
+        public static StateAccessors Create(DbModel dbContext)
         {
             // Create the state management with in-memory storage provider.
-            // TODO: Use CosmosDB instead of in-memory
+            // TODO: Use CosmosDB if not in-memory.
             IStorage storage = new MemoryStorage();
             ConversationState conversationState = new ConversationState(storage);
-
-            // Create the database.
-            // TODO: Store the connection string in settings.
-            var dbContext = new DbModel(new DbContextOptionsBuilder<DbModel>()
-                .UseSqlServer("data source=(LocalDb)\\MSSQLLocalDB;initial catalog=BotEntityModel;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework")
-                .Options);
-
-            // Create the state accessors.
-            return new StateAccessors(conversationState, dbContext);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StateAccessors"/> class from in-memory storage.
-        /// Contains the state management and associated accessor objects.
-        /// </summary>
-        public static StateAccessors CreateFromInMemoryStorage()
-        {
-            // Create the state management with in-memory storage provider.
-            IStorage storage = new MemoryStorage();
-            ConversationState conversationState = new ConversationState(storage);
-
-            // Create the database in memory.
-            var dbContext = new DbModel(new DbContextOptionsBuilder<DbModel>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString())
-                .EnableSensitiveDataLogging()
-                .Options);
-
+                
             // Create the state accessors.
             return new StateAccessors(conversationState, dbContext);
         }

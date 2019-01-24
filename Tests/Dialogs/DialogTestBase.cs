@@ -28,7 +28,10 @@ namespace Tests.Dialogs
 
         protected DialogTestBase()
         {
-            this.state = StateAccessors.CreateFromInMemoryStorage();
+            // Create an in-memory DB for each test class so that tests can run async without collisions.
+            var dbContext = DbModelFactory.CreateInMemory();
+
+            this.state = StateAccessors.Create(dbContext);
             this.dialogs = new DialogSet(state.DialogContextAccessor);
             this.adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));

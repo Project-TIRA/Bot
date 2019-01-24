@@ -56,9 +56,9 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
 
                             var response = await responseMessage.Content.ReadAsStringAsync();
                             LocationApiResponse result = JsonConvert.DeserializeObject<LocationApiResponse>(response);
-                            LocationApiAddress address = result.GetTopStreetResult();
+                            LocationApiAddress address = result.GetTopStreetResult(zipcode);
 
-                            if (address == null || address.PostalCode != zipcode)
+                            if (address == null)
                             {
                                 return await NotifyErrorAndRepeat(stepContext, cancellationToken);
                             }
