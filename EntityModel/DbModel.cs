@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace EntityModel
 {
@@ -7,8 +8,7 @@ namespace EntityModel
         public DbSet<Organization> Organizations { get; set; }
         public DbSet<Snapshot> Snapshots { get; set; }
 
-        public DbModel(DbContextOptions<DbModel> options)
-        : base(options)
+        public DbModel(DbContextOptions<DbModel> options) : base(options)
         { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

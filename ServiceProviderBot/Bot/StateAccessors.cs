@@ -8,6 +8,7 @@ using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace ServiceProviderBot.Bot
 {
@@ -58,10 +59,10 @@ namespace ServiceProviderBot.Bot
         /// Initializes a new instance of the <see cref="StateAccessors"/> class.
         /// Contains the state management and associated accessor objects.
         /// </summary>
-        public static StateAccessors Create()
+        public static StateAccessors Create(IConfiguration configuration)
         {
             // Create the state management with in-memory storage provider.
-            // TODO: Use CosmosDB
+            // TODO: Use CosmosDB instead of in-memory
             IStorage storage = new MemoryStorage();
             ConversationState conversationState = new ConversationState(storage);
 

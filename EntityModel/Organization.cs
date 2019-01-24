@@ -14,6 +14,7 @@ namespace EntityModel
         public string PhoneNumber { get; set; }
 
         // Verification
+        public bool IsComplete { get; set; }
         public bool IsVerified { get; set; }
 
         // Location

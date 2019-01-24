@@ -68,20 +68,10 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                     },
                     async (stepContext, cancellationToken) =>
                     {
-                        //var profile = await state.GetOrganizationProfile(stepContext.Context, cancellationToken);
-
-                            // Save the organization to the database.
-                            /*
-                            var organization = new Organization();
-                            organization.Name = profile.Name;
-                            organization.City = profile.Location.City;
-                            organization.State = profile.Location.State;
-                            organization.Zip = profile.Location.Zip;
-                            organization.Gender = profile.Demographic.Gender;
-                            organization.
-                            */
-
-                            // Save the snapshot to the database.
+                        // Mark the organization as complete.
+                        var organization = await state.GetOrganization(stepContext.Context);
+                        organization.IsComplete = true;
+                        await state.SaveDbContext();
 
                         // Send the closing message.
                         await Messages.SendAsync(Phrases.NewOrganization.Closing, stepContext.Context, cancellationToken);

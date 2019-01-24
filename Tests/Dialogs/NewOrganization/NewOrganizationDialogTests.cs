@@ -31,6 +31,9 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.TotalBeds.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
+            // Organization profile should be completed.
+            expectedOrganization.IsComplete = true;
+
             // Validate the results.
             await ValidateProfile(expectedOrganization);
         }
@@ -48,6 +51,9 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
+
+            // Organization profile should be completed.
+            expectedOrganization.IsComplete = true;
 
             // Validate the results.
             await ValidateProfile(expectedOrganization);
@@ -68,6 +74,9 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expectedOrganization.TotalBeds.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
+
+            // Organization profile should be completed.
+            expectedOrganization.IsComplete = true;
 
             // Validate the results.
             await ValidateProfile(expectedOrganization);
@@ -91,6 +100,9 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expectedOrganization.TotalBeds.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
+
+            // Organization profile should be completed.
+            expectedOrganization.IsComplete = true;
 
             // Validate the results.
             await ValidateProfile(expectedOrganization);
@@ -116,6 +128,9 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.AgeRangeEnd.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
+
+            // Organization profile should be completed.
+            expectedOrganization.IsComplete = true;
 
             // Validate the results.
             await ValidateProfile(expectedOrganization);

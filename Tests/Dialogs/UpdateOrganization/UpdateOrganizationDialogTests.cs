@@ -24,6 +24,9 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedSnapshot.OpenBeds.ToString(), Phrases.UpdateOrganization.Closing)
                 .StartTestAsync();
 
+            // Snapshot should be completed.
+            expectedSnapshot.IsComplete = true;
+
             // Validate the results.
             await ValidateProfile(expectedOrganization, expectedSnapshot);
         }

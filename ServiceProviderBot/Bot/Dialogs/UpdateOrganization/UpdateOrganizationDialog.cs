@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity;
@@ -37,6 +36,11 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                 },
                 async (stepContext, cancellationToken) =>
                 {
+                    // Mark the snapshot as complete.
+                    var snapshot = await state.GetSnapshot(stepContext.Context);
+                    snapshot.IsComplete = true;
+                    await state.SaveDbContext();
+
                     // Send the closing message.
                     await Messages.SendAsync(Phrases.UpdateOrganization.Closing, stepContext.Context, cancellationToken);
 

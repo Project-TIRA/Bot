@@ -8,6 +8,8 @@ namespace EntityModel
         [Key]
         public Guid Id { get; set; }
 
+        public bool IsComplete { get; set; }
+
         public Guid OrganizationId { get; set; }
         public Organization Organization { get; set; }
 
