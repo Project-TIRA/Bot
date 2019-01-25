@@ -4,27 +4,27 @@
     "services": [
         {
             "type": "endpoint",
+            "appId": "b89e2ca2-abdf-4263-9d93-1428a3911e49",
+            "appPassword": "fkqANJED30@^{qebvKD013!",
             "endpoint": "https://serviceproviderbot.azurewebsites.net/api/messages",
             "id": "6f35bad0-1949-11e9-9800-4b2d188882df",
-            "name": "Published",
-            "appId": "b89e2ca2-abdf-4263-9d93-1428a3911e49",
-            "appPassword": "fkqANJED30@^{qebvKD013!"
+            "name": "Published"
         },
         {
             "type": "endpoint",
+            "appId": "",
+            "appPassword": "",
             "endpoint": "http://localhost:5001/api/messages",
             "id": "130",
-            "name": "Local",
-            "appId": "b89e2ca2-abdf-4263-9d93-1428a3911e49",
-            "appPassword": "fkqANJED30@^{qebvKD013!"
+            "name": "Local"
         },
         {
             "type": "endpoint",
-            "endpoint": "https://ea0bbc7c.ngrok.io/api/messages",
-            "name": "ngrok",
-            "id": "194",
             "appId": "b89e2ca2-abdf-4263-9d93-1428a3911e49",
-            "appPassword": "fkqANJED30@^{qebvKD013!"
+            "appPassword": "fkqANJED30@^{qebvKD013!",
+            "endpoint": "https://ea0bbc7c.ngrok.io/api/messages",
+            "id": "194",
+            "name": "ngrok"
         }
     ],
     "padlock": "",

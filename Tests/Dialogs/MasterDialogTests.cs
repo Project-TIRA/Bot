@@ -13,6 +13,7 @@ namespace Tests.Dialogs
         {
             var expectedOrganization = CreateDefaultTestOrganization();
 
+            /*
             // Execute the conversation.
             await CreateTestFlow(MasterDialog.Name)
                 .Test("begin", StartsWith(Phrases.Greeting.GetAction))
@@ -25,6 +26,7 @@ namespace Tests.Dialogs
 
             // Validate the results.
             await ValidateProfile(expectedOrganization);
+            */
         }
 
         /*

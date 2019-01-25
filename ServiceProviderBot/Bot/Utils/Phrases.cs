@@ -35,8 +35,12 @@ namespace ServiceProviderBot.Bot.Utils
 
         public static class Greeting
         {
-            public static Activity GetAction = MessageFactory.Text("Welcome! Please choose an option:");
-            public static Activity GetActionRetry = MessageFactory.Text("Please choose an option:");
+            public static Activity Unregistered = MessageFactory.Text("It looks like you haven't registered your organization yet.");
+            public static Activity Registered = MessageFactory.Text("It looks like you have already registered your organization.");
+            public static Activity GetNew = MessageFactory.Text(string.Format($"Send \"{New}\" to register your organization."));
+            public static Activity GetUpdate = MessageFactory.Text(string.Format($"Send \"{Update}\" to update your organization."));
+            public static string New = "new";
+            public static string Update = "update";
         }
 
         public static class Location
