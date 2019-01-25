@@ -88,7 +88,7 @@ namespace ServiceProviderBot.Bot.Utils
         /// <summary>
         /// Removes incomplete conversation data that has expired.
         /// </summary>
-        public async Task<bool> CheckExpiredConversation(ITurnContext context)
+        public async Task<bool> CheckExpiredConversation(ITurnContext context, bool forceExpire)
         {
             // Expires after 6 hours.
             var expiration = DateTime.UtcNow.AddHours(-6);
@@ -97,8 +97,8 @@ namespace ServiceProviderBot.Bot.Utils
             // Check for an incomplete organization.
             var organization = await GetOrganization(context);
 
-            if (organization != null &&!organization.IsComplete &&
-                organization.DateCreated < expiration)
+            if (organization != null && 
+                (forceExpire || !organization.IsComplete && organization.DateCreated < expiration))
             {
                 this.dbContext.Organizations.Remove(organization);
                 didRemove = true;
@@ -107,8 +107,8 @@ namespace ServiceProviderBot.Bot.Utils
             // Check for an incomplete snapshot.
             var snapshot = await GetSnapshot(context);
 
-            if (snapshot != null && !snapshot.IsComplete &&
-                snapshot.Date < expiration)
+            if (snapshot != null &&
+                (forceExpire || !snapshot.IsComplete && snapshot.Date < expiration))
             {
                 this.dbContext.Snapshots.Remove(snapshot);
                 didRemove = true;

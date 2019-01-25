@@ -42,7 +42,8 @@ namespace ServiceProviderBot.Bot.Utils
             public static Activity Registered = MessageFactory.Text("It looks like you have already registered your organization.");
             public static Activity GetNew = MessageFactory.Text($"Send \"{New}\" to register your organization.");
             public static Activity GetUpdate = MessageFactory.Text($"Send \"{Update}\" to update your organization.");
-            
+            public static Activity Unverified = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified.");
+
         }
 
         public static class Location
@@ -54,12 +55,12 @@ namespace ServiceProviderBot.Bot.Utils
         public static class NewOrganization
         {
             public static Activity GetName = MessageFactory.Text("What is the name of your organization?");
-            public static Activity Closing = MessageFactory.Text("Thanks! We will notify you once your organization is verified.");
+            public static Activity Closing = MessageFactory.Text("Thanks! You will be notified once your organization is verified.");
         }
 
         public static class UpdateOrganization
         {
-            public static Activity NothingToUpdate = MessageFactory.Text("Looks like there isn't anything to update!");
+            public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
         }
     }

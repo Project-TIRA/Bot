@@ -37,6 +37,7 @@ namespace Tests.Dialogs
         public async Task UpdateOrganization()
         {
             var expectedOrganization = CreateDefaultTestOrganization();
+            expectedOrganization.IsVerified = true;
             expectedOrganization.TotalBeds = 10;
 
             var expectedSnapshot = new Snapshot(expectedOrganization.Id);
@@ -57,9 +58,21 @@ namespace Tests.Dialogs
         }
 
         [Fact]
+        public async Task UpdateOrganizationPendingVerification()
+        {
+            var initialOrganization = CreateDefaultTestOrganization();
+            initialOrganization.IsVerified = false;
+
+            await CreateTestFlow(MasterDialog.Name, initialOrganization)
+                .Test("update", Phrases.Greeting.Unverified)
+                .StartTestAsync();
+        }
+
+        [Fact]
         public async Task AlreadyRegistered()
         {
             var initialOrganization = CreateDefaultTestOrganization();
+            initialOrganization.IsVerified = true;
 
             // Execute the conversation.
             await CreateTestFlow(MasterDialog.Name, initialOrganization)
@@ -97,6 +110,7 @@ namespace Tests.Dialogs
         public async Task NonKeywordUpdateOrganization()
         {
             var initialOrganization = CreateDefaultTestOrganization();
+            initialOrganization.IsVerified = true;
 
             // Execute the conversation.
             await CreateTestFlow(MasterDialog.Name, initialOrganization)

@@ -111,6 +111,7 @@ namespace Tests.Dialogs
             if (initialOrganization != null)
             {
                 var organization = await this.state.Database.CreateOrganization(context);
+                organization.IsVerified = initialOrganization.IsVerified;
                 organization.Name = initialOrganization.Name;
                 organization.City = initialOrganization.City;
                 organization.State = initialOrganization.State;

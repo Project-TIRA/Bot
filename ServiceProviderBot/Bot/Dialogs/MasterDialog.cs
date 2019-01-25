@@ -3,6 +3,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
 using ServiceProviderBot.Bot.Prompts;
+using ServiceProviderBot.Bot.Utils;
 using System;
 
 namespace ServiceProviderBot.Bot.Dialogs
@@ -19,19 +20,29 @@ namespace ServiceProviderBot.Bot.Dialogs
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    // Send the welcome message.
-                    await Utils.Messages.SendAsync(Utils.Phrases.Greeting.Welcome, stepContext.Context, cancellationToken);
-
-                    // Check if we already have an org for this user.
+                    // Check if we already have an organization for this user.
                     var organization = await state.Database.GetOrganization(stepContext.Context);
                     bool isExistingOrganization = organization != null;
+
+                    // Check if the organization is verified.
+                    if (isExistingOrganization && !organization.IsVerified)
+                    {
+                        // Not verified.
+                        await Messages.SendAsync(Phrases.Greeting.Unverified, stepContext.Context, cancellationToken);
+
+                        // End this dialog to pop it off the stack.
+                        return await stepContext.EndDialogAsync(cancellationToken);
+                    }
+
+                    // Send the welcome message.
+                    await Messages.SendAsync(Phrases.Greeting.Welcome, stepContext.Context, cancellationToken);
 
                     // Check if the initial message is one of the keywords.
                     var incomingMessage = stepContext.Context.Activity.Text;
                     if (!string.IsNullOrEmpty(incomingMessage))
                     {
                         if (!isExistingOrganization &&
-                            string.Equals(incomingMessage, Utils.Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase))
+                            string.Equals(incomingMessage, Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase))
                         {
                             initialTextWasKeyword = true;
 
@@ -39,7 +50,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                             return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                         }
                         else if (isExistingOrganization &&
-                            string.Equals(incomingMessage, Utils.Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
+                            string.Equals(incomingMessage, Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
                         {
                             initialTextWasKeyword = true;
 
@@ -49,11 +60,11 @@ namespace ServiceProviderBot.Bot.Dialogs
                     }
 
                     // Send the registered/unregistered message.
-                    var greeting = isExistingOrganization ? Utils.Phrases.Greeting.Registered : Utils.Phrases.Greeting.Unregistered;
+                    var greeting = isExistingOrganization ? Phrases.Greeting.Registered : Phrases.Greeting.Unregistered;
                     await Utils.Messages.SendAsync(greeting, stepContext.Context, cancellationToken);
 
                     // Prompt for the action.
-                    var prompt = isExistingOrganization ? Utils.Phrases.Greeting.GetUpdate : Utils.Phrases.Greeting.GetNew;
+                    var prompt = isExistingOrganization ? Phrases.Greeting.GetUpdate : Phrases.Greeting.GetNew;
 
                     return await stepContext.PromptAsync(
                         Utils.Prompts.GreetingTextPrompt,
@@ -70,12 +81,12 @@ namespace ServiceProviderBot.Bot.Dialogs
 
                     var choice = (string)stepContext.Result;
 
-                    if (choice == Utils.Phrases.Greeting.New)
+                    if (choice == Phrases.Greeting.New)
                     {
                         // Push the new organization dialog onto the stack.
                         return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                     }
-                    else if (choice == Utils.Phrases.Greeting.Update)
+                    else if (choice == Phrases.Greeting.Update)
                     {
                         // Push the update organization dialog onto the stack.
                         return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);

@@ -32,7 +32,9 @@ namespace ServiceProviderBot.Bot
             // Establish context for our dialog from the turn context.
             DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-            var expired = ShouldReset(turnContext) || await this.state.Database.CheckExpiredConversation(turnContext);
+            var forceExpire = ShouldReset(turnContext);
+
+            var expired = await this.state.Database.CheckExpiredConversation(turnContext, forceExpire);
             if (expired)
             {
                 // Conversation expired, so start a new one.
