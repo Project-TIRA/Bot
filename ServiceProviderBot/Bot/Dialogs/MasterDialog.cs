@@ -1,8 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
-using ServiceProviderBot.Bot.Prompts;
 using ServiceProviderBot.Bot.Utils;
 using System;
 

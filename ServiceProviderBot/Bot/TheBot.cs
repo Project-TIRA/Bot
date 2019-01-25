@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ServiceProviderBot.Bot.Dialogs;
 using Microsoft.Extensions.Configuration;
 using System;
+using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot
 {
@@ -33,9 +34,9 @@ namespace ServiceProviderBot.Bot
             DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
             var forceExpire = ShouldReset(turnContext);
-
             var expired = await this.state.Database.CheckExpiredConversation(turnContext, forceExpire);
-            if (expired)
+
+            if (forceExpire || expired)
             {
                 // Conversation expired, so start a new one.
                 await dialogContext.CancelAllDialogsAsync(cancellationToken);
@@ -56,12 +57,7 @@ namespace ServiceProviderBot.Bot
 
         private bool ShouldReset(ITurnContext context)
         {
-            return !IsProduction() && string.Equals(context.Activity.Text, "reset", StringComparison.OrdinalIgnoreCase);
-        }
-
-        private bool IsProduction()
-        {
-            return this.configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Production";
+            return !this.configuration.IsProduction() && string.Equals(context.Activity.Text, "reset", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

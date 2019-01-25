@@ -4,7 +4,9 @@
 using System;
 using EntityModel;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot
@@ -56,12 +58,33 @@ namespace ServiceProviderBot.Bot
         /// Initializes a new instance of the <see cref="StateAccessors"/> class.
         /// Contains the state management and associated accessor objects.
         /// </summary>
-        public static StateAccessors Create(DbModel dbContext)
+        public static StateAccessors Create(IConfiguration configuration = null)
         {
-            // Create the state management with in-memory storage provider.
-            // TODO: Use CosmosDB if not in-memory.
-            IStorage storage = new MemoryStorage();
+            IStorage storage;
+
+            if (configuration == null || string.IsNullOrEmpty(configuration.CosmosKey()))
+            {
+                // Use the in-memory storage provider.
+                storage = new MemoryStorage();
+            }
+            else
+            {
+                // Use the Cosmos storage provider.
+                storage = new CosmosDbStorage(new CosmosDbStorageOptions
+                {
+                    CosmosDBEndpoint = configuration.CosmosEndpoint(),
+                    AuthKey = configuration.CosmosKey(),
+                    DatabaseId = configuration.CosmosDatabase(),
+                    CollectionId = configuration.CosmosCollection(),
+                });
+            }
+
+            // Create the state management.
             ConversationState conversationState = new ConversationState(storage);
+
+            // Create the database either from the connection string or in-memory.
+            DbModel dbContext = configuration == null ?
+                DbModelFactory.CreateInMemory() : DbModelFactory.Create(configuration.DbModelConnectionString());
                 
             // Create the state accessors.
             return new StateAccessors(conversationState, dbContext);

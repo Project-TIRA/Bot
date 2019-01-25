@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using EntityModel;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -14,6 +15,7 @@ namespace ServiceProviderBot
     public class Startup
     {
         private IConfiguration configuration;
+        private TelemetryClient telemetry;
 
         public Startup(IHostingEnvironment env)
         {
@@ -22,7 +24,9 @@ namespace ServiceProviderBot
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
-            configuration = builder.Build();
+            this.configuration = builder.Build();
+
+            this.telemetry = new TelemetryClient();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -30,24 +34,22 @@ namespace ServiceProviderBot
         public void ConfigureServices(IServiceCollection services)
         {
             // Add the configuration.
-            services.AddSingleton(configuration);
-
-            // Create the database context.
-            var dbContext = DbModelFactory.Create(configuration.GetConnectionString("DbModel"));
+            services.AddSingleton(this.configuration);
 
             // Create and add the state accessors.
-            var state = StateAccessors.Create(dbContext);
+            var state = StateAccessors.Create(this.configuration);
             services.AddSingleton(state);
 
             // Configure the bot.
             services.AddBot<TheBot>(options =>
             {
-                options.CredentialProvider = new ConfigurationCredentialProvider(configuration);
+                options.CredentialProvider = new ConfigurationCredentialProvider(this.configuration);
 
                 // Catches any errors that occur during a conversation turn and logs them.
                 options.OnTurnError = async (context, exception) =>
                 {
                     Debug.WriteLine(exception.Message);
+                    this.telemetry.TrackException(exception);
                     await context.SendActivityAsync("Sorry, it looks like something went wrong.");
                 };
 
