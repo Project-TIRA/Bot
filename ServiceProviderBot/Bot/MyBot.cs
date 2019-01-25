@@ -31,30 +31,11 @@ namespace ServiceProviderBot.Bot
             DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
             DialogTurnResult results = await Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
 
-            if (ShouldBeginConversation(turnContext))
+            if (turnContext.Activity.Type == ActivityTypes.Message &&
+                results.Status == DialogTurnStatus.Empty)
             {
                 await Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, dialogContext, MasterDialog.Name, null, cancellationToken);
             }
-        }
-
-        private bool ShouldBeginConversation(ITurnContext turnContext)
-        {
-            // Process ConversationUpdate activities to know when to the conversation.
-            if (turnContext.Activity.Type == ActivityTypes.ConversationUpdate)
-            {
-                if (turnContext.Activity.MembersAdded != null)
-                {
-                    foreach (var member in turnContext.Activity.MembersAdded)
-                    {
-                        if (member.Id != turnContext.Activity.Recipient.Id)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }
