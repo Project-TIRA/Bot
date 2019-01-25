@@ -4,7 +4,6 @@ using Microsoft.Bot.Schema;
 using System.Threading;
 using System.Threading.Tasks;
 using ServiceProviderBot.Bot.Dialogs;
-using EntityModel;
 
 namespace ServiceProviderBot.Bot
 {
