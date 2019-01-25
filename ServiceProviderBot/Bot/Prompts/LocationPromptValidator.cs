@@ -1,5 +1,4 @@
-﻿using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Dialogs;
+﻿using Microsoft.Bot.Builder.Dialogs;
 using System.Threading.Tasks;
 
 namespace ServiceProviderBot.Bot.Prompts

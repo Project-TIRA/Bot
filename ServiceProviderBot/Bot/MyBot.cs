@@ -22,7 +22,7 @@ namespace ServiceProviderBot.Bot
             this.dialogs = new DialogSet(state.DialogContextAccessor);
 
             // Register prompts.
-            Utils.Prompts.Register(this.dialogs);
+            Utils.Prompts.Register(this.state, this.dialogs);
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))

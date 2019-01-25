@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
@@ -13,31 +14,110 @@ namespace Tests.Dialogs
         {
             var expectedOrganization = CreateDefaultTestOrganization();
 
-            /*
             // Execute the conversation.
             await CreateTestFlow(MasterDialog.Name)
-                .Test("begin", StartsWith(Phrases.Greeting.GetAction))
-                .Test("new", Phrases.NewOrganization.GetName)
+                .Send("new")
+                .AssertReply(Phrases.Greeting.Welcome)
+                .AssertReply(Phrases.NewOrganization.GetName)
                 .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
                 .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
+            // Organization should be completed.
+            expectedOrganization.IsComplete = true;
+
             // Validate the results.
             await ValidateProfile(expectedOrganization);
-            */
         }
 
-        /*
         [Fact]
         public async Task UpdateOrganization()
         {
-            await CreateTestFlow(MasterDialog.Name)
-                .Test("hello", StartsWith(Phrases.Greeting.GetAction))
-                .Test("update", "TODO")
+            var expectedOrganization = CreateDefaultTestOrganization();
+            expectedOrganization.TotalBeds = 10;
+
+            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
+            expectedSnapshot.OpenBeds = 5;
+
+            await CreateTestFlow(MasterDialog.Name, expectedOrganization)
+                .Send("update")
+                .AssertReply(Phrases.Greeting.Welcome)
+                .AssertReply(Phrases.Capacity.GetHousingOpen)
+                .Test("5", Phrases.UpdateOrganization.Closing)
+                .StartTestAsync();
+
+            // Snapshot should be completed.
+            expectedSnapshot.IsComplete = true;
+
+            // Validate the results.
+            await ValidateProfile(expectedOrganization, expectedSnapshot);
+        }
+
+        [Fact]
+        public async Task AlreadyRegistered()
+        {
+            var initialOrganization = CreateDefaultTestOrganization();
+
+            // Execute the conversation.
+            await CreateTestFlow(MasterDialog.Name, initialOrganization)
+                .Send(Phrases.Greeting.New)
+                .AssertReply(Phrases.Greeting.Welcome)
+                .AssertReply(Phrases.Greeting.Registered)
                 .StartTestAsync();
         }
-        */
+
+        [Fact]
+        public async Task Unregistered()
+        {
+            // Execute the conversation.
+            await CreateTestFlow(MasterDialog.Name)
+                .Send(Phrases.Greeting.Update)
+                .AssertReply(Phrases.Greeting.Welcome)
+                .AssertReply(Phrases.Greeting.Unregistered)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task NonKeywordNewOrganization()
+        {
+            // Execute the conversation.
+            await CreateTestFlow(MasterDialog.Name)
+                .Send("hi")
+                .AssertReply(Phrases.Greeting.Welcome)
+                .AssertReply(Phrases.Greeting.Unregistered)
+                .AssertReply(Phrases.Greeting.GetNew)
+                .Test(Phrases.Greeting.New, Phrases.NewOrganization.GetName)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task NonKeywordUpdateOrganization()
+        {
+            var initialOrganization = CreateDefaultTestOrganization();
+
+            // Execute the conversation.
+            await CreateTestFlow(MasterDialog.Name, initialOrganization)
+                .Send("hi")
+                .AssertReply(Phrases.Greeting.Welcome)
+                .AssertReply(Phrases.Greeting.Registered)
+                .AssertReply(Phrases.Greeting.GetUpdate)
+                .Test(Phrases.Greeting.Update, Phrases.UpdateOrganization.NothingToUpdate)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task NonKeywordInvalid()
+        {
+            // Execute the conversation.
+            await CreateTestFlow(MasterDialog.Name)
+                .Send("hi")
+                .AssertReply(Phrases.Greeting.Welcome)
+                .AssertReply(Phrases.Greeting.Unregistered)
+                .AssertReply(Phrases.Greeting.GetNew)
+                .Test("hi", Phrases.Greeting.GetNew)
+                .StartTestAsync();
+        }
     }
 }

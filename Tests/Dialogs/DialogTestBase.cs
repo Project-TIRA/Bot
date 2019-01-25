@@ -37,7 +37,7 @@ namespace Tests.Dialogs
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
 
             // Register prompts.
-            ServiceProviderBot.Bot.Utils.Prompts.Register(this.dialogs);
+            ServiceProviderBot.Bot.Utils.Prompts.Register(this.state, this.dialogs);
         }
 
         protected TestFlow CreateTestFlow(string dialogName, Organization initialOrganization = null, Snapshot initialSnapshot = null)
