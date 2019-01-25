@@ -16,11 +16,14 @@ namespace ServiceProviderBot.Bot.Dialogs
             {
                 async (stepContext, cancellationToken) =>
                 {
+                    // Send the welcome message.
+                    await Utils.Messages.SendAsync(Utils.Phrases.Greeting.Welcome, stepContext.Context, cancellationToken);
+
                     // Check if we already have an org for this user.
                     var organization = await state.GetOrganization(stepContext.Context);
                     
                     // Check if the initial message is one of the keywords.
-                    var incomingMessage = (string)stepContext.Result;
+                    var incomingMessage = stepContext.Context.Activity.Text;
                     if (!string.IsNullOrEmpty(incomingMessage))
                     {
                         if (incomingMessage == Utils.Phrases.Greeting.New && organization == null)
@@ -35,7 +38,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         }
                     }
 
-                    // Send the greeting.
+                    // Send the registered/unregistered message.
                     var greeting = organization == null ? Utils.Phrases.Greeting.Unregistered : Utils.Phrases.Greeting.Registered;
                     await Utils.Messages.SendAsync(greeting, stepContext.Context, cancellationToken);
 
