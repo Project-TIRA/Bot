@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
+using System;
 using System.Threading.Tasks;
 
 namespace ServiceProviderBot.Bot.Prompts
@@ -15,8 +16,8 @@ namespace ServiceProviderBot.Bot.Prompts
 
                 var message = promptContext.Recognized.Value;
 
-                if ((message == Utils.Phrases.Greeting.New && !isExistingOrganization) ||
-                    (message == Utils.Phrases.Greeting.Update && isExistingOrganization))
+                if ((!isExistingOrganization && string.Equals(message, Utils.Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase)) ||
+                    isExistingOrganization && string.Equals(message, Utils.Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
                 {
                     return await Task.FromResult(true);
                 }

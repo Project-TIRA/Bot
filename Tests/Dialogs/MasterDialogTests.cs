@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
@@ -110,6 +111,8 @@ namespace Tests.Dialogs
         [Fact]
         public async Task NonKeywordInvalid()
         {
+            var initialOrganization = CreateDefaultTestOrganization();
+
             // Execute the conversation.
             await CreateTestFlow(MasterDialog.Name)
                 .Send("hi")

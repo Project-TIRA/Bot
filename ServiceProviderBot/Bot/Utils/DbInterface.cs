@@ -1,6 +1,7 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +16,9 @@ namespace ServiceProviderBot.Bot.Utils
             this.dbContext = dbContext;
         }
 
+        /// <summary>
+        /// Saves pending changes to the database.
+        /// </summary>
         public async Task Save()
         {
             await this.dbContext.SaveChangesAsync();
@@ -30,7 +34,7 @@ namespace ServiceProviderBot.Bot.Utils
             var organization = new Organization();
             organization.PhoneNumber = phoneNumber;
             await this.dbContext.Organizations.AddAsync(organization);
-            await this.dbContext.SaveChangesAsync();
+            await Save();
 
             return organization;
         }
@@ -59,7 +63,7 @@ namespace ServiceProviderBot.Bot.Utils
 
             var snapshot = new Snapshot(organization.Id);
             await this.dbContext.Snapshots.AddAsync(snapshot);
-            await this.dbContext.SaveChangesAsync();
+            await Save();
 
             return snapshot;
         }
@@ -79,6 +83,39 @@ namespace ServiceProviderBot.Bot.Utils
 
             // Get the most recent snapshot.
             return organization.Snapshots.OrderByDescending(s => s.Date).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Removes incomplete conversation data that has expired.
+        /// </summary>
+        public async Task<bool> CheckExpiredConversation(ITurnContext context)
+        {
+            // Expires after 6 hours.
+            var expiration = DateTime.UtcNow.AddHours(-6);
+            bool didRemove = false;
+
+            // Check for an incomplete organization.
+            var organization = await GetOrganization(context);
+
+            if (organization != null &&!organization.IsComplete &&
+                organization.DateCreated < expiration)
+            {
+                this.dbContext.Organizations.Remove(organization);
+                didRemove = true;
+            }
+
+            // Check for an incomplete snapshot.
+            var snapshot = await GetSnapshot(context);
+
+            if (snapshot != null && !snapshot.IsComplete &&
+                snapshot.Date < expiration)
+            {
+                this.dbContext.Snapshots.Remove(snapshot);
+                didRemove = true;
+            }
+
+            await Save();
+            return didRemove;
         }
     }
 }

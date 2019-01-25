@@ -3,6 +3,7 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
 using ServiceProviderBot.Bot.Prompts;
+using System;
 
 namespace ServiceProviderBot.Bot.Dialogs
 {
@@ -29,14 +30,16 @@ namespace ServiceProviderBot.Bot.Dialogs
                     var incomingMessage = stepContext.Context.Activity.Text;
                     if (!string.IsNullOrEmpty(incomingMessage))
                     {
-                        if (incomingMessage == Utils.Phrases.Greeting.New && !isExistingOrganization)
+                        if (!isExistingOrganization &&
+                            string.Equals(incomingMessage, Utils.Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase))
                         {
                             initialTextWasKeyword = true;
 
                             // Push the new organization dialog onto the stack.
                             return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                         }
-                        else if (incomingMessage == Utils.Phrases.Greeting.Update && isExistingOrganization)
+                        else if (isExistingOrganization &&
+                            string.Equals(incomingMessage, Utils.Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
                         {
                             initialTextWasKeyword = true;
 
