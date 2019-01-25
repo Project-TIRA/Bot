@@ -22,9 +22,9 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                 async (stepContext, cancellationToken) =>
                 {
                     // Update the organization with the male demographic.
-                    var organization = await state.GetOrganization(stepContext.Context);
+                    var organization = await state.Database.GetOrganization(stepContext.Context);
                     organization.UpdateGender(Gender.Male, (bool)stepContext.Result);
-                    await state.SaveDbContext();
+                    await state.Database.Save();
 
                     // Prompt for working with women.
                     return await stepContext.PromptAsync(
@@ -35,9 +35,9 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                 async (stepContext, cancellationToken) =>
                 {
                     // Update the organization with the female demographic.
-                    var organization = await state.GetOrganization(stepContext.Context);
+                    var organization = await state.Database.GetOrganization(stepContext.Context);
                     organization.UpdateGender(Gender.Female, (bool)stepContext.Result);
-                    await state.SaveDbContext();
+                    await state.Database.Save();
 
                     // Prompt for the age range.
                     return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
@@ -55,9 +55,9 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     }
 
                     // Update the organization with the default age range.
-                    var organization = await state.GetOrganization(stepContext.Context);
+                    var organization = await state.Database.GetOrganization(stepContext.Context);
                     organization.SetDefaultAgeRange();
-                    await state.SaveDbContext();
+                    await state.Database.Save();
 
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);

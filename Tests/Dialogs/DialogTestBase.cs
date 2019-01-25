@@ -77,7 +77,7 @@ namespace Tests.Dialogs
         {
             if (expectedOrganization != null)
             {
-                var actualOrganization = await this.state.GetOrganization(this.turnContext);
+                var actualOrganization = await this.state.Database.GetOrganization(this.turnContext);
                 Assert.Equal(actualOrganization.Name, expectedOrganization.Name);
                 Assert.Equal(actualOrganization.Gender, expectedOrganization.Gender);
                 Assert.Equal(actualOrganization.AgeRangeStart, expectedOrganization.AgeRangeStart);
@@ -87,7 +87,7 @@ namespace Tests.Dialogs
 
             if (expectedSnapshot != null)
             {
-                var actualSnapshot = await this.state.GetSnapshot(this.turnContext);
+                var actualSnapshot = await this.state.Database.GetSnapshot(this.turnContext);
                 Assert.Equal(actualSnapshot.OpenBeds, expectedSnapshot.OpenBeds);
             }
         }
@@ -110,7 +110,7 @@ namespace Tests.Dialogs
             // Create the organization and snapshot if provided.
             if (initialOrganization != null)
             {
-                var organization = await this.state.CreateOrganization(context);
+                var organization = await this.state.Database.CreateOrganization(context);
                 organization.Name = initialOrganization.Name;
                 organization.City = initialOrganization.City;
                 organization.State = initialOrganization.State;
@@ -122,11 +122,11 @@ namespace Tests.Dialogs
 
                 if (initialSnapshot != null)
                 {
-                    var snapshot = await this.state.CreateSnapshot(context);
+                    var snapshot = await this.state.Database.CreateSnapshot(context);
                     snapshot.OpenBeds = initialSnapshot.OpenBeds;
                 }
 
-                await this.state.SaveDbContext();
+                await this.state.Database.Save();
             }
         }
     }

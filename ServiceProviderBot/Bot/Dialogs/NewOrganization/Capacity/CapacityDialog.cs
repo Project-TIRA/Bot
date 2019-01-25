@@ -29,9 +29,9 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
                     }
 
                     // Update the profile with the default housing capacity.
-                    var organization = await state.GetOrganization(stepContext.Context);
+                    var organization = await state.Database.GetOrganization(stepContext.Context);
                     organization.TotalBeds = 0;
-                    await state.SaveDbContext();
+                    await state.Database.Save();
 
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);

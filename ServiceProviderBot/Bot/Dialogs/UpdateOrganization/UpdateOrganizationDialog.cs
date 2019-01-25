@@ -29,7 +29,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                     }
 
                     // Create a new snapshot to be filled in by UpdateOrganization process.
-                    await state.CreateSnapshot(stepContext.Context);
+                    await state.Database.CreateSnapshot(stepContext.Context);
 
                     // Push the update capacity dialog onto the stack.
                     return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
@@ -37,9 +37,9 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                 async (stepContext, cancellationToken) =>
                 {
                     // Mark the snapshot as complete.
-                    var snapshot = await state.GetSnapshot(stepContext.Context);
+                    var snapshot = await state.Database.GetSnapshot(stepContext.Context);
                     snapshot.IsComplete = true;
-                    await state.SaveDbContext();
+                    await state.Database.Save();
 
                     // Send the closing message.
                     await Messages.SendAsync(Phrases.UpdateOrganization.Closing, stepContext.Context, cancellationToken);
@@ -52,7 +52,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
 
         private static async Task<bool> NeedsUpdate(StateAccessors state, ITurnContext context)
         {
-            var organization = await state.GetOrganization(context);
+            var organization = await state.Database.GetOrganization(context);
 
             // Currently the only thing to update is the beds.
             return organization.TotalBeds > 0;

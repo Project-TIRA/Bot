@@ -22,7 +22,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     await Utils.Messages.SendAsync(Utils.Phrases.Greeting.Welcome, stepContext.Context, cancellationToken);
 
                     // Check if we already have an org for this user.
-                    var organization = await state.GetOrganization(stepContext.Context);
+                    var organization = await state.Database.GetOrganization(stepContext.Context);
                     bool isExistingOrganization = organization != null;
 
                     // Check if the initial message is one of the keywords.

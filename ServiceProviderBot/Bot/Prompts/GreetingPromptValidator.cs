@@ -10,7 +10,7 @@ namespace ServiceProviderBot.Bot.Prompts
             return async (promptContext, cancellationToken) =>
             {
                 // Check if the organization exists.
-                var organization = await state.GetOrganization(promptContext.Context);
+                var organization = await state.Database.GetOrganization(promptContext.Context);
                 bool isExistingOrganization = organization != null;
 
                 var message = promptContext.Recognized.Value;

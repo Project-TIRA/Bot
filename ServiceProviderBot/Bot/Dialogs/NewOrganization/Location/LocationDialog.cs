@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
 using Newtonsoft.Json;
 using ServiceProviderBot.Bot.Models.LocationApi;
@@ -64,11 +63,11 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
                             }
                                 
                             // Update the profile with the location.
-                            var organization = await state.GetOrganization(stepContext.Context);
+                            var organization = await state.Database.GetOrganization(stepContext.Context);
                             organization.City = address.Municipality;
                             organization.State = address.CountrySubdivision;
                             organization.Zip = address.PostalCode;
-                            await state.SaveDbContext();
+                            await state.Database.Save();
                         }
                     }
                     catch (Exception e)

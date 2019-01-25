@@ -25,9 +25,9 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Update the profile with the total beds.
-                    var organization = await state.GetOrganization(stepContext.Context);
+                    var organization = await state.Database.GetOrganization(stepContext.Context);
                     organization.TotalBeds = (int)stepContext.Result;
-                    await state.SaveDbContext();
+                    await state.Database.Save();
 
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);

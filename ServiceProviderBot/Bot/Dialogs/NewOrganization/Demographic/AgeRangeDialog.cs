@@ -22,9 +22,9 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                 async (stepContext, cancellationToken) =>
                 {
                     // Update the profile with the youngest age.
-                    var organization = await state.GetOrganization(stepContext.Context);
+                    var organization = await state.Database.GetOrganization(stepContext.Context);
                     organization.AgeRangeStart = (int)stepContext.Result;
-                    await state.SaveDbContext();
+                    await state.Database.Save();
 
                     // Prompt for the oldest age.
                     return await stepContext.PromptAsync(
@@ -34,14 +34,14 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    var organization = await state.GetOrganization(stepContext.Context);
+                    var organization = await state.Database.GetOrganization(stepContext.Context);
 
                     // Validate the numbers.
                     var end = (int)stepContext.Result;
                     if (end < organization.AgeRangeStart)
                     {
                         organization.SetDefaultAgeRange();
-                        await state.SaveDbContext();
+                        await state.Database.Save();
 
                         // Send error message.
                         await Messages.SendAsync(Phrases.AgeRange.GetAgeRangeError, stepContext.Context, cancellationToken);
@@ -52,7 +52,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
 
                     // Update the profile with the oldest age.
                     organization.AgeRangeEnd = (int)stepContext.Result;
-                    await state.SaveDbContext();
+                    await state.Database.Save();
 
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
