@@ -36,7 +36,7 @@ namespace ServiceProviderBot.Bot
             var forceExpire = ShouldReset(turnContext);
             var expired = await this.state.Database.CheckExpiredConversation(turnContext, forceExpire);
 
-            if (forceExpire || expired)
+            if (expired)
             {
                 // Conversation expired, so start a new one.
                 await dialogContext.CancelAllDialogsAsync(cancellationToken);
@@ -46,8 +46,7 @@ namespace ServiceProviderBot.Bot
             {
                 DialogTurnResult results = await Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
 
-                if (turnContext.Activity.Type == ActivityTypes.Message &&
-                    results.Status == DialogTurnStatus.Empty)
+                if (turnContext.Activity.Type == ActivityTypes.Message && results.Status == DialogTurnStatus.Empty)
                 {
                     // Begin a new conversation.
                     await Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, dialogContext, MasterDialog.Name, null, cancellationToken);
@@ -57,7 +56,7 @@ namespace ServiceProviderBot.Bot
 
         private bool ShouldReset(ITurnContext context)
         {
-            return !this.configuration.IsProduction() && string.Equals(context.Activity.Text, "reset", StringComparison.OrdinalIgnoreCase);
+            return /*!this.configuration.IsProduction() &&*/ string.Equals(context.Activity.Text, "reset", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

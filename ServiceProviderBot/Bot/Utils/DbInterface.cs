@@ -115,7 +115,7 @@ namespace ServiceProviderBot.Bot.Utils
             }
 
             await Save();
-            return didRemove;
+            return didRemove || forceExpire;
         }
     }
 }
