@@ -1,12 +1,12 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
+using ServiceProviderBot.Bot.Dialogs;
+using ServiceProviderBot.Bot.Utils;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using ServiceProviderBot.Bot.Dialogs;
-using Microsoft.Extensions.Configuration;
-using System;
-using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot
 {

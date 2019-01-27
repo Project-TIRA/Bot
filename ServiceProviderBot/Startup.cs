@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics;
-using EntityModel;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.SnapshotCollector;
+using Microsoft.ApplicationInsights.AspNetCore;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -8,7 +10,10 @@ using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using ServiceProviderBot.Bot;
+using ServiceProviderBot.Bot.Utils;
+using System;
 
 namespace ServiceProviderBot
 {
@@ -35,6 +40,12 @@ namespace ServiceProviderBot
         {
             // Add the configuration.
             services.AddSingleton(this.configuration);
+
+            // Configure the SnapshotCollector.
+            services.Configure<SnapshotCollectorConfiguration>(configuration.SnapshotCollectorConfiguration());
+
+            // Add the SnapshotCollector telemetry processor.
+            services.AddSingleton<ITelemetryProcessorFactory>(s => new SnapshotCollectorTelemetryProcessorFactory(s));
 
             // Create and add the state accessors.
             var state = StateAccessors.Create(this.configuration);
@@ -69,6 +80,20 @@ namespace ServiceProviderBot
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseBotFramework();
+        }
+    }
+
+    public class SnapshotCollectorTelemetryProcessorFactory : ITelemetryProcessorFactory
+    {
+        private readonly IServiceProvider serviceProvider;
+
+        public SnapshotCollectorTelemetryProcessorFactory(IServiceProvider serviceProvider) =>
+            this.serviceProvider = serviceProvider;
+
+        public ITelemetryProcessor Create(ITelemetryProcessor next)
+        {
+            var snapshotConfigurationOptions = serviceProvider.GetService<IOptions<SnapshotCollectorConfiguration>>();
+            return new SnapshotCollectorTelemetryProcessor(next, snapshotConfigurationOptions.Value);
         }
     }
 }

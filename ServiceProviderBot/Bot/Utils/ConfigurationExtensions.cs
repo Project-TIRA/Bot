@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.ApplicationInsights.SnapshotCollector;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace ServiceProviderBot.Bot.Utils
@@ -33,6 +34,11 @@ namespace ServiceProviderBot.Bot.Utils
         /// <summary>
         /// The name of the setting that contains the CosmosDB collection.
         /// </summary>
+        private const string SnapshotCollectorConfigurationSettingName = "SnapshotCollectorConfiguration";
+
+        /// <summary>
+        /// The name of the setting that contains the CosmosDB collection.
+        /// </summary>
         private const string CosmosCollectionSettingName = "CosmosDb:Collection";
 
         public static string DbModelConnectionString(this IConfiguration configuration)
@@ -63,6 +69,11 @@ namespace ServiceProviderBot.Bot.Utils
         public static string CosmosCollection(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(CosmosCollectionSettingName);
+        }
+
+        public static IConfigurationSection SnapshotCollectorConfiguration(this IConfiguration configuration)
+        {
+            return configuration.GetSection(SnapshotCollectorConfigurationSettingName);
         }
 
         public static bool IsProduction(this IConfiguration configuration)
