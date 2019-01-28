@@ -73,12 +73,12 @@ namespace ServiceProviderBot.Bot.Dialogs
                         return await stepContext.NextAsync(cancellationToken);
                     }
 
-                    if (result == Phrases.Greeting.New)
+                    if (string.Equals(result, Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase))
                     {
                         // Push the new organization dialog onto the stack.
                         return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                     }
-                    else if (result == Phrases.Greeting.Update)
+                    else if (string.Equals(result, Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase))
                     {
                         // Push the update organization dialog onto the stack.
                         return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
