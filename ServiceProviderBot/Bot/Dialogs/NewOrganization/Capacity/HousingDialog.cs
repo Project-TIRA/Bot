@@ -1,5 +1,6 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
@@ -8,9 +9,10 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
     {
         public static string Name = typeof(HousingDialog).FullName;
 
-        /// <summary>Creates a dialog for getting housing capacity.</summary>
-        /// <param name="state">The state accessors.</param>
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
+        public HousingDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
+            : base(state, dialogs, database, configuration) { }
+
+        public override WaterfallDialog GetWaterfallDialog()
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {

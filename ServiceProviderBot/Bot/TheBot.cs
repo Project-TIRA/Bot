@@ -37,6 +37,9 @@ namespace ServiceProviderBot.Bot
             // Establish context for our dialog from the turn context.
             DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
+            // Create the master dialog.
+            var masterDialog = new MasterDialog(this.state, this.dialogs, this.database, this.configuration);
+
             var forceExpire = ShouldReset(turnContext);
             var expired = await this.database.CheckExpiredConversation(turnContext, forceExpire);
 
@@ -44,16 +47,16 @@ namespace ServiceProviderBot.Bot
             {
                 // Conversation expired, so start a new one.
                 await dialogContext.CancelAllDialogsAsync(cancellationToken);
-                await Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, this.database, dialogContext, MasterDialog.Name, null, cancellationToken);
+                await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
             }
             else
             {
-                DialogTurnResult results = await Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, this.database, dialogContext, cancellationToken);
+                DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
 
                 if (turnContext.Activity.Type == ActivityTypes.Message && results.Status == DialogTurnStatus.Empty)
                 {
                     // Begin a new conversation.
-                    await Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, this.database, dialogContext, MasterDialog.Name, null, cancellationToken);
+                    await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
                 }
             }
         }

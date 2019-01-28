@@ -1,6 +1,7 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Prompts;
 using ServiceProviderBot.Bot.Utils;
 using System;
@@ -11,9 +12,12 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
     {
         public static string Name = typeof(FrequencyDialog).FullName;
 
-        /// <summary>Creates a dialog for getting housing capacity.</summary>
+        public FrequencyDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
+            : base(state, dialogs, database, configuration) { }
+
+        /// <summary>Creates a dialog for getting update frequency.</summary>
         /// <param name="state">The state accessors.</param>
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
+        public override WaterfallDialog GetWaterfallDialog()
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {

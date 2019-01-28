@@ -1,5 +1,6 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
@@ -8,7 +9,10 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
     {
         public static string Name = typeof(CapacityDialog).FullName;
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
+        public CapacityDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
+            : base(state, dialogs, database, configuration) { }
+
+        public override WaterfallDialog GetWaterfallDialog()
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -25,7 +29,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
                     if ((bool)stepContext.Result)
                     {
                         // Push the housing dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, HousingDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(stepContext, HousingDialog.Name, null, cancellationToken);
                     }
 
                     // Update the profile with the default housing capacity.

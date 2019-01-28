@@ -1,7 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity;
 using ServiceProviderBot.Bot.Utils;
 
@@ -11,7 +11,10 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
     {
         public static string Name = typeof(UpdateOrganizationDialog).FullName;
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
+        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
+            : base(state, dialogs, database, configuration) { }
+
+        public override WaterfallDialog GetWaterfallDialog()
         {
             // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
@@ -32,7 +35,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                     await database.CreateSnapshot(stepContext.Context);
 
                     // Push the update capacity dialog onto the stack.
-                    return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
+                    return await BeginDialogAsync(stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {

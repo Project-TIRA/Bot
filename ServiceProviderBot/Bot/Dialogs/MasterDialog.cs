@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
 using ServiceProviderBot.Bot.Utils;
@@ -10,7 +11,10 @@ namespace ServiceProviderBot.Bot.Dialogs
     {
         public static string Name = typeof(MasterDialog).FullName;
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
+        public MasterDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
+            : base(state, dialogs, database, configuration) { }
+
+        public override WaterfallDialog GetWaterfallDialog()
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -41,13 +45,13 @@ namespace ServiceProviderBot.Bot.Dialogs
                             string.Equals(incomingMessage, Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase))
                         {
                             // Push the new organization dialog onto the stack.
-                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
+                            return await BeginDialogAsync(stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                         }
                         else if (isExistingOrganization &&
                             string.Equals(incomingMessage, Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
                         {
                             // Push the update organization dialog onto the stack.
-                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
+                            return await BeginDialogAsync(stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
                         }
                     }
 
@@ -76,12 +80,12 @@ namespace ServiceProviderBot.Bot.Dialogs
                     if (string.Equals(result, Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase))
                     {
                         // Push the new organization dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                     }
                     else if (string.Equals(result, Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
                     {
                         // Push the update organization dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
                     }
 
                     return await stepContext.NextAsync(cancellationToken);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
@@ -7,7 +8,10 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
     {
         public static string Name = typeof(AgeRangeDialog).FullName;
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
+        public AgeRangeDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
+            : base(state, dialogs, database, configuration) { }
+
+        public override WaterfallDialog GetWaterfallDialog()
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {

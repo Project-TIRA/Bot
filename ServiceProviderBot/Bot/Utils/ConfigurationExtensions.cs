@@ -34,12 +34,17 @@ namespace ServiceProviderBot.Bot.Utils
         /// <summary>
         /// The name of the setting that contains the CosmosDB collection.
         /// </summary>
-        private const string SnapshotCollectorConfigurationSettingName = "SnapshotCollectorConfiguration";
+        private const string CosmosCollectionSettingName = "CosmosDb:Collection";
+
+        /// <summary>
+        /// The name of the setting that contains the Azure Maps subscription key.
+        /// </summary>
+        private const string AzureMapsKeySettingName = "AzureMapsKey";
 
         /// <summary>
         /// The name of the setting that contains the CosmosDB collection.
         /// </summary>
-        private const string CosmosCollectionSettingName = "CosmosDb:Collection";
+        private const string SnapshotCollectorConfigurationSettingName = "SnapshotCollectorConfiguration";
 
         public static string DbModelConnectionString(this IConfiguration configuration)
         {
@@ -69,6 +74,11 @@ namespace ServiceProviderBot.Bot.Utils
         public static string CosmosCollection(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(CosmosCollectionSettingName);
+        }
+
+        public static string AzureMapsKey(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(AzureMapsKeySettingName);
         }
 
         public static IConfigurationSection SnapshotCollectorConfiguration(this IConfiguration configuration)

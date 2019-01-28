@@ -7,6 +7,7 @@ using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot;
+using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
 using Xunit;
 
@@ -45,7 +46,11 @@ namespace Tests.Dialogs
             {
                 // Initialize the dialog context.
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
-                DialogTurnResult results = await ServiceProviderBot.Bot.Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, this.database, dialogContext, cancellationToken);
+
+                // Create the master dialog.
+                var masterDialog = new MasterDialog(this.state, this.dialogs, this.database, null);
+
+                DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
 
                 this.turnContext = turnContext;
                 this.cancellationToken = cancellationToken;
@@ -56,7 +61,7 @@ namespace Tests.Dialogs
                     // Init at the start of the conversation.
                     await InitDatabase(turnContext, initialOrganization, initialSnapshot);
 
-                    await ServiceProviderBot.Bot.Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, this.database, dialogContext, dialogName, null, cancellationToken);
+                    await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
                 }
             });
         }

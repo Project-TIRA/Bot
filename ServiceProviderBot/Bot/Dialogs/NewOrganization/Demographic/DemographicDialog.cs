@@ -1,5 +1,6 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
@@ -8,7 +9,10 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
     {
         public static string Name = typeof(DemographicDialog).FullName;
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
+        public DemographicDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
+            : base(state, dialogs, database, configuration) { }
+
+        public override WaterfallDialog GetWaterfallDialog()
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -17,7 +21,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     // Prompt for working with men.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.ConfirmPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.Demographic.GetHasDemographicMen },
+                        new PromptOptions { Prompt = Phrases.Demographic.GetHasDemographicMen },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
@@ -30,7 +34,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     // Prompt for working with women.
                     return await stepContext.PromptAsync(
                         Utils.Prompts.ConfirmPrompt,
-                        new PromptOptions { Prompt = Utils.Phrases.Demographic.GetHasDemographicWomen },
+                        new PromptOptions { Prompt = Phrases.Demographic.GetHasDemographicWomen },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
@@ -43,7 +47,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     // Prompt for the age range.
                     return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
                     {
-                        Prompt = Utils.Phrases.Demographic.GetHasDemographicAgeRange
+                        Prompt = Phrases.Demographic.GetHasDemographicAgeRange
                     },
                     cancellationToken);
                 },
@@ -52,7 +56,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
                     if ((bool)stepContext.Result)
                     {
                         // Push the age range dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, AgeRangeDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(stepContext, AgeRangeDialog.Name, null, cancellationToken);
                     }
 
                     // Update the organization with the default age range.

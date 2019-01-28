@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using ServiceProviderBot.Bot.Models.LocationApi;
 using ServiceProviderBot.Bot.Utils;
@@ -15,11 +16,13 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
         public static string Name = typeof(LocationDialog).FullName;
 
         // TODO: Store this outside of the repo.
-        private const string SubscriptionKey = "VHtwi2RwWsjW_xn2M-3Wrn0MPVSWx7aQqseh2HwmNQc";
         private const string MapsApiUriFormat = "https://atlas.microsoft.com/search/fuzzy/json?" +
             "api-version=1.0&countrySet=US&subscription-key={0}&query={1}";
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
+        public LocationDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
+            : base(state, dialogs, database, configuration) { }
+
+        public override WaterfallDialog GetWaterfallDialog()
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -45,6 +48,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
                     {
                         using (HttpClient client = new HttpClient())
                         {
+                            var SubscriptionKey = this.configuration.AzureMapsKey();
                             var queryString = string.Format(MapsApiUriFormat, SubscriptionKey, zipcode);
                             HttpResponseMessage responseMessage = await client.GetAsync(queryString);
 
