@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <ApplicationInsightsResourceId>/subscriptions/1ec36331-5d68-4acf-b0d6-dff45050de48/resourcegroups/ServiceProviderBot/providers/microsoft.insights/components/ServiceProviderBot</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/1ec36331-5d68-4acf-b0d6-dff45050de48/resourcegroups/ServiceProviderBot/providers/microsoft.insights/components/ServiceProviderBot</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,6 +31,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EntityModel\EntityModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 </Project>
