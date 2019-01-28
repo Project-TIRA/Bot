@@ -15,7 +15,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dialogs\NewOrganization\Demographic\" />
-    <Folder Include="Dialogs\NewOrganization\Capacity\" />
     <Folder Include="Dialogs\UpdateOrganization\" />
     <Folder Include="Dialogs\UpdateOrganization\Capacity\" />
   </ItemGroup>

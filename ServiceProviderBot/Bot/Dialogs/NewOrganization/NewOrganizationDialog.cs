@@ -68,6 +68,11 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                     },
                     async (stepContext, cancellationToken) =>
                     {
+                        // Push the update frequency dialog onto the stack.
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, FrequencyDialog.Name, null, cancellationToken);
+                    },
+                    async (stepContext, cancellationToken) =>
+                    {
                         // Mark the organization as complete.
                         var organization = await database.GetOrganization(stepContext.Context);
                         organization.IsComplete = true;

@@ -7,18 +7,19 @@ namespace ServiceProviderBot.Bot.Utils
     {
         public static string ChoicePrompt = "ChoicePrompt";
         public static string ConfirmPrompt = "ConfirmPrompt";
-        public static string IntPrompt = "IntPrompt";
-        public static string TextPrompt = "TextPrompt";
         public static string GreetingTextPrompt = "GreetingTextPrompt";
+        public static string IntPrompt = "IntPrompt";
         public static string LocationTextPrompt = "LocationTextPrompt";
+        public static string TextPrompt = "TextPrompt";
 
         /// <summary>
         /// Adds each prompt to the master dialog set
         /// </summary>
         public static void Register(StateAccessors state, DialogSet dialogs, DbInterface database)
         {
-            dialogs.Add(new ChoicePrompt(ChoicePrompt));
-            dialogs.Add(new ConfirmPrompt(ConfirmPrompt));
+
+            dialogs.Add(new CustomChoicePrompt(ChoicePrompt));
+            dialogs.Add(new CustomConfirmPrompt(ConfirmPrompt));
             dialogs.Add(new NumberPrompt<int>(IntPrompt));
             dialogs.Add(new TextPrompt(TextPrompt));
             dialogs.Add(new TextPrompt(GreetingTextPrompt, GreetingPromptValidator.Create(state, database)));

@@ -17,8 +17,8 @@ namespace ServiceProviderBot.Bot.Prompts
 
                 var message = promptContext.Recognized.Value;
 
-                if ((!isExistingOrganization && string.Equals(message, Utils.Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase)) ||
-                    isExistingOrganization && string.Equals(message, Utils.Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
+                if ((!isExistingOrganization && string.Equals(message, Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase)) ||
+                    isExistingOrganization && string.Equals(message, Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
                 {
                     return await Task.FromResult(true);
                 }

@@ -28,6 +28,7 @@ namespace EntityModel
         public int AgeRangeEnd { get; set; }
 
         // Capacity
+        public Frequency UpdateFrequency { get; set; }
         public int TotalBeds { get; set; }
 
         // Snapshots
@@ -38,6 +39,7 @@ namespace EntityModel
             this.Id = Guid.NewGuid();
             this.DateCreated = DateTime.UtcNow;
             this.IsVerified = false;
+            this.UpdateFrequency = Frequency.Weekly;
 
             this.Snapshots = new List<Snapshot>();
         }

@@ -14,6 +14,7 @@ namespace Tests.Dialogs
         public async Task NewOrganization()
         {
             var expectedOrganization = CreateDefaultTestOrganization();
+            expectedOrganization.UpdateFrequency = Frequency.Daily;
 
             // Execute the conversation.
             await CreateTestFlow(MasterDialog.Name)
@@ -23,7 +24,8 @@ namespace Tests.Dialogs
                 .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
                 .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
-                .Test("no", Phrases.NewOrganization.Closing)
+                .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
+                .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Organization should be completed.

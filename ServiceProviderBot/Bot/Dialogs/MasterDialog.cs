@@ -78,7 +78,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         // Push the new organization dialog onto the stack.
                         return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                     }
-                    else if (string.Equals(result, Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase))
+                    else if (string.Equals(result, Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
                     {
                         // Push the update organization dialog onto the stack.
                         return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
