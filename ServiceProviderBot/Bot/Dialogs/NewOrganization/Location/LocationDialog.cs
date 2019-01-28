@@ -48,7 +48,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
                     {
                         using (HttpClient client = new HttpClient())
                         {
-                            var SubscriptionKey = this.configuration.AzureMapsKey();
+                            var SubscriptionKey = this.configuration.MapsKey();
                             var queryString = string.Format(MapsApiUriFormat, SubscriptionKey, zipcode);
                             HttpResponseMessage responseMessage = await client.GetAsync(queryString);
 

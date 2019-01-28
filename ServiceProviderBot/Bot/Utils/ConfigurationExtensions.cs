@@ -39,7 +39,7 @@ namespace ServiceProviderBot.Bot.Utils
         /// <summary>
         /// The name of the setting that contains the Azure Maps subscription key.
         /// </summary>
-        private const string AzureMapsKeySettingName = "AzureMapsKey";
+        private const string MapsKeySettingName = "MapsKey";
 
         /// <summary>
         /// The name of the setting that contains the CosmosDB collection.
@@ -76,9 +76,9 @@ namespace ServiceProviderBot.Bot.Utils
             return configuration.GetValue<string>(CosmosCollectionSettingName);
         }
 
-        public static string AzureMapsKey(this IConfiguration configuration)
+        public static string MapsKey(this IConfiguration configuration)
         {
-            return configuration.GetValue<string>(AzureMapsKeySettingName);
+            return configuration.GetValue<string>(MapsKeySettingName);
         }
 
         public static IConfigurationSection SnapshotCollectorConfiguration(this IConfiguration configuration)
