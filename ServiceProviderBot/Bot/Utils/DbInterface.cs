@@ -74,7 +74,9 @@ namespace ServiceProviderBot.Bot.Utils
         public async Task<Snapshot> GetSnapshot(ITurnContext context)
         {
             var phoneNumber = context.Activity.From.Id;
-            var organization = await this.dbContext.Organizations.FirstOrDefaultAsync(o => o.PhoneNumber == phoneNumber);
+            var organization = await this.dbContext.Organizations
+                .Include(o => o.Snapshots)
+                .FirstOrDefaultAsync(o => o.PhoneNumber == phoneNumber);
 
             if (organization == null)
             {

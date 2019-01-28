@@ -1,5 +1,6 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
+using ServiceProviderBot.Bot.Utils;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
@@ -7,7 +8,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateCapacityDialog).FullName;
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
         {
             // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
@@ -15,11 +16,11 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has housing.
-                    var organization = await state.Database.GetOrganization(stepContext.Context);
+                    var organization = await database.GetOrganization(stepContext.Context);
                     if (organization.TotalBeds > 0)
                     {
                         // Push the update housing dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, UpdateHousingDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, UpdateHousingDialog.Name, null, cancellationToken);
                     }
 
                     // Skip this step.

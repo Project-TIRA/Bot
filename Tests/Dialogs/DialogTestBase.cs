@@ -6,8 +6,8 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using Microsoft.EntityFrameworkCore;
 using ServiceProviderBot.Bot;
+using ServiceProviderBot.Bot.Utils;
 using Xunit;
 
 namespace Tests.Dialogs
@@ -21,6 +21,7 @@ namespace Tests.Dialogs
 
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
+        protected readonly DbInterface database;
         protected readonly TestAdapter adapter;
 
         protected ITurnContext turnContext;
@@ -30,11 +31,12 @@ namespace Tests.Dialogs
         {
             this.state = StateAccessors.Create();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
+            this.database = new DbInterface(DbModelFactory.CreateInMemory());
             this.adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
 
             // Register prompts.
-            ServiceProviderBot.Bot.Utils.Prompts.Register(this.state, this.dialogs);
+            Prompts.Register(this.state, this.dialogs, this.database);
         }
 
         protected TestFlow CreateTestFlow(string dialogName, Organization initialOrganization = null, Snapshot initialSnapshot = null)
@@ -43,7 +45,7 @@ namespace Tests.Dialogs
             {
                 // Initialize the dialog context.
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
-                DialogTurnResult results = await ServiceProviderBot.Bot.Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, dialogContext, cancellationToken);
+                DialogTurnResult results = await ServiceProviderBot.Bot.Utils.Dialogs.ContinueDialogAsync(this.state, this.dialogs, this.database, dialogContext, cancellationToken);
 
                 this.turnContext = turnContext;
                 this.cancellationToken = cancellationToken;
@@ -54,7 +56,7 @@ namespace Tests.Dialogs
                     // Init at the start of the conversation.
                     await InitDatabase(turnContext, initialOrganization, initialSnapshot);
 
-                    await ServiceProviderBot.Bot.Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, dialogContext, dialogName, null, cancellationToken);
+                    await ServiceProviderBot.Bot.Utils.Dialogs.BeginDialogAsync(this.state, this.dialogs, this.database, dialogContext, dialogName, null, cancellationToken);
                 }
             });
         }
@@ -74,7 +76,7 @@ namespace Tests.Dialogs
         {
             if (expectedOrganization != null)
             {
-                var actualOrganization = await this.state.Database.GetOrganization(this.turnContext);
+                var actualOrganization = await this.database.GetOrganization(this.turnContext);
                 Assert.Equal(actualOrganization.Name, expectedOrganization.Name);
                 Assert.Equal(actualOrganization.Gender, expectedOrganization.Gender);
                 Assert.Equal(actualOrganization.AgeRangeStart, expectedOrganization.AgeRangeStart);
@@ -84,7 +86,7 @@ namespace Tests.Dialogs
 
             if (expectedSnapshot != null)
             {
-                var actualSnapshot = await this.state.Database.GetSnapshot(this.turnContext);
+                var actualSnapshot = await this.database.GetSnapshot(this.turnContext);
                 Assert.Equal(actualSnapshot.OpenBeds, expectedSnapshot.OpenBeds);
             }
         }
@@ -107,7 +109,7 @@ namespace Tests.Dialogs
             // Create the organization and snapshot if provided.
             if (initialOrganization != null)
             {
-                var organization = await this.state.Database.CreateOrganization(context);
+                var organization = await this.database.CreateOrganization(context);
                 organization.IsVerified = initialOrganization.IsVerified;
                 organization.Name = initialOrganization.Name;
                 organization.City = initialOrganization.City;
@@ -120,11 +122,11 @@ namespace Tests.Dialogs
 
                 if (initialSnapshot != null)
                 {
-                    var snapshot = await this.state.Database.CreateSnapshot(context);
+                    var snapshot = await this.database.CreateSnapshot(context);
                     snapshot.OpenBeds = initialSnapshot.OpenBeds;
                 }
 
-                await this.state.Database.Save();
+                await this.database.Save();
             }
         }
     }

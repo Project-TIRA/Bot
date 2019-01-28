@@ -10,16 +10,14 @@ namespace ServiceProviderBot.Bot.Dialogs
     {
         public static string Name = typeof(MasterDialog).FullName;
 
-        private bool initialTextWasKeyword = false;
-
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if we already have an organization for this user.
-                    var organization = await state.Database.GetOrganization(stepContext.Context);
+                    var organization = await database.GetOrganization(stepContext.Context);
                     bool isExistingOrganization = organization != null;
 
                     // Check if the organization is verified.
@@ -42,24 +40,20 @@ namespace ServiceProviderBot.Bot.Dialogs
                         if (!isExistingOrganization &&
                             string.Equals(incomingMessage, Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase))
                         {
-                            initialTextWasKeyword = true;
-
                             // Push the new organization dialog onto the stack.
-                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
+                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                         }
                         else if (isExistingOrganization &&
                             string.Equals(incomingMessage, Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
                         {
-                            initialTextWasKeyword = true;
-
                             // Push the update organization dialog onto the stack.
-                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
+                            return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
                         }
                     }
 
                     // Send the registered/unregistered message.
                     var greeting = isExistingOrganization ? Phrases.Greeting.Registered : Phrases.Greeting.Unregistered;
-                    await Utils.Messages.SendAsync(greeting, stepContext.Context, cancellationToken);
+                    await Messages.SendAsync(greeting, stepContext.Context, cancellationToken);
 
                     // Prompt for the action.
                     var prompt = isExistingOrganization ? Phrases.Greeting.GetUpdate : Phrases.Greeting.GetNew;
@@ -71,23 +65,23 @@ namespace ServiceProviderBot.Bot.Dialogs
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    if (this.initialTextWasKeyword)
+                    var result = stepContext.Result as string;
+
+                    if (result == null)
                     {
-                        // Already handled the choice.
+                        // Initial text was keyword so prompt wasn't needed.
                         return await stepContext.NextAsync(cancellationToken);
                     }
 
-                    var choice = (string)stepContext.Result;
-
-                    if (choice == Phrases.Greeting.New)
+                    if (result == Phrases.Greeting.New)
                     {
                         // Push the new organization dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, NewOrganizationDialog.Name, null, cancellationToken);
                     }
-                    else if (choice == Phrases.Greeting.Update)
+                    else if (result == Phrases.Greeting.Update)
                     {
                         // Push the update organization dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
                     }
 
                     return await stepContext.NextAsync(cancellationToken);

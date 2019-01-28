@@ -19,7 +19,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
         private const string MapsApiUriFormat = "https://atlas.microsoft.com/search/fuzzy/json?" +
             "api-version=1.0&countrySet=US&subscription-key={0}&query={1}";
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -63,11 +63,11 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
                             }
                                 
                             // Update the profile with the location.
-                            var organization = await state.Database.GetOrganization(stepContext.Context);
+                            var organization = await database.GetOrganization(stepContext.Context);
                             organization.City = address.Municipality;
                             organization.State = address.CountrySubdivision;
                             organization.Zip = address.PostalCode;
-                            await state.Database.Save();
+                            await database.Save();
                         }
                     }
                     catch (Exception e)

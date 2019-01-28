@@ -7,7 +7,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateHousingDialog).FullName;
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
         {
             // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
@@ -22,7 +22,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    var organization = await state.Database.GetOrganization(stepContext.Context);              
+                    var organization = await database.GetOrganization(stepContext.Context);              
 
                     // Validate the numbers.
                     var open = (int)stepContext.Result;
@@ -37,9 +37,9 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     }
 
                     // Update the profile with the open beds.
-                    var snapshot = await state.Database.GetSnapshot(stepContext.Context);
+                    var snapshot = await database.GetSnapshot(stepContext.Context);
                     snapshot.OpenBeds = (int)stepContext.Result;
-                    await state.Database.Save();
+                    await database.Save();
 
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);

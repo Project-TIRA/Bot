@@ -15,13 +15,13 @@ namespace ServiceProviderBot.Bot.Utils
         /// <summary>
         /// Adds each prompt to the master dialog set
         /// </summary>
-        public static void Register(StateAccessors state, DialogSet dialogs)
+        public static void Register(StateAccessors state, DialogSet dialogs, DbInterface database)
         {
             dialogs.Add(new ChoicePrompt(ChoicePrompt));
             dialogs.Add(new ConfirmPrompt(ConfirmPrompt));
             dialogs.Add(new NumberPrompt<int>(IntPrompt));
             dialogs.Add(new TextPrompt(TextPrompt));
-            dialogs.Add(new TextPrompt(GreetingTextPrompt, GreetingPromptValidator.Create(state)));
+            dialogs.Add(new TextPrompt(GreetingTextPrompt, GreetingPromptValidator.Create(state, database)));
             dialogs.Add(new TextPrompt(LocationTextPrompt, LocationPromptValidator.Create()));
         }
     }

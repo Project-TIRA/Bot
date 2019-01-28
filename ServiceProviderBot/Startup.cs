@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Utils;
 using System;
+using EntityModel;
 
 namespace ServiceProviderBot
 {
@@ -46,6 +47,9 @@ namespace ServiceProviderBot
 
             // Add the SnapshotCollector telemetry processor.
             services.AddSingleton<ITelemetryProcessorFactory>(s => new SnapshotCollectorTelemetryProcessorFactory(s));
+
+            // Add the database interface.
+            services.AddScoped(_ => new DbInterface(DbModelFactory.Create(configuration.DbModelConnectionString())));
 
             // Create and add the state accessors.
             var state = StateAccessors.Create(this.configuration);

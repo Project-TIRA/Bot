@@ -35,23 +35,14 @@ namespace ServiceProviderBot.Bot
         public ConversationState ConversationState { get; }
 
         /// <summary>
-        /// Gets the <see cref="DbInterface"/> for accessing the database.
-        /// </summary>
-        /// <value>The <see cref="DbInterface"/> object.</value>
-        public DbInterface Database { get; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="StateAccessors"/> class.
         /// Contains the state management and associated accessor objects.
         /// </summary>
         /// <param name="conversationState">The state object that stores the conversation state.</param>
-        /// <param name="conversationState">The database object for accessing the database.</param>
-        public StateAccessors(ConversationState conversationState, DbModel dbContext)
+        public StateAccessors(ConversationState conversationState)
         {
             this.ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
             this.DialogContextAccessor = conversationState.CreateProperty<DialogState>(DialogContextName);
-
-            this.Database = new DbInterface(dbContext ?? throw new ArgumentNullException(nameof(dbContext)));
         }
 
         /// <summary>
@@ -79,15 +70,8 @@ namespace ServiceProviderBot.Bot
                 });
             }
 
-            // Create the state management.
-            ConversationState conversationState = new ConversationState(storage);
-
-            // Create the database either from the connection string or in-memory.
-            DbModel dbContext = configuration == null ?
-                DbModelFactory.CreateInMemory() : DbModelFactory.Create(configuration.DbModelConnectionString());
-                
-            // Create the state accessors.
-            return new StateAccessors(conversationState, dbContext);
+            // Create the state management and accessors.
+            return new StateAccessors(new ConversationState(storage));
         }
     }
 }

@@ -10,7 +10,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
 
         /// <summary>Creates a dialog for getting housing capacity.</summary>
         /// <param name="state">The state accessors.</param>
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -25,9 +25,9 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Update the profile with the total beds.
-                    var organization = await state.Database.GetOrganization(stepContext.Context);
+                    var organization = await database.GetOrganization(stepContext.Context);
                     organization.TotalBeds = (int)stepContext.Result;
-                    await state.Database.Save();
+                    await database.Save();
 
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);

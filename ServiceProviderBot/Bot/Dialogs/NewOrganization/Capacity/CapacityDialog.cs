@@ -8,7 +8,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
     {
         public static string Name = typeof(CapacityDialog).FullName;
 
-        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs)
+        public override WaterfallDialog Init(StateAccessors state, DialogSet dialogs, DbInterface database)
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
@@ -25,13 +25,13 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
                     if ((bool)stepContext.Result)
                     {
                         // Push the housing dialog onto the stack.
-                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, stepContext, HousingDialog.Name, null, cancellationToken);
+                        return await Utils.Dialogs.BeginDialogAsync(state, dialogs, database, stepContext, HousingDialog.Name, null, cancellationToken);
                     }
 
                     // Update the profile with the default housing capacity.
-                    var organization = await state.Database.GetOrganization(stepContext.Context);
+                    var organization = await database.GetOrganization(stepContext.Context);
                     organization.TotalBeds = 0;
-                    await state.Database.Save();
+                    await database.Save();
 
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);
