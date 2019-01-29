@@ -20,9 +20,9 @@
         },
         {
             "type": "endpoint",
-            "appId": "b89e2ca2-abdf-4263-9d93-1428a3911e49",
-            "appPassword": "fkqANJED30@^{qebvKD013!",
-            "endpoint": "https://ea0bbc7c.ngrok.io/api/messages",
+            "appId": "",
+            "appPassword": "",
+            "endpoint": "https://f8f480bb.ngrok.io/api/messages",
             "id": "194",
             "name": "ngrok"
         }

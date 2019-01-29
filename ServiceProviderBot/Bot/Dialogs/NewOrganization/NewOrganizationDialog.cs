@@ -32,7 +32,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                     },
                     async (stepContext, cancellationToken) =>
                     {
-                        // Update the profile with the name.
+                        // Update the organization with the name.
                         var organization = await database.GetOrganization(stepContext.Context);
                         organization.Name = (string)stepContext.Result;
                         await database.Save();

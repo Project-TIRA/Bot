@@ -1,5 +1,4 @@
-﻿using Microsoft.ApplicationInsights.SnapshotCollector;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using System;
 
 namespace ServiceProviderBot.Bot.Utils

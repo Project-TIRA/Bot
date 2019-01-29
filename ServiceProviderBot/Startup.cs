@@ -66,6 +66,12 @@ namespace ServiceProviderBot
                     Debug.WriteLine(exception.Message);
                     this.telemetry.TrackException(exception);
                     await context.SendActivityAsync("Sorry, it looks like something went wrong.");
+
+                    if (!configuration.IsProduction())
+                    {
+                        await context.SendActivityAsync(exception.Message);
+                        await context.SendActivityAsync(exception.StackTrace);
+                    }
                 };
 
                 // Auto-save the state after each turn.

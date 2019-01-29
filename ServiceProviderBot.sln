@@ -8,6 +8,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityModel", "EntityModel\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBot", "ServiceProviderBot\ServiceProviderBot.csproj", "{B361B495-77F1-4756-ACA2-B86BCA4536DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotTrigger", "BotTrigger\BotTrigger.csproj", "{BC79A314-66C2-4132-860E-3E0F3293134E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotTriggerHarness", "BotTriggerHarness\BotTriggerHarness.csproj", "{693A06D1-289E-4573-8621-862F41B5EFAF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +30,14 @@ Global
 		{B361B495-77F1-4756-ACA2-B86BCA4536DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B361B495-77F1-4756-ACA2-B86BCA4536DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B361B495-77F1-4756-ACA2-B86BCA4536DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC79A314-66C2-4132-860E-3E0F3293134E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC79A314-66C2-4132-860E-3E0F3293134E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC79A314-66C2-4132-860E-3E0F3293134E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC79A314-66C2-4132-860E-3E0F3293134E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{693A06D1-289E-4573-8621-862F41B5EFAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{693A06D1-289E-4573-8621-862F41B5EFAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{693A06D1-289E-4573-8621-862F41B5EFAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{693A06D1-289E-4573-8621-862F41B5EFAF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
