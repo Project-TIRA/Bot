@@ -48,8 +48,8 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
                     {
                         using (HttpClient client = new HttpClient())
                         {
-                            var SubscriptionKey = this.configuration.MapsKey();
-                            var queryString = string.Format(MapsApiUriFormat, SubscriptionKey, zipcode);
+                            var subscriptionKey = this.configuration.MapsKey();
+                            var queryString = string.Format(MapsApiUriFormat, subscriptionKey, zipcode);
                             HttpResponseMessage responseMessage = await client.GetAsync(queryString);
 
                             if (!responseMessage.IsSuccessStatusCode)

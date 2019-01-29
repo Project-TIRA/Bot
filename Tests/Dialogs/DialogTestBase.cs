@@ -6,6 +6,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
@@ -24,6 +25,7 @@ namespace Tests.Dialogs
         protected readonly DialogSet dialogs;
         protected readonly DbInterface database;
         protected readonly TestAdapter adapter;
+        private readonly IConfiguration configuration;
 
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;
@@ -35,6 +37,8 @@ namespace Tests.Dialogs
             this.database = new DbInterface(DbModelFactory.CreateInMemory());
             this.adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
+
+            this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
 
             // Register prompts.
             Prompts.Register(this.state, this.dialogs, this.database);
@@ -48,7 +52,7 @@ namespace Tests.Dialogs
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 // Create the master dialog.
-                var masterDialog = new MasterDialog(this.state, this.dialogs, this.database, null);
+                var masterDialog = new MasterDialog(this.state, this.dialogs, this.database, this.configuration);
 
                 DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
 

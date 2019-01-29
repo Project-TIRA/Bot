@@ -13,11 +13,10 @@ namespace ServiceProviderBot.Bot
 {
     public class TheBot : IBot
     {
-        private readonly IConfiguration configuration;
-
         private readonly StateAccessors state;
         private readonly DialogSet dialogs;
         private readonly DbInterface database;
+        private readonly IConfiguration configuration;
 
         public TheBot(IConfiguration configuration, StateAccessors state, DbInterface database)
         {
