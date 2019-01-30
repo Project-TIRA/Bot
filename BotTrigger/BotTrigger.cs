@@ -1,5 +1,6 @@
 using EntityModel;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -48,6 +50,51 @@ namespace BotTrigger
                 {
                     try
                     {
+                        MicrosoftAppCredentials.TrustServiceUrl(ServiceUrl);
+                        var creds = new MicrosoftAppCredentials("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
+                        var connector = new ConnectorClient(new Uri(ServiceUrl), creds);
+
+                        List<ChannelAccount> participants = new List<ChannelAccount>();
+                        participants.Add(new ChannelAccount(organization.PhoneNumber));
+
+                        var botAccount = new ChannelAccount(BotPhoneNumber, BotPhoneNumber);
+                        var orgAccount = new ChannelAccount(organization.PhoneNumber, organization.PhoneNumber);
+
+                        ConversationParameters parameters = new ConversationParameters(false, botAccount, participants);
+
+                        ConversationResourceResponse conversationId = null;
+                        try
+                        {
+                            conversationId = await connector.Conversations.CreateConversationAsync(parameters);
+                        }
+                        catch (Exception ex)
+                        {
+                            var a = ex;
+                        }
+
+                        IMessageActivity message = Activity.CreateMessageActivity();
+                        message.From = botAccount;
+                        message.Recipient = orgAccount;
+                        message.Conversation = new ConversationAccount(id: conversationId?.Id);
+                        message.ChannelId = "sms";
+                        message.Text = "HI!!!";
+                        //message.Locale = "en-Us";
+
+                        await connector.Conversations.SendToConversationAsync((Activity)message);
+
+                        /*
+                        var credentialProvider = new SimpleCredentialProvider("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
+                        var adapter = new BotFrameworkAdapter(credentialProvider);
+
+                        var convo = new ConversationReference();
+
+                        await adapter.ContinueConversationAsync(organization.PhoneNumber, proMsg.Conversation, async (context, token) =>
+                        {
+                            await context.SendActivityAsync(proMsg.MessagePayload);
+                        }, new System.Threading.CancellationToken());
+
+
+
                         var userAccount = new ChannelAccount() { Id = organization.PhoneNumber };
                         var botAccount = new ChannelAccount() { Id = BotPhoneNumber };
 
@@ -55,12 +102,15 @@ namespace BotTrigger
                         var account = new MicrosoftAppCredentials("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
                         var connector = new ConnectorClient(new Uri(ServiceUrl), account);
 
+
+
                         IMessageActivity message = Activity.CreateMessageActivity();
                         message.Text = "Message sent from console application!!!";
 
                         var conversation = await connector.Conversations.CreateDirectConversationAsync(userAccount, botAccount);
                         var response = await connector.Conversations.SendToConversationAsync((Activity)message);
                         Console.WriteLine($"response:{response.Id}");
+                        */
                     }
                     catch (Exception e)
                     {
