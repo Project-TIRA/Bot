@@ -40,6 +40,7 @@ namespace BotTrigger
 
         public static async Task Send(string connectionString)
         {
+            /*
             using (var dbContext = DbModelFactory.Create(connectionString))
             {
                 var organizations = await dbContext.Organizations
@@ -48,6 +49,14 @@ namespace BotTrigger
 
                 foreach (var organization in organizations)
                 {
+                */
+
+            var organization = new Organization
+            {
+                PhoneNumber = "+17605004495"
+            };
+
+
                     try
                     {
                         MicrosoftAppCredentials.TrustServiceUrl(ServiceUrl);
@@ -60,12 +69,26 @@ namespace BotTrigger
                         var botAccount = new ChannelAccount(BotPhoneNumber, BotPhoneNumber);
                         var orgAccount = new ChannelAccount(organization.PhoneNumber, organization.PhoneNumber);
 
-                        ConversationParameters parameters = new ConversationParameters(false, botAccount, participants);
+                        var activity = new Activity()
+                        {
+                            Type = ActivityTypes.Message,
+                            Recipient = orgAccount,
+                            From = botAccount,
+                            Text = "TEST Create Conversation"
+                        };
+
+                        var param = new ConversationParameters()
+                        {
+                            Members = new ChannelAccount[] { orgAccount },
+                            Bot = botAccount,
+                            Activity = activity
+                        };
 
                         ConversationResourceResponse conversationId = null;
+
                         try
                         {
-                            conversationId = await connector.Conversations.CreateConversationAsync(parameters);
+                            conversationId = await connector.Conversations.CreateConversationAsync(param);
                         }
                         catch (Exception ex)
                         {
@@ -116,8 +139,10 @@ namespace BotTrigger
                     {
                         Console.WriteLine($"{e.Message}{Environment.NewLine}{e.StackTrace}");
                     }
-                }
+            /*
+                }              
             }
+            */
         }
     }
 }
