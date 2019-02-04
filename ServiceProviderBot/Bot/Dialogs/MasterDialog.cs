@@ -35,7 +35,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     }
 
                     // Send the welcome message.
-                    //await Messages.SendAsync(Phrases.Greeting.Welcome, stepContext.Context, cancellationToken);
+                    await Messages.SendAsync(Phrases.Greeting.Welcome, stepContext.Context, cancellationToken);
 
                     // Check if the initial message is one of the keywords.
                     var incomingMessage = stepContext.Context.Activity.Text;
@@ -56,8 +56,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                     }
 
                     // Send the registered/unregistered message.
-                    //var greeting = isExistingOrganization ? Phrases.Greeting.Registered : Phrases.Greeting.Unregistered;
-                    //await Messages.SendAsync(greeting, stepContext.Context, cancellationToken);
+                    var greeting = isExistingOrganization ? Phrases.Greeting.Registered : Phrases.Greeting.Unregistered;
+                    await Messages.SendAsync(greeting, stepContext.Context, cancellationToken);
 
                     // Prompt for the action.
                     var prompt = isExistingOrganization ? Phrases.Greeting.GetUpdate : Phrases.Greeting.GetNew;
