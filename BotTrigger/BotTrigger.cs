@@ -60,80 +60,113 @@ namespace BotTrigger
                     try
                     {
                         MicrosoftAppCredentials.TrustServiceUrl(ServiceUrl);
-                        var creds = new MicrosoftAppCredentials("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
-                        var connector = new ConnectorClient(new Uri(ServiceUrl), creds);
 
-                        List<ChannelAccount> participants = new List<ChannelAccount>();
-                        participants.Add(new ChannelAccount(organization.PhoneNumber));
+                var userAccount = new ChannelAccount() { Id = organization.PhoneNumber };
+                var botAccount = new ChannelAccount() { Id = BotPhoneNumber };
 
-                        var botAccount = new ChannelAccount(BotPhoneNumber, BotPhoneNumber);
-                        var orgAccount = new ChannelAccount(organization.PhoneNumber, organization.PhoneNumber);
+                var creds = new MicrosoftAppCredentials("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
 
-                        var activity = new Activity()
-                        {
-                            Type = ActivityTypes.Message,
-                            Recipient = orgAccount,
-                            From = botAccount,
-                            Text = "TEST Create Conversation"
-                        };
 
-                        var param = new ConversationParameters()
-                        {
-                            Members = new ChannelAccount[] { orgAccount },
-                            Bot = botAccount,
-                            Activity = activity
-                        };
+                /*
+                var creds = new MicrosoftAppCredentials("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
+                var connector = new ConnectorClient(new Uri(ServiceUrl), creds);
 
-                        ConversationResourceResponse conversationId = null;
+                List<ChannelAccount> participants = new List<ChannelAccount>();
+                participants.Add(new ChannelAccount(organization.PhoneNumber));
 
-                        try
-                        {
-                            conversationId = await connector.Conversations.CreateConversationAsync(param);
-                        }
-                        catch (Exception ex)
-                        {
-                            var a = ex;
-                        }
+                var botAccount = new ChannelAccount(BotPhoneNumber, BotPhoneNumber);
+                var orgAccount = new ChannelAccount(organization.PhoneNumber, organization.PhoneNumber);
 
-                        IMessageActivity message = Activity.CreateMessageActivity();
-                        message.From = botAccount;
-                        message.Recipient = orgAccount;
-                        message.Conversation = new ConversationAccount(id: conversationId?.Id);
-                        message.ChannelId = "sms";
-                        message.Text = "HI!!!";
-                        //message.Locale = "en-Us";
+                var activity = new Activity()
+                {
+                    Type = ActivityTypes.Message,
+                    Recipient = orgAccount,
+                    From = botAccount,
+                    Text = "TEST Create Conversation"
+                };
 
-                        await connector.Conversations.SendToConversationAsync((Activity)message);
+                var param = new ConversationParameters()
+                {
+                    Members = new ChannelAccount[] { orgAccount },
+                    Bot = botAccount,
+                    Activity = activity
+                };
 
-                        /*
-                        var credentialProvider = new SimpleCredentialProvider("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
+                ConversationResourceResponse conversationId = null;
+
+                try
+                {
+                    conversationId = await connector.Conversations.CreateConversationAsync(param);
+                }
+                catch (Exception ex)
+                {
+                    var a = ex;
+                }
+
+                IMessageActivity message = Activity.CreateMessageActivity();
+                message.From = botAccount;
+                message.Recipient = orgAccount;
+                message.Conversation = new ConversationAccount(id: conversationId?.Id);
+                message.ChannelId = "sms";
+                message.Text = "HI!!!";
+                //message.Locale = "en-Us";
+
+                await connector.Conversations.SendToConversationAsync((Activity)message);
+                */
+
+
+
+
+                var credentialProvider = new SimpleCredentialProvider("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
                         var adapter = new BotFrameworkAdapter(credentialProvider);
 
-                        var convo = new ConversationReference();
+                var convoAccount = new ConversationAccount(id: "3d615eb0-24b6-11e9-a3e0-59b9a7e71098|livechat");
 
-                        await adapter.ContinueConversationAsync(organization.PhoneNumber, proMsg.Conversation, async (context, token) =>
+                var activity = new Activity()
+                {
+                    Type = ActivityTypes.Message,
+                    Recipient = userAccount,
+                    From = botAccount,
+                    Text = "TEST Create Conversation"
+                };
+
+                var param = new ConversationParameters()
+                {
+                    Members = new ChannelAccount[] { userAccount },
+                    Bot = botAccount,
+                    Activity = activity
+                };
+
+
+                //var convo = new ConversationReference("1548870074430.5957731639975665.8", userAccount, botAccount, convoAccount, "sms", ServiceUrl);
+
+                        await adapter.CreateConversationAsync("sms", ServiceUrl, creds, param, async (context, token) =>
                         {
-                            await context.SendActivityAsync(proMsg.MessagePayload);
+                            await context.SendActivityAsync("YES!!!");
                         }, new System.Threading.CancellationToken());
+                        
 
-
-
+                        
+                        /*
                         var userAccount = new ChannelAccount() { Id = organization.PhoneNumber };
                         var botAccount = new ChannelAccount() { Id = BotPhoneNumber };
 
-                        MicrosoftAppCredentials.TrustServiceUrl(ServiceUrl);
                         var account = new MicrosoftAppCredentials("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
                         var connector = new ConnectorClient(new Uri(ServiceUrl), account);
 
-
+                        var conversation = connector.Conversations.CreateDirectConversation(botAccount, userAccount);
 
                         IMessageActivity message = Activity.CreateMessageActivity();
-                        message.Text = "Message sent from console application!!!";
+                        message.From = botAccount;
+                        message.Recipient = userAccount;
+                        message.Conversation = new ConversationAccount(id: conversation.Id);
+                        message.ChannelId = "sms";
+                        message.Text = "HI!!!";
 
-                        var conversation = await connector.Conversations.CreateDirectConversationAsync(userAccount, botAccount);
                         var response = await connector.Conversations.SendToConversationAsync((Activity)message);
                         Console.WriteLine($"response:{response.Id}");
                         */
+                        
                     }
                     catch (Exception e)
                     {

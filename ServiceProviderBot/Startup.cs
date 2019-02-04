@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.SnapshotCollector;
-using Microsoft.ApplicationInsights.AspNetCore;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,8 +25,8 @@ namespace ServiceProviderBot
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: false, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
             this.configuration = builder.Build();
 
@@ -41,12 +39,6 @@ namespace ServiceProviderBot
         {
             // Add the configuration.
             services.AddSingleton(this.configuration);
-
-            // Configure the SnapshotCollector.
-            services.Configure<SnapshotCollectorConfiguration>(configuration.SnapshotCollectorConfiguration());
-
-            // Add the SnapshotCollector telemetry processor.
-            services.AddSingleton<ITelemetryProcessorFactory>(s => new SnapshotCollectorTelemetryProcessorFactory(s));
 
             // Add the database interface.
             services.AddScoped(_ => new DbInterface(DbModelFactory.Create(configuration.DbModelConnectionString())));
@@ -90,20 +82,6 @@ namespace ServiceProviderBot
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseBotFramework();
-        }
-    }
-
-    public class SnapshotCollectorTelemetryProcessorFactory : ITelemetryProcessorFactory
-    {
-        private readonly IServiceProvider serviceProvider;
-
-        public SnapshotCollectorTelemetryProcessorFactory(IServiceProvider serviceProvider) =>
-            this.serviceProvider = serviceProvider;
-
-        public ITelemetryProcessor Create(ITelemetryProcessor next)
-        {
-            var snapshotConfigurationOptions = serviceProvider.GetService<IOptions<SnapshotCollectorConfiguration>>();
-            return new SnapshotCollectorTelemetryProcessor(next, snapshotConfigurationOptions.Value);
         }
     }
 }
