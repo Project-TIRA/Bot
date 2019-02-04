@@ -6,14 +6,24 @@ namespace ServiceProviderBot.Bot.Utils
     public static class ConfigurationExtensions
     {
         /// <summary>
+        /// The name of the app setting for the environment.
+        /// </summary>
+        private const string EnvironmentSettingName = "Environment";
+
+        /// <summary>
         /// The name of the app setting for the database connection string.
         /// </summary>
         private const string DbModelConnectionStringSettingName = "DbModel";
 
         /// <summary>
-        /// The name of the app setting for the environment.
+        /// The name of the app setting for the MicrosoftAppId.
         /// </summary>
-        private const string EnvironmentSettingName = "Environment";
+        private const string MicrosoftAppIdSettingName = "MicrosoftAppId";
+
+        /// <summary>
+        /// The name of the app setting for the MicrosoftAppPassword.
+        /// </summary>
+        private const string MicrosoftAppPasswordSettingName = "MicrosoftAppPassword";
 
         /// <summary>
         /// The name of the setting that contains the CosmosDB endpoint.
@@ -45,14 +55,24 @@ namespace ServiceProviderBot.Bot.Utils
         /// </summary>
         private const string SnapshotCollectorConfigurationSettingName = "SnapshotCollectorConfiguration";
 
-        public static string DbModelConnectionString(this IConfiguration configuration)
-        {
-            return configuration.GetConnectionString(DbModelConnectionStringSettingName);
-        }
-
         public static string Environment(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(EnvironmentSettingName);
+        }
+
+        public static string MicrosoftAppId(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(MicrosoftAppIdSettingName);
+        }
+
+        public static string MicrosoftAppPassword(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(MicrosoftAppPasswordSettingName);
+        }
+
+        public static string DbModelConnectionString(this IConfiguration configuration)
+        {
+            return configuration.GetConnectionString(DbModelConnectionStringSettingName);
         }
 
         public static Uri CosmosEndpoint(this IConfiguration configuration)

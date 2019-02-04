@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -8,11 +7,10 @@ using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Utils;
-using System;
 using EntityModel;
+using Microsoft.Bot.Connector.Authentication;
 
 namespace ServiceProviderBot
 {
@@ -50,7 +48,10 @@ namespace ServiceProviderBot
             // Configure the bot.
             services.AddBot<TheBot>(options =>
             {
-                options.CredentialProvider = new ConfigurationCredentialProvider(this.configuration);
+                // Load the configuration settings.
+                options.CredentialProvider = new SimpleCredentialProvider(
+                   this.configuration.MicrosoftAppId(),
+                   this.configuration.MicrosoftAppPassword());
 
                 // Catches any errors that occur during a conversation turn and logs them.
                 options.OnTurnError = async (context, exception) =>
