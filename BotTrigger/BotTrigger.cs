@@ -116,11 +116,11 @@ namespace BotTrigger
 
 
 
-
+                /*
                 var credentialProvider = new SimpleCredentialProvider("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
                         var adapter = new BotFrameworkAdapter(credentialProvider);
 
-                var convoAccount = new ConversationAccount(id: "3d615eb0-24b6-11e9-a3e0-59b9a7e71098|livechat");
+                var convoAccount = new ConversationAccount(id: userAccount.Id);
 
                 var activity = new Activity()
                 {
@@ -138,34 +138,27 @@ namespace BotTrigger
                 };
 
 
-                //var convo = new ConversationReference("1548870074430.5957731639975665.8", userAccount, botAccount, convoAccount, "sms", ServiceUrl);
+                var convo = new ConversationReference("1548870074430.5957731639975665.8", userAccount, botAccount, convoAccount, "sms", ServiceUrl);
 
-                        await adapter.CreateConversationAsync("sms", ServiceUrl, creds, param, async (context, token) =>
+                        await adapter.ContinueConversationAsync("ServiceProviderBot", convo, async (context, token) =>
                         {
                             await context.SendActivityAsync("YES!!!");
                         }, new System.Threading.CancellationToken());
+                      */  
                         
 
+                        var connector = new ConnectorClient(new Uri(ServiceUrl), creds);
                         
-                        /*
-                        var userAccount = new ChannelAccount() { Id = organization.PhoneNumber };
-                        var botAccount = new ChannelAccount() { Id = BotPhoneNumber };
-
-                        var account = new MicrosoftAppCredentials("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
-                        var connector = new ConnectorClient(new Uri(ServiceUrl), account);
-
-                        var conversation = connector.Conversations.CreateDirectConversation(botAccount, userAccount);
-
                         IMessageActivity message = Activity.CreateMessageActivity();
                         message.From = botAccount;
                         message.Recipient = userAccount;
-                        message.Conversation = new ConversationAccount(id: conversation.Id);
+                        message.Conversation = new ConversationAccount(id: userAccount.Id);
                         message.ChannelId = "sms";
                         message.Text = "HI!!!";
 
                         var response = await connector.Conversations.SendToConversationAsync((Activity)message);
                         Console.WriteLine($"response:{response.Id}");
-                        */
+                        
                         
                     }
                     catch (Exception e)
