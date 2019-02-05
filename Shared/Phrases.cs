@@ -1,7 +1,7 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace ServiceProviderBot.Bot.Utils
+namespace Shared
 {
     public static class Phrases
     {
@@ -38,6 +38,7 @@ namespace ServiceProviderBot.Bot.Utils
         {
             public static string New = "new";
             public static string Update = "update";
+            public static Activity TimeToUpdate = MessageFactory.Text("It's time to update! " + GetUpdate.Text);
             public static Activity Welcome = MessageFactory.Text("Welcome!");
             public static Activity Unregistered = MessageFactory.Text("It looks like you haven't registered your organization yet.");
             public static Activity Registered = MessageFactory.Text("It looks like you have already registered your organization.");

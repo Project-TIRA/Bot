@@ -28,6 +28,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EntityModel\EntityModel.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

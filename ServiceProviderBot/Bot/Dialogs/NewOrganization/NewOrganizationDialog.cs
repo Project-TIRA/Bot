@@ -5,6 +5,7 @@ using ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Location;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
 {

@@ -6,11 +6,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityModel", "EntityModel\EntityModel.csproj", "{EAB706C6-67C9-4C42-BFBA-E5A746558617}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBot", "ServiceProviderBot\ServiceProviderBot.csproj", "{B361B495-77F1-4756-ACA2-B86BCA4536DE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceProviderBot", "ServiceProviderBot\ServiceProviderBot.csproj", "{B361B495-77F1-4756-ACA2-B86BCA4536DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotTrigger", "BotTrigger\BotTrigger.csproj", "{BC79A314-66C2-4132-860E-3E0F3293134E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotTriggerHarness", "BotTriggerHarness\BotTriggerHarness.csproj", "{693A06D1-289E-4573-8621-862F41B5EFAF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,10 @@ Global
 		{693A06D1-289E-4573-8621-862F41B5EFAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{693A06D1-289E-4573-8621-862F41B5EFAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{693A06D1-289E-4573-8621-862F41B5EFAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

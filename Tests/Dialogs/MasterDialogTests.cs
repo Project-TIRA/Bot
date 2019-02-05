@@ -4,6 +4,7 @@ using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 using Xunit;
 
 namespace Tests.Dialogs

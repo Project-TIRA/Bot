@@ -1,7 +1,7 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using ServiceProviderBot.Bot.Utils;
+using Shared;
 using System;
 using System.Collections.Generic;
 

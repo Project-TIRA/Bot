@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using ServiceProviderBot.Bot.Models.LocationApi;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
 {

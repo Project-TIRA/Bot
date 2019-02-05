@@ -8,7 +8,7 @@ namespace BotTriggerHarness
         static void Main(string[] args)
         {
             var connectionString = "data source=(LocalDb)\\MSSQLLocalDB;initial catalog=OrganizationModel;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
-            var sendTask = BotTrigger.BotTrigger.Send(connectionString);
+            var sendTask = BotTrigger.BotTrigger.DoWork(connectionString);
             sendTask.Wait();
 
             Console.WriteLine("Press 'enter' to quit");

@@ -4,6 +4,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
 {

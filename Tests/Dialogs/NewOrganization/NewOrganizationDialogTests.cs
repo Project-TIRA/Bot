@@ -3,6 +3,7 @@ using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 using Xunit;
 
 namespace Tests.Dialogs.NewOrganization

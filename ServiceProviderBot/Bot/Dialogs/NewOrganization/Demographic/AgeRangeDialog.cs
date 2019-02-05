@@ -1,6 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 
 namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic
 {

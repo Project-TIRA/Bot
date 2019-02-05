@@ -1,5 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 using System;
 using System.Threading.Tasks;
 
