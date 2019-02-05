@@ -24,7 +24,7 @@ namespace BotTrigger
         private const string ServiceUrl = "https://sms.botframework.com";
 
         [FunctionName("BotTrigger")]
-        public static async Task Run([TimerTrigger("0 0 10-14/2 * * *")]TimerInfo myTimer, ILogger log, Microsoft.Azure.WebJobs.ExecutionContext context)
+        public static async Task Run([TimerTrigger("0 0 9 * * *")]TimerInfo myTimer, ILogger log, Microsoft.Azure.WebJobs.ExecutionContext context)
         {
             log.LogInformation($"BotTrigger: executed at: {DateTime.Now}");
 
@@ -59,22 +59,14 @@ namespace BotTrigger
                 {
                     LogInfo(log, $"BotTrigger: sending to {organization.Name}");
 
-                    try
-                    {
-                        var userAccount = new ChannelAccount() { Id = organization.PhoneNumber };
-                        var convoAccount = new ConversationAccount(id: userAccount.Id);
-                        var convo = new ConversationReference(null, userAccount, botAccount, convoAccount, ChannelId, ServiceUrl);
+                    var userAccount = new ChannelAccount() { Id = organization.PhoneNumber };
+                    var convoAccount = new ConversationAccount(id: userAccount.Id);
+                    var convo = new ConversationReference(null, userAccount, botAccount, convoAccount, ChannelId, ServiceUrl);
 
-                        await adapter.ContinueConversationAsync(creds.MicrosoftAppId, convo, async (context, token) =>
-                        {
-                            await context.SendActivityAsync(Phrases.Greeting.TimeToUpdate);
-                        }, new CancellationToken());
-                    }
-                    catch (Exception e)
+                    await adapter.ContinueConversationAsync(creds.MicrosoftAppId, convo, async (context, token) =>
                     {
-                        LogInfo(log, $"BotTrigger: failed sending to {organization.Name}. {e.Message}");
-                        throw e;
-                    }
+                        await context.SendActivityAsync(Phrases.Greeting.TimeToUpdate);
+                    }, new CancellationToken());
 
 
                     /*
