@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 using Xunit;
 
 namespace Tests.Dialogs
@@ -48,23 +49,37 @@ namespace Tests.Dialogs
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
+                this.turnContext = turnContext;
+                this.cancellationToken = cancellationToken;
+
                 // Initialize the dialog context.
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 // Create the master dialog.
                 var masterDialog = new MasterDialog(this.state, this.dialogs, this.database, this.configuration);
 
+                // Attempt to continue any existing conversation.
                 DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
+                var startNewConversation = turnContext.Activity.Type == ActivityTypes.Message && results.Status == DialogTurnStatus.Empty;
 
-                this.turnContext = turnContext;
-                this.cancellationToken = cancellationToken;
-
-                // Start the dialog if there is no conversation.
-                if (results.Status == DialogTurnStatus.Empty)
+                if (startNewConversation)
                 {
-                    // Init at the start of the conversation.
+                    // Init at the start of the conversation. Need to do before checking for expired data.
                     await InitDatabase(turnContext, initialOrganization, initialSnapshot);
+                }
 
+                // Check if the conversation is expired.
+                var forceExpire = Phrases.TriggerReset(turnContext);
+                var expired = await this.database.CheckExpiredConversation(turnContext, forceExpire);
+
+                if (expired)
+                {
+                    await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                    await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
+                }
+                else if (startNewConversation)
+                {
+                    // Difference for tests here is starting the given dialog instead of master so that individual dialog flows can be tested.
                     await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
                 }
             });
@@ -111,14 +126,15 @@ namespace Tests.Dialogs
             };
         }
 
-        private async Task InitDatabase(ITurnContext context, Organization initialOrganization = null, Snapshot initialSnapshot = null)
+        private async Task InitDatabase(ITurnContext turnContext, Organization initialOrganization = null, Snapshot initialSnapshot = null)
         {
             Assert.True(initialSnapshot == null || initialOrganization != null, "Cannot initialize a snapshot without an organization");
 
             // Create the organization and snapshot if provided.
             if (initialOrganization != null)
             {
-                var organization = await this.database.CreateOrganization(context);
+                var organization = await this.database.CreateOrganization(turnContext);
+                organization.DateCreated = initialOrganization.DateCreated;
                 organization.IsVerified = initialOrganization.IsVerified;
                 organization.Name = initialOrganization.Name;
                 organization.City = initialOrganization.City;
@@ -131,7 +147,8 @@ namespace Tests.Dialogs
 
                 if (initialSnapshot != null)
                 {
-                    var snapshot = await this.database.CreateSnapshot(context);
+                    var snapshot = await this.database.CreateSnapshot(turnContext);
+                    snapshot.Date = initialSnapshot.Date;
                     snapshot.OpenBeds = initialSnapshot.OpenBeds;
                 }
 

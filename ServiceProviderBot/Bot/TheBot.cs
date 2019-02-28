@@ -4,6 +4,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,30 +39,23 @@ namespace ServiceProviderBot.Bot
             // Create the master dialog.
             var masterDialog = new MasterDialog(this.state, this.dialogs, this.database, this.configuration);
 
-            var forceExpire = ShouldReset(turnContext);
+            // Attempt to continue any existing conversation.
+            DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
+            var startNewConversation = turnContext.Activity.Type == ActivityTypes.Message && results.Status == DialogTurnStatus.Empty;
+
+            // Check if the conversation is expired.
+            var forceExpire = Phrases.TriggerReset(turnContext);
             var expired = await this.database.CheckExpiredConversation(turnContext, forceExpire);
 
             if (expired)
             {
-                // Conversation expired, so start a new one.
                 await dialogContext.CancelAllDialogsAsync(cancellationToken);
                 await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
             }
-            else
+            else if (startNewConversation)
             {
-                DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
-
-                if (turnContext.Activity.Type == ActivityTypes.Message && results.Status == DialogTurnStatus.Empty)
-                {
-                    // Begin a new conversation.
-                    await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
-                }
+                await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
             }
-        }
-
-        private bool ShouldReset(ITurnContext context)
-        {
-            return /*!this.configuration.IsProduction() &&*/ string.Equals(context.Activity.Text, "reset", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

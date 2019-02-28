@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EntityModel.Migrations
 {
-    public partial class CreateDatabase : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -23,6 +23,7 @@ namespace EntityModel.Migrations
                     Gender = table.Column<int>(nullable: false),
                     AgeRangeStart = table.Column<int>(nullable: false),
                     AgeRangeEnd = table.Column<int>(nullable: false),
+                    UpdateFrequency = table.Column<int>(nullable: false),
                     TotalBeds = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

@@ -24,7 +24,7 @@ namespace BotTrigger
         private const string ServiceUrl = "https://sms.botframework.com";
 
         [FunctionName("BotTrigger")]
-        public static async Task Run([TimerTrigger("0 0 9 * * *")]TimerInfo myTimer, ILogger log, Microsoft.Azure.WebJobs.ExecutionContext context)
+        public static async Task Run([TimerTrigger("0 0 8 * * *")]TimerInfo myTimer, ILogger log, Microsoft.Azure.WebJobs.ExecutionContext context)
         {
             log.LogInformation($"BotTrigger: executed at: {DateTime.Now}");
 

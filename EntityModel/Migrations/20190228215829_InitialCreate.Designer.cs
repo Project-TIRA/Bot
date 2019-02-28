@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EntityModel.Migrations
 {
     [DbContext(typeof(DbModel))]
-    [Migration("20190124223103_CreateDatabase")]
-    partial class CreateDatabase
+    [Migration("20190228215829_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,6 +47,8 @@ namespace EntityModel.Migrations
                     b.Property<string>("State");
 
                     b.Property<int>("TotalBeds");
+
+                    b.Property<int>("UpdateFrequency");
 
                     b.Property<string>("Zip");
 

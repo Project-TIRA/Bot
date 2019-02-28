@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
-using ServiceProviderBot.Bot.Utils;
 using Shared;
 using Xunit;
 
-namespace Tests.Dialogs.NewOrganization
+namespace Tests.Dialogs.UpdateOrganization
 {
     public class UpdateOrganizationDialogTests : DialogTestBase
     {
@@ -44,6 +44,29 @@ namespace Tests.Dialogs.NewOrganization
 
             // Validate the results.
             await ValidateProfile(expectedOrganization);
+        }
+
+        [Fact]
+        public async Task ClearIncompleteSnapshot()
+        {
+            var organization = CreateDefaultTestOrganization();
+            organization.IsVerified = true;
+            organization.TotalBeds = 10;
+
+            var snapshot = new Snapshot(organization.Id);
+            snapshot.Date = DateTime.UtcNow.AddDays(-1);
+
+            // Execute the conversation.
+            await CreateTestFlow(UpdateOrganizationDialog.Name, organization, snapshot)
+                .Send("begin")
+                .AssertReply(Phrases.Greeting.Welcome)
+                .AssertReply(Phrases.Greeting.Registered)
+                .AssertReply(Phrases.Greeting.GetUpdate)
+                .StartTestAsync();
+
+            // Validate the results. Snapshot should have been cleared out.
+            snapshot = await this.database.GetSnapshot(this.turnContext);
+            Assert.Null(snapshot);
         }
     }
 }

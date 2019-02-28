@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Schema;
@@ -146,6 +147,25 @@ namespace Tests.Dialogs.NewOrganization
 
             // Validate the results.
             await ValidateProfile(expectedOrganization);
+        }
+
+        [Fact]
+        public async Task ClearIncompleteOrganization()
+        {
+            var organization = CreateDefaultTestOrganization();
+            organization.DateCreated = DateTime.UtcNow.AddDays(-1);
+
+            // Execute the conversation.
+            await CreateTestFlow(NewOrganizationDialog.Name, organization)
+                .Send("begin")
+                .AssertReply(Phrases.Greeting.Welcome)
+                .AssertReply(Phrases.Greeting.Unregistered)
+                .AssertReply(Phrases.Greeting.GetNew)
+                .StartTestAsync();
+
+            // Validate the results. Organization should have been cleared out.
+            organization = await this.database.GetOrganization(this.turnContext);
+            Assert.Null(organization);
         }
     }
 }

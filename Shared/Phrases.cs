@@ -1,5 +1,6 @@
 ﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using System;
 
 namespace Shared
 {
@@ -64,6 +65,12 @@ namespace Shared
         {
             public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
+        }
+
+        public static bool TriggerReset(ITurnContext turnContext)
+        {
+            // TODO
+            return /*!this.configuration.IsProduction() &&*/ string.Equals(turnContext.Activity.Text, "reset", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -128,8 +128,6 @@ namespace Tests.Dialogs
         [Fact]
         public async Task NonKeywordInvalid()
         {
-            var initialOrganization = CreateDefaultTestOrganization();
-
             // Execute the conversation.
             await CreateTestFlow(MasterDialog.Name)
                 .Send("hi")
@@ -137,6 +135,20 @@ namespace Tests.Dialogs
                 .AssertReply(Phrases.Greeting.Unregistered)
                 .AssertReply(Phrases.Greeting.GetNew)
                 .Test("hi", Phrases.Greeting.GetNew)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task Reset()
+        {
+            // Execute the conversation.
+            await CreateTestFlow(MasterDialog.Name)
+                .Send("hi")
+                .AssertReply(Phrases.Greeting.Welcome)
+                .AssertReply(Phrases.Greeting.Unregistered)
+                .AssertReply(Phrases.Greeting.GetNew)
+                .Send("reset")
+                .AssertReply(Phrases.Greeting.GetNew)
                 .StartTestAsync();
         }
     }
