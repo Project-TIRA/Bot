@@ -3,7 +3,6 @@ using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.BotFramework;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +10,7 @@ using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Utils;
 using EntityModel;
 using Microsoft.Bot.Connector.Authentication;
+using ServiceProviderBot.Bot.Middleware;
 
 namespace ServiceProviderBot
 {
@@ -66,6 +66,9 @@ namespace ServiceProviderBot
                         await context.SendActivityAsync(exception.StackTrace);
                     }
                 };
+
+                // Trim the incoming message.
+                options.Middleware.Add(new TrimIncomingMessageMiddleware());
 
                 // Auto-save the state after each turn.
                 options.Middleware.Add(new AutoSaveStateMiddleware(state.ConversationState));

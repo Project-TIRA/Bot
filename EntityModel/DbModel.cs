@@ -30,7 +30,7 @@ namespace EntityModel
         public DbModel CreateDbContext(string[] args)
         {
             // Only used by EF Core Tools, so okay to hardcode to local DB.
-            return Create("data source=(LocalDb)\\MSSQLLocalDB;initial catalog=ServiceProviderBot;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework");
+            return Create("data source=(LocalDb)\\MSSQLLocalDB;initial catalog=OrganizationModel;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework");
         }
 
         public static DbModel Create(string connectionString)
