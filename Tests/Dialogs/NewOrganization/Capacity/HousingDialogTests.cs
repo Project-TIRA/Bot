@@ -11,15 +11,35 @@ namespace Tests.Dialogs.NewOrganization.Capacity
     public class HousingDialogTests : DialogTestBase
     {
         [Fact]
-        public async Task Valid()
+        public async Task YesToAll()
         {
             var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.TotalBeds = 10;
+            expectedOrganization.BedsTotal = 10;
+            expectedOrganization.BedsWaitlist = true;
 
             // Execute the conversation.
             await CreateTestFlow(HousingDialog.Name, expectedOrganization)
                 .Test("begin", Phrases.Capacity.GetHousingTotal)
-                .Send(expectedOrganization.TotalBeds.ToString())
+                .Test(expectedOrganization.BedsTotal.ToString(), StartsWith(Phrases.Capacity.GetHasHousingWaitlist))
+                .Send("yes")
+                .StartTestAsync();
+
+            // Validate the results.
+            await ValidateProfile(expectedOrganization);
+        }
+
+        [Fact]
+        public async Task NoWaitlist()
+        {
+            var expectedOrganization = CreateDefaultTestOrganization();
+            expectedOrganization.BedsTotal = 10;
+            expectedOrganization.BedsWaitlist = false;
+
+            // Execute the conversation.
+            await CreateTestFlow(HousingDialog.Name, expectedOrganization)
+                .Test("begin", Phrases.Capacity.GetHousingTotal)
+                .Test(expectedOrganization.BedsTotal.ToString(), StartsWith(Phrases.Capacity.GetHasHousingWaitlist))
+                .Send("no")
                 .StartTestAsync();
 
             // Validate the results.

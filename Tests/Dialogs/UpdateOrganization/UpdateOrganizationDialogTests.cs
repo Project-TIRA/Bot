@@ -14,15 +14,15 @@ namespace Tests.Dialogs.UpdateOrganization
         public async Task UpdateAll()
         {
             var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.TotalBeds = 10;
+            expectedOrganization.BedsTotal = 10;
 
             var expectedSnapshot = new Snapshot(expectedOrganization.Id);
-            expectedSnapshot.OpenBeds = 5;
+            expectedSnapshot.BedsOpen = 5;
 
             // Execute the conversation.
             await CreateTestFlow(UpdateOrganizationDialog.Name, expectedOrganization, expectedSnapshot)
                 .Test("begin", Phrases.Capacity.GetHousingOpen)
-                .Test(expectedSnapshot.OpenBeds.ToString(), Phrases.UpdateOrganization.Closing)
+                .Test(expectedSnapshot.BedsOpen.ToString(), Phrases.UpdateOrganization.Closing)
                 .StartTestAsync();
 
             // Snapshot should be completed.
@@ -51,7 +51,7 @@ namespace Tests.Dialogs.UpdateOrganization
         {
             var organization = CreateDefaultTestOrganization();
             organization.IsVerified = true;
-            organization.TotalBeds = 10;
+            organization.BedsTotal = 10;
 
             var snapshot = new Snapshot(organization.Id);
             snapshot.Date = DateTime.UtcNow.AddDays(-1);

@@ -28,7 +28,20 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
                 {
                     // Update the profile with the total beds.
                     var organization = await database.GetOrganization(stepContext.Context);
-                    organization.TotalBeds = (int)stepContext.Result;
+                    organization.BedsTotal = (int)stepContext.Result;
+                    await database.Save();
+
+                    // Prompt for whether or not they keep a waitlist.
+                    return await stepContext.PromptAsync(
+                        Utils.Prompts.ConfirmPrompt,
+                        new PromptOptions { Prompt = Phrases.Capacity.GetHasHousingWaitlist },
+                        cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    // Update the profile with whether or not they keep a waitlist.
+                    var organization = await database.GetOrganization(stepContext.Context);
+                    organization.BedsWaitlist = (bool)stepContext.Result;
                     await database.Save();
 
                     // End this dialog to pop it off the stack.

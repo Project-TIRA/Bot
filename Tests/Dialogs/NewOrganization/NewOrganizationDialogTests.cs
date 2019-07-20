@@ -17,7 +17,8 @@ namespace Tests.Dialogs.NewOrganization
             var expectedOrganization = CreateDefaultTestOrganization();
             expectedOrganization.AgeRangeStart = 14;
             expectedOrganization.AgeRangeEnd = 24;
-            expectedOrganization.TotalBeds = 10;
+            expectedOrganization.BedsTotal = 10;
+            expectedOrganization.BedsWaitlist = true;
             expectedOrganization.UpdateFrequency = Frequency.Daily;
 
             // Execute the conversation.
@@ -32,7 +33,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.AgeRangeStart.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
                 .Test(expectedOrganization.AgeRangeEnd.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
+                .Test(expectedOrganization.BedsTotal.ToString(), StartsWith(Phrases.Capacity.GetHasHousingWaitlist))
+                .Test("yes", StartsWith(Phrases.Capacity.GetFrequency))
                 .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
@@ -71,7 +73,8 @@ namespace Tests.Dialogs.NewOrganization
         {
             var expectedOrganization = CreateDefaultTestOrganization();
             expectedOrganization.UpdateFrequency = Frequency.Daily;
-            expectedOrganization.TotalBeds = 10;
+            expectedOrganization.BedsTotal = 10;
+            expectedOrganization.BedsWaitlist = true;
 
             // Execute the conversation.
             await CreateTestFlow(NewOrganizationDialog.Name, expectedOrganization)
@@ -80,7 +83,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
+                .Test(expectedOrganization.BedsTotal.ToString(), StartsWith(Phrases.Capacity.GetHasHousingWaitlist))
+                .Test("yes", StartsWith(Phrases.Capacity.GetFrequency))
                 .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
@@ -95,7 +99,8 @@ namespace Tests.Dialogs.NewOrganization
         public async Task NoAgeRange()
         {
             var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.TotalBeds = 10;
+            expectedOrganization.BedsTotal = 10;
+            expectedOrganization.BedsWaitlist = true;
             expectedOrganization.UpdateFrequency = Frequency.Daily;
 
             // Execute the conversation.
@@ -108,7 +113,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
+                .Test(expectedOrganization.BedsTotal.ToString(), StartsWith(Phrases.Capacity.GetHasHousingWaitlist))
+                .Test("yes", StartsWith(Phrases.Capacity.GetFrequency))
                 .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 

@@ -16,7 +16,6 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
     {
         public static string Name = typeof(LocationDialog).FullName;
 
-        // TODO: Store this outside of the repo.
         private const string MapsApiUriFormat = "https://atlas.microsoft.com/search/fuzzy/json?" +
             "api-version=1.0&countrySet=US&subscription-key={0}&query={1}";
 
