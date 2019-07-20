@@ -14,4 +14,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Migrations\20190228215829_InitialCreate.cs" />
+  </ItemGroup>
 </Project>

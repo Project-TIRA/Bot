@@ -41,10 +41,10 @@ namespace Tests.Dialogs
         {
             var expectedOrganization = CreateDefaultTestOrganization();
             expectedOrganization.IsVerified = true;
-            expectedOrganization.TotalBeds = 10;
+            expectedOrganization.BedsTotal = 10;
 
             var expectedSnapshot = new Snapshot(expectedOrganization.Id);
-            expectedSnapshot.OpenBeds = 5;
+            expectedSnapshot.BedsOpen = 5;
 
             await CreateTestFlow(MasterDialog.Name, expectedOrganization)
                 .Send("update")

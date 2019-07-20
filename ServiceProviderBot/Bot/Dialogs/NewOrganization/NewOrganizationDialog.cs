@@ -81,10 +81,6 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                         // Mark the organization as complete.
                         var organization = await database.GetOrganization(stepContext.Context);
                         organization.IsComplete = true;
-
-                        // TODO: Only for testing, remove.
-                        organization.IsVerified = true;
-
                         await database.Save();
 
                         // Send the closing message.

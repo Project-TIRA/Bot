@@ -19,6 +19,8 @@ namespace Shared
             public static Activity GetHousingTotal = MessageFactory.Text("How many TOTAL beds does your organization have?");
             public static Activity GetHousingOpen = MessageFactory.Text("How many OPEN beds does your organization have?");
             public static Activity GetHousingError = MessageFactory.Text("Oops, the total beds must be greater than the open beds.");
+            public static Activity GetHasHousingWaitlist = MessageFactory.Text("Do you have a bed waitlist when you reach capacity?");
+            public static Activity GetHousingWaitlist = MessageFactory.Text("How long is your bed waitlist?");
             public static Activity GetFrequency = MessageFactory.Text("How often would you like to be contacted to update your capacity?");
 
             public static string GetHousingErrorFormat(int totalBeds)
