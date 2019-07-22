@@ -35,7 +35,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var initialOrganization = CreateDefaultTestOrganization();
             initialOrganization.TotalBeds = 10;
 
-            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(initialOrganization.TotalBeds));
+            var error = Phrases.Capacity.GetHousingError(initialOrganization.TotalBeds);
 
             // Execute the conversation.
             await CreateTestFlow(UpdateHousingDialog.Name, initialOrganization)

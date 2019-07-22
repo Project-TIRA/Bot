@@ -9,7 +9,6 @@ namespace ServiceProviderBot.Bot.Utils
         public static string ConfirmPrompt = "ConfirmPrompt";
         public static string GreetingTextPrompt = "GreetingTextPrompt";
         public static string IntPrompt = "IntPrompt";
-        public static string LocationTextPrompt = "LocationTextPrompt";
         public static string TextPrompt = "TextPrompt";
 
         /// <summary>
@@ -23,7 +22,6 @@ namespace ServiceProviderBot.Bot.Utils
             dialogs.Add(new NumberPrompt<int>(IntPrompt));
             dialogs.Add(new TextPrompt(TextPrompt));
             dialogs.Add(new TextPrompt(GreetingTextPrompt, GreetingPromptValidator.Create(state, database)));
-            dialogs.Add(new TextPrompt(LocationTextPrompt, LocationPromptValidator.Create()));
         }
     }
 }

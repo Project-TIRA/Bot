@@ -18,9 +18,11 @@ namespace Tests.Dialogs
     public abstract class DialogTestBase
     {
         protected const string TestOrgName = "Test Org";
-        protected const string TestOrgCity = "Redmond";
+        protected const string TestOrgPartialAddress = "4215 Rainier Ave Seattle";
+        protected const string TestOrgFullAddress = "4215 Rainier Avenue South, Seattle, WA 98118";
+        protected const string TestOrgCity = "Seattle";
         protected const string TestOrgState = "WA";
-        protected const string TestOrgZip = "98052";
+        protected const string TestOrgZip = "98118";
 
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;

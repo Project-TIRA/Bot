@@ -43,22 +43,6 @@ namespace Tests.Dialogs.NewOrganization.Capacity
         }
 
         [Fact]
-        public async Task Monthly()
-        {
-            var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.UpdateFrequency = Frequency.Monthly;
-
-            // Execute the conversation.
-            await CreateTestFlow(FrequencyDialog.Name, expectedOrganization)
-                .Test("begin", StartsWith(Phrases.Capacity.GetFrequency))
-                .Send(expectedOrganization.UpdateFrequency.ToString())
-                .StartTestAsync();
-
-            // Validate the results.
-            await ValidateProfile(expectedOrganization);
-        }
-
-        [Fact]
         public async Task Invalid()
         {
             var expectedOrganization = CreateDefaultTestOrganization();

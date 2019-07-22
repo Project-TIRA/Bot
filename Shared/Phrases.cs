@@ -18,12 +18,11 @@ namespace Shared
             public static Activity GetHasHousing = MessageFactory.Text("Does your organization offer housing?");
             public static Activity GetHousingTotal = MessageFactory.Text("How many TOTAL beds does your organization have?");
             public static Activity GetHousingOpen = MessageFactory.Text("How many OPEN beds does your organization have?");
-            public static Activity GetHousingError = MessageFactory.Text("Oops, the total beds must be greater than the open beds.");
             public static Activity GetFrequency = MessageFactory.Text("How often would you like to be contacted to update your capacity?");
 
-            public static string GetHousingErrorFormat(int totalBeds)
+            public static Activity GetHousingError(int totalBeds)
             {
-                return string.Format("Oops, the total beds ({0}) must be greater than the open beds.", totalBeds);
+                return MessageFactory.Text($"Oops, the total beds ({totalBeds}) must be greater than the open beds.");
             }
         }
 
@@ -51,8 +50,13 @@ namespace Shared
 
         public static class Location
         {
-            public static Activity GetLocation = MessageFactory.Text("In what ZIP code is your oganization? (XXXXX)");
+            public static Activity GetLocation = MessageFactory.Text("What is your organization's address?");
             public static Activity GetLocationError = MessageFactory.Text("Oops, unable to validate location.");
+
+            public static Activity GetLocationConfirmation(string address)
+            {
+                return MessageFactory.Text("Is this address correct?" + Environment.NewLine + address);
+            }
         }
 
         public static class NewOrganization
