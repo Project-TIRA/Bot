@@ -59,7 +59,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             var organization = await database.GetOrganization(context);
 
             // Currently the only thing to update is the beds.
-            return organization.BedsTotal > 0;
+            return organization.TotalBeds > 0;
         }
     }
 }

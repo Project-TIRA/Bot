@@ -11,40 +11,18 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
     public class UpdateHousingDialogTests : DialogTestBase
     {
         [Fact]
-        public async Task HasWaitlist()
+        public async Task Valid()
         {
             var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.BedsTotal = 10;
-            expectedOrganization.BedsWaitlist = true;
+            expectedOrganization.TotalBeds = 10;
 
             var expectedSnapshot = new Snapshot(expectedOrganization.Id);
-            expectedSnapshot.BedsOpen = 0;
-            expectedSnapshot.BedsWaitlist = 5;
+            expectedSnapshot.OpenBeds = 5;
 
             // Execute the conversation.
             await CreateTestFlow(UpdateHousingDialog.Name, expectedOrganization, expectedSnapshot)
                 .Test("begin", Phrases.Capacity.GetHousingOpen)
-                .Test(expectedSnapshot.BedsOpen.ToString(), StartsWith(Phrases.Capacity.GetHousingWaitlist))
-                .Send(expectedSnapshot.BedsWaitlist.ToString())
-                .StartTestAsync();
-
-            // Validate the results.
-            await ValidateProfile(expectedOrganization, expectedSnapshot);
-        }
-
-        [Fact]
-        public async Task NoWaitlist()
-        {
-            var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.BedsTotal = 10;
-
-            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
-            expectedSnapshot.BedsOpen = 5;
-
-            // Execute the conversation.
-            await CreateTestFlow(UpdateHousingDialog.Name, expectedOrganization, expectedSnapshot)
-                .Test("begin", Phrases.Capacity.GetHousingOpen)
-                .Send(expectedSnapshot.BedsOpen.ToString())
+                .Send(expectedSnapshot.OpenBeds.ToString())
                 .StartTestAsync();
 
             // Validate the results.
@@ -55,9 +33,9 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
         public async Task Invalid()
         {
             var initialOrganization = CreateDefaultTestOrganization();
-            initialOrganization.BedsTotal = 10;
+            initialOrganization.TotalBeds = 10;
 
-            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(initialOrganization.BedsTotal));
+            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(initialOrganization.TotalBeds));
 
             // Execute the conversation.
             await CreateTestFlow(UpdateHousingDialog.Name, initialOrganization)
