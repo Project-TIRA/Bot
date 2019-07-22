@@ -13,8 +13,6 @@ namespace EntityModel
         public string Name { get; set; }
         public string PhoneNumber { get; set; }
 
-        public Frequency UpdateFrequency { get; set; }
-
         // Verification
         public bool IsComplete { get; set; }
         public bool IsVerified { get; set; }
@@ -30,8 +28,8 @@ namespace EntityModel
         public int AgeRangeEnd { get; set; }
 
         // Capacity
-        public int BedsTotal { get; set; }
-        public bool BedsWaitlist { get; set; }
+        public Frequency UpdateFrequency { get; set; }
+        public int TotalBeds { get; set; }
 
         // Snapshots
         public ICollection<Snapshot> Snapshots { get; set; }

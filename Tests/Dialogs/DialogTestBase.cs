@@ -105,15 +105,13 @@ namespace Tests.Dialogs
                 Assert.Equal(actualOrganization.Gender, expectedOrganization.Gender);
                 Assert.Equal(actualOrganization.AgeRangeStart, expectedOrganization.AgeRangeStart);
                 Assert.Equal(actualOrganization.AgeRangeEnd, expectedOrganization.AgeRangeEnd);
-                Assert.Equal(actualOrganization.BedsTotal, expectedOrganization.BedsTotal);
-                Assert.Equal(actualOrganization.BedsWaitlist, expectedOrganization.BedsWaitlist);
+                Assert.Equal(actualOrganization.TotalBeds, expectedOrganization.TotalBeds);
             }
 
             if (expectedSnapshot != null)
             {
                 var actualSnapshot = await this.database.GetSnapshot(this.turnContext);
-                Assert.Equal(actualSnapshot.BedsOpen, expectedSnapshot.BedsOpen);
-                Assert.Equal(actualSnapshot.BedsWaitlist, expectedSnapshot.BedsWaitlist);
+                Assert.Equal(actualSnapshot.OpenBeds, expectedSnapshot.OpenBeds);
             }
         }
 
@@ -145,15 +143,13 @@ namespace Tests.Dialogs
                 organization.Gender = initialOrganization.Gender;
                 organization.AgeRangeStart = initialOrganization.AgeRangeStart;
                 organization.AgeRangeEnd = initialOrganization.AgeRangeEnd;
-                organization.BedsTotal = initialOrganization.BedsTotal;
-                organization.BedsWaitlist = initialOrganization.BedsWaitlist;
+                organization.TotalBeds = initialOrganization.TotalBeds;
 
                 if (initialSnapshot != null)
                 {
                     var snapshot = await this.database.CreateSnapshot(turnContext);
                     snapshot.Date = initialSnapshot.Date;
-                    snapshot.BedsOpen = initialSnapshot.BedsOpen;
-                    snapshot.BedsWaitlist = initialSnapshot.BedsWaitlist;
+                    snapshot.OpenBeds = initialSnapshot.OpenBeds;
                 }
 
                 await this.database.Save();

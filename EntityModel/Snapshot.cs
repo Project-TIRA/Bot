@@ -14,8 +14,7 @@ namespace EntityModel
         public Organization Organization { get; set; }
 
         public DateTime Date { get; set; }
-        public int BedsOpen { get; set; }
-        public int BedsWaitlist { get; set; }
+        public int OpenBeds { get; set; }
 
         public Snapshot(Guid organizationId)
         {

@@ -14,15 +14,13 @@ namespace Tests.Dialogs.NewOrganization.Capacity
         public async Task YesToAll()
         {
             var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.BedsTotal = 10;
-            expectedOrganization.BedsWaitlist = true;
+            expectedOrganization.TotalBeds = 10;
 
             // Execute the conversation.
             await CreateTestFlow(CapacityDialog.Name, expectedOrganization)
                 .Test("begin", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Test(expectedOrganization.BedsTotal.ToString(), StartsWith(Phrases.Capacity.GetHasHousingWaitlist))
-                .Send("yes")
+                .Send(expectedOrganization.TotalBeds.ToString())
                 .StartTestAsync();
 
             // Validate the results.

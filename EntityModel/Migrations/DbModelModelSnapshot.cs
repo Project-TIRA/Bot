@@ -28,10 +28,6 @@ namespace EntityModel.Migrations
 
                     b.Property<int>("AgeRangeStart");
 
-                    b.Property<int>("BedsTotal");
-
-                    b.Property<bool>("BedsWaitlist");
-
                     b.Property<string>("City");
 
                     b.Property<DateTime>("DateCreated");
@@ -47,6 +43,8 @@ namespace EntityModel.Migrations
                     b.Property<string>("PhoneNumber");
 
                     b.Property<string>("State");
+
+                    b.Property<int>("TotalBeds");
 
                     b.Property<int>("UpdateFrequency");
 
@@ -66,13 +64,11 @@ namespace EntityModel.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("BedsOpen");
-
-                    b.Property<int>("BedsWaitlist");
-
                     b.Property<DateTime>("Date");
 
                     b.Property<bool>("IsComplete");
+
+                    b.Property<int>("OpenBeds");
 
                     b.Property<Guid>("OrganizationId");
 
