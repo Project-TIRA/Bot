@@ -8,7 +8,10 @@ namespace EntityModel
         Unknown = 0,
         Male = 1,
         Female = 2,
-        All = Male | Female
+        //     = 4
+        //     = 8
         // Todo: Add more options
+
+        All = Male | Female
     }
 }

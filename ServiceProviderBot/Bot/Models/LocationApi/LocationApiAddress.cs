@@ -5,6 +5,6 @@
         public string Municipality { get; set; }
         public string CountrySubdivision { get; set; }
         public string PostalCode { get; set; }
-        public string CountryCode { get; set; }
+        public string FreeformAddress { get; set; }
     }
 }

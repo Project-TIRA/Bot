@@ -31,15 +31,15 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
                 {
                     // Prompt for the location.
                     return await stepContext.PromptAsync(
-                        Utils.Prompts.LocationTextPrompt,
+                        Utils.Prompts.TextPrompt,
                         new PromptOptions { Prompt = Phrases.Location.GetLocation },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    var zipcode = (string)stepContext.Result;
+                    var inputAddress = (string)stepContext.Result;
 
-                    if (string.IsNullOrEmpty(zipcode))
+                    if (string.IsNullOrEmpty(inputAddress))
                     {
                         return await NotifyErrorAndRepeat(stepContext, cancellationToken);
                     }
@@ -50,7 +50,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
                         using (HttpClient client = new HttpClient())
                         {
                             var subscriptionKey = this.configuration.MapsKey();
-                            var queryString = string.Format(MapsApiUriFormat, subscriptionKey, zipcode);
+                            var queryString = string.Format(MapsApiUriFormat, subscriptionKey, inputAddress);
                             HttpResponseMessage responseMessage = await client.GetAsync(queryString);
 
                             if (!responseMessage.IsSuccessStatusCode)
@@ -60,7 +60,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
 
                             var response = await responseMessage.Content.ReadAsStringAsync();
                             LocationApiResponse result = JsonConvert.DeserializeObject<LocationApiResponse>(response);
-                            LocationApiAddress address = result.GetTopStreetResult(zipcode);
+                            LocationApiAddress address = result.GetTopResult();
 
                             if (address == null)
                             {
@@ -69,10 +69,18 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
                                 
                             // Update the profile with the location.
                             var organization = await database.GetOrganization(stepContext.Context);
+                            organization.Address = address.FreeformAddress;
                             organization.City = address.Municipality;
                             organization.State = address.CountrySubdivision;
                             organization.Zip = address.PostalCode;
                             await database.Save();
+
+                            // Prompt for confirmation.
+                            return await stepContext.PromptAsync(Utils.Prompts.ConfirmPrompt, new PromptOptions
+                            {
+                                Prompt = Phrases.Location.GetLocationConfirmation(address.FreeformAddress)
+                            },
+                            cancellationToken);
                         }
                     }
                     catch (Exception e)
@@ -80,7 +88,15 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Location
                         Debug.WriteLine(e.Message);
                         return await NotifyErrorAndRepeat(stepContext, cancellationToken);
                     }
-                     
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    if (!(bool)stepContext.Result)
+                    {
+                        // Repeat the dialog.
+                        return await stepContext.ReplaceDialogAsync(Name, null, cancellationToken);
+                    }
+
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
                 }

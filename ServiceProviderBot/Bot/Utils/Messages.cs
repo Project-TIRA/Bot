@@ -7,11 +7,6 @@ namespace ServiceProviderBot.Bot.Utils
 {
     public static class Messages
     {
-        public static async Task SendAsync(string message, ITurnContext turnContext, CancellationToken cancellationToken)
-        {
-            await SendAsync(MessageFactory.Text(message), turnContext, cancellationToken);
-        }
-
         public static async Task SendAsync(Activity message, ITurnContext turnContext, CancellationToken cancellationToken)
         {
             await turnContext.SendActivityAsync(message, cancellationToken);

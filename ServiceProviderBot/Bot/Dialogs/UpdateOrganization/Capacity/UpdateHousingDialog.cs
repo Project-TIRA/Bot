@@ -34,7 +34,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (open > organization.TotalBeds)
                     {
                         // Send error message.
-                        var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(organization.TotalBeds));
+                        var error = Phrases.Capacity.GetHousingError(organization.TotalBeds);
                         await Messages.SendAsync(error, stepContext.Context, cancellationToken);
 
                         // Repeat the dialog.
