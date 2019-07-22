@@ -31,6 +31,20 @@ namespace EntityModel
         public Frequency UpdateFrequency { get; set; }
         public int TotalBeds { get; set; }
 
+        // Mental Health
+        public Gender MentalHealth_Gender { get; set; }
+        public int MentalHealth_AgeRangeStart { get; set; }
+        public int MentalHealth_AgeRangeEnd { get; set; }
+        public int MentalHealth_InPatientTotal { get; set; }
+        public int MentalHealth_OutPatientTotal { get; set; }
+        public bool MentalHealth_HasWaitlist { get; set; }
+
+        public int MentalHealth_InPatientOpen { get; set; }
+        public int MentalHealth_InPatientWaitlistLength { get; set; }
+        public int MentalHealth_OutPatientOpen { get; set; }
+        public int MentalHealth_OutPatientWaitlistLength { get; set; }
+
+
         // Snapshots
         public ICollection<Snapshot> Snapshots { get; set; }
 
@@ -60,6 +74,24 @@ namespace EntityModel
         {
             this.AgeRangeStart = 0;
             this.AgeRangeEnd = 0;
+        }
+
+        public void UpdateMentalHealthGender(Gender gender, bool add)
+        {
+            if (add)
+            {
+                this.MentalHealth_Gender |= gender;
+            }
+            else
+            {
+                this.MentalHealth_Gender &= ~gender;
+            }
+        }
+
+        public void SetMentalHealthDefaultAgeRange()
+        {
+            this.MentalHealth_AgeRangeStart = 0;
+            this.MentalHealth_AgeRangeEnd = 0;
         }
     }
 }
