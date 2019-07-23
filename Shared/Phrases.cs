@@ -77,7 +77,6 @@ namespace Shared
             public static Activity GetAgeRangeStart = MessageFactory.Text("What is the youngest age you work with for case management?");
             public static Activity GetAgeRangeEnd = MessageFactory.Text("What is the oldest age you work with for case management?");
 
-            public static Activity GetHasServiceAnimals = MessageFactory.Text("Do you offer service animals for case management?");
             public static Activity GetHasSobriety = MessageFactory.Text("Do you only work with sober individuals for case management?");
             public static Activity GetCaseManagementTotal = MessageFactory.Text("How many TOTAL spaces do you have for case management?");
             public static Activity GetCaseManagementOpen = MessageFactory.Text("How many OPEN spaces do you have for case management?");
