@@ -84,6 +84,11 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                     },
                     async (stepContext, cancellationToken) =>
                     {
+                        // Push the update job training services dialog onto the stack.
+                        return await BeginDialogAsync(stepContext, JobTraining.JobTrainingDialog.Name, null, cancellationToken);
+                    },
+                    async (stepContext, cancellationToken) =>
+                    {
                         // Mark the organization as complete.
                         var organization = await database.GetOrganization(stepContext.Context);
                         organization.IsComplete = true;

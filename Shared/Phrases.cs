@@ -67,6 +67,20 @@ namespace Shared
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
         }
 
+        public static class JobTrainingServices
+        {
+            public static Activity GetHasJobTraining = MessageFactory.Text("Does your organization offer job training services?");
+            public static Activity GetJobTrainingPositions = MessageFactory.Text("How many TOTAL job training positions do you have?");
+            public static Activity GetJobTrainingOpenings = MessageFactory.Text("How many OPEN job training positions do you have?");
+            public static Activity GetHasJobTrainingWaitlist = MessageFactory.Text("Do you have a waitlist for your job training services?");
+            public static Activity GetJobTrainingWaitlistPositions = MessageFactory.Text("How many people are on your waitlist?");
+
+            public static string GetJobTrainingOpeningsErrorFormat(int totalOpenings)
+            {
+                return string.Format("Oops, the total number of job training openings ({0}) must be greater than the open positions.", totalOpenings);
+            }
+        }
+
         public static class CaseManagement
         {
             public static Activity GetHasCaseManagement = MessageFactory.Text("Does your organization offer case management or support services?");
@@ -86,7 +100,6 @@ namespace Shared
             public static string GetCaseManagementSpaceErrorFormat(int totalSpaces)
             {
                 return string.Format("Oops, the total slots ({0}) must be greater than the open slots.", totalSpaces);
-
             }
         }
 
@@ -95,5 +108,6 @@ namespace Shared
             // TODO
             return /*!this.configuration.IsProduction() &&*/ string.Equals(turnContext.Activity.Text, "reset", StringComparison.OrdinalIgnoreCase);
         }
+
     }
 }

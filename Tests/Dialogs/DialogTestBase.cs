@@ -152,6 +152,11 @@ namespace Tests.Dialogs
                 organization.AgeRangeStart = initialOrganization.AgeRangeStart;
                 organization.AgeRangeEnd = initialOrganization.AgeRangeEnd;
                 organization.TotalBeds = initialOrganization.TotalBeds;
+                organization.HasJobTrainingServices = initialOrganization.HasJobTrainingServices;
+                organization.HasJobTrainingWaitlist = initialOrganization.HasJobTrainingWaitlist;
+                organization.TotalJobTrainingPositions = initialOrganization.TotalJobTrainingPositions;
+                organization.OpenJobTrainingPositions = initialOrganization.OpenJobTrainingPositions;
+                organization.JobTrainingWaitlistPositions = initialOrganization.JobTrainingWaitlistPositions;
 
                 //Case Management
                 organization.CaseManagementTotal = initialOrganization.CaseManagementTotal;
