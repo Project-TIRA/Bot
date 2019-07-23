@@ -38,8 +38,6 @@ namespace EntityModel
         public int CaseManagementAgeRangeStart { get; set; }
         public int CaseManagementAgeRangeEnd { get; set; }
         public bool CaseManagementSobriety { get; set; }
-        // public int CaseManagementOpenSlots { get; set; } //snapshot
-        // public int CaseManagementWaitListLength { get; set; } //snapshot
 
         // Snapshots
         public ICollection<Snapshot> Snapshots { get; set; }
