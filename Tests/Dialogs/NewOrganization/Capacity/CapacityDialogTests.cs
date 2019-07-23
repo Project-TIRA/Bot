@@ -11,23 +11,6 @@ namespace Tests.Dialogs.NewOrganization.Capacity
     public class CapacityDialogTests : DialogTestBase
     {
         [Fact]
-        public async Task YesToAll()
-        {
-            var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.TotalBeds = 10;
-
-            // Execute the conversation.
-            await CreateTestFlow(CapacityDialog.Name, expectedOrganization)
-                .Test("begin", StartsWith(Phrases.Capacity.GetHasHousing))
-                .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Send(expectedOrganization.TotalBeds.ToString())
-                .StartTestAsync();
-
-            // Validate the results.
-            await ValidateProfile(expectedOrganization);
-        }
-
-        [Fact]
         public async Task NoHousing()
         {
             var expectedOrganization = CreateDefaultTestOrganization();

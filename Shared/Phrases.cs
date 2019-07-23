@@ -15,16 +15,45 @@ namespace Shared
 
         public static class Capacity
         {
+            // onboarding
             public static Activity GetHasHousing = MessageFactory.Text("Does your organization offer housing?");
-            public static Activity GetHousingTotal = MessageFactory.Text("How many TOTAL beds does your organization have?");
-            public static Activity GetHousingOpen = MessageFactory.Text("How many OPEN beds does your organization have?");
-            public static Activity GetHousingError = MessageFactory.Text("Oops, the total beds must be greater than the open beds.");
+            public static Activity GetHasHousingEmergency = MessageFactory.Text("Does your organization have beds for emergency housing?");
+            public static Activity GetHasHousingLongterm = MessageFactory.Text("Does your organization have beds for longterm housing?");
+            public static Activity GetHousingEmergencyPrivateTotal = MessageFactory.Text("How many TOTAL EMERGENCY beds in PRIVATE rooms does your organization have?");
+            public static Activity GetHousingEmergencySharedTotal = MessageFactory.Text("How many TOTAL EMERGENCY beds in SHARED rooms does your organization have?");
+            public static Activity GetHousingLongtermPrivateTotal = MessageFactory.Text("How many TOTAL LONGTERM beds in PRIVATE rooms does your organization have?");
+            public static Activity GetHousingLongtermSharedTotal = MessageFactory.Text("How many TOTAL LONGTERM beds in SHARED rooms does your organization have?");
             public static Activity GetFrequency = MessageFactory.Text("How often would you like to be contacted to update your capacity?");
+
+            // updating
+            public static Activity GetHousingEmergencyPrivateOpen = MessageFactory.Text("How many OPEN EMERGENCY beds does your organization have in PRIVATE rooms?");
+            public static Activity GetHousingEmergencySharedOpen = MessageFactory.Text("How many OPEN EMERGENCY beds does your organization have in SHARED rooms?");
+            public static Activity GetHousingLongtermPrivateOpen = MessageFactory.Text("How many OPEN LONGTERM beds does your organization have in PRIVATE rooms?");
+            public static Activity GetHousingLongtermSharedOpen = MessageFactory.Text("How many OPEN LONGTERM beds does your organization have in SHARED rooms?");
+            public static Activity GetHousingError = MessageFactory.Text("Oops, the total beds must be greater than the open beds.");
+            public static Activity GetHousingEmergencyPrivateWaitlist = MessageFactory.Text("How long is your waitlist for emergency beds in private rooms?");
+            public static Activity GetHousingEmergencySharedWaitlist = MessageFactory.Text("How long is your waitlist for emergency beds in shared rooms?");
+            public static Activity GetHousingLongtermPrivateWaitlist = MessageFactory.Text("How long is your waitlist for longterm beds in private rooms?");
+            public static Activity GetHousingLongtermSharedWaitlist = MessageFactory.Text("How long is your waitlist for longterm beds in shared rooms?");
 
             public static string GetHousingErrorFormat(int totalBeds)
             {
-                return string.Format("Oops, the total beds ({0}) must be greater than the open beds.", totalBeds);
+                return string.Format("Oops, the total beds ({0}) must be greater than the open beds. Please input the number of open beds again.", totalBeds);
             }
+        }
+
+        public static class HousingDemographic
+        {
+            public static Activity GetHasDemographicMen = MessageFactory.Text("Does your organization house men?");
+            public static Activity GetHasDemographicWomen = MessageFactory.Text("Does your organization house women?");
+            public static Activity GetHasDemographicNonbinary = MessageFactory.Text("Does your organization house non-binary people?");
+            public static Activity GetHasDemographicAgeRange = MessageFactory.Text("Is your organization’s housing restricted to a specific age range?");
+            public static Activity GetAgeRangeStart = MessageFactory.Text("What is the youngest age your organization will house?");
+            public static Activity GetAgeRangeEnd = MessageFactory.Text("What is the oldest age your organization will house?");
+            public static Activity GetHasDemographicPregnant = MessageFactory.Text("Does your organization house people who are pregnant?");
+            public static Activity GetHasDemographicParenting = MessageFactory.Text("Does your organization house parents with children?");
+            public static Activity GetAcceptsServiceAnimals = MessageFactory.Text("Does your organization house people who have service animals?");
+            public static Activity GetHasDemographicNotSober = MessageFactory.Text("Does your organization house people who are not sober?");
         }
 
         public static class Demographic
@@ -32,7 +61,8 @@ namespace Shared
             public static Activity GetHasDemographic = MessageFactory.Text("Does your organization work with a specific demographic?");
             public static Activity GetHasDemographicMen = MessageFactory.Text("Does your organization work with men?");
             public static Activity GetHasDemographicWomen = MessageFactory.Text("Does your organization work with women?");
-            public static Activity GetHasDemographicAgeRange = MessageFactory.Text("Does your organization work with an age range?");
+            public static Activity GetHasDemographicNonbinary = MessageFactory.Text("Does your organization work with non-binary people?");
+            public static Activity GetHasDemographicAgeRange = MessageFactory.Text("Does your organization work with an age range?");           
         }
 
         public static class Greeting

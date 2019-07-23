@@ -91,7 +91,9 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             // Check if any service needs updates
             return await UpdateHousingDialog.CanUpdate(state, database, context) ||
                 await UpdateCaseManagementDialog.CanUpdate(state, database, context) ||
-                await UpdateJobTrainingDialog.CanUpdate(state, database, context);
+                await UpdateJobTrainingDialog.CanUpdate(state, database, context) || 
+             organization.HousingEmergencyPrivateTotal > 0 || organization.HousingEmergencySharedTotal > 0
+                        || organization.HousingLongtermPrivateTotal > 0 || organization.HousingLongtermSharedTotal > 0;
         }
     }
 }

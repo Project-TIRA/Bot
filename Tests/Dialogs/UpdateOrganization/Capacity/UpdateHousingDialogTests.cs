@@ -11,18 +11,26 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
     public class UpdateHousingDialogTests : DialogTestBase
     {
         [Fact]
-        public async Task Valid()
+        public async Task EmergencyPrivateHasWaitlist()
         {
             var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.TotalBeds = 10;
+            expectedOrganization.HousingEmergencyPrivateTotal = 10;
+            expectedOrganization.HousingHasWaitlist = true;
+            expectedSnapshot.BedsEmergencyPrivateOpen = 0;
+            expectedSnapshot.BedsEmergencyPrivateWaitlistLength = 5;
+                .Test("begin", Phrases.Capacity.GetHousingEmergencyPrivateOpen)
+                .Test(expectedSnapshot.BedsEmergencyPrivateOpen.ToString(), StartsWith(Phrases.Capacity.GetHousingEmergencyPrivateWaitlist))
+                .Send(expectedSnapshot.BedsEmergencyPrivateWaitlistLength.ToString())
+        public async Task EmergencyPrivateNoWaitlist()
+            expectedOrganization.HousingEmergencyPrivateTotal = 10;
 
             var expectedSnapshot = new Snapshot(expectedOrganization.Id);
-            expectedSnapshot.OpenBeds = 5;
+            expectedSnapshot.BedsEmergencyPrivateOpen = 5;
 
             // Execute the conversation.
             await CreateTestFlow(UpdateHousingDialog.Name, expectedOrganization, expectedSnapshot)
-                .Test("begin", Phrases.Capacity.GetHousingOpen)
-                .Send(expectedSnapshot.OpenBeds.ToString())
+                .Test("begin", Phrases.Capacity.GetHousingEmergencyPrivateOpen)
+                .Send(expectedSnapshot.BedsEmergencyPrivateOpen.ToString())
                 .StartTestAsync();
 
             // Validate the results.
@@ -30,18 +38,74 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
         }
 
         [Fact]
-        public async Task Invalid()
+        public async Task UpdateAllNoWaitlist()
         {
-            var initialOrganization = CreateDefaultTestOrganization();
-            initialOrganization.TotalBeds = 10;
+            var expectedOrganization = CreateDefaultTestOrganization();
+            expectedOrganization.HousingEmergencyPrivateTotal = 10;
+            expectedOrganization.HousingEmergencySharedTotal = 10;
+            expectedOrganization.HousingLongtermPrivateTotal = 10;
+            expectedOrganization.HousingLongtermSharedTotal = 10;
 
-            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(initialOrganization.TotalBeds));
+            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
+            expectedSnapshot.BedsEmergencyPrivateOpen = 8;
+            expectedSnapshot.BedsEmergencySharedOpen = 7;
+            expectedSnapshot.BedsLongtermPrivateOpen = 6;
+            expectedSnapshot.BedsLongtermSharedOpen = 5;
+
+            await CreateTestFlow(UpdateHousingDialog.Name, expectedOrganization, expectedSnapshot)
+                .Test("begin", Phrases.Capacity.GetHousingEmergencyPrivateOpen)
+                .Test(expectedSnapshot.BedsEmergencyPrivateOpen.ToString(), Phrases.Capacity.GetHousingEmergencySharedOpen)
+                .Test(expectedSnapshot.BedsEmergencySharedOpen.ToString(), Phrases.Capacity.GetHousingLongtermPrivateOpen)
+                .Test(expectedSnapshot.BedsLongtermPrivateOpen.ToString(), Phrases.Capacity.GetHousingLongtermSharedOpen)
+                .Send(expectedSnapshot.BedsLongtermSharedOpen.ToString())
+                .StartTestAsync();
+
+            // Validate the results.
+            await ValidateProfile(expectedOrganization, expectedSnapshot);
+        }
+
+        [Fact]
+        public async Task EmergencyPrivateInvalid()
+        {
+            var expectedOrganization = CreateDefaultTestOrganization();
+            expectedOrganization.HousingEmergencyPrivateTotal = 10;
+
+            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(expectedOrganization.HousingEmergencyPrivateTotal));
+
+            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
+            expectedSnapshot.BedsEmergencyPrivateOpen = 5;
 
             // Execute the conversation.
-            await CreateTestFlow(UpdateHousingDialog.Name, initialOrganization)
-                .Test("begin", Phrases.Capacity.GetHousingOpen)
+            await CreateTestFlow(UpdateHousingDialog.Name, expectedOrganization, expectedSnapshot)
+                .Test("begin", Phrases.Capacity.GetHousingEmergencyPrivateOpen)
                 .Test("20", error)
+                .Send(expectedSnapshot.BedsEmergencyPrivateOpen.ToString())
                 .StartTestAsync();
+
+            // Validate the results.
+            await ValidateProfile(expectedOrganization, expectedSnapshot);
+        }
+
+        [Fact]
+        public async Task LongtermPrivateInvalid()
+        {
+            var expectedOrganization = CreateDefaultTestOrganization();
+            expectedOrganization.HousingLongtermPrivateTotal = 5;
+
+            var error = string.Format(Phrases.Capacity.GetHousingErrorFormat(expectedOrganization.HousingLongtermPrivateTotal));
+
+            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
+            expectedSnapshot.BedsLongtermPrivateOpen = 3;
+
+            // Execute the conversation.
+            await CreateTestFlow(UpdateHousingDialog.Name, expectedOrganization, expectedSnapshot)
+                .Test("begin", Phrases.Capacity.GetHousingLongtermPrivateOpen)
+                .Test("20", error)
+                .Send(expectedSnapshot.BedsLongtermPrivateOpen.ToString())
+                .StartTestAsync();
+
+            // Validate the results.
+            await ValidateProfile(expectedOrganization, expectedSnapshot);
         }
     }
 }

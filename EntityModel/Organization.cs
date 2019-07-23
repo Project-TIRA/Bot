@@ -29,7 +29,6 @@ namespace EntityModel
 
         // Capacity
         public Frequency UpdateFrequency { get; set; }
-        public int TotalBeds { get; set; }
 
         // Case Management
         public int CaseManagementTotal { get; set; }
@@ -38,6 +37,21 @@ namespace EntityModel
         public int CaseManagementAgeRangeStart { get; set; }
         public int CaseManagementAgeRangeEnd { get; set; }
         public bool CaseManagementSobriety { get; set; }
+
+        // Housing capacity
+        public int HousingEmergencyPrivateTotal { get; set; }
+        public int HousingEmergencySharedTotal { get; set; }
+        public int HousingLongtermPrivateTotal { get; set; }
+        public int HousingLongtermSharedTotal { get; set; }
+        public bool HousingHasWaitlist { get; set; }
+        
+        // Housing eligibility
+        public int HousingAgeRangeStart { get; set; }
+        public int HousingAgeRangeEnd { get; set; }
+        public Gender HousingGender { get; set; }
+        public FamilyStatus HousingFamilyStatus { get; set; }
+        public bool HousingServiceAnimal { get; set; }
+        public bool HousingSobriety { get; set; }
 
         // Snapshots
         public ICollection<Snapshot> Snapshots { get; set; }
@@ -82,6 +96,30 @@ namespace EntityModel
             }
         }
 
+        public void UpdateHousingGender(Gender gender, bool add)
+        {
+            if (add)
+            {
+                this.HousingGender |= gender;
+            }
+            else
+            {
+                this.HousingGender &= ~gender;
+            }
+        }
+
+        public void UpdateHousingFamilyStatus(FamilyStatus familyStatus, bool add)
+        {
+            if (add)
+            {
+                this.HousingFamilyStatus |= familyStatus;
+            }
+            else
+            {
+                this.HousingFamilyStatus &= ~familyStatus;
+            }
+        }
+
         public void SetDefaultAgeRange()
         {
             this.AgeRangeStart = 0;
@@ -92,6 +130,12 @@ namespace EntityModel
         {
             this.CaseManagementAgeRangeStart = 0;
             this.CaseManagementAgeRangeEnd = 0;
+        }
+
+        public void SetDefaultHousingAgeRange()
+        {
+            this.HousingAgeRangeStart = 0;
+            this.HousingAgeRangeEnd = 0;
         }
     }
 }
