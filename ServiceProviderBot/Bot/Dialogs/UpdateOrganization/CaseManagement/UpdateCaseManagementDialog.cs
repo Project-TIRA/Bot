@@ -47,7 +47,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.CaseManagement
 
                     if(organization.CaseManagementHasWaitlist && openSlots == 0)
                     {
-                        // Prompt to update number of open slots
+                        // Prompt to update waitlist length
                         return await stepContext.PromptAsync(
                             Utils.Prompts.IntPrompt,
                             new PromptOptions { Prompt = Phrases.CaseManagement.GetCaseManagementWaitlistLength },
@@ -71,7 +71,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.CaseManagement
             });
         }
 
-        private static async Task<bool> CanUpdate(StateAccessors state, DbInterface database, ITurnContext context)
+        public static async Task<bool> CanUpdate(StateAccessors state, DbInterface database, ITurnContext context)
         {
             var organization = await database.GetOrganization(context);
             

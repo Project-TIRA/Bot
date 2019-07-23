@@ -36,7 +36,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                     // Create a new snapshot to be filled in by UpdateOrganization process.
                     await database.CreateSnapshot(stepContext.Context);
 
-                    var housingNeedsUpdate = await HousingNeedsUpdate(state, database, stepContext.Context);
+                    var housingNeedsUpdate = await UpdateHousingDialog.CanUpdate(state, database, stepContext.Context);
                     if(!housingNeedsUpdate)
                     {
                         // Skip this step.
@@ -48,7 +48,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    var caseManagementNeedsUpdate = await CaseManagementNeedsUpdate(state, database, stepContext.Context);
+                    var caseManagementNeedsUpdate = await UpdateCaseManagementDialog.CanUpdate(state, database, stepContext.Context);
                     if (!caseManagementNeedsUpdate)
                     {
                         // Nothing to update.
@@ -78,24 +78,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
         private static async Task<bool> NeedsUpdate(StateAccessors state, DbInterface database, ITurnContext context)
         {
             // Check if any service needs updates
-            return await HousingNeedsUpdate(state, database, context) || 
-                await CaseManagementNeedsUpdate(state, database, context);
-        }
-
-        private static async Task<bool> HousingNeedsUpdate(StateAccessors state, DbInterface database, ITurnContext context)
-        {
-            var organization = await database.GetOrganization(context);
-
-            // Currently the only thing to update is the beds.
-            return organization.TotalBeds > 0;
-        }
-
-        private static async Task<bool> CaseManagementNeedsUpdate(StateAccessors state, DbInterface database, ITurnContext context)
-        {
-            var organization = await database.GetOrganization(context);
-
-            // Currently the only thing to update is the beds.
-            return organization.CaseManagementTotal > 0;
+            return await UpdateHousingDialog.CanUpdate(state, database, context) || 
+                await UpdateCaseManagementDialog.CanUpdate(state, database, context);
         }
     }
 }
