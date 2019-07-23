@@ -106,6 +106,14 @@ namespace Tests.Dialogs
                 Assert.Equal(actualOrganization.AgeRangeStart, expectedOrganization.AgeRangeStart);
                 Assert.Equal(actualOrganization.AgeRangeEnd, expectedOrganization.AgeRangeEnd);
                 Assert.Equal(actualOrganization.TotalBeds, expectedOrganization.TotalBeds);
+
+                //Case Management
+                Assert.Equal(actualOrganization.CaseManagementTotal, expectedOrganization.CaseManagementTotal);
+                Assert.Equal(actualOrganization.CaseManagementHasWaitlist, expectedOrganization.CaseManagementHasWaitlist);
+                Assert.Equal(actualOrganization.CaseManagementGender, expectedOrganization.CaseManagementGender);
+                Assert.Equal(actualOrganization.CaseManagementAgeRangeStart, expectedOrganization.CaseManagementAgeRangeStart);
+                Assert.Equal(actualOrganization.CaseManagementAgeRangeEnd, expectedOrganization.CaseManagementAgeRangeEnd);
+                Assert.Equal(actualOrganization.CaseManagementSobriety, expectedOrganization.CaseManagementSobriety);
             }
 
             if (expectedSnapshot != null)
@@ -150,11 +158,23 @@ namespace Tests.Dialogs
                 organization.OpenJobTrainingPositions = initialOrganization.OpenJobTrainingPositions;
                 organization.JobTrainingWaitlistPositions = initialOrganization.JobTrainingWaitlistPositions;
 
+                //Case Management
+                organization.CaseManagementTotal = initialOrganization.CaseManagementTotal;
+                organization.CaseManagementHasWaitlist = initialOrganization.CaseManagementHasWaitlist;
+                organization.CaseManagementGender = initialOrganization.CaseManagementGender;
+                organization.CaseManagementAgeRangeStart = initialOrganization.CaseManagementAgeRangeStart;
+                organization.CaseManagementAgeRangeEnd = initialOrganization.CaseManagementAgeRangeEnd;
+                organization.CaseManagementSobriety = initialOrganization.CaseManagementSobriety;
+
                 if (initialSnapshot != null)
                 {
                     var snapshot = await this.database.CreateSnapshot(turnContext);
                     snapshot.Date = initialSnapshot.Date;
                     snapshot.OpenBeds = initialSnapshot.OpenBeds;
+
+                    //Case Management
+                    snapshot.CaseManagementOpenSlots = initialSnapshot.CaseManagementOpenSlots;
+                    snapshot.CaseManagementWaitlistLength = initialSnapshot.CaseManagementWaitlistLength;
                 }
 
                 await this.database.Save();

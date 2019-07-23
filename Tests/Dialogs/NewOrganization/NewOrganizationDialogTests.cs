@@ -33,7 +33,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.AgeRangeEnd.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
+                .Test("no", StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
                 .Test("yes", StartsWith(Phrases.JobTrainingServices.GetJobTrainingPositions))
                 .Test("10", StartsWith(Phrases.JobTrainingServices.GetHasJobTrainingWaitlist))
                 .Test("yes", Phrases.NewOrganization.Closing)
@@ -59,7 +60,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
+                .Test("no", StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
@@ -85,7 +87,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
+                .Test("no", StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
@@ -114,7 +117,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
+                .Test("no", StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
@@ -145,7 +149,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.AgeRangeStart.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
                 .Test(expectedOrganization.AgeRangeEnd.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
+                .Test("no", StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
                 .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 

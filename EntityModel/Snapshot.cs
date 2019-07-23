@@ -20,6 +20,10 @@ namespace EntityModel
 
         public int JobTrainingWaitlistPositions { get; set; }
 
+        //Case Management
+        public int CaseManagementOpenSlots { get; set; }
+        public int CaseManagementWaitlistLength { get; set; }
+
         public Snapshot(Guid organizationId)
         {
             this.Id = Guid.NewGuid();

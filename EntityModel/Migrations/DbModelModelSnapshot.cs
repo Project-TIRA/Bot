@@ -60,6 +60,18 @@ namespace EntityModel.Migrations
 
                     b.Property<int>("JobTrainingWaitlistPositions");
 
+                    b.Property<int>("CaseManagementTotal");
+
+                    b.Property<bool>("CaseManagementHasWaitlist");
+
+                    b.Property<Gender>("CaseManagementGender");
+
+                    b.Property<int>("CaseManagementAgeRangeStart");
+
+                    b.Property<int>("CaseManagementAgeRangeEnd");
+
+                    b.Property<bool>("CaseManagementSobriety");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PhoneNumber")
@@ -83,6 +95,10 @@ namespace EntityModel.Migrations
                     b.Property<int>("OpenJobTrainingPositions");
 
                     b.Property<int>("JobTrainingWaitlistPositions");
+
+                    b.Property<int>("CaseManagementOpenSlots");
+
+                    b.Property<int>("CaseManagementWaitlistLength");
 
                     b.Property<Guid>("OrganizationId");
 
