@@ -24,18 +24,7 @@ namespace EntityModel.Migrations
                     AgeRangeStart = table.Column<int>(nullable: false),
                     AgeRangeEnd = table.Column<int>(nullable: false),
                     UpdateFrequency = table.Column<int>(nullable: false),
-                    TotalBeds = table.Column<int>(nullable: false),
-                    HasJobTrainingServices = table.Column<bool>(nullable:false),
-                    HasJobTrainingWaitlist = table.Column<bool>(nullable:false),
-                    OpenJobTrainingPositions = table.Column<int>(nullable:false),
-                    TotalJobTrainingPositions = table.Column<int>(nullable:false),
-                    JobTrainingWaitlistPositions = table.Column<int>(nullable:false),
-                    CaseManagementTotal = table.Column<int>(nullable:false),
-                    CaseManagementHasWaitlist = table.Column<bool>(nullable:false),
-                    CaseManagementGender = table.Column<Gender>(nullable:false),
-                    CaseManagementAgeRangeStart = table.Column<int>(nullable:false),
-                    CaseManagementAgeRangeEnd = table.Column<int>(nullable:false),
-                    CaseManagementSobriety = table.Column<bool>(nullable:false)
+                    TotalBeds = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -50,11 +39,7 @@ namespace EntityModel.Migrations
                     IsComplete = table.Column<bool>(nullable: false),
                     OrganizationId = table.Column<Guid>(nullable: false),
                     Date = table.Column<DateTime>(nullable: false),
-                    OpenBeds = table.Column<int>(nullable: false),
-                    OpenJobTrainingPositions = table.Column<int>(nullable: false),
-                    JobTrainingWaitlistPositions = table.Column<int>(nullable: false),
-                    CaseManagementOpenSlots = table.Column<int>(nullable:false),
-                    CaseManagementWaitlistLength = table.Column<int>(nullable:false)
+                    OpenBeds = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
