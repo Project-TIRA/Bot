@@ -31,6 +31,14 @@ namespace EntityModel
         public Frequency UpdateFrequency { get; set; }
         public int TotalBeds { get; set; }
 
+        // Case Management
+        public int CaseManagementTotal { get; set; }
+        public bool CaseManagementHasWaitlist { get; set; }
+        public Gender CaseManagementGender { get; set; }
+        public int CaseManagementAgeRangeStart { get; set; }
+        public int CaseManagementAgeRangeEnd { get; set; }
+        public bool CaseManagementSobriety { get; set; }
+
         // Snapshots
         public ICollection<Snapshot> Snapshots { get; set; }
 
@@ -55,11 +63,28 @@ namespace EntityModel
                 this.Gender &= ~gender;
             }
         }
+        public void UpdateCaseManagementGender(Gender gender, bool add)
+        {
+            if (add)
+            {
+                this.CaseManagementGender |= gender;
+            }
+            else
+            {
+                this.CaseManagementGender &= ~gender;
+            }
+        }
 
         public void SetDefaultAgeRange()
         {
             this.AgeRangeStart = 0;
             this.AgeRangeEnd = 0;
+        }
+
+        public void SetDefaultAgeRangeCaseManagement()
+        {
+            this.CaseManagementAgeRangeStart = 0;
+            this.CaseManagementAgeRangeEnd = 0;
         }
     }
 }

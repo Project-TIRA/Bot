@@ -16,6 +16,10 @@ namespace EntityModel
         public DateTime Date { get; set; }
         public int OpenBeds { get; set; }
 
+        //Case Management
+        public int CaseManagementOpenSlots { get; set; }
+        public int CaseManagementWaitlistLength { get; set; }
+
         public Snapshot(Guid organizationId)
         {
             this.Id = Guid.NewGuid();

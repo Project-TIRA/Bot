@@ -3,6 +3,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity;
+using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.CaseManagement;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
 
@@ -22,21 +23,32 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             {
                 async (stepContext, cancellationToken) =>
                 {
+                    // Create a new snapshot to be filled in by UpdateOrganization process.
+                    await database.CreateSnapshot(stepContext.Context);
+
                     var needsUpdate = await NeedsUpdate(state, database, stepContext.Context);
                     if (!needsUpdate)
                     {
                         // Nothing to update.
-                        await Messages.SendAsync(Phrases.UpdateOrganization.NothingToUpdate, stepContext.Context, cancellationToken);
+                        // Skip this step
+                        return await stepContext.NextAsync(null, cancellationToken);
+                    }
 
+                    // Push the update capacity dialog onto the stack.
+                    return await BeginDialogAsync(stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    var needsUpdate = await CaseManagementNeedsUpdate(state, database, stepContext.Context);
+                    if (!needsUpdate)
+                    {
+                        // Nothing to update.
                         // End this dialog to pop it off the stack.
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
 
-                    // Create a new snapshot to be filled in by UpdateOrganization process.
-                    await database.CreateSnapshot(stepContext.Context);
-
-                    // Push the update capacity dialog onto the stack.
-                    return await BeginDialogAsync(stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
+                    // Push the update case management dialog onto the stack.
+                    return await BeginDialogAsync(stepContext, UpdateCaseManagementDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
@@ -60,6 +72,14 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
 
             // Currently the only thing to update is the beds.
             return organization.TotalBeds > 0;
+        }
+
+        private static async Task<bool> CaseManagementNeedsUpdate(StateAccessors state, DbInterface database, ITurnContext context)
+        {
+            var organization = await database.GetOrganization(context);
+
+            // Currently the only thing to update is the beds.
+            return organization.CaseManagementTotal > 0;
         }
     }
 }
