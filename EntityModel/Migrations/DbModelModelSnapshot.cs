@@ -50,6 +50,16 @@ namespace EntityModel.Migrations
 
                     b.Property<string>("Zip");
 
+                    b.Property<bool>("HasJobTrainingServices");
+
+                    b.Property<bool>("HasJobTrainingWaitlist");
+
+                    b.Property<int>("OpenJobTrainingPositions");
+
+                    b.Property<int>("TotalJobTrainingPositions");
+
+                    b.Property<int>("JobTrainingWaitlistPositions");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PhoneNumber")
@@ -69,6 +79,10 @@ namespace EntityModel.Migrations
                     b.Property<bool>("IsComplete");
 
                     b.Property<int>("OpenBeds");
+
+                    b.Property<int>("OpenJobTrainingPositions");
+
+                    b.Property<int>("JobTrainingWaitlistPositions");
 
                     b.Property<Guid>("OrganizationId");
 

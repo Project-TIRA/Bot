@@ -40,6 +40,16 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                 },
                 async (stepContext, cancellationToken) =>
                 {
+                    var organization = await database.GetOrganization(stepContext.Context);
+                    if(organization.HasJobTrainingServices)
+                    {
+                        return await BeginDialogAsync(stepContext, JobTraining.UpdateJobTrainingDialog.Name, null, cancellationToken);
+                    }
+
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
                     // Mark the snapshot as complete.
                     var snapshot = await database.GetSnapshot(stepContext.Context);
                     snapshot.IsComplete = true;
@@ -58,8 +68,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
         {
             var organization = await database.GetOrganization(context);
 
-            // Currently the only thing to update is the beds.
-            return organization.TotalBeds > 0;
+            // Currently the only thing to update is the beds and job training openings.
+            return organization.TotalBeds > 0 || organization.HasJobTrainingServices;
         }
     }
 }

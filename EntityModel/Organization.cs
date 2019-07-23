@@ -34,6 +34,13 @@ namespace EntityModel
         // Snapshots
         public ICollection<Snapshot> Snapshots { get; set; }
 
+        // Job Training Services
+        public bool HasJobTrainingServices { get; set; }
+        public bool HasJobTrainingWaitlist { get; set; }
+        public int TotalJobTrainingPositions { get; set; }
+        public int OpenJobTrainingPositions { get; set; }
+        public int JobTrainingWaitlistPositions { get; set; }
+
         public Organization()
         {
             this.Id = Guid.NewGuid();

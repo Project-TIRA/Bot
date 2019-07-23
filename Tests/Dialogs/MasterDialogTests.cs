@@ -26,7 +26,8 @@ namespace Tests.Dialogs
                 .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
+                .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Organization should be completed.
@@ -42,15 +43,23 @@ namespace Tests.Dialogs
             var expectedOrganization = CreateDefaultTestOrganization();
             expectedOrganization.IsVerified = true;
             expectedOrganization.TotalBeds = 10;
+            expectedOrganization.HasJobTrainingServices = true;
+            expectedOrganization.TotalJobTrainingPositions = 10;
+            expectedOrganization.HasJobTrainingWaitlist = true;
+            expectedOrganization.JobTrainingWaitlistPositions = 0;
 
             var expectedSnapshot = new Snapshot(expectedOrganization.Id);
             expectedSnapshot.OpenBeds = 5;
+            expectedSnapshot.OpenJobTrainingPositions = 5;
+            expectedSnapshot.JobTrainingWaitlistPositions = 2;
 
             await CreateTestFlow(MasterDialog.Name, expectedOrganization)
                 .Send("update")
                 .AssertReply(Phrases.Greeting.Welcome)
                 .AssertReply(Phrases.Capacity.GetHousingOpen)
-                .Test("5", Phrases.UpdateOrganization.Closing)
+                .Test("5", StartsWith(Phrases.JobTrainingServices.GetJobTrainingOpenings))
+                .Test("0", StartsWith(Phrases.JobTrainingServices.GetJobTrainingWaitlistPositions))
+                .Test("2", Phrases.UpdateOrganization.Closing)
                 .StartTestAsync();
 
             // Snapshot should be completed.
