@@ -1,4 +1,6 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
@@ -50,6 +52,14 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     return await stepContext.EndDialogAsync(cancellationToken);
                 }
             });
+        }
+
+        public static async Task<bool> CanUpdate(StateAccessors state, DbInterface database, ITurnContext context)
+        {
+            var organization = await database.GetOrganization(context);
+
+            // Updates valid 
+            return organization.TotalBeds > 0;
         }
     }
 }
