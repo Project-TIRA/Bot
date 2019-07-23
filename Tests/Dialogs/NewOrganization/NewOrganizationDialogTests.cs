@@ -33,7 +33,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.AgeRangeEnd.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
+                .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Organization profile should be completed.
@@ -56,7 +57,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
+                .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Organization profile should be completed.
@@ -81,7 +83,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
+                .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Organization profile should be completed.
@@ -109,7 +112,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
                 .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
+                .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Organization profile should be completed.
@@ -139,7 +143,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.AgeRangeStart.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
                 .Test(expectedOrganization.AgeRangeEnd.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
+                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
+                .Test("no", Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
             // Organization profile should be completed.

@@ -63,8 +63,7 @@ namespace Shared
 
         public static class UpdateOrganization
         {
-            public static Activity HousingNothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update for housing!");
-            public static Activity CaseManagementNothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update for case management!");
+            public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
         }
 

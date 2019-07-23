@@ -23,14 +23,23 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    // Create a new snapshot to be filled in by UpdateOrganization process.
-                    await database.CreateSnapshot(stepContext.Context);
-
                     var needsUpdate = await NeedsUpdate(state, database, stepContext.Context);
                     if (!needsUpdate)
                     {
                         // Nothing to update.
-                        // Skip this step
+                        await Messages.SendAsync(Phrases.UpdateOrganization.NothingToUpdate, stepContext.Context, cancellationToken);
+
+                        // End this dialog to pop it off the stack.
+                        return await stepContext.EndDialogAsync(cancellationToken);
+                    }
+
+                    // Create a new snapshot to be filled in by UpdateOrganization process.
+                    await database.CreateSnapshot(stepContext.Context);
+
+                    var housingNeedsUpdate = await HousingNeedsUpdate(state, database, stepContext.Context);
+                    if(!housingNeedsUpdate)
+                    {
+                        // Skip this step.
                         return await stepContext.NextAsync(null, cancellationToken);
                     }
 
@@ -39,8 +48,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    var needsUpdate = await CaseManagementNeedsUpdate(state, database, stepContext.Context);
-                    if (!needsUpdate)
+                    var caseManagementNeedsUpdate = await CaseManagementNeedsUpdate(state, database, stepContext.Context);
+                    if (!caseManagementNeedsUpdate)
                     {
                         // Nothing to update.
                         // End this dialog to pop it off the stack.
@@ -67,6 +76,13 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
         }
 
         private static async Task<bool> NeedsUpdate(StateAccessors state, DbInterface database, ITurnContext context)
+        {
+            // Check if any service needs updates
+            return await HousingNeedsUpdate(state, database, context) || 
+                await CaseManagementNeedsUpdate(state, database, context);
+        }
+
+        private static async Task<bool> HousingNeedsUpdate(StateAccessors state, DbInterface database, ITurnContext context)
         {
             var organization = await database.GetOrganization(context);
 

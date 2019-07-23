@@ -26,7 +26,7 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.CaseManagement
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    // If Case Management is not offered, set Total capacity to zero and exit this dialog
+                    // If Case Management is not offered, set total capacity to zero and exit this dialog
                     if ((bool)stepContext.Result == false)
                     {
                         // Update the profile with the default capacity.
