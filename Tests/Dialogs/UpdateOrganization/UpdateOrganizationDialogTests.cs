@@ -14,22 +14,31 @@ namespace Tests.Dialogs.UpdateOrganization
         public async Task UpdateAll()
         {
             var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.TotalBeds = 10;
+            expectedOrganization.HousingEmergencyPrivateTotal = 10;
+            expectedOrganization.HousingEmergencySharedTotal = 8;
+            expectedOrganization.HousingLongtermPrivateTotal = 6;
+            expectedOrganization.HousingLongtermSharedTotal = 4;
             expectedOrganization.HasJobTrainingServices = true;
             expectedOrganization.TotalJobTrainingPositions = 10;
             expectedOrganization.HasJobTrainingWaitlist = true;
             expectedOrganization.CaseManagementTotal = 10;
 
             var expectedSnapshot = new Snapshot(expectedOrganization.Id);
-            expectedSnapshot.OpenBeds = 5;
+            expectedSnapshot.BedsEmergencyPrivateOpen = 5;
+            expectedSnapshot.BedsEmergencySharedOpen = 4;
+            expectedSnapshot.BedsLongtermPrivateOpen = 3;
+            expectedSnapshot.BedsLongtermSharedOpen = 2;
             expectedSnapshot.OpenJobTrainingPositions = 5;
             expectedSnapshot.JobTrainingWaitlistPositions = 2;
             expectedSnapshot.CaseManagementOpenSlots = 5;
 
             // Execute the conversation.
             await CreateTestFlow(UpdateOrganizationDialog.Name, expectedOrganization, expectedSnapshot)
-                .Test("begin", Phrases.Capacity.GetHousingOpen)
-                .Test(expectedSnapshot.OpenBeds.ToString(), Phrases.CaseManagement.GetCaseManagementOpen)
+                .Test("begin", Phrases.Capacity.GetHousingEmergencyPrivateOpen)
+                .Test(expectedSnapshot.BedsEmergencyPrivateOpen.ToString(), Phrases.Capacity.GetHousingEmergencySharedOpen)
+                .Test(expectedSnapshot.BedsEmergencySharedOpen.ToString(), Phrases.Capacity.GetHousingLongtermPrivateOpen)
+                .Test(expectedSnapshot.BedsLongtermPrivateOpen.ToString(), Phrases.Capacity.GetHousingLongtermSharedOpen)
+                .Test(expectedSnapshot.BedsLongtermSharedOpen.ToString(), Phrases.CaseManagement.GetCaseManagementOpen)
                 .Test(expectedSnapshot.CaseManagementOpenSlots.ToString(), StartsWith(Phrases.JobTrainingServices.GetJobTrainingOpenings))
                 .Test("0", StartsWith(Phrases.JobTrainingServices.GetJobTrainingWaitlistPositions))
                 .Test("2", Phrases.UpdateOrganization.Closing)
@@ -83,7 +92,7 @@ namespace Tests.Dialogs.UpdateOrganization
         {
             var organization = CreateDefaultTestOrganization();
             organization.IsVerified = true;
-            organization.TotalBeds = 10;
+            organization.HousingEmergencyPrivateTotal = 10;
 
             var snapshot = new Snapshot(organization.Id);
             snapshot.Date = DateTime.UtcNow.AddDays(-1);

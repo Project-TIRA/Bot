@@ -14,7 +14,14 @@ namespace EntityModel
         public Organization Organization { get; set; }
 
         public DateTime Date { get; set; }
-        public int OpenBeds { get; set; }
+        public int BedsEmergencyPrivateOpen { get; set; }
+        public int BedsEmergencyPrivateWaitlistLength { get; set; }
+        public int BedsEmergencySharedOpen { get; set; }
+        public int BedsEmergencySharedWaitlistLength { get; set; }
+        public int BedsLongtermPrivateOpen { get; set; }
+        public int BedsLongtermPrivateWaitlistLength { get; set; }
+        public int BedsLongtermSharedOpen { get; set; }
+        public int BedsLongtermSharedWaitlistLength { get; set; }
 
         public int OpenJobTrainingPositions { get; set; }
 

@@ -20,7 +20,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 {
                     // Check if the organization has housing.
                     var organization = await database.GetOrganization(stepContext.Context);
-                    if (organization.TotalBeds > 0)
+                    if (organization.HousingEmergencyPrivateTotal > 0 || organization.HousingEmergencySharedTotal > 0 
+                        || organization.HousingLongtermPrivateTotal > 0 || organization.HousingLongtermSharedTotal > 0)
                     {
                         // Push the update housing dialog onto the stack.
                         return await BeginDialogAsync(stepContext, UpdateHousingDialog.Name, null, cancellationToken);

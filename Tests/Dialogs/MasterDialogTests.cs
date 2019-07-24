@@ -43,7 +43,7 @@ namespace Tests.Dialogs
         {
             var expectedOrganization = CreateDefaultTestOrganization();
             expectedOrganization.IsVerified = true;
-            expectedOrganization.TotalBeds = 10;
+            expectedOrganization.HousingEmergencyPrivateTotal = 10;
             expectedOrganization.HasJobTrainingServices = true;
             expectedOrganization.TotalJobTrainingPositions = 10;
             expectedOrganization.HasJobTrainingWaitlist = true;
@@ -51,14 +51,14 @@ namespace Tests.Dialogs
             expectedOrganization.CaseManagementTotal = 10;
 
             var expectedSnapshot = new Snapshot(expectedOrganization.Id);
-            expectedSnapshot.OpenBeds = 5;
+            expectedSnapshot.BedsEmergencyPrivateOpen = 5;
             expectedSnapshot.OpenJobTrainingPositions = 5;
             expectedSnapshot.JobTrainingWaitlistPositions = 2;
 
             await CreateTestFlow(MasterDialog.Name, expectedOrganization)
                 .Send("update")
                 .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Capacity.GetHousingOpen)
+                .AssertReply(Phrases.Capacity.GetHousingEmergencyPrivateOpen)
                 .Test("5", Phrases.CaseManagement.GetCaseManagementOpen)
                 .Test("5", StartsWith(Phrases.JobTrainingServices.GetJobTrainingOpenings))
                 .Test("0", StartsWith(Phrases.JobTrainingServices.GetJobTrainingWaitlistPositions))

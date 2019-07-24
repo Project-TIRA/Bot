@@ -105,7 +105,6 @@ namespace Tests.Dialogs
                 Assert.Equal(actualOrganization.Gender, expectedOrganization.Gender);
                 Assert.Equal(actualOrganization.AgeRangeStart, expectedOrganization.AgeRangeStart);
                 Assert.Equal(actualOrganization.AgeRangeEnd, expectedOrganization.AgeRangeEnd);
-                Assert.Equal(actualOrganization.TotalBeds, expectedOrganization.TotalBeds);
 
                 //Case Management
                 Assert.Equal(actualOrganization.CaseManagementTotal, expectedOrganization.CaseManagementTotal);
@@ -114,12 +113,29 @@ namespace Tests.Dialogs
                 Assert.Equal(actualOrganization.CaseManagementAgeRangeStart, expectedOrganization.CaseManagementAgeRangeStart);
                 Assert.Equal(actualOrganization.CaseManagementAgeRangeEnd, expectedOrganization.CaseManagementAgeRangeEnd);
                 Assert.Equal(actualOrganization.CaseManagementSobriety, expectedOrganization.CaseManagementSobriety);
+                
+                Assert.Equal(actualOrganization.HousingEmergencyPrivateTotal, expectedOrganization.HousingEmergencyPrivateTotal);
+                Assert.Equal(actualOrganization.HousingEmergencySharedTotal, expectedOrganization.HousingEmergencySharedTotal);
+                Assert.Equal(actualOrganization.HousingLongtermPrivateTotal, expectedOrganization.HousingLongtermPrivateTotal);
+                Assert.Equal(actualOrganization.HousingLongtermSharedTotal, expectedOrganization.HousingLongtermSharedTotal);
+                Assert.Equal(actualOrganization.HousingHasWaitlist, expectedOrganization.HousingHasWaitlist);
+                Assert.Equal(actualOrganization.HousingAgeRangeStart, expectedOrganization.HousingAgeRangeStart);
+                Assert.Equal(actualOrganization.HousingAgeRangeEnd, expectedOrganization.HousingAgeRangeEnd);
+                Assert.Equal(actualOrganization.HousingGender, expectedOrganization.HousingGender);
+                Assert.Equal(actualOrganization.HousingFamilyStatus, expectedOrganization.HousingFamilyStatus);
             }
 
             if (expectedSnapshot != null)
             {
                 var actualSnapshot = await this.database.GetSnapshot(this.turnContext);
-                Assert.Equal(actualSnapshot.OpenBeds, expectedSnapshot.OpenBeds);
+                Assert.Equal(actualSnapshot.BedsEmergencyPrivateOpen, expectedSnapshot.BedsEmergencyPrivateOpen);
+                Assert.Equal(actualSnapshot.BedsEmergencySharedOpen, expectedSnapshot.BedsEmergencySharedOpen);
+                Assert.Equal(actualSnapshot.BedsLongtermPrivateOpen, expectedSnapshot.BedsLongtermPrivateOpen);
+                Assert.Equal(actualSnapshot.BedsLongtermSharedOpen, expectedSnapshot.BedsLongtermSharedOpen);
+                Assert.Equal(actualSnapshot.BedsEmergencyPrivateWaitlistLength, expectedSnapshot.BedsEmergencyPrivateWaitlistLength);
+                Assert.Equal(actualSnapshot.BedsEmergencySharedWaitlistLength, expectedSnapshot.BedsEmergencySharedWaitlistLength);
+                Assert.Equal(actualSnapshot.BedsLongtermPrivateWaitlistLength, expectedSnapshot.BedsLongtermPrivateWaitlistLength);
+                Assert.Equal(actualSnapshot.BedsLongtermSharedWaitlistLength, expectedSnapshot.BedsLongtermSharedWaitlistLength);
             }
         }
 
@@ -151,7 +167,6 @@ namespace Tests.Dialogs
                 organization.Gender = initialOrganization.Gender;
                 organization.AgeRangeStart = initialOrganization.AgeRangeStart;
                 organization.AgeRangeEnd = initialOrganization.AgeRangeEnd;
-                organization.TotalBeds = initialOrganization.TotalBeds;
                 organization.HasJobTrainingServices = initialOrganization.HasJobTrainingServices;
                 organization.HasJobTrainingWaitlist = initialOrganization.HasJobTrainingWaitlist;
                 organization.TotalJobTrainingPositions = initialOrganization.TotalJobTrainingPositions;
@@ -162,19 +177,39 @@ namespace Tests.Dialogs
                 organization.CaseManagementTotal = initialOrganization.CaseManagementTotal;
                 organization.CaseManagementHasWaitlist = initialOrganization.CaseManagementHasWaitlist;
                 organization.CaseManagementGender = initialOrganization.CaseManagementGender;
+                organization.HousingEmergencyPrivateTotal = initialOrganization.HousingEmergencyPrivateTotal;
+                organization.HousingEmergencySharedTotal = initialOrganization.HousingEmergencySharedTotal;
+                organization.HousingLongtermPrivateTotal = initialOrganization.HousingLongtermPrivateTotal;
+                organization.HousingLongtermSharedTotal = initialOrganization.HousingLongtermSharedTotal;
+                organization.HousingHasWaitlist = initialOrganization.HousingHasWaitlist;
+                organization.HousingAgeRangeStart = initialOrganization.HousingAgeRangeStart;
+                organization.HousingAgeRangeEnd = initialOrganization.HousingAgeRangeEnd;
+                organization.HousingGender = initialOrganization.HousingGender;
+                organization.HousingFamilyStatus = initialOrganization.HousingFamilyStatus;
+                organization.HousingServiceAnimal = initialOrganization.HousingServiceAnimal;
+                organization.HousingSobriety = initialOrganization.HousingSobriety;
                 organization.CaseManagementAgeRangeStart = initialOrganization.CaseManagementAgeRangeStart;
                 organization.CaseManagementAgeRangeEnd = initialOrganization.CaseManagementAgeRangeEnd;
                 organization.CaseManagementSobriety = initialOrganization.CaseManagementSobriety;
+                
+                
 
                 if (initialSnapshot != null)
                 {
                     var snapshot = await this.database.CreateSnapshot(turnContext);
                     snapshot.Date = initialSnapshot.Date;
-                    snapshot.OpenBeds = initialSnapshot.OpenBeds;
 
                     //Case Management
                     snapshot.CaseManagementOpenSlots = initialSnapshot.CaseManagementOpenSlots;
                     snapshot.CaseManagementWaitlistLength = initialSnapshot.CaseManagementWaitlistLength;
+                    snapshot.BedsEmergencyPrivateOpen = initialSnapshot.BedsEmergencyPrivateOpen;
+                    snapshot.BedsEmergencySharedOpen = initialSnapshot.BedsEmergencySharedOpen;
+                    snapshot.BedsLongtermPrivateOpen = initialSnapshot.BedsLongtermPrivateOpen;
+                    snapshot.BedsLongtermSharedOpen = initialSnapshot.BedsLongtermSharedOpen;
+                    snapshot.BedsEmergencyPrivateWaitlistLength = initialSnapshot.BedsEmergencyPrivateWaitlistLength;
+                    snapshot.BedsEmergencySharedWaitlistLength = initialSnapshot.BedsEmergencySharedWaitlistLength;
+                    snapshot.BedsLongtermPrivateWaitlistLength = initialSnapshot.BedsLongtermPrivateWaitlistLength;
+                    snapshot.BedsLongtermSharedWaitlistLength = initialSnapshot.BedsLongtermSharedWaitlistLength;
                 }
 
                 await this.database.Save();
