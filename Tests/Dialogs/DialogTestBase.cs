@@ -115,6 +115,32 @@ namespace Tests.Dialogs
             }
         }
 
+        protected async Task ValidateProfileMentalHealth(Organization expectedOrganization = null, Snapshot expectedSnapshot = null)
+        {
+            if (expectedOrganization != null)
+            {
+                var actualOrganization = await this.database.GetOrganization(this.turnContext);
+                Assert.Equal(actualOrganization.Name, expectedOrganization.Name);
+                Assert.Equal(actualOrganization.Gender, expectedOrganization.Gender);
+                Assert.Equal(actualOrganization.AgeRangeStart, expectedOrganization.AgeRangeStart);
+                Assert.Equal(actualOrganization.AgeRangeEnd, expectedOrganization.AgeRangeEnd);
+                Assert.Equal(actualOrganization.TotalBeds, expectedOrganization.TotalBeds);
+                Assert.Equal(actualOrganization.MentalHealth_InPatientTotal, expectedOrganization.MentalHealth_InPatientTotal);
+                Assert.Equal(actualOrganization.MentalHealth_OutPatientTotal, expectedOrganization.MentalHealth_OutPatientTotal);
+                Assert.Equal(actualOrganization.MentalHealth_HasWaitlist, expectedOrganization.MentalHealth_HasWaitlist);
+            }
+
+            if (expectedSnapshot != null)
+            {
+                var actualSnapshot = await this.database.GetSnapshot(this.turnContext);
+                Assert.Equal(actualSnapshot.OpenBeds, expectedSnapshot.OpenBeds);
+                Assert.Equal(actualSnapshot.MentalHealth_InPatientOpen, expectedSnapshot.MentalHealth_InPatientOpen);
+                Assert.Equal(actualSnapshot.MentalHealth_OutPatientOpen, expectedSnapshot.MentalHealth_OutPatientOpen);
+                Assert.Equal(actualSnapshot.MentalHealth_InPatientWaitlistLength, expectedSnapshot.MentalHealth_InPatientWaitlistLength);
+                Assert.Equal(actualSnapshot.MentalHealth_OutPatientWaitlistLength, expectedSnapshot.MentalHealth_OutPatientWaitlistLength);
+            }
+        }
+
         protected Action<IActivity> StartsWith(IMessageActivity expected)
         {
             return receivedActivity =>
@@ -144,12 +170,19 @@ namespace Tests.Dialogs
                 organization.AgeRangeStart = initialOrganization.AgeRangeStart;
                 organization.AgeRangeEnd = initialOrganization.AgeRangeEnd;
                 organization.TotalBeds = initialOrganization.TotalBeds;
+                organization.MentalHealth_InPatientTotal = initialOrganization.MentalHealth_InPatientTotal;
+                organization.MentalHealth_OutPatientTotal = initialOrganization.MentalHealth_OutPatientTotal;
+                organization.MentalHealth_HasWaitlist = initialOrganization.MentalHealth_HasWaitlist;
 
                 if (initialSnapshot != null)
                 {
                     var snapshot = await this.database.CreateSnapshot(turnContext);
                     snapshot.Date = initialSnapshot.Date;
                     snapshot.OpenBeds = initialSnapshot.OpenBeds;
+                    snapshot.MentalHealth_InPatientOpen = initialSnapshot.MentalHealth_InPatientOpen;
+                    snapshot.MentalHealth_OutPatientOpen = initialSnapshot.MentalHealth_OutPatientOpen;
+                    snapshot.MentalHealth_InPatientWaitlistLength = initialSnapshot.MentalHealth_InPatientWaitlistLength;
+                    snapshot.MentalHealth_OutPatientWaitlistLength = initialSnapshot.MentalHealth_OutPatientWaitlistLength;
                 }
 
                 await this.database.Save();

@@ -67,6 +67,33 @@ namespace Shared
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
         }
 
+        public static class MentalHealth
+        {
+            public static Activity GetHasMentalHealth = MessageFactory.Text("Does your organization work with mental health?");
+
+            public static Activity GetHasDemographic = MessageFactory.Text("Does your organization work with a specific demographic?");
+            public static Activity GetHasDemographicMen = MessageFactory.Text("Does your organization work with men for mental health help?");
+            public static Activity GetHasDemographicWomen = MessageFactory.Text("Does your organization work with women for mental health help?");
+            public static Activity GetHasDemographicAgeRange = MessageFactory.Text("Does your organization work with an age range for mental health help?");
+            public static Activity GetAgeRangeStart = MessageFactory.Text("What is the youngest age your organization works with for mental health help?");
+            public static Activity GetAgeRangeEnd = MessageFactory.Text("What is the oldest age your organization works with for mental health help?");
+            public static Activity GetAgeRangeError = MessageFactory.Text("Oops, the oldest age must be greater than youngest age.");
+            public static Activity GetInPatientTotal = MessageFactory.Text("How many people can your organization serve for in patient mental health services in total?");
+            public static Activity GetOutPatientTotal = MessageFactory.Text("How many people can your organization serve for out patient mental health services in total?");
+            public static Activity GetHasWaitlist = MessageFactory.Text("Does your organization have a waitlist for mental health services?");
+
+            public static Activity GetInPatientOpen = MessageFactory.Text("How many in patient mental health services spots are open in your organization?");
+            public static Activity GetInPatientWaitlistLength = MessageFactory.Text("How many in patient mental health services spots are open in the waitlist?");
+            public static Activity GetOutPatientOpen = MessageFactory.Text("How many out patient mental health services spots are open in your organization?");
+            public static Activity GetOutPatientWaitlistLength = MessageFactory.Text("How many out patient mental health services spots are open in the waitlist?");
+
+            public static string GetMentalHealthErrorFormat(int totalSpots)
+            {
+                return string.Format("Oops, the total spots for mental health services ({0}) must be greater than the open spots.", totalSpots);
+            }
+        }
+
+
         public static bool TriggerReset(ITurnContext turnContext)
         {
             // TODO

@@ -31,6 +31,19 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 },
                 async (stepContext, cancellationToken) =>
                 {
+                    // Check if the organization has housing.
+                    var organization = await database.GetOrganization(stepContext.Context);
+                    if (organization.MentalHealth_InPatientTotal > 0 || organization.MentalHealth_OutPatientTotal > 0)
+                    {
+                        // Push the update housing dialog onto the stack.
+                        return await BeginDialogAsync(stepContext, UpdateMentalHealthDialog.Name, null, cancellationToken);
+                    }
+
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
                 }

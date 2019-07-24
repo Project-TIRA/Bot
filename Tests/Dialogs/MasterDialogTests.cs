@@ -25,6 +25,7 @@ namespace Tests.Dialogs
                 .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
                 .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
+                .Test("no", StartsWith(Phrases.MentalHealth.GetHasMentalHealth))
                 .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
                 .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();

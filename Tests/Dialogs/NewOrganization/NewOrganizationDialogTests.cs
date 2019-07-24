@@ -32,7 +32,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.AgeRangeStart.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
                 .Test(expectedOrganization.AgeRangeEnd.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
+                .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.MentalHealth.GetHasMentalHealth))
+                .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
                 .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
@@ -55,6 +56,7 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
                 .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
+                .Test("no", StartsWith(Phrases.MentalHealth.GetHasMentalHealth))
                 .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
                 .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
@@ -80,7 +82,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
+                .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.MentalHealth.GetHasMentalHealth))
+                .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
                 .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
@@ -108,7 +111,8 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("yes", Phrases.Capacity.GetHousingTotal)
-                .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
+                .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.MentalHealth.GetHasMentalHealth))
+                .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
                 .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();
 
@@ -138,6 +142,7 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("yes", Phrases.AgeRange.GetAgeRangeStart)
                 .Test(expectedOrganization.AgeRangeStart.ToString(), Phrases.AgeRange.GetAgeRangeEnd)
                 .Test(expectedOrganization.AgeRangeEnd.ToString(), StartsWith(Phrases.Capacity.GetHasHousing))
+                .Test("no", StartsWith(Phrases.MentalHealth.GetHasMentalHealth))
                 .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
                 .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
                 .StartTestAsync();

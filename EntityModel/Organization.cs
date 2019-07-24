@@ -39,10 +39,6 @@ namespace EntityModel
         public int MentalHealth_OutPatientTotal { get; set; }
         public bool MentalHealth_HasWaitlist { get; set; }
 
-        public int MentalHealth_InPatientOpen { get; set; }
-        public int MentalHealth_InPatientWaitlistLength { get; set; }
-        public int MentalHealth_OutPatientOpen { get; set; }
-        public int MentalHealth_OutPatientWaitlistLength { get; set; }
 
 
         // Snapshots

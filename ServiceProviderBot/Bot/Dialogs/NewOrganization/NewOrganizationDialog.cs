@@ -7,7 +7,7 @@ using ServiceProviderBot.Bot.Dialogs.NewOrganization.Location;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
 
-namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
+namespace ServiceProviderBot.Bot.Dialogs.NewOrganization 
 {
     public class NewOrganizationDialog : DialogBase
     {

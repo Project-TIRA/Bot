@@ -8,6 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Bot\Dialogs\NewOrganization\NewFolder\**" />
+    <Content Remove="Bot\Dialogs\NewOrganization\NewFolder\**" />
+    <EmbeddedResource Remove="Bot\Dialogs\NewOrganization\NewFolder\**" />
+    <None Remove="Bot\Dialogs\NewOrganization\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Bot\Dialogs\NewOrganization\MentalHealth\CapacityDialog.cs" />
+    <Compile Remove="Bot\Dialogs\NewOrganization\MentalHealth\FrequencyDialog.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Bot.Builder" Version="4.2.0" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.2.0" />
@@ -18,9 +30,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
-    <Folder Include="Bot\Dialogs\UpdateOrganization\" />
     <Folder Include="Bot\Dialogs\NewOrganization\Demographic\" />
-    <Folder Include="Bot\Dialogs\UpdateOrganization\Capacity\" />
     <Folder Include="Bot\Dialogs\NewOrganization\Location\" />
     <Folder Include="Bot\Models\" />
     <Folder Include="Bot\Models\LocationApi\" />

@@ -38,26 +38,6 @@ namespace EntityModel.Migrations
 
                     b.Property<bool>("IsVerified");
 
-                    b.Property<int>("MentalHealth_AgeRangeEnd");
-
-                    b.Property<int>("MentalHealth_AgeRangeStart");
-
-                    b.Property<int>("MentalHealth_Gender");
-
-                    b.Property<bool>("MentalHealth_HasWaitlist");
-
-                    b.Property<int>("MentalHealth_InPatientOpen");
-
-                    b.Property<int>("MentalHealth_InPatientTotal");
-
-                    b.Property<int>("MentalHealth_InPatientWaitlistLength");
-
-                    b.Property<int>("MentalHealth_OutPatientOpen");
-
-                    b.Property<int>("MentalHealth_OutPatientTotal");
-
-                    b.Property<int>("MentalHealth_OutPatientWaitlistLength");
-
                     b.Property<string>("Name");
 
                     b.Property<string>("PhoneNumber");
