@@ -166,6 +166,9 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         snapshot.BedsLongtermPrivateWaitlistLength = (int)stepContext.Result;
                         await database.Save();
                     }
+                        // Send error message.
+                        var error = Phrases.Capacity.GetHousingError(organization.TotalBeds);
+                        await Messages.SendAsync(error, stepContext.Context, cancellationToken);
 
                     var organization = await database.GetOrganization(stepContext.Context);
                     if (organization.HousingLongtermSharedTotal > 0)

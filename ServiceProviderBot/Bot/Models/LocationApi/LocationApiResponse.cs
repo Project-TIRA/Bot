@@ -6,10 +6,13 @@ namespace ServiceProviderBot.Bot.Models.LocationApi
     {
         public LocationApiResult[] Results { get; set; }
 
-        public LocationApiAddress GetTopStreetResult(string expectedZip)
+        public LocationApiAddress GetTopResult()
         {
-            return this.Results.FirstOrDefault(r => r.Type == LocationApiResult.StreetType &&
-                                                    r.Address.PostalCode == expectedZip).Address;
+            return this.Results
+                .Where(r => r.Type == LocationApiResult.PointAddressType)
+                .OrderByDescending(r => r.Score)
+                .FirstOrDefault()
+                .Address;
         }
     }
 }

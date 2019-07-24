@@ -10,6 +10,8 @@ namespace EntityModel
         Female = 2,
         NonBinary = 4,
         All = Male | Female | NonBinary
+        //     = 4
+        //     = 8
         // Todo: Add more options
     }
 }

@@ -88,6 +88,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
 
             var expectedSnapshot = new Snapshot(expectedOrganization.Id);
             expectedSnapshot.BedsEmergencyPrivateOpen = 5;
+            var error = Phrases.Capacity.GetHousingError(initialOrganization.TotalBeds);
 
             // Execute the conversation.
             await CreateTestFlow(UpdateHousingDialog.Name, expectedOrganization, expectedSnapshot)

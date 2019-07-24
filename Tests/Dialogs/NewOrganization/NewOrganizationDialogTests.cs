@@ -53,7 +53,8 @@ namespace Tests.Dialogs.NewOrganization
             await CreateTestFlow(NewOrganizationDialog.Name, expectedOrganization)
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
-                .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test(TestOrgPartialAddress, StartsWith(Phrases.Location.GetLocationConfirmation(TestOrgFullAddress)))
+                .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicMen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicWomen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
@@ -87,6 +88,27 @@ namespace Tests.Dialogs.NewOrganization
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", StartsWith(Phrases.MentalHealth.GetHasMentalHealth))
                 .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
+
+            // Organization profile should be completed.
+            expectedOrganization.IsComplete = true;
+
+            // Validate the results.
+            await ValidateProfile(expectedOrganization);
+        }
+
+        [Fact]
+        public async Task NoDemographic()
+        {
+            var expectedOrganization = CreateDefaultTestOrganization();
+            expectedOrganization.UpdateFrequency = Frequency.Daily;
+            expectedOrganization.TotalBeds = 10;
+
+            // Execute the conversation.
+            await CreateTestFlow(NewOrganizationDialog.Name, expectedOrganization)
+                .Test("begin", Phrases.NewOrganization.GetName)
+                .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
+                .Test(TestOrgPartialAddress, StartsWith(Phrases.Location.GetLocationConfirmation(TestOrgFullAddress)))
+                .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
                 .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
                 .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
@@ -151,7 +173,28 @@ namespace Tests.Dialogs.NewOrganization
         //    // Validate the results.
         //    await ValidateProfile(expectedOrganization);
         //}
+            // Execute the conversation.
+            await CreateTestFlow(NewOrganizationDialog.Name, expectedOrganization)
+                .Test("begin", Phrases.NewOrganization.GetName)
+                .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
+                .Test(TestOrgPartialAddress, StartsWith(Phrases.Location.GetLocationConfirmation(TestOrgFullAddress)))
+                .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicMen))
+                .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicWomen))
+                .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
+                .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
+                .Test("yes", Phrases.Capacity.GetHousingTotal)
+                .Test(expectedOrganization.TotalBeds.ToString(), StartsWith(Phrases.Capacity.GetFrequency))
+                .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
+                .StartTestAsync();
 
+            // Organization profile should be completed.
+            expectedOrganization.IsComplete = true;
+
+            // Validate the results.
+            await ValidateProfile(expectedOrganization);
+        }
+        
         [Fact]
         public async Task NoHousing()
         {
@@ -164,7 +207,8 @@ namespace Tests.Dialogs.NewOrganization
             await CreateTestFlow(NewOrganizationDialog.Name, expectedOrganization)
                 .Test("begin", Phrases.NewOrganization.GetName)
                 .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
-                .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
+                .Test(TestOrgPartialAddress, StartsWith(Phrases.Location.GetLocationConfirmation(TestOrgFullAddress)))
+                .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographic))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicMen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicWomen))
                 .Test("yes", StartsWith(Phrases.Demographic.GetHasDemographicAgeRange))
