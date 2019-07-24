@@ -2,6 +2,7 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,14 +13,14 @@ namespace ServiceProviderBot.Bot.Dialogs
     {
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
-        protected readonly DbInterface database;
+        protected readonly ApiInterface api;
         protected readonly IConfiguration configuration;
 
-        public DialogBase(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
+        public DialogBase(StateAccessors state, DialogSet dialogs, ApiInterface api, IConfiguration configuration)
         {
             this.state = state;
             this.dialogs = dialogs;
-            this.database = database;
+            this.api = api;
             this.configuration = configuration;
         }
 
@@ -77,7 +78,7 @@ namespace ServiceProviderBot.Bot.Dialogs
             if (type != null && type.IsSubclassOf(typeof(DialogBase)))
             {
                 // Create an instance of the dialog and add it to the dialog set.
-                return (DialogBase)Activator.CreateInstance(type, this.state, this.dialogs, this.database, this.configuration);
+                return (DialogBase)Activator.CreateInstance(type, this.state, this.dialogs, this.api, this.configuration);
             }
 
             return null;

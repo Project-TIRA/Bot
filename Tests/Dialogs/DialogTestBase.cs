@@ -24,7 +24,7 @@ namespace Tests.Dialogs
 
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
-        protected readonly DbInterface database;
+        protected readonly ApiInterface api;
         protected readonly TestAdapter adapter;
         private readonly IConfiguration configuration;
 
@@ -35,14 +35,15 @@ namespace Tests.Dialogs
         {
             this.state = StateAccessors.Create();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
-            this.database = new DbInterface(DbModelFactory.CreateInMemory());
+            this.api = new ApiInterface();
+            //this.database = new DbInterface(DbModelFactory.CreateInMemory());
             this.adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
 
             this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
 
             // Register prompts.
-            Prompts.Register(this.state, this.dialogs, this.database);
+            Prompts.Register(this.dialogs);
         }
 
         protected TestFlow CreateTestFlow(string dialogName, Organization initialOrganization = null, Snapshot initialSnapshot = null)
@@ -56,7 +57,7 @@ namespace Tests.Dialogs
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 // Create the master dialog.
-                var masterDialog = new MasterDialog(this.state, this.dialogs, this.database, this.configuration);
+                var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
 
                 // Attempt to continue any existing conversation.
                 DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
@@ -68,6 +69,7 @@ namespace Tests.Dialogs
                     await InitDatabase(turnContext, initialOrganization, initialSnapshot);
                 }
 
+                /*
                 // Check if the conversation is expired.
                 var forceExpire = Phrases.TriggerReset(turnContext);
                 var expired = await this.database.CheckExpiredConversation(turnContext, forceExpire);
@@ -82,6 +84,9 @@ namespace Tests.Dialogs
                     // Difference for tests here is starting the given dialog instead of master so that individual dialog flows can be tested.
                     await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
                 }
+                */
+
+                await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
             });
         }
 
@@ -98,6 +103,7 @@ namespace Tests.Dialogs
 
         protected async Task ValidateProfile(Organization expectedOrganization = null, Snapshot expectedSnapshot = null)
         {
+            /*
             if (expectedOrganization != null)
             {
                 var actualOrganization = await this.database.GetOrganization(this.turnContext);
@@ -113,6 +119,7 @@ namespace Tests.Dialogs
                 var actualSnapshot = await this.database.GetSnapshot(this.turnContext);
                 Assert.Equal(actualSnapshot.OpenBeds, expectedSnapshot.OpenBeds);
             }
+            */
         }
 
         protected Action<IActivity> StartsWith(IMessageActivity expected)
@@ -128,6 +135,7 @@ namespace Tests.Dialogs
 
         private async Task InitDatabase(ITurnContext turnContext, Organization initialOrganization = null, Snapshot initialSnapshot = null)
         {
+            /*
             Assert.True(initialSnapshot == null || initialOrganization != null, "Cannot initialize a snapshot without an organization");
 
             // Create the organization and snapshot if provided.
@@ -154,6 +162,7 @@ namespace Tests.Dialogs
 
                 await this.database.Save();
             }
+            */
         }
     }
 }

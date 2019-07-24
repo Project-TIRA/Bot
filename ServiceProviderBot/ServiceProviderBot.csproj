@@ -8,21 +8,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Bot\Dialogs\NewOrganization\**" />
+    <Content Remove="Bot\Dialogs\NewOrganization\**" />
+    <EmbeddedResource Remove="Bot\Dialogs\NewOrganization\**" />
+    <None Remove="Bot\Dialogs\NewOrganization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Bot.Builder" Version="4.2.0" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.2.0" />
     <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.2.0" />
     <PackageReference Include="Microsoft.Bot.Builder.Azure" Version="4.2.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.8.1" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.19.8" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\" />
     <Folder Include="Bot\Dialogs\UpdateOrganization\" />
-    <Folder Include="Bot\Dialogs\NewOrganization\Demographic\" />
     <Folder Include="Bot\Dialogs\UpdateOrganization\Capacity\" />
-    <Folder Include="Bot\Dialogs\NewOrganization\Location\" />
     <Folder Include="Bot\Models\" />
     <Folder Include="Bot\Models\LocationApi\" />
   </ItemGroup>

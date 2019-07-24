@@ -11,6 +11,7 @@ using ServiceProviderBot.Bot.Utils;
 using EntityModel;
 using Microsoft.Bot.Connector.Authentication;
 using ServiceProviderBot.Bot.Middleware;
+using Shared;
 
 namespace ServiceProviderBot
 {
@@ -32,14 +33,17 @@ namespace ServiceProviderBot
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940.
+        // AddSingleton - Same for every object and every request.
+        // AddScoped - Same within a request but different across different requests.
+        // AddTransient - Always different. New instance for every controller and service.
         public void ConfigureServices(IServiceCollection services)
         {
             // Add the configuration.
             services.AddSingleton(this.configuration);
 
             // Add the database interface.
-            services.AddScoped(_ => new DbInterface(DbModelFactory.Create(configuration.DbModelConnectionString())));
+            services.AddScoped(_ => new ApiInterface());
 
             // Create and add the state accessors.
             var state = StateAccessors.Create(this.configuration);

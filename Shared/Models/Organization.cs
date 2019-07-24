@@ -2,9 +2,15 @@
 
 namespace Shared.Models
 {
-    public class Organization
+    public class Organization : ModelBase
     {
-        public static string TableName = "accounts";
+        public static string TABLE_NAME = "accounts";
+
+        [JsonIgnore]
+        public override string TableName { get { return TABLE_NAME; } }
+
+        [JsonIgnore]
+        public override string ResourceId { get { return Id; } }
 
         [JsonProperty(PropertyName = "accountid")]
         public string Id { get; set; }
@@ -13,9 +19,15 @@ namespace Shared.Models
         public string Name { get; set; }
 
         [JsonProperty(PropertyName = "tira_isverified")]
-        public string IsVerified { get; set; }
+        public bool IsVerified { get; set; }
 
         [JsonProperty(PropertyName = "tira_updatefrequency")]
-        public string UpdateFrequency { get; set; }
+        public int UpdateFrequency { get; set; }
+
+        // Called by Json to prevent serialization but allow deserialization.
+        public bool ShouldSerializeId()
+        {
+            return false;
+        }
     }
 }

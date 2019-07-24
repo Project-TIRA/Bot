@@ -1,10 +1,16 @@
 ﻿using Newtonsoft.Json;
+using System.Threading.Tasks;
 
 namespace Shared.Models
 {
-    public class Service
+    public class Service : ModelBase
     {
-        public static string TableName = "tira_services";
+        public static string TABLE_NAME = "tira_services";
+
+        [JsonIgnore]
+        public override string TableName {  get { return TABLE_NAME; } }
+
+        public override string ResourceId { get { return Id; } }
 
         [JsonProperty(PropertyName = "tira_serviceid")]
         public string Id { get; set; }
@@ -16,6 +22,18 @@ namespace Shared.Models
         public string Name { get; set; }
 
         [JsonProperty(PropertyName = "tira_servicetype")]
-        public string ServiceType { get; set; }
+        public int ServiceType { get; set; }
+
+        // Called by Json to prevent serialization but allow deserialization.
+        public bool ShouldSerializeId()
+        {
+            return false;
+        }
+
+        // Called by Json to prevent serialization but allow deserialization.
+        public bool ShouldSerializeOrganizationId()
+        {
+            return false;
+        }
     }
 }

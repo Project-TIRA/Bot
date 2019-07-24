@@ -1,6 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
-using ServiceProviderBot.Bot.Utils;
+using Shared;
+using System.Linq;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
@@ -8,8 +9,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateCapacityDialog).FullName;
 
-        public UpdateCapacityDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
-            : base(state, dialogs, database, configuration) { }
+        public UpdateCapacityDialog(StateAccessors state, DialogSet dialogs, ApiInterface api, IConfiguration configuration)
+            : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
@@ -19,12 +20,28 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has housing.
-                    var organization = await database.GetOrganization(stepContext.Context);
-                    if (organization.TotalBeds > 0)
+                    var organization = await api.GetUserOrganization(Helpers.UserId(stepContext.Context));
+                    var services = await api.GetOrganizationServices(organization);
+
+                    // TODO: Use enum for service types.
+                    if (services.Any(s => s.ServiceType == 1))
                     {
                         // Push the update housing dialog onto the stack.
                         return await BeginDialogAsync(stepContext, UpdateHousingDialog.Name, null, cancellationToken);
                     }
+
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    /*
+                    // Check if the organization has case management.
+                    if ()
+                    {
+                        // Push the case management dialog
+                    }
+                    */
 
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);

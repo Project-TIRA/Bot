@@ -12,8 +12,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
     {
         public static string Name = typeof(UpdateOrganizationDialog).FullName;
 
-        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
-            : base(state, dialogs, database, configuration) { }
+        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, ApiInterface api, IConfiguration configuration)
+            : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
@@ -22,7 +22,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    var needsUpdate = await NeedsUpdate(state, database, stepContext.Context);
+                    var needsUpdate = await NeedsUpdate(state, api, stepContext.Context);
                     if (!needsUpdate)
                     {
                         // Nothing to update.
@@ -32,19 +32,11 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
 
-                    // Create a new snapshot to be filled in by UpdateOrganization process.
-                    await database.CreateSnapshot(stepContext.Context);
-
                     // Push the update capacity dialog onto the stack.
                     return await BeginDialogAsync(stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    // Mark the snapshot as complete.
-                    var snapshot = await database.GetSnapshot(stepContext.Context);
-                    snapshot.IsComplete = true;
-                    await database.Save();
-
                     // Send the closing message.
                     await Messages.SendAsync(Phrases.UpdateOrganization.Closing, stepContext.Context, cancellationToken);
 
@@ -54,12 +46,10 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             });
         }
 
-        private static async Task<bool> NeedsUpdate(StateAccessors state, DbInterface database, ITurnContext context)
+        private static async Task<bool> NeedsUpdate(StateAccessors state, ApiInterface api, ITurnContext context)
         {
-            var organization = await database.GetOrganization(context);
-
-            // Currently the only thing to update is the beds.
-            return organization.TotalBeds > 0;
+            var services = await api.GetUserOrganizationServices(Helpers.UserId(context));
+            return services.Count > 0;
         }
     }
 }

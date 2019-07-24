@@ -1,5 +1,4 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using ServiceProviderBot.Bot.Utils;
 using Shared;
 using System;
 using System.Threading.Tasks;
@@ -8,18 +7,14 @@ namespace ServiceProviderBot.Bot.Prompts
 {
     public static class GreetingPromptValidator
     {
-        public static PromptValidator<string> Create(StateAccessors state, DbInterface database)
+        public static PromptValidator<string> Create()
         {
             return async (promptContext, cancellationToken) =>
             {
-                // Check if the organization exists.
-                var organization = await database.GetOrganization(promptContext.Context);
-                bool isExistingOrganization = organization != null;
-
                 var message = promptContext.Recognized.Value;
 
-                if ((!isExistingOrganization && string.Equals(message, Phrases.Greeting.New, StringComparison.OrdinalIgnoreCase)) ||
-                    isExistingOrganization && string.Equals(message, Phrases.Greeting.Update, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(message, Phrases.Greeting.HelpKeyword, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(message, Phrases.Greeting.UpdateKeywork, StringComparison.OrdinalIgnoreCase))
                 {
                     return await Task.FromResult(true);
                 }
