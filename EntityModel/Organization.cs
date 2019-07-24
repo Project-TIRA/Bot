@@ -29,6 +29,8 @@ namespace EntityModel
 
         // Capacity
         public Frequency UpdateFrequency { get; set; }
+        public int TotalBeds { get; set; }
+
 
         // Case Management
         public int CaseManagementTotal { get; set; }

@@ -98,6 +98,46 @@ namespace Shared
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
         }
 
+        public static class JobTrainingServices
+        {
+            public static Activity GetHasJobTraining = MessageFactory.Text("Does your organization offer job training services?");
+            public static Activity GetJobTrainingPositions = MessageFactory.Text("How many TOTAL job training positions do you have?");
+            public static Activity GetJobTrainingOpenings = MessageFactory.Text("How many OPEN job training positions do you have?");
+            public static Activity GetHasJobTrainingWaitlist = MessageFactory.Text("Do you have a waitlist for your job training services?");
+            public static Activity GetJobTrainingWaitlistPositions = MessageFactory.Text("How many people are on your waitlist?");
+
+            public static string GetJobTrainingOpeningsErrorFormat(int totalOpenings)
+            {
+
+                return string.Format("Oops, the total number of job training openings ({0}) must be greater than the open positions.", totalOpenings);
+            }
+        }
+
+        public static class CaseManagement
+        {
+            public static Activity GetHasCaseManagement = MessageFactory.Text("Does your organization offer case management or support services?");
+            public static Activity GetHasDemographic = MessageFactory.Text("Do you work with a specific demographic for case management?");
+            public static Activity GetHasDemographicMen = MessageFactory.Text("Do you work with men for case management?");
+            public static Activity GetHasDemographicWomen = MessageFactory.Text("Do you work with women for case management?");
+            public static Activity GetHasDemographicAgeRange = MessageFactory.Text("Does your organization work with an age range for case management?");
+            public static Activity GetAgeRangeStart = MessageFactory.Text("What is the youngest age you work with for case management?");
+            public static Activity GetAgeRangeEnd = MessageFactory.Text("What is the oldest age you work with for case management?");
+
+
+            public static Activity GetHasSobriety = MessageFactory.Text("Do you only work with sober individuals for case management?");
+            public static Activity GetCaseManagementTotal = MessageFactory.Text("How many TOTAL spaces do you have for case management?");
+            public static Activity GetCaseManagementOpen = MessageFactory.Text("How many OPEN spaces do you have for case management?");
+            public static Activity GetHasWaitingList = MessageFactory.Text("Do you have a waiting list for case management?");
+            public static Activity GetCaseManagementWaitlistLength = MessageFactory.Text("How long is your waiting list?");
+
+
+            public static string GetCaseManagementSpaceErrorFormat(int totalSpaces)
+            {
+
+                return string.Format("Oops, the total slots ({0}) must be greater than the open slots.", totalSpaces);
+            }
+        }
+
         public static class MentalHealth
         {
             public static Activity GetHasMentalHealth = MessageFactory.Text("Does your organization work with mental health?");
