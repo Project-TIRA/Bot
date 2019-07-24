@@ -3,6 +3,8 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity;
+using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.CaseManagement;
+using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.JobTraining;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
 
@@ -35,8 +37,38 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                     // Create a new snapshot to be filled in by UpdateOrganization process.
                     await database.CreateSnapshot(stepContext.Context);
 
+                    var housingNeedsUpdate = await UpdateHousingDialog.CanUpdate(state, database, stepContext.Context);
+                    if(!housingNeedsUpdate)
+                    {
+                        // Skip this step.
+                        return await stepContext.NextAsync(null, cancellationToken);
+                    }
+
                     // Push the update capacity dialog onto the stack.
                     return await BeginDialogAsync(stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    var caseManagementNeedsUpdate = await UpdateCaseManagementDialog.CanUpdate(state, database, stepContext.Context);
+                    if (!caseManagementNeedsUpdate)
+                    {
+                        // Nothing to update. Skip this step.
+                        return await stepContext.NextAsync(null, cancellationToken);
+                    }
+
+                    // Push the update case management dialog onto the stack.
+                    return await BeginDialogAsync(stepContext, UpdateCaseManagementDialog.Name, null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    var jobTrainingNeedsUpdate = await UpdateJobTrainingDialog.CanUpdate(state, database, stepContext.Context);
+                    if(!jobTrainingNeedsUpdate)
+                    {
+                        return await stepContext.NextAsync(null, cancellationToken);
+                    }
+
+                    return await BeginDialogAsync(stepContext, JobTraining.UpdateJobTrainingDialog.Name, null, cancellationToken);
+
                 },
                 async (stepContext, cancellationToken) =>
                 {
@@ -58,8 +90,14 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
         {
             var organization = await database.GetOrganization(context);
 
-            // Currently the only thing to update is the beds.
-            return organization.TotalBeds > 0 || organization.MentalHealth_HasWaitlist || organization.MentalHealth_InPatientTotal > 0 || organization.MentalHealth_OutPatientTotal > 0;
+            // Check if any service needs updates
+            return await UpdateHousingDialog.CanUpdate(state, database, context) ||
+                await UpdateCaseManagementDialog.CanUpdate(state, database, context) ||
+                await UpdateJobTrainingDialog.CanUpdate(state, database, context) ||
+                organization.TotalBeds > 0 || 
+                organization.MentalHealth_HasWaitlist || 
+                organization.MentalHealth_InPatientTotal > 0 || 
+                organization.MentalHealth_OutPatientTotal > 0;
         }
     }
 }

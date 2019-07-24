@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Demographic;
 using ServiceProviderBot.Bot.Dialogs.NewOrganization.Location;
+using ServiceProviderBot.Bot.Dialogs.NewOrganization.CaseManagement;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
 
@@ -75,6 +76,16 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization
                     {
                         // Push the update frequency dialog onto the stack.
                         return await BeginDialogAsync(stepContext, FrequencyDialog.Name, null, cancellationToken);
+                    },
+                    async (stepContext, cancellationToken) =>
+                    {
+                        // Push the case management dialog onto the stack
+                        return await BeginDialogAsync(stepContext, CaseManagementDialog.Name, null, cancellationToken);
+                    },
+                    async (stepContext, cancellationToken) =>
+                    {
+                        // Push the update job training services dialog onto the stack.
+                        return await BeginDialogAsync(stepContext, JobTraining.JobTrainingDialog.Name, null, cancellationToken);
                     },
                     async (stepContext, cancellationToken) =>
                     {

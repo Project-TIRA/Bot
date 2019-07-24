@@ -33,11 +33,6 @@ namespace ServiceProviderBot.Bot.Dialogs.NewOrganization.Capacity
                         return await BeginDialogAsync(stepContext, HousingDialog.Name, null, cancellationToken);
                     }
 
-                    // Update the profile with the default housing capacity.
-                    var organization = await database.GetOrganization(stepContext.Context);
-                    organization.TotalBeds = 0;
-                    await database.Save();
-
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);
                 },
