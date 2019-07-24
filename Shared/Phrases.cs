@@ -23,6 +23,7 @@ namespace Shared
             public static Activity GetHousingEmergencySharedTotal = MessageFactory.Text("How many TOTAL EMERGENCY beds in SHARED rooms does your organization have?");
             public static Activity GetHousingLongtermPrivateTotal = MessageFactory.Text("How many TOTAL LONGTERM beds in PRIVATE rooms does your organization have?");
             public static Activity GetHousingLongtermSharedTotal = MessageFactory.Text("How many TOTAL LONGTERM beds in SHARED rooms does your organization have?");
+            public static Activity GetHasHousingWaitlist = MessageFactory.Text("Do you have a bed waitlist when you reach capacity?");
             public static Activity GetFrequency = MessageFactory.Text("How often would you like to be contacted to update your capacity?");
 
             // updating

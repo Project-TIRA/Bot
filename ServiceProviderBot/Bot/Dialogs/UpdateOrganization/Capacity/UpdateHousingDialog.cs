@@ -156,6 +156,9 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         }
                     }
                     return await stepContext.NextAsync(null);
+                },
+                async (stepContext, cancellationToken) =>
+                {
                     if (stepContext.Result != null)
                     {
                         // Update the profile with the longterm private waitlist length.
@@ -219,7 +222,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             var organization = await database.GetOrganization(context);
 
             // Updates valid 
-            return organization.TotalBeds > 0;
+            return organization.HousingEmergencyPrivateTotal > 0 || organization.HousingEmergencySharedTotal > 0
+                        || organization.HousingLongtermPrivateTotal > 0 || organization.HousingLongtermSharedTotal > 0;
         }
 
         private class PromptIds

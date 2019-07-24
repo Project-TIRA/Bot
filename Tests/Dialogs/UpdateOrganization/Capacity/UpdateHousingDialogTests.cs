@@ -16,12 +16,26 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var expectedOrganization = CreateDefaultTestOrganization();
             expectedOrganization.HousingEmergencyPrivateTotal = 10;
             expectedOrganization.HousingHasWaitlist = true;
+
+            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
             expectedSnapshot.BedsEmergencyPrivateOpen = 0;
             expectedSnapshot.BedsEmergencyPrivateWaitlistLength = 5;
+
+            // Execute the conversation.
+            await CreateTestFlow(UpdateHousingDialog.Name, expectedOrganization, expectedSnapshot)
                 .Test("begin", Phrases.Capacity.GetHousingEmergencyPrivateOpen)
                 .Test(expectedSnapshot.BedsEmergencyPrivateOpen.ToString(), StartsWith(Phrases.Capacity.GetHousingEmergencyPrivateWaitlist))
                 .Send(expectedSnapshot.BedsEmergencyPrivateWaitlistLength.ToString())
+                .StartTestAsync();
+
+            // Validate the results.
+            await ValidateProfile(expectedOrganization, expectedSnapshot);
+        }
+
+        [Fact]
         public async Task EmergencyPrivateNoWaitlist()
+        {
+            var expectedOrganization = CreateDefaultTestOrganization();
             expectedOrganization.HousingEmergencyPrivateTotal = 10;
 
             var expectedSnapshot = new Snapshot(expectedOrganization.Id);
