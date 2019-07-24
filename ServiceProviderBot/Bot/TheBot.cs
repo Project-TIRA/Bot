@@ -6,6 +6,7 @@ using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,6 +34,17 @@ namespace ServiceProviderBot.Bot
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
+            ApiInterface apiInterface = new ApiInterface();
+            Shared.Models.Organization org = await apiInterface.GetOrganization("d9e4bba1-84ad-e911-a988-000d3a30dc0a");
+            List<Shared.Models.Service> services = await apiInterface.GetServicesForOrganization(org);
+
+
+
+            var a = 1;
+
+            //Shared.Models.User user = await apiInterface.GetUser("17be44bf-d9ac-e911-a981-000d3a30d7c8");
+
+            /*
             // Establish context for our dialog from the turn context.
             DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
@@ -56,6 +68,7 @@ namespace ServiceProviderBot.Bot
             {
                 await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
             }
+            */
         }
     }
 }
