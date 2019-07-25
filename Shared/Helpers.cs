@@ -19,6 +19,30 @@ namespace Shared
         /// <summary>
         /// Gets the table name for a service.
         /// </summary>
+        public static ServiceType GetServiceType<T>() where T : ModelBase
+        {
+            var type = typeof(T);
+
+            if (type == typeof(HousingData))
+            {
+                return ServiceType.Housing;
+            }
+            else if (type == typeof(MentalHealthData))
+            {
+                return ServiceType.MentalHealth;
+            }
+            else if (type == typeof(JobTrainingData))
+            {
+                return ServiceType.JobTraining;
+            }
+
+            // TODO: other types
+            return ServiceType.Housing;
+        }
+
+        /// <summary>
+        /// Gets the table name for a service.
+        /// </summary>
         public static string GetServiceTableName(ServiceType serviceType)
         {
             switch (serviceType)

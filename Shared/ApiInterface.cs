@@ -110,8 +110,10 @@ namespace Shared
         /// <summary>
         /// Gets the latest shapshot for a service.
         /// </summary>
-        public async Task<T> GetLatestServiceData<T>(string userId, ServiceType serviceType) where T : ModelBase
+        public async Task<T> GetLatestServiceData<T>(string userId) where T : ModelBase
         {
+            var serviceType = Helpers.GetServiceType<T>();
+
             var service = await GetService(userId, serviceType);
             if (service != null)
             {

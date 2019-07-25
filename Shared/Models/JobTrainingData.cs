@@ -32,7 +32,7 @@ namespace Shared.Models
         public int Open { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int WaitListLength { get; set; }
+        public int WaitlistLength { get; set; }
 
         // Called by Json to prevent serialization but allow deserialization.
         public bool ShouldSerializeId()

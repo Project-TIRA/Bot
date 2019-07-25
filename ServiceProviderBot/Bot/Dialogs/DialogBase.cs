@@ -1,9 +1,13 @@
 ﻿using EntityModel;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
+using Shared.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -69,6 +73,76 @@ namespace ServiceProviderBot.Bot.Dialogs
             }
 
             return await context.ContinueDialogAsync(cancellationToken);
+        }
+
+        protected WaterfallStep[] GenerateUpdateSteps<T>(string serviceName, string totalPropertyName, string openPropertyName,
+            string hasWaitlistPropertyName, string waitlistLengthPropertyName, Activity prompt) where T : ModelBase
+        {
+            return new WaterfallStep[]
+            {
+                async (stepContext, cancellationToken) =>
+                {
+                    // Get the latest snapshot.
+                    var serviceData = await this.api.GetLatestServiceData<T>(Helpers.UserId(stepContext.Context));
+                    var totalProperty = (int)typeof(T).GetProperty(totalPropertyName).GetValue(serviceData);
+
+                    // Check if the organization has this service.
+                    if (totalProperty > 0)
+                    {
+                        // Prompt for the open count.
+                        return await stepContext.PromptAsync(
+                            Utils.Prompts.LessThanOrEqualPrompt,
+                            new PromptOptions { Prompt = prompt,
+                                RetryPrompt = Phrases.Capacity.RetryInvalidCount(totalProperty, prompt),
+                                Validations = totalProperty },
+                            cancellationToken);
+                    }
+
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    // Check if the previous step had a result.
+                    if (stepContext.Result != null)
+                    {
+                        var open = int.Parse((string)stepContext.Result);
+
+                        // Get the latest housing snapshot and update it.
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.UserId(stepContext.Context));
+                        typeof(T).GetProperty(openPropertyName).SetValue(data, open);
+                        await data.Update(this.api);
+
+                        // Check if a waitlist is available.
+                        var hasWaitlist = (bool)typeof(T).GetProperty(hasWaitlistPropertyName).GetValue(data);
+                        if (hasWaitlist && open == 0)
+                        {
+                            // Prompt for the waitlist length.
+                            return await stepContext.PromptAsync(
+                                Utils.Prompts.IntPrompt,
+                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(serviceName) },
+                                cancellationToken);
+                        }
+                    }
+
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    // Check if the previous step had a result.
+                    if (stepContext.Result != null)
+                    {
+                        // Get the latest housing snapshot and update it.
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.UserId(stepContext.Context));
+                        typeof(T).GetProperty(waitlistLengthPropertyName).SetValue(data, (int)stepContext.Result);
+                        await data.Update(this.api);
+                    }
+
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                }
+            };
         }
 
         private DialogBase CreateFromDialogId(string dialogId)

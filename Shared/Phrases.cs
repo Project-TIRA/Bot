@@ -56,6 +56,12 @@ namespace Shared
                 public static Activity GetInPatientOpen = MessageFactory.Text($"How many spaces do you have open for {InPatient}?");
                 public static Activity GetOutPatientOpen = MessageFactory.Text($"How many spaces do you have open for {OutPatient}?");
             }
+
+            public static class JobTraining
+            {
+                public static string Service = "job training services";
+                public static Activity GetServiceOpen = MessageFactory.Text($"How many spaces do you have open for {Service}?");
+            }
         }
 
         public static class Greeting

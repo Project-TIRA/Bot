@@ -56,7 +56,7 @@ namespace Shared.Models
         public int EmergencyPrivateBedsTotal { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencyprivatebedsopen")]
-        public int EmergencyPrivatedBedsOpen { get; set; }
+        public int EmergencyPrivateBedsOpen { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencyprivatebedswaitlist")]
         public int EmergencyPrivateBedsWaitListLength { get; set; }
