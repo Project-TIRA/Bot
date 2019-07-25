@@ -12,6 +12,7 @@ using EntityModel;
 using Microsoft.Bot.Connector.Authentication;
 using ServiceProviderBot.Bot.Middleware;
 using Shared;
+using Newtonsoft.Json;
 
 namespace ServiceProviderBot
 {
@@ -48,6 +49,12 @@ namespace ServiceProviderBot
             // Create and add the state accessors.
             var state = StateAccessors.Create(this.configuration);
             services.AddSingleton(state);
+
+            // Ignore null json values. Will be set to default values.
+            services.AddMvcCore().AddJsonOptions(options => 
+            {
+                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            });
 
             // Configure the bot.
             services.AddBot<TheBot>(options =>

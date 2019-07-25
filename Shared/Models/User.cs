@@ -18,6 +18,9 @@ namespace Shared.Models
         [JsonProperty(PropertyName = "_parentcustomerid_value")]
         public string OrganizationId { get; set; }
 
+        [JsonProperty(PropertyName = "firstname")]
+        public string Name { get; set; }
+
         // Called by Json to prevent serialization but allow deserialization.
         public bool ShouldSerializeId()
         {

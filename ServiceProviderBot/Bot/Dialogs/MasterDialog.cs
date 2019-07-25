@@ -52,7 +52,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     }
 
                     // Send the welcome message.
-                    await Messages.SendAsync(Phrases.Greeting.Welcome, stepContext.Context, cancellationToken);
+                    await Messages.SendAsync(Phrases.Greeting.Welcome(user), stepContext.Context, cancellationToken);
 
                     // Check if the initial message is one of the keywords.
                     var incomingMessage = stepContext.Context.Activity.Text;
