@@ -5,6 +5,7 @@ namespace Shared.Models
     public class HousingData : ModelBase
     {
         public static string TABLE_NAME = "tira_housingdatas";
+        public static string PRIMARY_KEY = "_tira_housingserviceid_value";
 
         [JsonIgnore]
         public override string TableName { get { return TABLE_NAME; } }

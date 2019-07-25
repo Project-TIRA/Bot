@@ -20,11 +20,9 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has housing.
-                    var organization = await api.GetUserOrganization(Helpers.UserId(stepContext.Context));
-                    var services = await api.GetOrganizationServices(organization);
+                    var service = await api.GetService(Helpers.UserId(stepContext.Context), ServiceType.Housing);
 
-                    // TODO: Use enum for service types.
-                    if (services.Any(s => s.ServiceType == 1))
+                    if (service != null)
                     {
                         // Push the update housing dialog onto the stack.
                         return await BeginDialogAsync(stepContext, UpdateHousingDialog.Name, null, cancellationToken);

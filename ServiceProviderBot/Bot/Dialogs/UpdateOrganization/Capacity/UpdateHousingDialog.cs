@@ -19,7 +19,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest housing snapshot.
-                    var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                    var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
 
                     // Check if the organization has emergency shared beds.
                     if (housingData.EmergencySharedBedsTotal > 0)
@@ -44,7 +44,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest housing snapshot and update it.
-                        var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                        var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
                         housingData.EmergencySharedBedsOpen = open;
                         await housingData.Update(this.api);
 
@@ -67,7 +67,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (stepContext.Result != null)
                     {
                         // Get the latest housing snapshot and update it.
-                        var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                        var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
                         housingData.EmergencySharedBedsWaitListLength = (int)stepContext.Result;
                         await housingData.Update(this.api);
                     }
@@ -78,7 +78,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest housing snapshot.
-                    var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                    var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
 
                     // Check if the organization has emergency private beds.
                     if (housingData.EmergencySharedBedsTotal > 0)
@@ -103,7 +103,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest housing snapshot and update it.
-                        var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                        var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
                         housingData.EmergencyPrivatedBedsOpen = open;
                         await housingData.Update(this.api);
 
@@ -126,7 +126,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (stepContext.Result != null)
                     {
                         // Get the latest housing snapshot and update it.
-                        var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                        var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
                         housingData.EmergencyPrivateBedsWaitListLength = (int)stepContext.Result;
                         await housingData.Update(this.api);
                     }
@@ -137,7 +137,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest housing snapshot.
-                    var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                    var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
 
                     // Check if the organization has long-term shared beds.
                     if (housingData.EmergencySharedBedsTotal > 0)
@@ -162,7 +162,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest housing snapshot and update it.
-                        var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                        var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
                         housingData.LongTermSharedBedsOpen = open;
                         await housingData.Update(this.api);
 
@@ -185,7 +185,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (stepContext.Result != null)
                     {
                         // Get the latest housing snapshot and update it.
-                        var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                        var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
                         housingData.LongTermSharedBedsWaitListLength = (int)stepContext.Result;
                         await housingData.Update(this.api);
                     }
@@ -196,7 +196,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest housing snapshot.
-                    var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                    var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
 
                     // Check if the organization has long-term private beds.
                     if (housingData.EmergencySharedBedsTotal > 0)
@@ -221,7 +221,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest housing snapshot and update it.
-                        var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                        var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
                         housingData.LongTermPrivateBedsOpen = open;
                         await housingData.Update(this.api);
 
@@ -244,7 +244,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (stepContext.Result != null)
                     {
                         // Get the latest housing snapshot and update it.
-                        var housingData = await this.api.GetLatestHousingServiceData(Helpers.UserId(stepContext.Context));
+                        var housingData = await this.api.GetLatestServiceData(Helpers.UserId(stepContext.Context), ServiceType.Housing);
                         housingData.LongTermPrivateBedsWaitListLength = (int)stepContext.Result;
                         await housingData.Update(this.api);
                     }
