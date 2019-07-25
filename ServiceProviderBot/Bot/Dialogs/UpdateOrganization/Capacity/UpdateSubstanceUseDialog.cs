@@ -1,6 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
+using Shared.Models;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
@@ -19,7 +20,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest substance use snapshot.
-                    var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                    var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
 
                     // Check if the organization has detox spaces.
                     if (substanceUseData.DetoxTotal > 0)
@@ -44,11 +45,11 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest housing snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
                         substanceUseData.DetoxOpen = open;
                         await substanceUseData.Update(this.api);
 
-                        if (open == 0)
+                        if (substanceUseData.HasWaitlist && open == 0)
                         {
                             // Prompt for the waitlist length.
                             return await stepContext.PromptAsync(
@@ -67,7 +68,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (stepContext.Result != null)
                     {
                         // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
                         substanceUseData.DetoxOpen = (int)stepContext.Result;
                         await substanceUseData.Update(this.api);
                     }
@@ -78,7 +79,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest substance use snapshot.
-                    var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                    var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
 
                     // Check if the organization has in-patient spaces.
                     if (substanceUseData.InPatientTotal > 0)
@@ -103,11 +104,11 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
                         substanceUseData.InPatientOpen = open;
                         await substanceUseData.Update(this.api);
 
-                        if (open == 0)
+                        if (substanceUseData.HasWaitlist && open == 0)
                         {
                             // Prompt for the waitlist length.
                             return await stepContext.PromptAsync(
@@ -126,7 +127,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (stepContext.Result != null)
                     {
                         // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
                         substanceUseData.InPatientWaitlistLength = (int)stepContext.Result;
                         await substanceUseData.Update(this.api);
                     }
@@ -137,7 +138,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest substance use snapshot.
-                    var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                    var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
 
                     // Check if the organization has out-patient spaces.
                     if (substanceUseData.OutPatientTotal > 0)
@@ -162,11 +163,11 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
                         substanceUseData.OutPatientOpen = open;
                         await substanceUseData.Update(this.api);
 
-                        if (open == 0)
+                        if (substanceUseData.HasWaitlist && open == 0)
                         {
                             // Prompt for the waitlist length.
                             return await stepContext.PromptAsync(
@@ -185,7 +186,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (stepContext.Result != null)
                     {
                         // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
                         substanceUseData.OutPatientWaitlistLength = (int)stepContext.Result;
                         await substanceUseData.Update(this.api);
                     }
@@ -196,7 +197,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest substance use snapshot.
-                    var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                    var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
 
                     // Check if the organization has group spaces.
                     if (substanceUseData.GroupTotal > 0)
@@ -221,11 +222,11 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
                         substanceUseData.GroupOpen = open;
                         await substanceUseData.Update(this.api);
 
-                        if (open == 0)
+                        if (substanceUseData.HasWaitlist && open == 0)
                         {
                             // Prompt for the waitlist length.
                             return await stepContext.PromptAsync(
@@ -244,7 +245,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (stepContext.Result != null)
                     {
                         // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestSubstanceUseServiceData(Helpers.UserId(stepContext.Context));
+                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
                         substanceUseData.GroupWaitlistLength= (int)stepContext.Result;
                         await substanceUseData.Update(this.api);
                     }

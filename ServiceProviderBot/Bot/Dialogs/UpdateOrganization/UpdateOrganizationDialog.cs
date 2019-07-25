@@ -48,8 +48,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
 
         private static async Task<bool> NeedsUpdate(StateAccessors state, ApiInterface api, ITurnContext context)
         {
-            var services = await api.GetUserOrganizationServices(Helpers.UserId(context));
-            return services.Count > 0;
+            var serviceCount = await api.GetServiceCount(Helpers.UserId(context));
+            return serviceCount > 0;
         }
     }
 }

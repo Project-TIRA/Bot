@@ -32,7 +32,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     }
 
                     // Check if we already have an organization for this user.
-                    var organization = await api.GetOrganization(user);
+                    var organization = await api.GetOrganization(user.Id);
                     bool isExistingOrganization = organization != null;
 
                     if (user == null)

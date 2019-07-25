@@ -52,163 +52,91 @@ namespace Shared
         }
 
         /// <summary>
-        /// Gets an organization from a user ID.
-        /// </summary>
-        public async Task<Organization> GetUserOrganization(string userId)
-        {
-            User user = await GetUser(userId);
-            return user != null ? await GetOrganization(user) : null;
-        }
-
-        /// <summary>
-        /// Gets an organization's services from a user ID.
-        /// </summary>
-        public async Task<List<Service>> GetUserOrganizationServices(string userId)
-        {
-            User user = await GetUser(userId);
-            if (user != null)
-            {
-                Organization organization = await GetOrganization(user);
-                if (organization != null)
-                {
-                    return await GetOrganizationServices(organization);
-                }
-            }
-
-            return new List<Service>();
-        }
-
-        /// <summary>
-        /// Gets the latest shapshot for a housing service.
-        /// </summary>
-        public async Task<HousingData> GetLatestHousingServiceData(string userId)
-        {
-            var organization = await GetUserOrganization(userId);
-            if (organization != null)
-            {
-                var service = await GetOrganizationHousingService(organization);
-                if (service != null)
-                {
-                    JObject response = await GetJsonData(HousingData.TABLE_NAME, $"$filter=_tira_housingserviceid_value eq {service.Id} &$orderby=createdon desc &$top=1");
-                    if (response == null)
-                    {
-                        return null;
-                    }
-
-                    return response["value"].HasValues ? response["value"][0].ToObject<HousingData>() : null;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Gets the latest shapshot for a case management service.
-        /// </summary>
-        public async Task<CaseManagementData> GetLatestCaseManagementServiceData(string userId)
-        {
-            var organization = await GetUserOrganization(userId);
-            if (organization != null)
-            {
-                var service = await GetOrganizationCaseManagementService(organization);
-                if (service != null)
-                {
-                    JObject response = await GetJsonData(CaseManagementData.TABLE_NAME, $"$filter=_tira_casemanagementserviceid_value eq {service.Id} &$orderby=createdon desc &$top=1");
-                    if (response == null)
-                    {
-                        return null;
-                    }
-
-                    return response["value"].HasValues ? response["value"][0].ToObject<CaseManagementData>() : null;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Gets the latest shapshot for a housing service.
-        /// </summary>
-        public async Task<SubstanceUseData> GetLatestSubstanceUseServiceData(string userId)
-        {
-            var organization = await GetUserOrganization(userId);
-            if (organization != null)
-            {
-                var service = await GetOrganizationSubstanceUseService(organization);
-                if (service != null)
-                {
-                    JObject response = await GetJsonData(SubstanceUseData.TABLE_NAME, $"$filter=_tira_substanceuseserviceid_value eq {service.Id} &$orderby=createdon desc &$top=1");
-                    if (response == null)
-                    {
-                        return null;
-                    }
-
-                    return response["value"].HasValues ? response["value"][0].ToObject<SubstanceUseData>() : null;
-                }
-            }
-
-            return null;
-        }
-
-        /// <summary>
         /// Gets a user's organization.
         /// </summary>
-        public async Task<Organization> GetOrganization(User user)
+        public async Task<Organization> GetOrganization(string userId)
         {
-            JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + user.OrganizationId);
-            if (response == null)
+            var user = await GetUser(userId);
+            if (user == null)
             {
                 return null;
             }
 
-            return response["value"].HasValues ? response["value"][0].ToObject<Organization>() : null;
+            JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + user.OrganizationId);
+            if (response != null)
+            {
+                return response["value"].HasValues ? response["value"][0].ToObject<Organization>() : null;
+            }
+
+            return null;
         }
 
         /// <summary>
-        /// Gets an organization's services.
+        /// Gets the count of an organization's services.
         /// </summary>
-        public async Task<List<Service>> GetOrganizationServices(Organization organization)
+        public async Task<int> GetServiceCount(string userId)
         {
-            JObject response = await GetJsonData(Service.TABLE_NAME, "$filter=_tira_organizationservicesid_value eq " + organization.Id);
-            return response != null ? response["value"].ToObject<List<Service>>() : new List<Service>();
+            Organization organization = await GetOrganization(userId);
+            if (organization != null)
+            {
+                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} &$count=true");
+                if (response != null)
+                {
+                    return (int)response["@odata.count"];
+                }
+            }
+
+            return 0;
         }
 
         /// <summary>
-        /// Gets an organization's housing service.
+        /// Gets an organization's service by type.
         /// </summary>
-        public async Task<Service> GetOrganizationHousingService(Organization organization)
+        public async Task<Service> GetService(string userId, ServiceType serviceType)
         {
-            // TODO: use enum for service type
-            JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq 1");
-            return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
+            Organization organization = await GetOrganization(userId);
+            if (organization != null)
+            {
+                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {(int)serviceType}");
+                if (response != null)
+                {
+                    return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
-        /// Gets an organization's case management service.
+        /// Gets the latest shapshot for a service.
         /// </summary>
-        public async Task<Service> GetOrganizationCaseManagementService(Organization organization)
+        public async Task<T> GetLatestServiceData<T>(string userId, ServiceType serviceType) where T : ModelBase
         {
-            // TODO: use enum for service type
-            JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq 2");
-            return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
-        }
+            var service = await GetService(userId, serviceType);
+            if (service != null)
+            {
+                var tableName = Helpers.GetServiceTableName(serviceType);
+                var primaryKey = Helpers.GetServicePrimaryKey(serviceType);
+
+                JObject response = await GetJsonData(tableName, $"$filter={primaryKey} eq {service.Id} &$orderby=createdon desc &$top=1");
+                if (response != null)
+                {
+                    return response["value"].HasValues ? response["value"][0].ToObject<T>() : null;
+                }
+            }
+
+            return null;
+        }        
 
         /// <summary>
-        /// Gets an organization's substance use service.
+        /// Gets JSON data from the API.
         /// </summary>
-        public async Task<Service> GetOrganizationSubstanceUseService(Organization organization)
-        {
-            // TODO: use enum for service type
-            JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq 4");
-            return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
-        }
-
         public async Task<JObject> GetJsonData(string tableName, string paramString)
         {
             await EnsureAuthHeader();
             string url = Path.Combine(API_URL, tableName) + "?" + paramString;
-            HttpResponseMessage response = await this.client.GetAsync(url, HttpCompletionOption.ResponseContentRead);
 
+            HttpResponseMessage response = await this.client.GetAsync(url, HttpCompletionOption.ResponseContentRead);
             if (!response.IsSuccessStatusCode)
             {
                 return null;
@@ -218,13 +146,16 @@ namespace Shared
             return JObject.Parse(responseContent);
         }
 
+        /// <summary>
+        /// Posts JSON data to the API.
+        /// </summary>
         public async Task<string> PostJsonData(string tableName, string json)
         {
             await EnsureAuthHeader();
             string url = Path.Combine(API_URL, tableName);
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await this.client.PostAsync(url, content);
 
+            HttpResponseMessage response = await this.client.PostAsync(url, content);
             if (!response.IsSuccessStatusCode)
             {
                 return string.Empty;
@@ -238,6 +169,9 @@ namespace Shared
             return string.Empty;
         }
 
+        /// <summary>
+        /// Patches JSON data to the API.
+        /// </summary>
         public async Task<bool> PatchJsonData(string tableName, string resourceId, string json)
         {
             await EnsureAuthHeader();
@@ -259,7 +193,7 @@ namespace Shared
         }
 
         /// <summary>
-        /// Retrieve an authentication token from AAD.
+        /// Gets an authentication token from AAD.
         /// </summary>
         private async Task<string> GetAuthToken()
         {
@@ -269,7 +203,6 @@ namespace Shared
             }
 
             string authorityUrl = string.Format(AUTH_URL, TENANT_ID);
-            //var authParameters = await AuthenticationParameters.CreateFromUrlAsync(new Uri(authorityUrl));
             var authContext = new AuthenticationContext(authorityUrl, false);
 
             ClientCredential clientCred = new ClientCredential(CLIENT_ID, CLIENT_SECRET);
@@ -278,5 +211,14 @@ namespace Shared
             this.authToken = authResult.AccessToken;
             return authResult.AccessToken;
         }
+    }
+
+    public enum ServiceType
+    {
+        Housing = 1,
+        Advocacy = 2,
+        MentalHealth = 3,
+        SubstanceUse = 4,
+        JobTraining = 5
     }
 }

@@ -5,11 +5,11 @@ using Shared.Models;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
-    public class UpdateCaseManagementDialog : DialogBase
+    public class UpdateMentalHealthDialog : DialogBase
     {
-        public static string Name = typeof(UpdateCaseManagementDialog).FullName;
+        public static string Name = typeof(UpdateMentalHealthDialog).FullName;
 
-        public UpdateCaseManagementDialog(StateAccessors state, DialogSet dialogs, ApiInterface api, IConfiguration configuration)
+        public UpdateMentalHealthDialog(StateAccessors state, DialogSet dialogs, ApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
@@ -19,18 +19,18 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    // Get the latest case management snapshot.
-                    var caseManagementData = await this.api.GetLatestServiceData<CaseManagementData>(Helpers.UserId(stepContext.Context), ServiceType.Advocacy);
+                    // Get the latest substance use snapshot.
+                    var mentalHealthData = await this.api.GetLatestServiceData<MentalHealthData>(Helpers.UserId(stepContext.Context), ServiceType.MentalHealth);
 
-                    // Check if the organization has case management spots.
-                    if (caseManagementData.SpotsTotal > 0)
+                    // Check if the organization has in-patient services.
+                    if (mentalHealthData.InPatientTotal > 0)
                     {
-                        // Prompt for the open spots.
+                        // Prompt for the open beds.
                         return await stepContext.PromptAsync(
                             Utils.Prompts.LessThanOrEqualPrompt,
-                            new PromptOptions { Prompt = Phrases.Capacity.CaseManagement.GetSpotsOpen,
-                                RetryPrompt = Phrases.Capacity.RetryInvalidCount(caseManagementData.SpotsTotal, Phrases.Capacity.CaseManagement.GetSpotsOpen),
-                                Validations = caseManagementData.SpotsTotal },
+                            new PromptOptions { Prompt = Phrases.Capacity.MentalHealth.GetInPatientOpen,
+                                RetryPrompt = Phrases.Capacity.RetryInvalidCount(mentalHealthData.InPatientTotal, Phrases.Capacity.MentalHealth.GetInPatientOpen),
+                                Validations = mentalHealthData.InPatientTotal },
                             cancellationToken);
                     }
 
@@ -45,16 +45,16 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest housing snapshot and update it.
-                        var caseManagementData = await this.api.GetLatestServiceData<CaseManagementData>(Helpers.UserId(stepContext.Context), ServiceType.Advocacy);
-                        caseManagementData.SpotsOpen = open;
-                        await caseManagementData.Update(this.api);
+                        var mentalHealthData = await this.api.GetLatestServiceData<MentalHealthData>(Helpers.UserId(stepContext.Context), ServiceType.Housing);
+                        mentalHealthData.InPatientOpen = open;
+                        await mentalHealthData.Update(this.api);
 
-                        if (caseManagementData.HasWaitlist && open == 0)
+                        if (open == 0)
                         {
                             // Prompt for the waitlist length.
                             return await stepContext.PromptAsync(
                                 Utils.Prompts.IntPrompt,
-                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.CaseManagement.ServiceName) },
+                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.MentalHealth.InPatient) },
                                 cancellationToken);
                         }
                     }
@@ -68,9 +68,9 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                     if (stepContext.Result != null)
                     {
                         // Get the latest housing snapshot and update it.
-                        var caseManagementData = await this.api.GetLatestServiceData<CaseManagementData>(Helpers.UserId(stepContext.Context), ServiceType.Advocacy);
-                        caseManagementData.WaitlistLength = (int)stepContext.Result;
-                        await caseManagementData.Update(this.api);
+                        var housingData = await this.api.GetLatestServiceData<MentalHealthData>(Helpers.UserId(stepContext.Context), ServiceType.Housing);
+                        housingData.InPatientWaitListLength = (int)stepContext.Result;
+                        await housingData.Update(this.api);
                     }
 
                     // Skip this step.
