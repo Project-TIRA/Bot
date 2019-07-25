@@ -103,6 +103,54 @@ namespace Shared
         }
 
         /// <summary>
+        /// Gets the latest shapshot for a case management service.
+        /// </summary>
+        public async Task<CaseManagementData> GetLatestCaseManagementServiceData(string userId)
+        {
+            var organization = await GetUserOrganization(userId);
+            if (organization != null)
+            {
+                var service = await GetOrganizationCaseManagementService(organization);
+                if (service != null)
+                {
+                    JObject response = await GetJsonData(CaseManagementData.TABLE_NAME, $"$filter=_tira_casemanagementserviceid_value eq {service.Id} &$orderby=createdon desc &$top=1");
+                    if (response == null)
+                    {
+                        return null;
+                    }
+
+                    return response["value"].HasValues ? response["value"][0].ToObject<CaseManagementData>() : null;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the latest shapshot for a housing service.
+        /// </summary>
+        public async Task<SubstanceUseData> GetLatestSubstanceUseServiceData(string userId)
+        {
+            var organization = await GetUserOrganization(userId);
+            if (organization != null)
+            {
+                var service = await GetOrganizationSubstanceUseService(organization);
+                if (service != null)
+                {
+                    JObject response = await GetJsonData(SubstanceUseData.TABLE_NAME, $"$filter=_tira_substanceuseserviceid_value eq {service.Id} &$orderby=createdon desc &$top=1");
+                    if (response == null)
+                    {
+                        return null;
+                    }
+
+                    return response["value"].HasValues ? response["value"][0].ToObject<SubstanceUseData>() : null;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Gets a user's organization.
         /// </summary>
         public async Task<Organization> GetOrganization(User user)
@@ -132,6 +180,26 @@ namespace Shared
         {
             // TODO: use enum for service type
             JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq 1");
+            return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
+        }
+
+        /// <summary>
+        /// Gets an organization's case management service.
+        /// </summary>
+        public async Task<Service> GetOrganizationCaseManagementService(Organization organization)
+        {
+            // TODO: use enum for service type
+            JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq 2");
+            return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
+        }
+
+        /// <summary>
+        /// Gets an organization's substance use service.
+        /// </summary>
+        public async Task<Service> GetOrganizationSubstanceUseService(Organization organization)
+        {
+            // TODO: use enum for service type
+            JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq 4");
             return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
         }
 

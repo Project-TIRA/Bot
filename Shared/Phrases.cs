@@ -28,7 +28,25 @@ namespace Shared
                 public static Activity GetEmergencySharedBedsOpen = MessageFactory.Text($"How many {EmergencySharedBeds} do you have open?");
                 public static Activity GetEmergencyPrivateBedsOpen = MessageFactory.Text($"How many {EmergencyPrivateBeds} do you have open?");
                 public static Activity GetLongTermSharedBedsOpen = MessageFactory.Text($"How many {LongTermSharedBeds} do you have open?");
-                public static Activity GetLongTermPrivateBedsOpen = MessageFactory.Text($"How many {LongTermPrivateBeds} beds do you have open?");
+                public static Activity GetLongTermPrivateBedsOpen = MessageFactory.Text($"How many {LongTermPrivateBeds} do you have open?");
+            }
+
+            public static class CaseManagement
+            {
+                public static string ServiceName = "case management";
+                public static Activity GetSpotsOpen = MessageFactory.Text($"How many spots for {ServiceName} do you have open?");
+            }
+
+            public static class SubstanceUse
+            {
+                public static string DetoxService = "detox services";
+                public static string InPatientService = "in-patient services";
+                public static string OutPatientService = "out-patient services";
+                public static string GroupService = "group services";
+                public static Activity GetDetoxOpen = MessageFactory.Text($"How many open spaces do you have for your {DetoxService}");
+                public static Activity GetInPatientOpen = MessageFactory.Text($"How many open spaces do you have for your {InPatientService}");
+                public static Activity GetOutPatientOpen = MessageFactory.Text($"How many open spaces do you have for your {OutPatientService}");
+                public static Activity GetGroupOpen = MessageFactory.Text($"How many open spaces do you have for your {GroupService}");
             }
         }
 
