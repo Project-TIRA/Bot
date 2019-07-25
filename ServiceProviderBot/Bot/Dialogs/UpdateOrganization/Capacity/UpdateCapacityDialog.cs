@@ -21,7 +21,6 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 {
                     // Check if the organization has housing.
                     var service = await api.GetService(Helpers.UserId(stepContext.Context), ServiceType.Housing);
-
                     if (service != null)
                     {
                         // Push the update housing dialog onto the stack.

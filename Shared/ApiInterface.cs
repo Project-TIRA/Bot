@@ -63,12 +63,12 @@ namespace Shared
             }
 
             JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + user.OrganizationId);
-            if (response == null)
+            if (response != null)
             {
-                return null;
+                return response["value"].HasValues ? response["value"][0].ToObject<Organization>() : null;
             }
 
-            return response["value"].HasValues ? response["value"][0].ToObject<Organization>() : null;
+            return null;
         }
 
         /// <summary>
@@ -79,8 +79,11 @@ namespace Shared
             Organization organization = await GetOrganization(userId);
             if (organization != null)
             {
-                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} $count");
-                return response.ToObject<int>();
+                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} &$count=true");
+                if (response != null)
+                {
+                    return (int)response["@odata.count"];
+                }
             }
 
             return 0;
@@ -94,8 +97,11 @@ namespace Shared
             Organization organization = await GetOrganization(userId);
             if (organization != null)
             {
-                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {serviceType}");
-                return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
+                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {(int)serviceType}");
+                if (response != null)
+                {
+                    return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
+                }
             }
 
             return null;
@@ -113,12 +119,10 @@ namespace Shared
                 var primaryKey = Helpers.GetServicePrimaryKey(serviceType);
 
                 JObject response = await GetJsonData(tableName, $"$filter={primaryKey} eq {service.Id} &$orderby=createdon desc &$top=1");
-                if (response == null)
+                if (response != null)
                 {
-                    return null;
+                    return response["value"].HasValues ? response["value"][0].ToObject<HousingData>() : null;
                 }
-
-                return response["value"].HasValues ? response["value"][0].ToObject<HousingData>() : null;
             }
 
             return null;
@@ -131,8 +135,8 @@ namespace Shared
         {
             await EnsureAuthHeader();
             string url = Path.Combine(API_URL, tableName) + "?" + paramString;
-            HttpResponseMessage response = await this.client.GetAsync(url, HttpCompletionOption.ResponseContentRead);
 
+            HttpResponseMessage response = await this.client.GetAsync(url, HttpCompletionOption.ResponseContentRead);
             if (!response.IsSuccessStatusCode)
             {
                 return null;
@@ -150,8 +154,8 @@ namespace Shared
             await EnsureAuthHeader();
             string url = Path.Combine(API_URL, tableName);
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await this.client.PostAsync(url, content);
 
+            HttpResponseMessage response = await this.client.PostAsync(url, content);
             if (!response.IsSuccessStatusCode)
             {
                 return string.Empty;
