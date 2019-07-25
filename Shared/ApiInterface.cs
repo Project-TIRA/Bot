@@ -110,7 +110,7 @@ namespace Shared
         /// <summary>
         /// Gets the latest shapshot for a service.
         /// </summary>
-        public async Task<HousingData> GetLatestServiceData(string userId, ServiceType serviceType)
+        public async Task<T> GetLatestServiceData<T>(string userId, ServiceType serviceType) where T : ModelBase
         {
             var service = await GetService(userId, serviceType);
             if (service != null)
@@ -121,7 +121,7 @@ namespace Shared
                 JObject response = await GetJsonData(tableName, $"$filter={primaryKey} eq {service.Id} &$orderby=createdon desc &$top=1");
                 if (response != null)
                 {
-                    return response["value"].HasValues ? response["value"][0].ToObject<HousingData>() : null;
+                    return response["value"].HasValues ? response["value"][0].ToObject<T>() : null;
                 }
             }
 

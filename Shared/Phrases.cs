@@ -30,6 +30,14 @@ namespace Shared
                 public static Activity GetLongTermSharedBedsOpen = MessageFactory.Text($"How many {LongTermSharedBeds} do you have open?");
                 public static Activity GetLongTermPrivateBedsOpen = MessageFactory.Text($"How many {LongTermPrivateBeds} beds do you have open?");
             }
+
+            public static class MentalHealth
+            {
+                public static string InPatient = "mental health in-patient services";
+                public static string OutPatient = "mental health out-patient services";
+                public static Activity GetInPatientOpen = MessageFactory.Text($"How many spaces do you have open for {InPatient}?");
+                public static Activity GetOutPatientOpen = MessageFactory.Text($"How many spaces do you have open for {OutPatient}?");
+            }
         }
 
         public static class Greeting

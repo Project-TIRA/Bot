@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Bot.Builder;
+using Newtonsoft.Json.Linq;
 using Shared.Models;
 
 namespace Shared
@@ -24,8 +25,8 @@ namespace Shared
             {
                 case ServiceType.Housing: return HousingData.TABLE_NAME;
                 case ServiceType.Advocacy: return "TODO";
-                case ServiceType.MentalHealth: return "TODO";
-                case ServiceType.SubstanceUse: return SubstanceUseData.TABLE_NAME;
+                case ServiceType.MentalHealth: return MentalHealthData.TABLE_NAME;
+                case ServiceType.SubstanceUse: return "TODO";
                 case ServiceType.JobTraining: return JobTrainingData.TABLE_NAME;
                 default: return string.Empty;
             }
@@ -40,8 +41,8 @@ namespace Shared
             {
                 case ServiceType.Housing: return HousingData.PRIMARY_KEY;
                 case ServiceType.Advocacy: return "TODO";
-                case ServiceType.MentalHealth: return "TODO";
-                case ServiceType.SubstanceUse: return SubstanceUseData.PRIMARY_KEY;
+                case ServiceType.MentalHealth: return MentalHealthData.PRIMARY_KEY;
+                case ServiceType.SubstanceUse: return "TODO";
                 case ServiceType.JobTraining: return JobTrainingData.PRIMARY_KEY;
                 default: return string.Empty;
             }

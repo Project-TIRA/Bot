@@ -2,7 +2,7 @@
 
 namespace Shared.Models
 {
-    public class SubstanceUseData : ModelBase
+    public class MentalHealthData : ModelBase
     {
         public static string TABLE_NAME = "tira_substanceuses";
         public static string PRIMARY_KEY = "TODO";
@@ -26,15 +26,6 @@ namespace Shared.Models
         public bool HasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int DetoxTotal { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int DetoxOpen { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int DetoxWaitListLength { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
         public int InPatientTotal { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
@@ -51,15 +42,6 @@ namespace Shared.Models
 
         [JsonProperty(PropertyName = "TODO")]
         public int OutPatientWaitListLength { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int GroupTotal { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int GroupOpen { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int GroupWaitListLength { get; set; }
 
         // Called by Json to prevent serialization but allow deserialization.
         public bool ShouldSerializeId()

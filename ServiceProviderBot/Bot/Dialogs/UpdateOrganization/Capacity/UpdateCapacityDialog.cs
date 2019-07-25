@@ -19,7 +19,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    // Check if the organization has housing.
+                    // Check if the organization has housing services.
                     var service = await api.GetService(Helpers.UserId(stepContext.Context), ServiceType.Housing);
                     if (service != null)
                     {
@@ -32,13 +32,13 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    /*
-                    // Check if the organization has case management.
-                    if ()
+                    // Check if the organization has substance use services.
+                    var service = await api.GetService(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
+                    if (service != null)
                     {
-                        // Push the case management dialog
+                        // Push the update substance use dialog onto the stack.
+                        return await BeginDialogAsync(stepContext, UpdateSubstanceUseDialog.Name, null, cancellationToken);
                     }
-                    */
 
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);
