@@ -32,7 +32,7 @@ namespace Shared.Models
         public int LongTermSharedBedsOpen { get; set; }
 
         [JsonProperty(PropertyName = "tira_longtemsharedbedswaitlist")]
-        public int LongTermSharedBedsWaitListLength{ get; set; }
+        public int LongTermSharedBedsWaitlistLength{ get; set; }
 
         [JsonProperty(PropertyName = "tira_longtemprivatebedstotal")]
         public int LongTermPrivateBedsTotal { get; set; }
@@ -41,7 +41,7 @@ namespace Shared.Models
         public int LongTermPrivateBedsOpen { get; set; }        
 
         [JsonProperty(PropertyName = "tira_longtemprivatebedswaitlist")]
-        public int LongTermPrivateBedsWaitListLength { get; set; }
+        public int LongTermPrivateBedsWaitlistLength { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencysharedbedstotal")]
         public int EmergencySharedBedsTotal { get; set; }
@@ -50,7 +50,7 @@ namespace Shared.Models
         public int EmergencySharedBedsOpen { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencysharedbedswaitlist")]
-        public int EmergencySharedBedsWaitListLength { get; set; }
+        public int EmergencySharedBedsWaitlistLength { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencyprivatebedstotal")]
         public int EmergencyPrivateBedsTotal { get; set; }
@@ -59,7 +59,7 @@ namespace Shared.Models
         public int EmergencyPrivateBedsOpen { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencyprivatebedswaitlist")]
-        public int EmergencyPrivateBedsWaitListLength { get; set; }
+        public int EmergencyPrivateBedsWaitlistLength { get; set; }
 
         // Called by Json to prevent serialization but allow deserialization.
         public bool ShouldSerializeId()

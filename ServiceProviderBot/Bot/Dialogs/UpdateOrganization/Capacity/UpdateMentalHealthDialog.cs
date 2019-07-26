@@ -18,11 +18,11 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             var steps = new List<WaterfallStep>();
 
             steps.AddRange(GenerateUpdateSteps<MentalHealthData>(Phrases.Capacity.MentalHealth.InPatient, nameof(MentalHealthData.InPatientTotal),
-                nameof(MentalHealthData.InPatientTotal), nameof(MentalHealthData.HasWaitlist), nameof(MentalHealthData.InPatientWaitListLength),
+                nameof(MentalHealthData.InPatientTotal), nameof(MentalHealthData.HasWaitlist), nameof(MentalHealthData.InPatientWaitlistLength),
                 Phrases.Capacity.MentalHealth.GetInPatientOpen));
 
             steps.AddRange(GenerateUpdateSteps<MentalHealthData>(Phrases.Capacity.MentalHealth.OutPatient, nameof(MentalHealthData.OutPatientTotal),
-                nameof(MentalHealthData.OutPatientOpen), nameof(MentalHealthData.HasWaitlist), nameof(MentalHealthData.OutPatientWaitListLength),
+                nameof(MentalHealthData.OutPatientOpen), nameof(MentalHealthData.HasWaitlist), nameof(MentalHealthData.OutPatientWaitlistLength),
                 Phrases.Capacity.MentalHealth.GetOutPatientOpen));
 
             // End this dialog to pop it off the stack.

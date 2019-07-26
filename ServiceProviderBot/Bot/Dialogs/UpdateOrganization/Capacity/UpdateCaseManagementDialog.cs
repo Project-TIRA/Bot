@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.Models;
+using System.Collections.Generic;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
@@ -14,74 +15,16 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 
         public override WaterfallDialog GetWaterfallDialog()
         {
-            // Define the dialog and add it to the set.
-            return new WaterfallDialog(Name, new WaterfallStep[]
-            {
-                async (stepContext, cancellationToken) =>
-                {
-                    // Get the latest case management snapshot.
-                    var caseManagementData = await this.api.GetLatestServiceData<CaseManagementData>(Helpers.UserId(stepContext.Context), ServiceType.Advocacy);
+            var steps = new List<WaterfallStep>();
 
-                    // Check if the organization has case management spots.
-                    if (caseManagementData.SpotsTotal > 0)
-                    {
-                        // Prompt for the open spots.
-                        return await stepContext.PromptAsync(
-                            Utils.Prompts.LessThanOrEqualPrompt,
-                            new PromptOptions { Prompt = Phrases.Capacity.CaseManagement.GetSpotsOpen,
-                                RetryPrompt = Phrases.Capacity.RetryInvalidCount(caseManagementData.SpotsTotal, Phrases.Capacity.CaseManagement.GetSpotsOpen),
-                                Validations = caseManagementData.SpotsTotal },
-                            cancellationToken);
-                    }
+            steps.AddRange(GenerateUpdateSteps<CaseManagementData>(Phrases.Capacity.CaseManagement.Service, nameof(CaseManagementData.Total),
+                nameof(CaseManagementData.Open), nameof(CaseManagementData.HasWaitlist), nameof(CaseManagementData.WaitlistLength),
+                Phrases.Capacity.CaseManagement.GetSpotsOpen));
 
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Check if the previous step had a result.
-                    if (stepContext.Result != null)
-                    {
-                        var open = int.Parse((string)stepContext.Result);
+            // End this dialog to pop it off the stack.
+            steps.Add(async (stepContext, cancellationToken) => { return await stepContext.EndDialogAsync(cancellationToken); });
 
-                        // Get the latest housing snapshot and update it.
-                        var caseManagementData = await this.api.GetLatestServiceData<CaseManagementData>(Helpers.UserId(stepContext.Context), ServiceType.Advocacy);
-                        caseManagementData.SpotsOpen = open;
-                        await caseManagementData.Update(this.api);
-
-                        if (caseManagementData.HasWaitlist && open == 0)
-                        {
-                            // Prompt for the waitlist length.
-                            return await stepContext.PromptAsync(
-                                Utils.Prompts.IntPrompt,
-                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.CaseManagement.ServiceName) },
-                                cancellationToken);
-                        }
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Check if the previous step had a result.
-                    if (stepContext.Result != null)
-                    {
-                        // Get the latest housing snapshot and update it.
-                        var caseManagementData = await this.api.GetLatestServiceData<CaseManagementData>(Helpers.UserId(stepContext.Context), ServiceType.Advocacy);
-                        caseManagementData.WaitlistLength = (int)stepContext.Result;
-                        await caseManagementData.Update(this.api);
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // End this dialog to pop it off the stack.
-                    return await stepContext.EndDialogAsync(cancellationToken);
-                }
-            });
+            return new WaterfallDialog(Name, steps);
         }
     }
 }

@@ -41,7 +41,7 @@ namespace Tests.Dialogs.UpdateOrganization
 
             // Execute the conversation.
             await CreateTestFlow(UpdateOrganizationDialog.Name, expectedOrganization)
-                .Test("begin", Phrases.UpdateOrganization.NothingToUpdate)
+                .Test("begin", Phrases.Update.NothingToUpdate)
                 .StartTestAsync();
 
             // Validate the results.

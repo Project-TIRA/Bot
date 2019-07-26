@@ -32,7 +32,7 @@ namespace Shared.Models
         public int InPatientOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int InPatientWaitListLength { get; set; }
+        public int InPatientWaitlistLength { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int OutPatientTotal { get; set; }
@@ -41,7 +41,7 @@ namespace Shared.Models
         public int OutPatientOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int OutPatientWaitListLength { get; set; }
+        public int OutPatientWaitlistLength { get; set; }
 
         // Called by Json to prevent serialization but allow deserialization.
         public bool ShouldSerializeId()

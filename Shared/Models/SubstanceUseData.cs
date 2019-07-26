@@ -13,52 +13,52 @@ namespace Shared.Models
         [JsonIgnore]
         public override string ResourceId { get { return Id; } }
 
-        [JsonProperty(PropertyName = "tira_substanceusedataid")]
+        [JsonProperty(PropertyName = "TODO")]
         public string Id { get; set; }
 
-        [JsonProperty(PropertyName = "_tira_substanceuseserviceid_value")]
+        [JsonProperty(PropertyName = "TODO")]
         public string ServiceId { get; set; }
 
-        [JsonProperty(PropertyName = "tira_name")]
+        [JsonProperty(PropertyName = "TODO")]
         public string Name { get; set; }
 
-        [JsonProperty(PropertyName = "tira_haswaitlist")]
+        [JsonProperty(PropertyName = "TODO")]
         public bool HasWaitlist { get; set; }
 
-        [JsonProperty(PropertyName = "tira_detoxwaitlistlength")]
+        [JsonProperty(PropertyName = "TODO")]
         public int DetoxWaitlistLength { get; set; }
 
-        [JsonProperty(PropertyName = "tira_inpatientwaitlistlength")]
+        [JsonProperty(PropertyName = "TODO")]
         public int InPatientWaitlistLength { get; set; }
 
-        [JsonProperty(PropertyName = "tira_outpatientwaitlistlength")]
+        [JsonProperty(PropertyName = "TODO")]
         public int OutPatientWaitlistLength { get; set; }
 
-        [JsonProperty(PropertyName = "tira_groupwaitlistlength")]
+        [JsonProperty(PropertyName = "TODO")]
         public int GroupWaitlistLength { get; set; }
 
-        [JsonProperty(PropertyName = "tira_detoxtotal")]
+        [JsonProperty(PropertyName = "TODO")]
         public int DetoxTotal { get; set; }
 
-        [JsonProperty(PropertyName = "tira_inpatienttotal")]
+        [JsonProperty(PropertyName = "TODO")]
         public int InPatientTotal { get; set; }
 
-        [JsonProperty(PropertyName = "tira_outpatienttotal")]
+        [JsonProperty(PropertyName = "TODO")]
         public int OutPatientTotal { get; set; }
 
-        [JsonProperty(PropertyName = "tira_grouptotal")]
+        [JsonProperty(PropertyName = "TODO")]
         public int GroupTotal { get; set; }
 
-        [JsonProperty(PropertyName = "tira_detoxopen")]
+        [JsonProperty(PropertyName = "TODO")]
         public int DetoxOpen { get; set; }
 
-        [JsonProperty(PropertyName = "tira_inpatientopen")]
+        [JsonProperty(PropertyName = "TODO")]
         public int InPatientOpen { get; set; }
 
-        [JsonProperty(PropertyName = "tira_outpatientopen")]
+        [JsonProperty(PropertyName = "TODO")]
         public int OutPatientOpen { get; set; }
 
-        [JsonProperty(PropertyName = "tira_groupopen")]
+        [JsonProperty(PropertyName = "TODO")]
         public int GroupOpen { get; set; }
 
         // Called by Json to prevent serialization but allow deserialization.

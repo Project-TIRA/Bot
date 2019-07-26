@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Shared;
 using Shared.Models;
+using System.Collections.Generic;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
@@ -14,251 +15,28 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 
         public override WaterfallDialog GetWaterfallDialog()
         {
-            // Define the dialog and add it to the set.
-            return new WaterfallDialog(Name, new WaterfallStep[]
-            {
-                async (stepContext, cancellationToken) =>
-                {
-                    // Get the latest substance use snapshot.
-                    var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
+            var steps = new List<WaterfallStep>();
 
-                    // Check if the organization has detox spaces.
-                    if (substanceUseData.DetoxTotal > 0)
-                    {
-                        // Prompt for the open detox spaces.
-                        return await stepContext.PromptAsync(
-                            Utils.Prompts.LessThanOrEqualPrompt,
-                            new PromptOptions { Prompt = Phrases.Capacity.SubstanceUse.GetDetoxOpen,
-                                RetryPrompt = Phrases.Capacity.RetryInvalidCount(substanceUseData.DetoxTotal, Phrases.Capacity.Housing.GetEmergencySharedBedsOpen),
-                                Validations = substanceUseData.DetoxTotal },
-                            cancellationToken);
-                    }
+            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Capacity.SubstanceUse.DetoxService, nameof(SubstanceUseData.DetoxTotal),
+                nameof(SubstanceUseData.DetoxOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.DetoxWaitlistLength),
+                Phrases.Capacity.SubstanceUse.GetDetoxOpen));
 
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Check if the previous step had a result.
-                    if (stepContext.Result != null)
-                    {
-                        var open = int.Parse((string)stepContext.Result);
+            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Capacity.SubstanceUse.InPatientService, nameof(SubstanceUseData.InPatientTotal),
+                nameof(SubstanceUseData.InPatientOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.InPatientWaitlistLength),
+                Phrases.Capacity.SubstanceUse.GetDetoxOpen));
 
-                        // Get the latest housing snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-                        substanceUseData.DetoxOpen = open;
-                        await substanceUseData.Update(this.api);
+            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Capacity.SubstanceUse.OutPatientService, nameof(SubstanceUseData.OutPatientTotal),
+                nameof(SubstanceUseData.OutPatientOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.OutPatientWaitlistLength),
+                Phrases.Capacity.SubstanceUse.GetDetoxOpen));
 
-                        if (substanceUseData.HasWaitlist && open == 0)
-                        {
-                            // Prompt for the waitlist length.
-                            return await stepContext.PromptAsync(
-                                Utils.Prompts.IntPrompt,
-                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.SubstanceUse.DetoxService) },
-                                cancellationToken);
-                        }
-                    }
+            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Capacity.SubstanceUse.GroupService, nameof(SubstanceUseData.GroupTotal),
+                nameof(SubstanceUseData.GroupOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.GroupWaitlistLength),
+                Phrases.Capacity.SubstanceUse.GetDetoxOpen));
 
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Check if the previous step had a result.
-                    if (stepContext.Result != null)
-                    {
-                        // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-                        substanceUseData.DetoxOpen = (int)stepContext.Result;
-                        await substanceUseData.Update(this.api);
-                    }
+            // End this dialog to pop it off the stack.
+            steps.Add(async (stepContext, cancellationToken) => { return await stepContext.EndDialogAsync(cancellationToken); });
 
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Get the latest substance use snapshot.
-                    var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-
-                    // Check if the organization has in-patient spaces.
-                    if (substanceUseData.InPatientTotal > 0)
-                    {
-                        // Prompt for the open spaces.
-                        return await stepContext.PromptAsync(
-                            Utils.Prompts.LessThanOrEqualPrompt,
-                            new PromptOptions { Prompt = Phrases.Capacity.SubstanceUse.GetInPatientOpen,
-                                RetryPrompt = Phrases.Capacity.RetryInvalidCount(substanceUseData.InPatientTotal, Phrases.Capacity.SubstanceUse.GetInPatientOpen),
-                                Validations = substanceUseData.InPatientTotal },
-                            cancellationToken);
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Check if the previous step had a result.
-                    if (stepContext.Result != null)
-                    {
-                        var open = int.Parse((string)stepContext.Result);
-
-                        // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-                        substanceUseData.InPatientOpen = open;
-                        await substanceUseData.Update(this.api);
-
-                        if (substanceUseData.HasWaitlist && open == 0)
-                        {
-                            // Prompt for the waitlist length.
-                            return await stepContext.PromptAsync(
-                                Utils.Prompts.IntPrompt,
-                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.SubstanceUse.InPatientService) },
-                                cancellationToken);
-                        }
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Check if the previous step had a result.
-                    if (stepContext.Result != null)
-                    {
-                        // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-                        substanceUseData.InPatientWaitlistLength = (int)stepContext.Result;
-                        await substanceUseData.Update(this.api);
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Get the latest substance use snapshot.
-                    var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-
-                    // Check if the organization has out-patient spaces.
-                    if (substanceUseData.OutPatientTotal > 0)
-                    {
-                        // Prompt for the open spaces.
-                        return await stepContext.PromptAsync(
-                            Utils.Prompts.LessThanOrEqualPrompt,
-                            new PromptOptions { Prompt = Phrases.Capacity.SubstanceUse.GetOutPatientOpen,
-                                RetryPrompt = Phrases.Capacity.RetryInvalidCount(substanceUseData.OutPatientTotal, Phrases.Capacity.SubstanceUse.GetOutPatientOpen),
-                                Validations = substanceUseData.OutPatientTotal },
-                            cancellationToken);
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Check if the previous step had a result.
-                    if (stepContext.Result != null)
-                    {
-                        var open = int.Parse((string)stepContext.Result);
-
-                        // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-                        substanceUseData.OutPatientOpen = open;
-                        await substanceUseData.Update(this.api);
-
-                        if (substanceUseData.HasWaitlist && open == 0)
-                        {
-                            // Prompt for the waitlist length.
-                            return await stepContext.PromptAsync(
-                                Utils.Prompts.IntPrompt,
-                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.SubstanceUse.OutPatientService) },
-                                cancellationToken);
-                        }
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Check if the previous step had a result.
-                    if (stepContext.Result != null)
-                    {
-                        // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-                        substanceUseData.OutPatientWaitlistLength = (int)stepContext.Result;
-                        await substanceUseData.Update(this.api);
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Get the latest substance use snapshot.
-                    var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-
-                    // Check if the organization has group spaces.
-                    if (substanceUseData.GroupTotal > 0)
-                    {
-                        // Prompt for the open spaces.
-                        return await stepContext.PromptAsync(
-                            Utils.Prompts.LessThanOrEqualPrompt,
-                            new PromptOptions { Prompt = Phrases.Capacity.SubstanceUse.GetGroupOpen,
-                                RetryPrompt = Phrases.Capacity.RetryInvalidCount(substanceUseData.GroupTotal, Phrases.Capacity.SubstanceUse.GetGroupOpen),
-                                Validations = substanceUseData.GroupTotal },
-                            cancellationToken);
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Check if the previous step had a result.
-                    if (stepContext.Result != null)
-                    {
-                        var open = int.Parse((string)stepContext.Result);
-
-                        // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-                        substanceUseData.GroupOpen = open;
-                        await substanceUseData.Update(this.api);
-
-                        if (substanceUseData.HasWaitlist && open == 0)
-                        {
-                            // Prompt for the waitlist length.
-                            return await stepContext.PromptAsync(
-                                Utils.Prompts.IntPrompt,
-                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.SubstanceUse.GroupService) },
-                                cancellationToken);
-                        }
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Check if the previous step had a result.
-                    if (stepContext.Result != null)
-                    {
-                        // Get the latest substance use snapshot and update it.
-                        var substanceUseData = await this.api.GetLatestServiceData<SubstanceUseData>(Helpers.UserId(stepContext.Context), ServiceType.SubstanceUse);
-                        substanceUseData.GroupWaitlistLength= (int)stepContext.Result;
-                        await substanceUseData.Update(this.api);
-                    }
-
-                    // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // End this dialog to pop it off the stack.
-                    return await stepContext.EndDialogAsync(cancellationToken);
-                }
-            });
+            return new WaterfallDialog(Name, steps);
         }
     }
 }

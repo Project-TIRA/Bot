@@ -26,7 +26,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                     if (!needsUpdate)
                     {
                         // Nothing to update.
-                        await Messages.SendAsync(Phrases.UpdateOrganization.NothingToUpdate, stepContext.Context, cancellationToken);
+                        await Messages.SendAsync(Phrases.Update.NothingToUpdate, stepContext.Context, cancellationToken);
 
                         // End this dialog to pop it off the stack.
                         return await stepContext.EndDialogAsync(cancellationToken);
@@ -38,7 +38,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                 async (stepContext, cancellationToken) =>
                 {
                     // Send the closing message.
-                    await Messages.SendAsync(Phrases.UpdateOrganization.Closing, stepContext.Context, cancellationToken);
+                    await Messages.SendAsync(Phrases.Update.Closing, stepContext.Context, cancellationToken);
 
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
