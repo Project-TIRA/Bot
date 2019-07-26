@@ -83,7 +83,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest snapshot.
-                    var serviceData = await this.api.GetLatestServiceData<T>(Helpers.UserId(stepContext.Context));
+                    var serviceData = await this.api.GetLatestServiceData<T>(Helpers.GetPhoneNumber(stepContext.Context));
                     var totalProperty = (int)typeof(T).GetProperty(totalPropertyName).GetValue(serviceData);
 
                     // Check if the organization has this service.
@@ -109,7 +109,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest snapshot and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.UserId(stepContext.Context));
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetPhoneNumber(stepContext.Context));
                         typeof(T).GetProperty(openPropertyName).SetValue(data, open);
                         await data.Update(this.api);
 
@@ -134,7 +134,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     if (stepContext.Result != null)
                     {
                         // Get the latest snapshot and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.UserId(stepContext.Context));
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetPhoneNumber(stepContext.Context));
                         typeof(T).GetProperty(waitlistLengthPropertyName).SetValue(data, (int)stepContext.Result);
                         await data.Update(this.api);
                     }

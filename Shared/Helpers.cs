@@ -10,10 +10,10 @@ namespace Shared
         /// <summary>
         /// Gets a user ID from the turn context.
         /// </summary>
-        public static string UserId(ITurnContext context)
+        public static string GetPhoneNumber(ITurnContext context)
         {
-            return "9a0f1731-45ae-e911-a97f-000d3a30da4f";
-            //return context.Activity.From.Id;
+            //return "9a0f1731-45ae-e911-a97f-000d3a30da4f";
+            return context.Activity.From.Id;
         }
 
         /// <summary>

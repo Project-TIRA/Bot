@@ -24,7 +24,6 @@ namespace Shared
 
         HttpClient client;
         string authToken;
-        bool isInitialized;
 
         public ApiInterface()
         {
@@ -40,9 +39,9 @@ namespace Shared
         /// <summary>
         /// Gets a user from a user ID.
         /// </summary>
-        public async Task<User> GetUser(string userId)
+        public async Task<User> GetUser(string phoneNumber)
         {
-            JObject response = await GetJsonData(User.TABLE_NAME, "$filter=contactid eq " + userId);
+            JObject response = await GetJsonData(User.TABLE_NAME, "$filter=mobilephone eq " + phoneNumber);
             if (response == null)
             {
                 return null;
@@ -54,9 +53,9 @@ namespace Shared
         /// <summary>
         /// Gets a user's organization.
         /// </summary>
-        public async Task<Organization> GetOrganization(string userId)
+        public async Task<Organization> GetOrganization(string phoneNumber)
         {
-            var user = await GetUser(userId);
+            var user = await GetUser(phoneNumber);
             if (user == null)
             {
                 return null;
@@ -74,9 +73,9 @@ namespace Shared
         /// <summary>
         /// Gets the count of an organization's services.
         /// </summary>
-        public async Task<int> GetServiceCount(string userId)
+        public async Task<int> GetServiceCount(string phoneNumber)
         {
-            Organization organization = await GetOrganization(userId);
+            Organization organization = await GetOrganization(phoneNumber);
             if (organization != null)
             {
                 JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} &$count=true");
@@ -92,9 +91,9 @@ namespace Shared
         /// <summary>
         /// Gets an organization's service by type.
         /// </summary>
-        public async Task<Service> GetService(string userId, ServiceType serviceType)
+        public async Task<Service> GetService(string phoneNumber, ServiceType serviceType)
         {
-            Organization organization = await GetOrganization(userId);
+            Organization organization = await GetOrganization(phoneNumber);
             if (organization != null)
             {
                 JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {(int)serviceType}");
@@ -110,11 +109,11 @@ namespace Shared
         /// <summary>
         /// Gets the latest shapshot for a service.
         /// </summary>
-        public async Task<T> GetLatestServiceData<T>(string userId) where T : ModelBase
+        public async Task<T> GetLatestServiceData<T>(string phoneNumber) where T : ModelBase
         {
             var serviceType = Helpers.GetServiceType<T>();
 
-            var service = await GetService(userId, serviceType);
+            var service = await GetService(phoneNumber, serviceType);
             if (service != null)
             {
                 var tableName = Helpers.GetServiceTableName(serviceType);

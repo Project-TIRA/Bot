@@ -21,24 +21,17 @@ namespace ServiceProviderBot.Bot.Dialogs
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the user is already registered.
-                    var user = await api.GetUser(Helpers.UserId(stepContext.Context));
-
+                    var user = await api.GetUser(Helpers.GetPhoneNumber(stepContext.Context));
                     if (user == null)
                     {
-                        // Not registered.
-                        // TODO: Send message with link to website to sign up
                         await Messages.SendAsync(Phrases.Greeting.NotRegistered, stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
 
                     // Check if we already have an organization for this user.
                     var organization = await api.GetOrganization(user.Id);
-                    bool isExistingOrganization = organization != null;
-
-                    if (user == null)
+                    if (organization == null)
                     {
-                        // No associated with an organization.
-                        // TODO: Send message with link to website to register
                         await Messages.SendAsync(Phrases.Greeting.NoOrganization, stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
@@ -46,7 +39,6 @@ namespace ServiceProviderBot.Bot.Dialogs
                     // Check if the organization is verified.
                     if (!organization.IsVerified)
                     {
-                        // Not verified.
                         await Messages.SendAsync(Phrases.Greeting.UnverifiedOrganization, stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
@@ -64,7 +56,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                             await Messages.SendAsync(Phrases.Greeting.GetHelp, stepContext.Context, cancellationToken);
                             return await stepContext.EndDialogAsync(cancellationToken);
                         }
-                        else if (string.Equals(incomingMessage, Phrases.Greeting.UpdateKeywork, StringComparison.OrdinalIgnoreCase))
+                        else if (string.Equals(incomingMessage, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase))
                         {
                             // Push the update organization dialog onto the stack.
                             return await BeginDialogAsync(stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
@@ -91,7 +83,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         await Messages.SendAsync(Phrases.Greeting.GetHelp, stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
-                    else if (string.Equals(result, Phrases.Greeting.UpdateKeywork, StringComparison.OrdinalIgnoreCase))
+                    else if (string.Equals(result, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase))
                     {
                         // Push the update organization dialog onto the stack.
                         return await BeginDialogAsync(stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);

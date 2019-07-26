@@ -21,6 +21,9 @@ namespace Shared.Models
         [JsonProperty(PropertyName = "firstname")]
         public string Name { get; set; }
 
+        [JsonProperty(PropertyName = "mobilephone")]
+        public string PhoneNumber { get; set; }
+
         // Called by Json to prevent serialization but allow deserialization.
         public bool ShouldSerializeId()
         {

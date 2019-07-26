@@ -7,16 +7,18 @@ namespace Shared
 {
     public static class Phrases
     {
+        public static string WebsiteUrl = "tira.powerappsportals.com";
+
         public static class Greeting
         {
             public static string HelpKeyword = "help";
-            public static string UpdateKeywork = "update";
-            public static Activity NotRegistered = MessageFactory.Text("It looks like you aren't registered - Visit ... to register.");
-            public static Activity NoOrganization = MessageFactory.Text("It looks like you aren't connected with an organization. Visit ... to register your organization.");
-            public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified.");
-            public static Activity Keywords = MessageFactory.Text($"Send \"{UpdateKeywork}\" to update your organization's current capacity or \"{HelpKeyword}\" for more information.");
-            public static Activity GetHelp = MessageFactory.Text($"TODO: Help dialog");
-            public static Activity TimeToUpdate = MessageFactory.Text($"It's time to update! Send \"{UpdateKeywork}\" when you are ready to begin.");
+            public static string UpdateKeyword = "update";
+            public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register");
+            public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
+            public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
+            public static Activity Keywords = MessageFactory.Text($"Send \"{UpdateKeyword}\" to update your organization's current capacity or \"{HelpKeyword}\" for more information");
+            public static Activity GetHelp = MessageFactory.Text("TODO: Help dialog");
+            public static Activity TimeToUpdate = MessageFactory.Text($"It's time to update! Send \"{UpdateKeyword}\" when you are ready to begin");
 
             public static Activity Welcome(User user)
             {
@@ -34,7 +36,7 @@ namespace Shared
 
             public static Activity RetryInvalidCount(int total, Activity retryPrompt)
             {
-                return MessageFactory.Text($"Oops, the availability cannot be more than the total ({total}). {retryPrompt.Text}");
+                return MessageFactory.Text($"Oops, the openings cannot be more than the total availablble ({total}). {retryPrompt.Text}");
             }
 
             public static class CaseManagement
