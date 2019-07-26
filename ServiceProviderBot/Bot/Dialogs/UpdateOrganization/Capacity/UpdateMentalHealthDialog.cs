@@ -28,7 +28,6 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             // End this dialog to pop it off the stack.
             steps.Add(async (stepContext, cancellationToken) => { return await stepContext.EndDialogAsync(cancellationToken); });
 
-            // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, steps);
         }
     }

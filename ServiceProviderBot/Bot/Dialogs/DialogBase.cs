@@ -108,7 +108,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     {
                         var open = int.Parse((string)stepContext.Result);
 
-                        // Get the latest housing snapshot and update it.
+                        // Get the latest snapshot and update it.
                         var data = await this.api.GetLatestServiceData<T>(Helpers.UserId(stepContext.Context));
                         typeof(T).GetProperty(openPropertyName).SetValue(data, open);
                         await data.Update(this.api);
@@ -133,7 +133,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     // Check if the previous step had a result.
                     if (stepContext.Result != null)
                     {
-                        // Get the latest housing snapshot and update it.
+                        // Get the latest snapshot and update it.
                         var data = await this.api.GetLatestServiceData<T>(Helpers.UserId(stepContext.Context));
                         typeof(T).GetProperty(waitlistLengthPropertyName).SetValue(data, (int)stepContext.Result);
                         await data.Update(this.api);
