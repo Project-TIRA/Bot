@@ -8,7 +8,7 @@ namespace Shared.ApiInterface
     /// <summary>
     /// API interface for Entity Framework
     /// </summary>
-    public class EfInterface : ApiInterface
+    public class EfInterface : IApiInterface
     {
         private DbModel dbContext { get; }
 
@@ -20,15 +20,55 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Creates a new record of a model.
         /// </summary>
-        public override Task<string> Create<T>(T model)
+        public async Task<string> Create<T>(T model) where T : ModelBase
         {
-            return Task.FromResult(string.Empty);
+            bool success = true;
+
+            if (model is User)
+            {
+                await this.dbContext.Users.AddAsync(model as User);
+            }
+            else if (model is Organization)
+            {
+                await this.dbContext.Organizations.AddAsync(model as Organization);
+            }
+            else if (model is Organization)
+            {
+                await this.dbContext.Organizations.AddAsync(model as Organization);
+            }
+            else if (model is CaseManagementData)
+            {
+                await this.dbContext.CaseManagementData.AddAsync(model as CaseManagementData);
+            }
+            else if (model is HousingData)
+            {
+                await this.dbContext.HousingData.AddAsync(model as HousingData);
+            }
+            else if (model is JobTrainingData)
+            {
+                await this.dbContext.JobTrainingData.AddAsync(model as JobTrainingData);
+            }
+            else if (model is MentalHealthData)
+            {
+                await this.dbContext.MentalHealthData.AddAsync(model as MentalHealthData);
+            }
+            else if (model is SubstanceUseData)
+            {
+                await this.dbContext.SubstanceUseData.AddAsync(model as SubstanceUseData);
+            }
+            else
+            {
+                success = false;
+            }
+
+            await this.dbContext.SaveChangesAsync();
+            return success ? model.ResourceId : string.Empty;
         }
 
         /// <summary>
         /// Saves changes to a model.
         /// </summary>
-        public override async Task<bool> Update<T>(T model)
+        public async Task<bool> Update<T>(T model) where T : ModelBase
         {
             await this.dbContext.SaveChangesAsync();
             return true;
@@ -37,7 +77,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets a user from a user ID.
         /// </summary>
-        public override async Task<User> GetUser(string userId)
+        public async Task<User> GetUser(string userId)
         {
             var user = await this.dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
             return user;
@@ -46,7 +86,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization from a user ID.
         /// </summary>
-        public override async Task<Organization> GetOrganization(string userId)
+        public async Task<Organization> GetOrganization(string userId)
         {
             var user = await GetUser(userId);
             if (user != null)
@@ -60,7 +100,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the count of an organization's services from a user ID.
         /// </summary>
-        public override async Task<int> GetServiceCount(string userId)
+        public async Task<int> GetServiceCount(string userId)
         {
             Organization organization = await GetOrganization(userId);
             if (organization != null)
@@ -74,7 +114,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from a user ID.
         /// </summary>
-        public override async Task<Service> GetService<T>(string userId)
+        public async Task<Service> GetService<T>(string userId) where T : ServiceModelBase
         {
             Organization organization = await GetOrganization(userId);
             if (organization != null)
@@ -92,7 +132,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from a user ID.
         /// </summary>
-        public override async Task<T> GetLatestServiceData<T>(string userId)
+        public async Task<T> GetLatestServiceData<T>(string userId) where T : ServiceModelBase
         {
             var service = await GetService<T>(userId);
             if (service != null)

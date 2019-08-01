@@ -15,7 +15,7 @@ namespace Shared.ApiInterface
     /// <summary>
     /// API interface for Common Data Service (Dynamics)
     /// </summary>
-    public class CdsInterface : ApiInterface
+    public class CdsInterface : IApiInterface
     {
         // TODO: Put these in app settings.
         const string CLIENT_ID = "4cd0f1ea-6f83-419a-a4fa-24878d30dd09";
@@ -42,7 +42,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Creates a new record of a model.
         /// </summary>
-        public override async Task<string> Create<T>(T model)
+        public async Task<string> Create<T>(T model) where T : ModelBase
         {
             if (!string.IsNullOrEmpty(model.ResourceId))
             {
@@ -55,7 +55,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Saves changes to a model.
         /// </summary>
-        public override async Task<bool> Update<T>(T model)
+        public async Task<bool> Update<T>(T model) where T : ModelBase
         {
             if (string.IsNullOrEmpty(model.ResourceId))
             {
@@ -68,8 +68,10 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets a user from a user ID.
         /// </summary>
-        public override async Task<User> GetUser(string phoneNumber)
+        public async Task<User> GetUser(string userId)
         {
+            string phoneNumber = PhoneNumber.Standardize(userId);
+
             JObject response = await GetJsonData(User.TABLE_NAME, $"$filter=contains(mobilephone,'{phoneNumber}')");
             if (response == null)
             {
@@ -82,8 +84,10 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization from a user ID.
         /// </summary>
-        public override async Task<Organization> GetOrganization(string phoneNumber)
+        public async Task<Organization> GetOrganization(string userId)
         {
+            string phoneNumber = PhoneNumber.Standardize(userId);
+
             var user = await GetUser(phoneNumber);
             if (user != null)
             {
@@ -100,8 +104,10 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the count of an organization's services from a user ID.
         /// </summary>
-        public override async Task<int> GetServiceCount(string phoneNumber)
+        public async Task<int> GetServiceCount(string userId)
         {
+            string phoneNumber = PhoneNumber.Standardize(userId);
+
             Organization organization = await GetOrganization(phoneNumber);
             if (organization != null)
             {
@@ -118,8 +124,10 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from a user ID.
         /// </summary>
-        public override async Task<Service> GetService<T>(string phoneNumber)
+        public async Task<Service> GetService<T>(string userId) where T : ServiceModelBase
         {
+            string phoneNumber = PhoneNumber.Standardize(userId);
+
             Organization organization = await GetOrganization(phoneNumber);
             if (organization != null)
             {
@@ -140,8 +148,10 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from a user ID.
         /// </summary>
-        public override async Task<T> GetLatestServiceData<T>(string phoneNumber)
+        public async Task<T> GetLatestServiceData<T>(string userId) where T : ServiceModelBase
         {
+            string phoneNumber = PhoneNumber.Standardize(userId);
+
             var service = await GetService<T>(phoneNumber);
             if (service != null)
             {

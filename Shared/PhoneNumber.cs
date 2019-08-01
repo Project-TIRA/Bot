@@ -24,7 +24,7 @@
             }
 
             // Can't do anything with the number.
-            return string.Empty;
+            return phoneNumber;
         }
 
         private static string StripSeparators(string phoneNumber)

@@ -1,9 +1,8 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
-using ServiceProviderBot.Bot.Utils;
 using Shared;
 using Xunit;
 
@@ -12,30 +11,34 @@ namespace Tests.Dialogs
     public class MasterDialogTests : DialogTestBase
     {
         [Fact]
-        public async Task NewOrganization()
+        public async Task NotRegistered()
         {
-            /*
-            var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.UpdateFrequency = Frequency.Daily;
-
-            // Execute the conversation.
             await CreateTestFlow(MasterDialog.Name)
-                .Send("new")
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.NewOrganization.GetName)
-                .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
-                .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
-                .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
-                .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), Phrases.NewOrganization.Closing)
+                .Test("hi", Phrases.Greeting.NotRegistered)
                 .StartTestAsync();
+        }
 
-            // Organization should be completed.
-            expectedOrganization.IsComplete = true;
+        [Fact]
+        public async Task NoOrganization()
+        {
+            var user = CreateTestUser(string.Empty);
+            var initialModels = new List<ModelBase>() { user };
 
-            // Validate the results.
-            await ValidateProfile(expectedOrganization);
-            */
+            await CreateTestFlow(MasterDialog.Name, initialModels)
+                .Test("hi", Phrases.Greeting.NoOrganization)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task OrganizationNotVerified()
+        {
+            var organization = CreateTestOrganization(false);
+            var user = CreateTestUser(organization.Id);
+            var initialModels = new List<ModelBase>() { organization, user };
+
+            await CreateTestFlow(MasterDialog.Name, initialModels)
+                .Test("hi", Phrases.Greeting.UnverifiedOrganization)
+                .StartTestAsync();
         }
 
         [Fact]
@@ -67,12 +70,7 @@ namespace Tests.Dialogs
         [Fact]
         public async Task UpdateOrganizationPendingVerification()
         {
-            var initialOrganization = CreateDefaultTestOrganization();
-            initialOrganization.IsVerified = false;
-
-            await CreateTestFlow(MasterDialog.Name, initialOrganization)
-                .Test("update", Phrases.Greeting.UnverifiedOrganization)
-                .StartTestAsync();
+            
         }
 
         [Fact]

@@ -40,6 +40,7 @@ namespace BotTrigger
 
         public static async Task DoWork(string connectionString, ILogger log = null)
         {
+            /*
             MicrosoftAppCredentials.TrustServiceUrl(ServiceUrl);
 
             var creds = new MicrosoftAppCredentials("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
@@ -69,20 +70,19 @@ namespace BotTrigger
                     }, new CancellationToken());
 
 
-                    /*
-                    var connector = new ConnectorClient(new Uri(ServiceUrl), creds);
+                    //var connector = new ConnectorClient(new Uri(ServiceUrl), creds);
 
-                    IMessageActivity message = Activity.CreateMessageActivity();
-                    message.From = botAccount;
-                    message.Recipient = userAccount;
-                    message.Conversation = new ConversationAccount(id: userAccount.Id);
-                    message.ChannelId = ChannelId;
-                    message.Text = $"It's time for an update. Reply \"{Bot}";
+                    //IMessageActivity message = Activity.CreateMessageActivity();
+                    //message.From = botAccount;
+                    //message.Recipient = userAccount;
+                    //message.Conversation = new ConversationAccount(id: userAccount.Id);
+                    //message.ChannelId = ChannelId;
+                    //message.Text = $"It's time for an update. Reply \"{Bot}";
 
-                    await connector.Conversations.SendToConversationAsync((Activity)message);
-                    */
+                    //await connector.Conversations.SendToConversationAsync((Activity)message);
                 }
-            }     
+            }
+            */
         }
 
         private static void LogInfo(ILogger log, string text)

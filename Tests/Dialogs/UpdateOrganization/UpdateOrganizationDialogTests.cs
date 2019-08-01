@@ -37,15 +37,7 @@ namespace Tests.Dialogs.UpdateOrganization
         [Fact]
         public async Task NothingToUpdate()
         {
-            var expectedOrganization = CreateDefaultTestOrganization();
 
-            // Execute the conversation.
-            await CreateTestFlow(UpdateOrganizationDialog.Name, expectedOrganization)
-                .Test("begin", Phrases.Update.NothingToUpdate)
-                .StartTestAsync();
-
-            // Validate the results.
-            await ValidateProfile(expectedOrganization);
         }
 
         [Fact]

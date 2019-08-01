@@ -11,7 +11,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateCaseManagementDialog).FullName;
 
-        public UpdateCaseManagementDialog(StateAccessors state, DialogSet dialogs, ApiInterface api, IConfiguration configuration)
+        public UpdateCaseManagementDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()

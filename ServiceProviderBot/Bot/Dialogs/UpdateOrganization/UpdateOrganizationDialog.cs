@@ -13,7 +13,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
     {
         public static string Name = typeof(UpdateOrganizationDialog).FullName;
 
-        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, ApiInterface api, IConfiguration configuration)
+        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
@@ -47,9 +47,9 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             });
         }
 
-        private static async Task<bool> NeedsUpdate(StateAccessors state, ApiInterface api, ITurnContext context)
+        private static async Task<bool> NeedsUpdate(StateAccessors state, IApiInterface api, ITurnContext context)
         {
-            var serviceCount = await api.GetServiceCount(Helpers.GetPhoneNumber(context));
+            var serviceCount = await api.GetServiceCount(Helpers.GetUserId(context));
             return serviceCount > 0;
         }
     }

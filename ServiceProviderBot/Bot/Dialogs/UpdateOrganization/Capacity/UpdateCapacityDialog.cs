@@ -10,7 +10,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateCapacityDialog).FullName;
 
-        public UpdateCapacityDialog(StateAccessors state, DialogSet dialogs, ApiInterface api, IConfiguration configuration)
+        public UpdateCapacityDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
@@ -21,7 +21,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has housing services.
-                    var service = await api.GetService<HousingData>(Helpers.GetPhoneNumber(stepContext.Context));
+                    var service = await api.GetService<HousingData>(Helpers.GetUserId(stepContext.Context));
                     if (service != null)
                     {
                         // Push the update housing dialog onto the stack.
@@ -34,7 +34,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has substance use services.
-                    var service = await api.GetService<SubstanceUseData>(Helpers.GetPhoneNumber(stepContext.Context));
+                    var service = await api.GetService<SubstanceUseData>(Helpers.GetUserId(stepContext.Context));
                     if (service != null)
                     {
                         // Push the update substance use dialog onto the stack.

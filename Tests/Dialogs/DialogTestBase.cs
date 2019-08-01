@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityModel;
@@ -17,11 +18,6 @@ namespace Tests.Dialogs
 {
     public abstract class DialogTestBase
     {
-        protected const string TestOrgName = "Test Org";
-        protected const string TestOrgCity = "Redmond";
-        protected const string TestOrgState = "WA";
-        protected const string TestOrgZip = "98052";
-
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
         protected readonly EfInterface api;
@@ -45,7 +41,7 @@ namespace Tests.Dialogs
             Prompts.Register(this.dialogs);
         }
 
-        protected TestFlow CreateTestFlow(string dialogName)
+        protected TestFlow CreateTestFlow(string dialogName, List<ModelBase> initialModels = null)
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
@@ -64,8 +60,7 @@ namespace Tests.Dialogs
 
                 if (startNewConversation)
                 {
-                    // Init at the start of the conversation. Need to do before checking for expired data.
-                    await InitDatabase(turnContext, initialOrganization, initialSnapshot);
+                    await InitDatabase(initialModels);
                 }
 
                 /*
@@ -89,38 +84,6 @@ namespace Tests.Dialogs
             });
         }
 
-        protected Organization CreateDefaultTestOrganization()
-        {
-            var organization = new Organization();
-            organization.Name = TestOrgName;
-            organization.Gender = Gender.All;
-            organization.City = TestOrgCity;
-            organization.State = TestOrgState;
-            organization.Zip = TestOrgZip;
-            return organization;
-        }
-
-        protected async Task ValidateProfile(Organization expectedOrganization = null, Snapshot expectedSnapshot = null)
-        {
-            /*
-            if (expectedOrganization != null)
-            {
-                var actualOrganization = await this.database.GetOrganization(this.turnContext);
-                Assert.Equal(actualOrganization.Name, expectedOrganization.Name);
-                Assert.Equal(actualOrganization.Gender, expectedOrganization.Gender);
-                Assert.Equal(actualOrganization.AgeRangeStart, expectedOrganization.AgeRangeStart);
-                Assert.Equal(actualOrganization.AgeRangeEnd, expectedOrganization.AgeRangeEnd);
-                Assert.Equal(actualOrganization.TotalBeds, expectedOrganization.TotalBeds);
-            }
-
-            if (expectedSnapshot != null)
-            {
-                var actualSnapshot = await this.database.GetSnapshot(this.turnContext);
-                Assert.Equal(actualSnapshot.OpenBeds, expectedSnapshot.OpenBeds);
-            }
-            */
-        }
-
         protected Action<IActivity> StartsWith(IMessageActivity expected)
         {
             return receivedActivity =>
@@ -132,36 +95,43 @@ namespace Tests.Dialogs
             };
         }
 
-        private async Task InitDatabase(ITurnContext turnContext, Organization initialOrganization = null, Snapshot initialSnapshot = null)
+        protected User CreateTestUser(string organizationId)
         {
-            /*
-            Assert.True(initialSnapshot == null || initialOrganization != null, "Cannot initialize a snapshot without an organization");
-
-            // Create the organization and snapshot if provided.
-            if (initialOrganization != null)
+            return new User()
             {
-                var organization = await this.database.CreateOrganization(turnContext);
-                organization.DateCreated = initialOrganization.DateCreated;
-                organization.IsVerified = initialOrganization.IsVerified;
-                organization.Name = initialOrganization.Name;
-                organization.City = initialOrganization.City;
-                organization.State = initialOrganization.State;
-                organization.Zip = initialOrganization.Zip;
-                organization.Gender = initialOrganization.Gender;
-                organization.AgeRangeStart = initialOrganization.AgeRangeStart;
-                organization.AgeRangeEnd = initialOrganization.AgeRangeEnd;
-                organization.TotalBeds = initialOrganization.TotalBeds;
+                Id = Guid.NewGuid().ToString(),
+                Name = "Test User",
+                PhoneNumber = string.Empty,
+                OrganizationId = organizationId
+            };
+        }
 
-                if (initialSnapshot != null)
+        protected Organization CreateTestOrganization(bool isVerified)
+        {
+            return new Organization()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = "Test Organization",
+                IsVerified = isVerified,
+            };
+        }
+
+        private async Task InitDatabase(List<ModelBase> models)
+        {
+            if (models != null)
+            {
+                foreach (var model in models)
                 {
-                    var snapshot = await this.database.CreateSnapshot(turnContext);
-                    snapshot.Date = initialSnapshot.Date;
-                    snapshot.OpenBeds = initialSnapshot.OpenBeds;
-                }
+                    if (model is User)
+                    {
+                        // Turn context can only be accessed on a turn, so 
+                        // this must be called when the bot is executing a turn.
+                        ((User)model).Id = this.turnContext.Activity.From.Id;
+                    }
 
-                await this.database.Save();
+                    await this.api.Create(model);
+                }
             }
-            */
         }
     }
 }

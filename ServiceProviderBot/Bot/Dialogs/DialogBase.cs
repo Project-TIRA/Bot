@@ -14,10 +14,10 @@ namespace ServiceProviderBot.Bot.Dialogs
     {
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
-        protected readonly ApiInterface api;
+        protected readonly IApiInterface api;
         protected readonly IConfiguration configuration;
 
-        public DialogBase(StateAccessors state, DialogSet dialogs, ApiInterface api, IConfiguration configuration)
+        public DialogBase(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
         {
             this.state = state;
             this.dialogs = dialogs;
@@ -80,7 +80,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest snapshot.
-                    var serviceData = await this.api.GetLatestServiceData<T>(Helpers.GetPhoneNumber(stepContext.Context));
+                    var serviceData = await this.api.GetLatestServiceData<T>(Helpers.GetUserId(stepContext.Context));
                     var totalProperty = (int)typeof(T).GetProperty(totalPropertyName).GetValue(serviceData);
 
                     // Check if the organization has this service.
@@ -106,7 +106,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest snapshot and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetPhoneNumber(stepContext.Context));
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserId(stepContext.Context));
                         typeof(T).GetProperty(openPropertyName).SetValue(data, open);
                         await this.api.Update(data);
 
@@ -131,7 +131,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     if (stepContext.Result != null)
                     {
                         // Get the latest snapshot and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetPhoneNumber(stepContext.Context));
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserId(stepContext.Context));
                         typeof(T).GetProperty(waitlistLengthPropertyName).SetValue(data, (int)stepContext.Result);
                         await this.api.Update(data);
                     }
