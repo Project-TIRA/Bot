@@ -1,13 +1,10 @@
 ﻿using EntityModel;
-using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using ServiceProviderBot.Bot.Utils;
 using Shared;
-using Shared.Models;
+using Shared.ApiInterface;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -76,7 +73,7 @@ namespace ServiceProviderBot.Bot.Dialogs
         }
 
         protected WaterfallStep[] GenerateUpdateSteps<T>(string serviceName, string totalPropertyName, string openPropertyName,
-            string hasWaitlistPropertyName, string waitlistLengthPropertyName, Activity prompt) where T : ModelBase
+            string hasWaitlistPropertyName, string waitlistLengthPropertyName, Activity prompt) where T : ServiceModelBase
         {
             return new WaterfallStep[]
             {
@@ -111,7 +108,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         // Get the latest snapshot and update it.
                         var data = await this.api.GetLatestServiceData<T>(Helpers.GetPhoneNumber(stepContext.Context));
                         typeof(T).GetProperty(openPropertyName).SetValue(data, open);
-                        await data.Update(this.api);
+                        await this.api.Update(data);
 
                         // Check if a waitlist is available.
                         var hasWaitlist = (bool)typeof(T).GetProperty(hasWaitlistPropertyName).GetValue(data);
@@ -136,7 +133,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         // Get the latest snapshot and update it.
                         var data = await this.api.GetLatestServiceData<T>(Helpers.GetPhoneNumber(stepContext.Context));
                         typeof(T).GetProperty(waitlistLengthPropertyName).SetValue(data, (int)stepContext.Result);
-                        await data.Update(this.api);
+                        await this.api.Update(data);
                     }
 
                     // Skip this step.

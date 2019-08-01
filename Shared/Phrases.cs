@@ -1,6 +1,6 @@
-﻿using Microsoft.Bot.Builder;
+﻿using EntityModel;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using Shared.Models;
 using System;
 
 namespace Shared
@@ -13,7 +13,7 @@ namespace Shared
         {
             public static string HelpKeyword = "help";
             public static string UpdateKeyword = "update";
-            public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register");
+            public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register and link your mobile phone number");
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
             public static Activity Keywords = MessageFactory.Text($"Send \"{UpdateKeyword}\" to update your organization's current capacity or \"{HelpKeyword}\" for more information");

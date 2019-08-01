@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
+using Shared.ApiInterface;
 using System;
 
 namespace ServiceProviderBot.Bot.Dialogs

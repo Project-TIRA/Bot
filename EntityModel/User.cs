@@ -1,28 +1,30 @@
 ﻿using Newtonsoft.Json;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
-namespace Shared.Models
+namespace EntityModel
 {
-    public class Service : ModelBase
+    public class User : ModelBase
     {
-        public static string TABLE_NAME = "tira_services";
+        public static string TABLE_NAME = "contacts";
 
         [JsonIgnore]
-        public override string TableName {  get { return TABLE_NAME; } }
+        public override string TableName { get { return TABLE_NAME; } }
 
+        [JsonIgnore]
         public override string ResourceId { get { return Id; } }
 
-        [JsonProperty(PropertyName = "tira_serviceid")]
+        [Key]
+        [JsonProperty(PropertyName = "contactId")]
         public string Id { get; set; }
 
-        [JsonProperty(PropertyName = "_tira_organizationservicesid_value")]
+        [JsonProperty(PropertyName = "_parentcustomerid_value")]
         public string OrganizationId { get; set; }
 
-        [JsonProperty(PropertyName = "tira_name")]
+        [JsonProperty(PropertyName = "firstname")]
         public string Name { get; set; }
 
-        [JsonProperty(PropertyName = "tira_servicetype")]
-        public int ServiceType { get; set; }
+        [JsonProperty(PropertyName = "mobilephone")]
+        public string PhoneNumber { get; set; }
 
         // Called by Json to prevent serialization but allow deserialization.
         public bool ShouldSerializeId()

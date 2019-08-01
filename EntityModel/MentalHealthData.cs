@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace Shared.Models
+namespace EntityModel
 {
-    public class JobTrainingData : ModelBase
+    public class MentalHealthData : ServiceModelBase
     {
-        public static string TABLE_NAME = "TODO";
+        public static string TABLE_NAME = "tira_substanceuses";
         public static string PRIMARY_KEY = "TODO";
 
         [JsonIgnore]
@@ -13,6 +15,7 @@ namespace Shared.Models
         [JsonIgnore]
         public override string ResourceId { get { return Id; } }
 
+        [Key]
         [JsonProperty(PropertyName = "TODO")]
         public string Id { get; set; }
 
@@ -22,17 +25,29 @@ namespace Shared.Models
         [JsonProperty(PropertyName = "TODO")]
         public string Name { get; set; }
 
+        [JsonProperty(PropertyName = "createdon")]
+        public DateTime CreatedOn { get; set; }
+
         [JsonProperty(PropertyName = "TODO")]
         public bool HasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int Total { get; set; }
+        public int InPatientTotal { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int Open { get; set; }
+        public int InPatientOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int WaitlistLength { get; set; }
+        public int InPatientWaitlistLength { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public int OutPatientTotal { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public int OutPatientOpen { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public int OutPatientWaitlistLength { get; set; }
 
         // Called by Json to prevent serialization but allow deserialization.
         public bool ShouldSerializeId()

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
-using Shared;
+using Shared.ApiInterface;
 using Xunit;
 
 namespace Tests.Dialogs
@@ -24,7 +24,7 @@ namespace Tests.Dialogs
 
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
-        protected readonly ApiInterface api;
+        protected readonly EfInterface api;
         protected readonly TestAdapter adapter;
         private readonly IConfiguration configuration;
 
@@ -35,8 +35,7 @@ namespace Tests.Dialogs
         {
             this.state = StateAccessors.Create();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
-            this.api = new ApiInterface();
-            //this.database = new DbInterface(DbModelFactory.CreateInMemory());
+            this.api = new EfInterface(DbModelFactory.CreateInMemory());
             this.adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
 
@@ -46,7 +45,7 @@ namespace Tests.Dialogs
             Prompts.Register(this.dialogs);
         }
 
-        protected TestFlow CreateTestFlow(string dialogName, Organization initialOrganization = null, Snapshot initialSnapshot = null)
+        protected TestFlow CreateTestFlow(string dialogName)
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {

@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace Shared.Models
+namespace EntityModel
 {
-    public class HousingData : ModelBase
+    public class HousingData : ServiceModelBase
     {
         public static string TABLE_NAME = "tira_housingdatas";
         public static string PRIMARY_KEY = "_tira_housingserviceid_value";
@@ -13,6 +15,7 @@ namespace Shared.Models
         [JsonIgnore]
         public override string ResourceId { get { return Id; } }
 
+        [Key]
         [JsonProperty(PropertyName = "tira_housingdataid")]
         public string Id { get; set; }
 
@@ -21,6 +24,9 @@ namespace Shared.Models
 
         [JsonProperty(PropertyName = "tira_name")]
         public string Name { get; set; }
+
+        [JsonProperty(PropertyName = "createdon")]
+        public DateTime CreatedOn { get; set; }
 
         [JsonProperty(PropertyName = "tira_haswaitlist")]
         public bool HasWaitlist { get; set; }

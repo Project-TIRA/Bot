@@ -8,11 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Utils;
-using EntityModel;
 using Microsoft.Bot.Connector.Authentication;
 using ServiceProviderBot.Bot.Middleware;
 using Shared;
 using Newtonsoft.Json;
+using Shared.ApiInterface;
 
 namespace ServiceProviderBot
 {
@@ -43,8 +43,8 @@ namespace ServiceProviderBot
             // Add the configuration.
             services.AddSingleton(this.configuration);
 
-            // Add the database interface.
-            services.AddScoped(_ => new ApiInterface());
+            // Add the Common Data Service interface.
+            services.AddScoped(_ => new CdsInterface());
 
             // Create and add the state accessors.
             var state = StateAccessors.Create(this.configuration);

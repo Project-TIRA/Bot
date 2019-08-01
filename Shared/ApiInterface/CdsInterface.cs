@@ -4,17 +4,20 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System;
 using Newtonsoft.Json.Linq;
-using Shared.Models;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Bot.Builder;
+using Newtonsoft.Json;
+using EntityModel;
 
-namespace Shared
+namespace Shared.ApiInterface
 {
-    public class ApiInterface
+    /// <summary>
+    /// API interface for Common Data Service (Dynamics)
+    /// </summary>
+    public class CdsInterface : ApiInterface
     {
+        // TODO: Put these in app settings.
         const string CLIENT_ID = "4cd0f1ea-6f83-419a-a4fa-24878d30dd09";
         const string CLIENT_SECRET = "L-7r?rQY/5xo+QQ1yBJ02IEk3z9V297f";
         const string TENANT_ID = "72f988bf-86f1-41af-91ab-2d7cd011db47";
@@ -25,23 +28,49 @@ namespace Shared
         HttpClient client;
         string authToken;
 
-        public ApiInterface()
+        public CdsInterface()
         {
             this.client = new HttpClient();
             this.client.BaseAddress = new Uri(API_URL);
         }
 
-        ~ApiInterface()
+        ~CdsInterface()
         {
             this.client.Dispose();
         }
 
         /// <summary>
+        /// Creates a new record of a model.
+        /// </summary>
+        public override async Task<string> Create<T>(T model)
+        {
+            if (!string.IsNullOrEmpty(model.ResourceId))
+            {
+                return string.Empty;
+            }
+
+            return await PostJsonData(model.TableName, JsonConvert.SerializeObject(model));
+        }
+
+        /// <summary>
+        /// Saves changes to a model.
+        /// </summary>
+        public override async Task<bool> Update<T>(T model)
+        {
+            if (string.IsNullOrEmpty(model.ResourceId))
+            {
+                return false;
+            }
+
+            return await PatchJsonData(model.TableName, model.ResourceId, JsonConvert.SerializeObject(model));
+        }
+
+        /// <summary>
         /// Gets a user from a user ID.
         /// </summary>
-        public async Task<User> GetUser(string phoneNumber)
+        public override async Task<User> GetUser(string phoneNumber)
         {
-            JObject response = await GetJsonData(User.TABLE_NAME, "$filter=mobilephone eq " + phoneNumber);
+            JObject response = await GetJsonData(User.TABLE_NAME, $"$filter=contains(mobilephone,'{phoneNumber}')");
             if (response == null)
             {
                 return null;
@@ -51,29 +80,27 @@ namespace Shared
         }
 
         /// <summary>
-        /// Gets a user's organization.
+        /// Gets an organization from a user ID.
         /// </summary>
-        public async Task<Organization> GetOrganization(string phoneNumber)
+        public override async Task<Organization> GetOrganization(string phoneNumber)
         {
             var user = await GetUser(phoneNumber);
-            if (user == null)
+            if (user != null)
             {
-                return null;
-            }
-
-            JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + user.OrganizationId);
-            if (response != null)
-            {
-                return response["value"].HasValues ? response["value"][0].ToObject<Organization>() : null;
+                JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + user.OrganizationId);
+                if (response != null)
+                {
+                    return response["value"].HasValues ? response["value"][0].ToObject<Organization>() : null;
+                }
             }
 
             return null;
         }
 
         /// <summary>
-        /// Gets the count of an organization's services.
+        /// Gets the count of an organization's services from a user ID.
         /// </summary>
-        public async Task<int> GetServiceCount(string phoneNumber)
+        public override async Task<int> GetServiceCount(string phoneNumber)
         {
             Organization organization = await GetOrganization(phoneNumber);
             if (organization != null)
@@ -89,17 +116,21 @@ namespace Shared
         }
 
         /// <summary>
-        /// Gets an organization's service by type.
+        /// Gets an organization's service by type from a user ID.
         /// </summary>
-        public async Task<Service> GetService(string phoneNumber, ServiceType serviceType)
+        public override async Task<Service> GetService<T>(string phoneNumber)
         {
             Organization organization = await GetOrganization(phoneNumber);
             if (organization != null)
             {
-                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {(int)serviceType}");
-                if (response != null)
+                var serviceType = Helpers.GetServiceType<T>();
+                if (serviceType != ServiceType.Invalid)
                 {
-                    return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
+                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {(int)serviceType}");
+                    if (response != null)
+                    {
+                        return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
+                    }
                 }
             }
 
@@ -107,22 +138,24 @@ namespace Shared
         }
 
         /// <summary>
-        /// Gets the latest shapshot for a service.
+        /// Gets the latest shapshot for a service from a user ID.
         /// </summary>
-        public async Task<T> GetLatestServiceData<T>(string phoneNumber) where T : ModelBase
+        public override async Task<T> GetLatestServiceData<T>(string phoneNumber)
         {
-            var serviceType = Helpers.GetServiceType<T>();
-
-            var service = await GetService(phoneNumber, serviceType);
+            var service = await GetService<T>(phoneNumber);
             if (service != null)
             {
-                var tableName = Helpers.GetServiceTableName(serviceType);
-                var primaryKey = Helpers.GetServicePrimaryKey(serviceType);
-
-                JObject response = await GetJsonData(tableName, $"$filter={primaryKey} eq {service.Id} &$orderby=createdon desc &$top=1");
-                if (response != null)
+                var serviceType = Helpers.GetServiceType<T>();
+                if (serviceType != ServiceType.Invalid)
                 {
-                    return response["value"].HasValues ? response["value"][0].ToObject<T>() : null;
+                    var tableName = Helpers.GetServiceTableName(serviceType);
+                    var primaryKey = Helpers.GetServicePrimaryKey(serviceType);
+
+                    JObject response = await GetJsonData(tableName, $"$filter={primaryKey} eq {service.Id} &$orderby=createdon desc &$top=1");
+                    if (response != null)
+                    {
+                        return response["value"].HasValues ? response["value"][0].ToObject<T>() : null;
+                    }
                 }
             }
 
@@ -132,7 +165,7 @@ namespace Shared
         /// <summary>
         /// Gets JSON data from the API.
         /// </summary>
-        public async Task<JObject> GetJsonData(string tableName, string paramString)
+        private async Task<JObject> GetJsonData(string tableName, string paramString)
         {
             await EnsureAuthHeader();
             string url = Path.Combine(API_URL, tableName) + "?" + paramString;
@@ -150,7 +183,7 @@ namespace Shared
         /// <summary>
         /// Posts JSON data to the API.
         /// </summary>
-        public async Task<string> PostJsonData(string tableName, string json)
+        private async Task<string> PostJsonData(string tableName, string json)
         {
             await EnsureAuthHeader();
             string url = Path.Combine(API_URL, tableName);
@@ -212,14 +245,5 @@ namespace Shared
             this.authToken = authResult.AccessToken;
             return authResult.AccessToken;
         }
-    }
-
-    public enum ServiceType
-    {
-        Housing = 1,
-        Advocacy = 2,
-        MentalHealth = 3,
-        SubstanceUse = 4,
-        JobTraining = 5
     }
 }

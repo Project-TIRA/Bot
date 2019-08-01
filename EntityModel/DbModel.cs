@@ -6,17 +6,23 @@ namespace EntityModel
 {
     public class DbModel : DbContext
     {
+        public DbSet<User> Users { get; set; }
         public DbSet<Organization> Organizations { get; set; }
-        public DbSet<Snapshot> Snapshots { get; set; }
+        public DbSet<Service> Services { get; set; }
+        public DbSet<CaseManagementData> CaseManagementData { get; set; }
+        public DbSet<HousingData> HousingData { get; set; }
+        public DbSet<JobTrainingData> JobTrainingData { get; set; }
+        public DbSet<MentalHealthData> MentalHealthData { get; set; }
+        public DbSet<SubstanceUseData> SubstanceUseData { get; set; }
 
         public DbModel(DbContextOptions<DbModel> options) : base(options)
         { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Phone number should be unique for each organization.
-            modelBuilder.Entity<Organization>()
-                .HasIndex(o => o.PhoneNumber)
+            // Phone number should be unique for each user.
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.PhoneNumber)
                 .IsUnique();
         }
     }

@@ -1,7 +1,8 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using EntityModel;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
-using Shared.Models;
+using Shared.ApiInterface;
 using System.Collections.Generic;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity

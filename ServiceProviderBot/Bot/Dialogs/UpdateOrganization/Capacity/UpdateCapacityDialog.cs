@@ -1,7 +1,8 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using EntityModel;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
-using System.Linq;
+using Shared.ApiInterface;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
@@ -20,7 +21,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has housing services.
-                    var service = await api.GetService(Helpers.GetPhoneNumber(stepContext.Context), ServiceType.Housing);
+                    var service = await api.GetService<HousingData>(Helpers.GetPhoneNumber(stepContext.Context));
                     if (service != null)
                     {
                         // Push the update housing dialog onto the stack.
@@ -33,7 +34,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has substance use services.
-                    var service = await api.GetService(Helpers.GetPhoneNumber(stepContext.Context), ServiceType.SubstanceUse);
+                    var service = await api.GetService<SubstanceUseData>(Helpers.GetPhoneNumber(stepContext.Context));
                     if (service != null)
                     {
                         // Push the update substance use dialog onto the stack.
