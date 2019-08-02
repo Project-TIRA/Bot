@@ -121,9 +121,8 @@ namespace Tests.Dialogs
             return user;
         }
 
-        protected async Task<Service> CreateService<T>(string organizationId) where T : ServiceModelBase
+        protected async Task<Service> CreateService(string organizationId, ServiceType type)
         {
-            var type = Helpers.GetServiceType<T>();
             if (type == ServiceType.Invalid)
             {
                 return null;
@@ -141,16 +140,20 @@ namespace Tests.Dialogs
             return service;
         }
 
-        protected async Task<CaseManagementData> CreateCaseManagementData(string serviceId, bool hasWaitlist, int total)
+        protected async Task<HousingData> CreateHousingData(string serviceId, bool hasWaitlist,
+            int emergencyPrivateBedsTotal, int emergencySharedBedsTotal, int longtermPrivateBedsTotal, int longtermSharedBedsTotal)
         {
-            var data = new CaseManagementData()
+            var data = new HousingData()
             {
                 Id = Guid.NewGuid().ToString(),
                 ServiceId = serviceId,
-                Name = "Test User",
+                Name = "Test Data",
                 CreatedOn = DateTime.UtcNow,
                 HasWaitlist = hasWaitlist,
-                Total = total
+                EmergencyPrivateBedsTotal = emergencyPrivateBedsTotal,
+                EmergencySharedBedsTotal = emergencySharedBedsTotal,
+                LongTermPrivateBedsTotal = longtermPrivateBedsTotal,
+                LongTermSharedBedsTotal = longtermSharedBedsTotal
             };
 
             await this.api.Create(data);

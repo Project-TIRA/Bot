@@ -1,5 +1,6 @@
 ﻿using EntityModel;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,8 +23,6 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task<string> Create<T>(T model) where T : ModelBase
         {
-            bool success = true;
-
             if (model is User)
             {
                 await this.dbContext.Users.AddAsync(model as User);
@@ -32,9 +31,9 @@ namespace Shared.ApiInterface
             {
                 await this.dbContext.Organizations.AddAsync(model as Organization);
             }
-            else if (model is Organization)
+            else if (model is Service)
             {
-                await this.dbContext.Organizations.AddAsync(model as Organization);
+                await this.dbContext.Services.AddAsync(model as Service);
             }
             else if (model is CaseManagementData)
             {
@@ -58,11 +57,12 @@ namespace Shared.ApiInterface
             }
             else
             {
-                success = false;
+                Debug.Assert(false, "Add the new type");
+                return string.Empty;
             }
 
             await this.dbContext.SaveChangesAsync();
-            return success ? model.ResourceId : string.Empty;
+            return model.ResourceId;
         }
 
         /// <summary>
