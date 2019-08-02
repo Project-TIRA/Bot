@@ -131,10 +131,10 @@ namespace Shared.ApiInterface
             Organization organization = await GetOrganization(phoneNumber);
             if (organization != null)
             {
-                var serviceType = Helpers.GetServiceType<T>();
-                if (serviceType != ServiceType.Invalid)
+                var type = Helpers.GetServiceType<T>();
+                if (type != ServiceType.Invalid)
                 {
-                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {(int)serviceType}");
+                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {(int)type}");
                     if (response != null)
                     {
                         return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
@@ -155,11 +155,11 @@ namespace Shared.ApiInterface
             var service = await GetService<T>(phoneNumber);
             if (service != null)
             {
-                var serviceType = Helpers.GetServiceType<T>();
-                if (serviceType != ServiceType.Invalid)
+                var type = Helpers.GetServiceType<T>();
+                if (type != ServiceType.Invalid)
                 {
-                    var tableName = Helpers.GetServiceTableName(serviceType);
-                    var primaryKey = Helpers.GetServicePrimaryKey(serviceType);
+                    var tableName = Helpers.GetServiceTableName(type);
+                    var primaryKey = Helpers.GetServicePrimaryKey(type);
 
                     JObject response = await GetJsonData(tableName, $"$filter={primaryKey} eq {service.Id} &$orderby=createdon desc &$top=1");
                     if (response != null)

@@ -119,10 +119,10 @@ namespace Shared.ApiInterface
             Organization organization = await GetOrganization(userId);
             if (organization != null)
             {
-                var serviceType = Helpers.GetServiceType<T>();
-                if (serviceType != ServiceType.Invalid)
+                var type = Helpers.GetServiceType<T>();
+                if (type != ServiceType.Invalid)
                 {
-                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.Type == (int)serviceType);
+                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.Type == (int)type);
                 }
             }
 
@@ -137,8 +137,8 @@ namespace Shared.ApiInterface
             var service = await GetService<T>(userId);
             if (service != null)
             {
-                var serviceType = Helpers.GetServiceType<T>();
-                switch (serviceType)
+                var type = Helpers.GetServiceType<T>();
+                switch (type)
                 {
                     case ServiceType.CaseManagement: return await this.dbContext.CaseManagementData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
                     case ServiceType.Housing: return await this.dbContext.HousingData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;

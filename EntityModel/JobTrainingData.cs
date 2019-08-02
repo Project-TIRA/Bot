@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace EntityModel
@@ -21,15 +20,6 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "TODO")]
         public string ServiceId { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public string Name { get; set; }
-
-        [JsonProperty(PropertyName = "createdon")]
-        public DateTime CreatedOn { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public bool HasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int Total { get; set; }

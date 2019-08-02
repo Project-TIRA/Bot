@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
+using Shared;
 using Shared.ApiInterface;
 using Xunit;
 
@@ -20,7 +21,7 @@ namespace Tests.Dialogs
     {
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
-        protected readonly EfInterface api;
+        protected readonly IApiInterface api;
         protected readonly TestAdapter adapter;
         private readonly IConfiguration configuration;
 
@@ -41,7 +42,7 @@ namespace Tests.Dialogs
             Prompts.Register(this.dialogs);
         }
 
-        protected TestFlow CreateTestFlow(string dialogName, List<ModelBase> initialModels = null)
+        protected TestFlow CreateTestFlow(string dialogName, User user = null)
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
@@ -60,7 +61,7 @@ namespace Tests.Dialogs
 
                 if (startNewConversation)
                 {
-                    await InitDatabase(initialModels);
+                    await InitUser(user);
                 }
 
                 /*
@@ -95,42 +96,75 @@ namespace Tests.Dialogs
             };
         }
 
-        protected User CreateTestUser(string organizationId)
+        protected async Task<Organization> CreateOrganization(bool isVerified)
         {
-            return new User()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = "Test User",
-                PhoneNumber = string.Empty,
-                OrganizationId = organizationId
-            };
-        }
-
-        protected Organization CreateTestOrganization(bool isVerified)
-        {
-            return new Organization()
+            var organization = new Organization()
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = "Test Organization",
-                IsVerified = isVerified,
+                IsVerified = isVerified
             };
+
+            await this.api.Create(organization);
+            return organization;
         }
 
-        private async Task InitDatabase(List<ModelBase> models)
+        protected User CreateUser(string organizationId)
         {
-            if (models != null)
+            var user = new User()
             {
-                foreach (var model in models)
-                {
-                    if (model is User)
-                    {
-                        // Turn context can only be accessed on a turn, so 
-                        // this must be called when the bot is executing a turn.
-                        ((User)model).Id = this.turnContext.Activity.From.Id;
-                    }
+                OrganizationId = organizationId,
+                Name = "Test User",
+                PhoneNumber = "+12223334444",
+            };
 
-                    await this.api.Create(model);
-                }
+            return user;
+        }
+
+        protected async Task<Service> CreateService<T>(string organizationId) where T : ServiceModelBase
+        {
+            var type = Helpers.GetServiceType<T>();
+            if (type == ServiceType.Invalid)
+            {
+                return null;
+            }
+
+            var service = new Service()
+            {
+                Id = Guid.NewGuid().ToString(),
+                OrganizationId = organizationId,
+                Name = $"Test Service ({type.ToString()})",
+                Type = (int)type
+            };
+                
+            await this.api.Create(service);
+            return service;
+        }
+
+        protected async Task<CaseManagementData> CreateCaseManagementData(string serviceId, bool hasWaitlist, int total)
+        {
+            var data = new CaseManagementData()
+            {
+                Id = Guid.NewGuid().ToString(),
+                ServiceId = serviceId,
+                Name = "Test User",
+                CreatedOn = DateTime.UtcNow,
+                HasWaitlist = hasWaitlist,
+                Total = total
+            };
+
+            await this.api.Create(data);
+            return data;
+        }
+
+        private async Task InitUser(User user)
+        {
+            if (user != null)
+            {
+                // Turn context can only be accessed on a turn, so 
+                // this must be called when the bot is executing a turn.
+                user.Id = this.turnContext.Activity.From.Id;
+                await this.api.Create(user);
             }
         }
     }

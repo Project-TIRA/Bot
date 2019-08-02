@@ -21,16 +21,7 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "_tira_housingserviceid_value")]
         public string ServiceId { get; set; }
-
-        [JsonProperty(PropertyName = "tira_name")]
-        public string Name { get; set; }
-
-        [JsonProperty(PropertyName = "createdon")]
-        public DateTime CreatedOn { get; set; }
-
-        [JsonProperty(PropertyName = "tira_haswaitlist")]
-        public bool HasWaitlist { get; set; }
-
+        
         [JsonProperty(PropertyName = "tira_longtemsharedbedstotal")]
         public int LongTermSharedBedsTotal { get; set; }
 

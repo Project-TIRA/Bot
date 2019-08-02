@@ -14,7 +14,7 @@ namespace ServiceProviderBot.Bot
     {
         private readonly StateAccessors state;
         private readonly DialogSet dialogs;
-        private readonly CdsInterface api;
+        private readonly IApiInterface api;
         private readonly IConfiguration configuration;
 
         public TheBot(IConfiguration configuration, StateAccessors state, CdsInterface api)

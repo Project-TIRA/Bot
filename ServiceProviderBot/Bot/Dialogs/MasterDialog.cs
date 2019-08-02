@@ -54,7 +54,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         if (string.Equals(incomingMessage, Phrases.Greeting.HelpKeyword, StringComparison.OrdinalIgnoreCase))
                         {
                             // Show help dialog.
-                            await Messages.SendAsync(Phrases.Greeting.GetHelp, stepContext.Context, cancellationToken);
+                            await Messages.SendAsync(Phrases.Greeting.Help, stepContext.Context, cancellationToken);
                             return await stepContext.EndDialogAsync(cancellationToken);
                         }
                         else if (string.Equals(incomingMessage, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase))
@@ -81,7 +81,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     if (string.Equals(result, Phrases.Greeting.HelpKeyword, StringComparison.OrdinalIgnoreCase))
                     {
                         // Show help dialog.
-                        await Messages.SendAsync(Phrases.Greeting.GetHelp, stepContext.Context, cancellationToken);
+                        await Messages.SendAsync(Phrases.Greeting.Help, stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
                     else if (string.Equals(result, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase))

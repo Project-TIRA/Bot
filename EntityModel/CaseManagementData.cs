@@ -23,15 +23,6 @@ namespace EntityModel
         public string ServiceId { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public string Name { get; set; }
-
-        [JsonProperty(PropertyName = "createdon")]
-        public DateTime CreatedOn { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public bool HasWaitlist { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
         public int WaitlistLength { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
