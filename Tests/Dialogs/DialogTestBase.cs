@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityModel;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
-using Shared;
 using Shared.ApiInterface;
 using Xunit;
 
@@ -109,15 +107,16 @@ namespace Tests.Dialogs
             return organization;
         }
 
-        protected User CreateUser(string organizationId)
+        protected async Task<User> CreateUser(string organizationId)
         {
             var user = new User()
             {
+                Id = Guid.NewGuid().ToString(),
                 OrganizationId = organizationId,
                 Name = "Test User",
-                PhoneNumber = "+12223334444",
             };
 
+            await this.api.Create(user);
             return user;
         }
 
@@ -166,8 +165,8 @@ namespace Tests.Dialogs
             {
                 // Turn context can only be accessed on a turn, so 
                 // this must be called when the bot is executing a turn.
-                user.Id = this.turnContext.Activity.From.Id;
-                await this.api.Create(user);
+                user.PhoneNumber = this.turnContext.Activity.From.Id;
+                await this.api.Update(user);
             }
         }
     }

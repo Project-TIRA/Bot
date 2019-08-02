@@ -80,18 +80,18 @@ namespace ServiceProviderBot.Bot.Dialogs
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the latest snapshot.
-                    var serviceData = await this.api.GetLatestServiceData<T>(Helpers.GetUserId(stepContext.Context));
-                    var totalProperty = (int)typeof(T).GetProperty(totalPropertyName).GetValue(serviceData);
+                    var serviceData = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
+                    var totalPropertyValue = (int)typeof(T).GetProperty(totalPropertyName).GetValue(serviceData);
 
                     // Check if the organization has this service.
-                    if (totalProperty > 0)
+                    if (totalPropertyValue > 0)
                     {
                         // Prompt for the open count.
                         return await stepContext.PromptAsync(
                             Utils.Prompts.LessThanOrEqualPrompt,
                             new PromptOptions { Prompt = prompt,
-                                RetryPrompt = Phrases.Capacity.RetryInvalidCount(totalProperty, prompt),
-                                Validations = totalProperty },
+                                RetryPrompt = Phrases.Capacity.RetryInvalidCount(totalPropertyValue, prompt),
+                                Validations = totalPropertyValue },
                             cancellationToken);
                     }
 
@@ -106,7 +106,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest snapshot and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserId(stepContext.Context));
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
                         typeof(T).GetProperty(openPropertyName).SetValue(data, open);
                         await this.api.Update(data);
 
@@ -131,7 +131,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     if (stepContext.Result != null)
                     {
                         // Get the latest snapshot and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserId(stepContext.Context));
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
                         typeof(T).GetProperty(waitlistLengthPropertyName).SetValue(data, (int)stepContext.Result);
                         await this.api.Update(data);
                     }

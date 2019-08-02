@@ -75,20 +75,20 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets a user from a user ID.
+        /// Gets a user from a user token.
         /// </summary>
-        public async Task<User> GetUser(string userId)
+        public async Task<User> GetUser(string userToken)
         {
-            var user = await this.dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
             return user;
         }
 
         /// <summary>
-        /// Gets an organization from a user ID.
+        /// Gets an organization from a user token.
         /// </summary>
-        public async Task<Organization> GetOrganization(string userId)
+        public async Task<Organization> GetOrganization(string userToken)
         {
-            var user = await GetUser(userId);
+            var user = await GetUser(userToken);
             if (user != null)
             {
                 return await this.dbContext.Organizations.FirstOrDefaultAsync(o => o.Id == user.OrganizationId);
@@ -98,11 +98,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the count of an organization's services from a user ID.
+        /// Gets the count of an organization's services from a user token.
         /// </summary>
-        public async Task<int> GetServiceCount(string userId)
+        public async Task<int> GetServiceCount(string userToken)
         {
-            Organization organization = await GetOrganization(userId);
+            Organization organization = await GetOrganization(userToken);
             if (organization != null)
             {
                 return await this.dbContext.Services.CountAsync(s => s.OrganizationId == organization.Id);
@@ -112,11 +112,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets an organization's service by type from a user ID.
+        /// Gets an organization's service by type from a user token.
         /// </summary>
-        public async Task<Service> GetService<T>(string userId) where T : ServiceModelBase
+        public async Task<Service> GetService<T>(string userToken) where T : ServiceModelBase
         {
-            Organization organization = await GetOrganization(userId);
+            Organization organization = await GetOrganization(userToken);
             if (organization != null)
             {
                 var type = Helpers.GetServiceType<T>();
@@ -130,11 +130,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the latest shapshot for a service from a user ID.
+        /// Gets the latest shapshot for a service from a user token.
         /// </summary>
-        public async Task<T> GetLatestServiceData<T>(string userId) where T : ServiceModelBase
+        public async Task<T> GetLatestServiceData<T>(string userToken) where T : ServiceModelBase
         {
-            var service = await GetService<T>(userId);
+            var service = await GetService<T>(userToken);
             if (service != null)
             {
                 var type = Helpers.GetServiceType<T>();

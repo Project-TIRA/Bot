@@ -9,11 +9,14 @@ namespace Shared
     public static class Helpers
     {
         /// <summary>
-        /// Gets a user ID from the turn context.
+        /// Gets a user token from the turn context.
+        /// This will vary based on the channel the bot is running in.
+        /// i.e. Phone number for SMS, GUID for emulator
         /// </summary>
-        public static string GetUserId(ITurnContext context)
+        public static string GetUserToken(ITurnContext context)
         {
-            return context.Activity.From.Id;
+            return "+17605004495";
+            //return context.Activity.From.Id;
         }
 
         /// <summary>

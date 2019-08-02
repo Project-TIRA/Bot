@@ -27,11 +27,13 @@ namespace Shared.ApiInterface
 
         HttpClient client;
         string authToken;
+        JsonSerializerSettings jsonSettings;
 
         public CdsInterface()
         {
             this.client = new HttpClient();
             this.client.BaseAddress = new Uri(API_URL);
+            this.jsonSettings = new JsonSerializerSettings() { NullValueHandling = NullValueHandling.Ignore };
         }
 
         ~CdsInterface()
@@ -66,11 +68,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets a user from a user ID.
+        /// Gets a user from a user token.
         /// </summary>
-        public async Task<User> GetUser(string userId)
+        public async Task<User> GetUser(string userToken)
         {
-            string phoneNumber = PhoneNumber.Standardize(userId);
+            string phoneNumber = PhoneNumber.Standardize(userToken);
 
             JObject response = await GetJsonData(User.TABLE_NAME, $"$filter=contains(mobilephone,'{phoneNumber}')");
             if (response == null)
@@ -78,15 +80,15 @@ namespace Shared.ApiInterface
                 return null;
             }
 
-            return response["value"].HasValues ? response["value"][0].ToObject<User>() : null;
+            return response["value"].HasValues ? JsonConvert.DeserializeObject<User>(response["value"].ToString(), jsonSettings) : null;
         }
 
         /// <summary>
-        /// Gets an organization from a user ID.
+        /// Gets an organization from a user token.
         /// </summary>
-        public async Task<Organization> GetOrganization(string userId)
+        public async Task<Organization> GetOrganization(string userToken)
         {
-            string phoneNumber = PhoneNumber.Standardize(userId);
+            string phoneNumber = PhoneNumber.Standardize(userToken);
 
             var user = await GetUser(phoneNumber);
             if (user != null)
@@ -94,7 +96,7 @@ namespace Shared.ApiInterface
                 JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + user.OrganizationId);
                 if (response != null)
                 {
-                    return response["value"].HasValues ? response["value"][0].ToObject<Organization>() : null;
+                    return response["value"].HasValues ? JsonConvert.DeserializeObject<Organization>(response["value"][0].ToString(), jsonSettings) : null;
                 }
             }
 
@@ -102,11 +104,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the count of an organization's services from a user ID.
+        /// Gets the count of an organization's services from a user token.
         /// </summary>
-        public async Task<int> GetServiceCount(string userId)
+        public async Task<int> GetServiceCount(string userToken)
         {
-            string phoneNumber = PhoneNumber.Standardize(userId);
+            string phoneNumber = PhoneNumber.Standardize(userToken);
 
             Organization organization = await GetOrganization(phoneNumber);
             if (organization != null)
@@ -122,11 +124,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets an organization's service by type from a user ID.
+        /// Gets an organization's service by type from a user token.
         /// </summary>
-        public async Task<Service> GetService<T>(string userId) where T : ServiceModelBase
+        public async Task<Service> GetService<T>(string userToken) where T : ServiceModelBase
         {
-            string phoneNumber = PhoneNumber.Standardize(userId);
+            string phoneNumber = PhoneNumber.Standardize(userToken);
 
             Organization organization = await GetOrganization(phoneNumber);
             if (organization != null)
@@ -137,7 +139,7 @@ namespace Shared.ApiInterface
                     JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {(int)type}");
                     if (response != null)
                     {
-                        return response["value"].HasValues ? response["value"][0].ToObject<Service>() : null;
+                        return response["value"].HasValues ? JsonConvert.DeserializeObject<Service>(response["value"][0].ToString(), jsonSettings) : null;
                     }
                 }
             }
@@ -146,11 +148,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the latest shapshot for a service from a user ID.
+        /// Gets the latest shapshot for a service from a user token.
         /// </summary>
-        public async Task<T> GetLatestServiceData<T>(string userId) where T : ServiceModelBase
+        public async Task<T> GetLatestServiceData<T>(string userToken) where T : ServiceModelBase
         {
-            string phoneNumber = PhoneNumber.Standardize(userId);
+            string phoneNumber = PhoneNumber.Standardize(userToken);
 
             var service = await GetService<T>(phoneNumber);
             if (service != null)
@@ -164,7 +166,7 @@ namespace Shared.ApiInterface
                     JObject response = await GetJsonData(tableName, $"$filter={primaryKey} eq {service.Id} &$orderby=createdon desc &$top=1");
                     if (response != null)
                     {
-                        return response["value"].HasValues ? response["value"][0].ToObject<T>() : null;
+                        return response["value"].HasValues ? JsonConvert.DeserializeObject<T>(response["value"][0].ToString(), jsonSettings) : null;
                     }
                 }
             }

@@ -22,15 +22,15 @@ namespace ServiceProviderBot.Bot.Dialogs
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the user is already registered.
-                    var user = await api.GetUser(Helpers.GetUserId(stepContext.Context));
+                    var user = await api.GetUser(Helpers.GetUserToken(stepContext.Context));
                     if (user == null)
                     {
                         await Messages.SendAsync(Phrases.Greeting.NotRegistered, stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
 
-                    // Check if we already have an organization for this user.
-                    var organization = await api.GetOrganization(user.Id);
+                    // Check if we already have an organization for the user.
+                    var organization = await api.GetOrganization(Helpers.GetUserToken(stepContext.Context));
                     if (organization == null)
                     {
                         await Messages.SendAsync(Phrases.Greeting.NoOrganization, stepContext.Context, cancellationToken);

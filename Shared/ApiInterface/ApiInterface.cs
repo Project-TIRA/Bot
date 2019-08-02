@@ -16,29 +16,29 @@ namespace Shared.ApiInterface
         Task<bool> Update<T>(T model) where T : ModelBase;
 
         /// <summary>
-        /// Gets a user from a user ID.
+        /// Gets a user from a user token.
         /// </summary>
-        Task<User> GetUser(string userId);
+        Task<User> GetUser(string userToken);
 
         /// <summary>
-        /// Gets an organization from a user ID.
+        /// Gets an organization from a user token.
         /// </summary>
-        Task<Organization> GetOrganization(string userId);
+        Task<Organization> GetOrganization(string userToken);
 
         /// <summary>
-        /// Gets the count of an organization's services from a user ID.
+        /// Gets the count of an organization's services from a user token.
         /// </summary>
-        Task<int> GetServiceCount(string userId);
+        Task<int> GetServiceCount(string userToken);
 
         /// <summary>
-        /// Gets an organization's service by type from a user ID.
+        /// Gets an organization's service by type from a user token.
         /// </summary>
-        Task<Service> GetService<T>(string userId) where T : ServiceModelBase;
+        Task<Service> GetService<T>(string userToken) where T : ServiceModelBase;
 
         /// <summary>
-        /// Gets the latest shapshot for a service from a user ID.
+        /// Gets the latest shapshot for a service from a user token.
         /// </summary>
-        Task<T> GetLatestServiceData<T>(string userId) where T : ServiceModelBase;
+        Task<T> GetLatestServiceData<T>(string userToken) where T : ServiceModelBase;
     }
 
     public enum ServiceType
