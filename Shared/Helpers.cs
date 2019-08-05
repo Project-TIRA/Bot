@@ -57,11 +57,11 @@ namespace Shared
         {
             switch (serviceType)
             {
+                case ServiceType.CaseManagement: return CaseManagementData.TABLE_NAME;
                 case ServiceType.Housing: return HousingData.TABLE_NAME;
-                case ServiceType.CaseManagement: return "TODO";
-                case ServiceType.MentalHealth: return MentalHealthData.TABLE_NAME;
-                case ServiceType.SubstanceUse: return "TODO";
                 case ServiceType.JobTraining: return JobTrainingData.TABLE_NAME;
+                case ServiceType.MentalHealth: return MentalHealthData.TABLE_NAME;
+                case ServiceType.SubstanceUse: return SubstanceUseData.TABLE_NAME;
                 default: return string.Empty;
             }
         }
@@ -73,11 +73,11 @@ namespace Shared
         {
             switch (serviceType)
             {
+                case ServiceType.CaseManagement: return CaseManagementData.PRIMARY_KEY;
                 case ServiceType.Housing: return HousingData.PRIMARY_KEY;
-                case ServiceType.CaseManagement: return "TODO";
-                case ServiceType.MentalHealth: return MentalHealthData.PRIMARY_KEY;
-                case ServiceType.SubstanceUse: return "TODO";
                 case ServiceType.JobTraining: return JobTrainingData.PRIMARY_KEY;
+                case ServiceType.MentalHealth: return MentalHealthData.PRIMARY_KEY;
+                case ServiceType.SubstanceUse: return SubstanceUseData.PRIMARY_KEY;
                 default: return string.Empty;
             }
         }
