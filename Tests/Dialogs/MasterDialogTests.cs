@@ -66,6 +66,7 @@ namespace Tests.Dialogs
                 .StartTestAsync();
         }
 
+        /*
         [Fact]
         public async Task Update()
         {
@@ -80,63 +81,10 @@ namespace Tests.Dialogs
                 .AssertReply(Phrases.Capacity.Housing.GetEmergencySharedBedsOpen)
                 .Test("5", Phrases.Capacity.Housing.GetEmergencyPrivateBedsOpen)
                 .Test("5", Phrases.Capacity.Housing.GetLongTermSharedBedsOpen)
-                //.Test("5", Phrases.Capacity.Housing.GetLongTermPrivateBedsOpen)
+                .Test("5", Phrases.Capacity.Housing.GetLongTermPrivateBedsOpen)
+                .Test("5", Phrases.Update.Closing)
                 .StartTestAsync();
         }
-
-        [Fact]
-        public async Task UpdateOrganizationNoWaitlists()
-        {
-
-        }
-
-        [Fact]
-        public async Task NonKeywordUpdateOrganization()
-        {
-            /*
-            var initialOrganization = CreateDefaultTestOrganization();
-            initialOrganization.IsVerified = true;
-
-            // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name, initialOrganization)
-                .Send("hi")
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Greeting.Registered)
-                .AssertReply(Phrases.Greeting.Keywords)
-                .Test(Phrases.Greeting.Update, Phrases.UpdateOrganization.NothingToUpdate)
-                .StartTestAsync();
-            */
-        }
-
-        [Fact]
-        public async Task NonKeywordInvalid()
-        {
-            /*
-            // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name)
-                .Send("hi")
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Greeting.Unregistered)
-                .AssertReply(Phrases.Greeting.GetHelp)
-                .Test("hi", Phrases.Greeting.GetHelp)
-                .StartTestAsync();
-            */
-        }
-
-        [Fact]
-        public async Task Reset()
-        {
-            /*
-            // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name)
-                .Send("hi")
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Greeting.Unregistered)
-                .AssertReply(Phrases.Greeting.GetHelp)
-                .Send("reset")
-                .AssertReply(Phrases.Greeting.GetHelp)
-                .StartTestAsync();
-            */
-        }
+        */
     }
 }

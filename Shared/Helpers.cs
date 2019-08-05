@@ -15,8 +15,7 @@ namespace Shared
         /// </summary>
         public static string GetUserToken(ITurnContext context)
         {
-            return "+17605004495";
-            //return context.Activity.From.Id;
+            return context.Activity.From.Id;
         }
 
         /// <summary>
