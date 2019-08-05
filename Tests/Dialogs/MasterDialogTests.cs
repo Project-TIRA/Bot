@@ -1,10 +1,10 @@
-﻿using System;
+﻿
 using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
-using ServiceProviderBot.Bot.Utils;
 using Shared;
+using Shared.ApiInterface;
 using Xunit;
 
 namespace Tests.Dialogs
@@ -12,156 +12,79 @@ namespace Tests.Dialogs
     public class MasterDialogTests : DialogTestBase
     {
         [Fact]
-        public async Task NewOrganization()
+        public async Task NotRegistered()
         {
-            var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.UpdateFrequency = Frequency.Daily;
-
-            // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name)
-                .Send("new")
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.NewOrganization.GetName)
-                .Test(expectedOrganization.Name, Phrases.Location.GetLocation)
-                .Test(expectedOrganization.Zip, StartsWith(Phrases.Demographic.GetHasDemographic))
-                .Test("no", StartsWith(Phrases.Capacity.GetHasHousing))
-                .Test("no", StartsWith(Phrases.Capacity.GetFrequency))
-                .Test(expectedOrganization.UpdateFrequency.ToString(), StartsWith(Phrases.CaseManagement.GetHasCaseManagement))
-                .Test("no", StartsWith(Phrases.JobTrainingServices.GetHasJobTraining))
-                .Test("no", Phrases.NewOrganization.Closing)
+            await CreateTestFlow(MasterDialog.Name, user: null)
+                .Test("hi", Phrases.Greeting.NotRegistered)
                 .StartTestAsync();
-
-            // Organization should be completed.
-            expectedOrganization.IsComplete = true;
-
-            // Validate the results.
-            await ValidateProfile(expectedOrganization);
         }
 
         [Fact]
-        public async Task UpdateOrganization()
+        public async Task NoOrganization()
         {
-            var expectedOrganization = CreateDefaultTestOrganization();
-            expectedOrganization.IsVerified = true;
-            expectedOrganization.HousingEmergencyPrivateTotal = 10;
-            expectedOrganization.HasJobTrainingServices = true;
-            expectedOrganization.TotalJobTrainingPositions = 10;
-            expectedOrganization.HasJobTrainingWaitlist = true;
-            expectedOrganization.JobTrainingWaitlistPositions = 0;
-            expectedOrganization.CaseManagementTotal = 10;
+            User user = await CreateUser(organizationId: string.Empty);
 
-            var expectedSnapshot = new Snapshot(expectedOrganization.Id);
-            expectedSnapshot.BedsEmergencyPrivateOpen = 5;
-            expectedSnapshot.OpenJobTrainingPositions = 5;
-            expectedSnapshot.JobTrainingWaitlistPositions = 2;
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Test("hi", Phrases.Greeting.NoOrganization)
+                .StartTestAsync();
+        }
 
-            await CreateTestFlow(MasterDialog.Name, expectedOrganization)
+        [Fact]
+        public async Task OrganizationNotVerified()
+        {
+            var organization = await CreateOrganization(isVerified: false);
+            var user = await CreateUser(organization.Id);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Test("hi", Phrases.Greeting.UnverifiedOrganization)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task Help()
+        {
+            var organization = await CreateOrganization(isVerified: true);
+            var user = await CreateUser(organization.Id);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Send(Phrases.Greeting.HelpKeyword)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Greeting.Help)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task NothingToUpdate()
+        {
+            var organization = await CreateOrganization(isVerified: true);
+            var user = await CreateUser(organization.Id);
+
+            await CreateTestFlow(MasterDialog.Name, user)
                 .Send("update")
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Capacity.GetHousingEmergencyPrivateOpen)
-                .Test("5", Phrases.CaseManagement.GetCaseManagementOpen)
-                .Test("5", StartsWith(Phrases.JobTrainingServices.GetJobTrainingOpenings))
-                .Test("0", StartsWith(Phrases.JobTrainingServices.GetJobTrainingWaitlistPositions))
-                .Test("2", Phrases.UpdateOrganization.Closing)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Update.NothingToUpdate)
                 .StartTestAsync();
-
-            // Snapshot should be completed.
-            expectedSnapshot.IsComplete = true;
-
-            // Validate the results.
-            await ValidateProfile(expectedOrganization, expectedSnapshot);
         }
 
+        /*
         [Fact]
-        public async Task UpdateOrganizationPendingVerification()
+        public async Task Update()
         {
-            var initialOrganization = CreateDefaultTestOrganization();
-            initialOrganization.IsVerified = false;
+            var organization = await CreateOrganization(isVerified: true);
+            var user = await CreateUser(organization.Id);
+            var service = await CreateService(organization.Id, ServiceType.Housing);
+            var housingData = await CreateHousingData(service.Id, true, 10, 10, 10, 10);
 
-            await CreateTestFlow(MasterDialog.Name, initialOrganization)
-                .Test("update", Phrases.Greeting.Unverified)
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Send("update")
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Capacity.Housing.GetEmergencySharedBedsOpen)
+                .Test("5", Phrases.Capacity.Housing.GetEmergencyPrivateBedsOpen)
+                .Test("5", Phrases.Capacity.Housing.GetLongTermSharedBedsOpen)
+                .Test("5", Phrases.Capacity.Housing.GetLongTermPrivateBedsOpen)
+                .Test("5", Phrases.Update.Closing)
                 .StartTestAsync();
         }
-
-        [Fact]
-        public async Task AlreadyRegistered()
-        {
-            var initialOrganization = CreateDefaultTestOrganization();
-            initialOrganization.IsVerified = true;
-
-            // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name, initialOrganization)
-                .Send(Phrases.Greeting.New)
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Greeting.Registered)
-                .StartTestAsync();
-        }
-
-        [Fact]
-        public async Task Unregistered()
-        {
-            // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name)
-                .Send(Phrases.Greeting.Update)
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Greeting.Unregistered)
-                .StartTestAsync();
-        }
-
-        [Fact]
-        public async Task NonKeywordNewOrganization()
-        {
-            // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name)
-                .Send("hi")
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Greeting.Unregistered)
-                .AssertReply(Phrases.Greeting.GetNew)
-                .Test(Phrases.Greeting.New, Phrases.NewOrganization.GetName)
-                .StartTestAsync();
-        }
-
-        [Fact]
-        public async Task NonKeywordUpdateOrganization()
-        {
-            var initialOrganization = CreateDefaultTestOrganization();
-            initialOrganization.IsVerified = true;
-
-            // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name, initialOrganization)
-                .Send("hi")
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Greeting.Registered)
-                .AssertReply(Phrases.Greeting.GetUpdate)
-                .Test(Phrases.Greeting.Update, Phrases.UpdateOrganization.NothingToUpdate)
-                .StartTestAsync();
-        }
-
-        [Fact]
-        public async Task NonKeywordInvalid()
-        {
-            // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name)
-                .Send("hi")
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Greeting.Unregistered)
-                .AssertReply(Phrases.Greeting.GetNew)
-                .Test("hi", Phrases.Greeting.GetNew)
-                .StartTestAsync();
-        }
-
-        [Fact]
-        public async Task Reset()
-        {
-            // Execute the conversation.
-            await CreateTestFlow(MasterDialog.Name)
-                .Send("hi")
-                .AssertReply(Phrases.Greeting.Welcome)
-                .AssertReply(Phrases.Greeting.Unregistered)
-                .AssertReply(Phrases.Greeting.GetNew)
-                .Send("reset")
-                .AssertReply(Phrases.Greeting.GetNew)
-                .StartTestAsync();
-        }
+        */
     }
 }

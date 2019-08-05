@@ -3,10 +3,9 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity;
-using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.CaseManagement;
-using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.JobTraining;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
+using Shared.ApiInterface;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
 {
@@ -14,8 +13,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
     {
         public static string Name = typeof(UpdateOrganizationDialog).FullName;
 
-        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
-            : base(state, dialogs, database, configuration) { }
+        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+            : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
@@ -24,24 +23,14 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    var needsUpdate = await NeedsUpdate(state, database, stepContext.Context);
+                    var needsUpdate = await NeedsUpdate(state, api, stepContext.Context);
                     if (!needsUpdate)
                     {
                         // Nothing to update.
-                        await Messages.SendAsync(Phrases.UpdateOrganization.NothingToUpdate, stepContext.Context, cancellationToken);
+                        await Messages.SendAsync(Phrases.Update.NothingToUpdate, stepContext.Context, cancellationToken);
 
                         // End this dialog to pop it off the stack.
                         return await stepContext.EndDialogAsync(cancellationToken);
-                    }
-
-                    // Create a new snapshot to be filled in by UpdateOrganization process.
-                    await database.CreateSnapshot(stepContext.Context);
-
-                    var housingNeedsUpdate = await UpdateHousingDialog.CanUpdate(state, database, stepContext.Context);
-                    if(!housingNeedsUpdate)
-                    {
-                        // Skip this step.
-                        return await stepContext.NextAsync(null, cancellationToken);
                     }
 
                     // Push the update capacity dialog onto the stack.
@@ -49,36 +38,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    var caseManagementNeedsUpdate = await UpdateCaseManagementDialog.CanUpdate(state, database, stepContext.Context);
-                    if (!caseManagementNeedsUpdate)
-                    {
-                        // Nothing to update. Skip this step.
-                        return await stepContext.NextAsync(null, cancellationToken);
-                    }
-
-                    // Push the update case management dialog onto the stack.
-                    return await BeginDialogAsync(stepContext, UpdateCaseManagementDialog.Name, null, cancellationToken);
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    var jobTrainingNeedsUpdate = await UpdateJobTrainingDialog.CanUpdate(state, database, stepContext.Context);
-                    if(!jobTrainingNeedsUpdate)
-                    {
-                        return await stepContext.NextAsync(null, cancellationToken);
-                    }
-
-                    return await BeginDialogAsync(stepContext, JobTraining.UpdateJobTrainingDialog.Name, null, cancellationToken);
-
-                },
-                async (stepContext, cancellationToken) =>
-                {
-                    // Mark the snapshot as complete.
-                    var snapshot = await database.GetSnapshot(stepContext.Context);
-                    snapshot.IsComplete = true;
-                    await database.Save();
-
                     // Send the closing message.
-                    await Messages.SendAsync(Phrases.UpdateOrganization.Closing, stepContext.Context, cancellationToken);
+                    await Messages.SendAsync(Phrases.Update.Closing, stepContext.Context, cancellationToken);
 
                     // End this dialog to pop it off the stack.
                     return await stepContext.EndDialogAsync(cancellationToken);
@@ -86,12 +47,10 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             });
         }
 
-        private static async Task<bool> NeedsUpdate(StateAccessors state, DbInterface database, ITurnContext context)
+        private static async Task<bool> NeedsUpdate(StateAccessors state, IApiInterface api, ITurnContext context)
         {
-            // Check if any service needs updates
-            return await UpdateHousingDialog.CanUpdate(state, database, context) ||
-                await UpdateCaseManagementDialog.CanUpdate(state, database, context) ||
-                await UpdateJobTrainingDialog.CanUpdate(state, database, context);
+            var serviceCount = await api.GetServiceCount(Helpers.GetUserToken(context));
+            return serviceCount > 0;
         }
     }
 }

@@ -1,6 +1,8 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using EntityModel;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
-using ServiceProviderBot.Bot.Utils;
+using Shared;
+using Shared.ApiInterface;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 {
@@ -8,8 +10,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateCapacityDialog).FullName;
 
-        public UpdateCapacityDialog(StateAccessors state, DialogSet dialogs, DbInterface database, IConfiguration configuration)
-            : base(state, dialogs, database, configuration) { }
+        public UpdateCapacityDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+            : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
@@ -18,13 +20,64 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    // Check if the organization has housing.
-                    var organization = await database.GetOrganization(stepContext.Context);
-                    if (organization.HousingEmergencyPrivateTotal > 0 || organization.HousingEmergencySharedTotal > 0 
-                        || organization.HousingLongtermPrivateTotal > 0 || organization.HousingLongtermSharedTotal > 0)
+                    // Check if the organization has case management services.
+                    var service = await api.GetService<CaseManagementData>(Helpers.GetUserToken(stepContext.Context));
+                    if (service != null)
+                    {
+                        // Push the update case management dialog onto the stack.
+                        return await BeginDialogAsync(stepContext, UpdateCaseManagementDialog.Name, null, cancellationToken);
+                    }
+
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    // Check if the organization has housing services.
+                    var service = await api.GetService<HousingData>(Helpers.GetUserToken(stepContext.Context));
+                    if (service != null)
                     {
                         // Push the update housing dialog onto the stack.
                         return await BeginDialogAsync(stepContext, UpdateHousingDialog.Name, null, cancellationToken);
+                    }
+
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    // Check if the organization has job training services.
+                    var service = await api.GetService<JobTrainingData>(Helpers.GetUserToken(stepContext.Context));
+                    if (service != null)
+                    {
+                        // Push the update job training dialog onto the stack.
+                        return await BeginDialogAsync(stepContext, UpdateJobTrainingDialog.Name, null, cancellationToken);
+                    }
+
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    // Check if the organization has mental health services.
+                    var service = await api.GetService<MentalHealthData>(Helpers.GetUserToken(stepContext.Context));
+                    if (service != null)
+                    {
+                        // Push the update mental health dialog onto the stack.
+                        return await BeginDialogAsync(stepContext, UpdateMentalHealthDialog.Name, null, cancellationToken);
+                    }
+
+                    // Skip this step.
+                    return await stepContext.NextAsync(null, cancellationToken);
+                },
+                async (stepContext, cancellationToken) =>
+                {
+                    // Check if the organization has substance use services.
+                    var service = await api.GetService<SubstanceUseData>(Helpers.GetUserToken(stepContext.Context));
+                    if (service != null)
+                    {
+                        // Push the update substance use dialog onto the stack.
+                        return await BeginDialogAsync(stepContext, UpdateSubstanceUseDialog.Name, null, cancellationToken);
                     }
 
                     // Skip this step.

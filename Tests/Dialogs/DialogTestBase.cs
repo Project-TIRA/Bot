@@ -10,21 +10,16 @@ using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Utils;
-using Shared;
+using Shared.ApiInterface;
 using Xunit;
 
 namespace Tests.Dialogs
 {
     public abstract class DialogTestBase
     {
-        protected const string TestOrgName = "Test Org";
-        protected const string TestOrgCity = "Redmond";
-        protected const string TestOrgState = "WA";
-        protected const string TestOrgZip = "98052";
-
         protected readonly StateAccessors state;
         protected readonly DialogSet dialogs;
-        protected readonly DbInterface database;
+        protected readonly IApiInterface api;
         protected readonly TestAdapter adapter;
         private readonly IConfiguration configuration;
 
@@ -35,17 +30,17 @@ namespace Tests.Dialogs
         {
             this.state = StateAccessors.Create();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
-            this.database = new DbInterface(DbModelFactory.CreateInMemory());
+            this.api = new EfInterface(DbModelFactory.CreateInMemory());
             this.adapter = new TestAdapter()
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
 
             this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
 
             // Register prompts.
-            Prompts.Register(this.state, this.dialogs, this.database);
+            Prompts.Register(this.dialogs);
         }
 
-        protected TestFlow CreateTestFlow(string dialogName, Organization initialOrganization = null, Snapshot initialSnapshot = null)
+        protected TestFlow CreateTestFlow(string dialogName, User user = null)
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
@@ -56,7 +51,7 @@ namespace Tests.Dialogs
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 // Create the master dialog.
-                var masterDialog = new MasterDialog(this.state, this.dialogs, this.database, this.configuration);
+                var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
 
                 // Attempt to continue any existing conversation.
                 DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
@@ -64,10 +59,10 @@ namespace Tests.Dialogs
 
                 if (startNewConversation)
                 {
-                    // Init at the start of the conversation. Need to do before checking for expired data.
-                    await InitDatabase(turnContext, initialOrganization, initialSnapshot);
+                    await InitUser(user);
                 }
 
+                /*
                 // Check if the conversation is expired.
                 var forceExpire = Phrases.TriggerReset(turnContext);
                 var expired = await this.database.CheckExpiredConversation(turnContext, forceExpire);
@@ -82,61 +77,10 @@ namespace Tests.Dialogs
                     // Difference for tests here is starting the given dialog instead of master so that individual dialog flows can be tested.
                     await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
                 }
+                */
+
+                await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
             });
-        }
-
-        protected Organization CreateDefaultTestOrganization()
-        {
-            var organization = new Organization();
-            organization.Name = TestOrgName;
-            organization.Gender = Gender.All;
-            organization.City = TestOrgCity;
-            organization.State = TestOrgState;
-            organization.Zip = TestOrgZip;
-            return organization;
-        }
-
-        protected async Task ValidateProfile(Organization expectedOrganization = null, Snapshot expectedSnapshot = null)
-        {
-            if (expectedOrganization != null)
-            {
-                var actualOrganization = await this.database.GetOrganization(this.turnContext);
-                Assert.Equal(actualOrganization.Name, expectedOrganization.Name);
-                Assert.Equal(actualOrganization.Gender, expectedOrganization.Gender);
-                Assert.Equal(actualOrganization.AgeRangeStart, expectedOrganization.AgeRangeStart);
-                Assert.Equal(actualOrganization.AgeRangeEnd, expectedOrganization.AgeRangeEnd);
-
-                //Case Management
-                Assert.Equal(actualOrganization.CaseManagementTotal, expectedOrganization.CaseManagementTotal);
-                Assert.Equal(actualOrganization.CaseManagementHasWaitlist, expectedOrganization.CaseManagementHasWaitlist);
-                Assert.Equal(actualOrganization.CaseManagementGender, expectedOrganization.CaseManagementGender);
-                Assert.Equal(actualOrganization.CaseManagementAgeRangeStart, expectedOrganization.CaseManagementAgeRangeStart);
-                Assert.Equal(actualOrganization.CaseManagementAgeRangeEnd, expectedOrganization.CaseManagementAgeRangeEnd);
-                Assert.Equal(actualOrganization.CaseManagementSobriety, expectedOrganization.CaseManagementSobriety);
-                
-                Assert.Equal(actualOrganization.HousingEmergencyPrivateTotal, expectedOrganization.HousingEmergencyPrivateTotal);
-                Assert.Equal(actualOrganization.HousingEmergencySharedTotal, expectedOrganization.HousingEmergencySharedTotal);
-                Assert.Equal(actualOrganization.HousingLongtermPrivateTotal, expectedOrganization.HousingLongtermPrivateTotal);
-                Assert.Equal(actualOrganization.HousingLongtermSharedTotal, expectedOrganization.HousingLongtermSharedTotal);
-                Assert.Equal(actualOrganization.HousingHasWaitlist, expectedOrganization.HousingHasWaitlist);
-                Assert.Equal(actualOrganization.HousingAgeRangeStart, expectedOrganization.HousingAgeRangeStart);
-                Assert.Equal(actualOrganization.HousingAgeRangeEnd, expectedOrganization.HousingAgeRangeEnd);
-                Assert.Equal(actualOrganization.HousingGender, expectedOrganization.HousingGender);
-                Assert.Equal(actualOrganization.HousingFamilyStatus, expectedOrganization.HousingFamilyStatus);
-            }
-
-            if (expectedSnapshot != null)
-            {
-                var actualSnapshot = await this.database.GetSnapshot(this.turnContext);
-                Assert.Equal(actualSnapshot.BedsEmergencyPrivateOpen, expectedSnapshot.BedsEmergencyPrivateOpen);
-                Assert.Equal(actualSnapshot.BedsEmergencySharedOpen, expectedSnapshot.BedsEmergencySharedOpen);
-                Assert.Equal(actualSnapshot.BedsLongtermPrivateOpen, expectedSnapshot.BedsLongtermPrivateOpen);
-                Assert.Equal(actualSnapshot.BedsLongtermSharedOpen, expectedSnapshot.BedsLongtermSharedOpen);
-                Assert.Equal(actualSnapshot.BedsEmergencyPrivateWaitlistLength, expectedSnapshot.BedsEmergencyPrivateWaitlistLength);
-                Assert.Equal(actualSnapshot.BedsEmergencySharedWaitlistLength, expectedSnapshot.BedsEmergencySharedWaitlistLength);
-                Assert.Equal(actualSnapshot.BedsLongtermPrivateWaitlistLength, expectedSnapshot.BedsLongtermPrivateWaitlistLength);
-                Assert.Equal(actualSnapshot.BedsLongtermSharedWaitlistLength, expectedSnapshot.BedsLongtermSharedWaitlistLength);
-            }
         }
 
         protected Action<IActivity> StartsWith(IMessageActivity expected)
@@ -150,69 +94,79 @@ namespace Tests.Dialogs
             };
         }
 
-        private async Task InitDatabase(ITurnContext turnContext, Organization initialOrganization = null, Snapshot initialSnapshot = null)
+        protected async Task<Organization> CreateOrganization(bool isVerified)
         {
-            Assert.True(initialSnapshot == null || initialOrganization != null, "Cannot initialize a snapshot without an organization");
-
-            // Create the organization and snapshot if provided.
-            if (initialOrganization != null)
+            var organization = new Organization()
             {
-                var organization = await this.database.CreateOrganization(turnContext);
-                organization.DateCreated = initialOrganization.DateCreated;
-                organization.IsVerified = initialOrganization.IsVerified;
-                organization.Name = initialOrganization.Name;
-                organization.City = initialOrganization.City;
-                organization.State = initialOrganization.State;
-                organization.Zip = initialOrganization.Zip;
-                organization.Gender = initialOrganization.Gender;
-                organization.AgeRangeStart = initialOrganization.AgeRangeStart;
-                organization.AgeRangeEnd = initialOrganization.AgeRangeEnd;
-                organization.HasJobTrainingServices = initialOrganization.HasJobTrainingServices;
-                organization.HasJobTrainingWaitlist = initialOrganization.HasJobTrainingWaitlist;
-                organization.TotalJobTrainingPositions = initialOrganization.TotalJobTrainingPositions;
-                organization.OpenJobTrainingPositions = initialOrganization.OpenJobTrainingPositions;
-                organization.JobTrainingWaitlistPositions = initialOrganization.JobTrainingWaitlistPositions;
+                Id = Guid.NewGuid().ToString(),
+                Name = "Test Organization",
+                IsVerified = isVerified
+            };
 
-                //Case Management
-                organization.CaseManagementTotal = initialOrganization.CaseManagementTotal;
-                organization.CaseManagementHasWaitlist = initialOrganization.CaseManagementHasWaitlist;
-                organization.CaseManagementGender = initialOrganization.CaseManagementGender;
-                organization.HousingEmergencyPrivateTotal = initialOrganization.HousingEmergencyPrivateTotal;
-                organization.HousingEmergencySharedTotal = initialOrganization.HousingEmergencySharedTotal;
-                organization.HousingLongtermPrivateTotal = initialOrganization.HousingLongtermPrivateTotal;
-                organization.HousingLongtermSharedTotal = initialOrganization.HousingLongtermSharedTotal;
-                organization.HousingHasWaitlist = initialOrganization.HousingHasWaitlist;
-                organization.HousingAgeRangeStart = initialOrganization.HousingAgeRangeStart;
-                organization.HousingAgeRangeEnd = initialOrganization.HousingAgeRangeEnd;
-                organization.HousingGender = initialOrganization.HousingGender;
-                organization.HousingFamilyStatus = initialOrganization.HousingFamilyStatus;
-                organization.HousingServiceAnimal = initialOrganization.HousingServiceAnimal;
-                organization.HousingSobriety = initialOrganization.HousingSobriety;
-                organization.CaseManagementAgeRangeStart = initialOrganization.CaseManagementAgeRangeStart;
-                organization.CaseManagementAgeRangeEnd = initialOrganization.CaseManagementAgeRangeEnd;
-                organization.CaseManagementSobriety = initialOrganization.CaseManagementSobriety;
+            await this.api.Create(organization);
+            return organization;
+        }
+
+        protected async Task<User> CreateUser(string organizationId)
+        {
+            var user = new User()
+            {
+                Id = Guid.NewGuid().ToString(),
+                OrganizationId = organizationId,
+                Name = "Test User",
+            };
+
+            await this.api.Create(user);
+            return user;
+        }
+
+        protected async Task<Service> CreateService(string organizationId, ServiceType type)
+        {
+            if (type == ServiceType.Invalid)
+            {
+                return null;
+            }
+
+            var service = new Service()
+            {
+                Id = Guid.NewGuid().ToString(),
+                OrganizationId = organizationId,
+                Name = $"Test Service ({type.ToString()})",
+                Type = (int)type
+            };
                 
-                
+            await this.api.Create(service);
+            return service;
+        }
 
-                if (initialSnapshot != null)
-                {
-                    var snapshot = await this.database.CreateSnapshot(turnContext);
-                    snapshot.Date = initialSnapshot.Date;
+        protected async Task<HousingData> CreateHousingData(string serviceId, bool hasWaitlist,
+            int emergencyPrivateBedsTotal, int emergencySharedBedsTotal, int longtermPrivateBedsTotal, int longtermSharedBedsTotal)
+        {
+            var data = new HousingData()
+            {
+                Id = Guid.NewGuid().ToString(),
+                ServiceId = serviceId,
+                Name = "Test Data",
+                CreatedOn = DateTime.UtcNow,
+                HasWaitlist = hasWaitlist,
+                EmergencyPrivateBedsTotal = emergencyPrivateBedsTotal,
+                EmergencySharedBedsTotal = emergencySharedBedsTotal,
+                LongTermPrivateBedsTotal = longtermPrivateBedsTotal,
+                LongTermSharedBedsTotal = longtermSharedBedsTotal
+            };
 
-                    //Case Management
-                    snapshot.CaseManagementOpenSlots = initialSnapshot.CaseManagementOpenSlots;
-                    snapshot.CaseManagementWaitlistLength = initialSnapshot.CaseManagementWaitlistLength;
-                    snapshot.BedsEmergencyPrivateOpen = initialSnapshot.BedsEmergencyPrivateOpen;
-                    snapshot.BedsEmergencySharedOpen = initialSnapshot.BedsEmergencySharedOpen;
-                    snapshot.BedsLongtermPrivateOpen = initialSnapshot.BedsLongtermPrivateOpen;
-                    snapshot.BedsLongtermSharedOpen = initialSnapshot.BedsLongtermSharedOpen;
-                    snapshot.BedsEmergencyPrivateWaitlistLength = initialSnapshot.BedsEmergencyPrivateWaitlistLength;
-                    snapshot.BedsEmergencySharedWaitlistLength = initialSnapshot.BedsEmergencySharedWaitlistLength;
-                    snapshot.BedsLongtermPrivateWaitlistLength = initialSnapshot.BedsLongtermPrivateWaitlistLength;
-                    snapshot.BedsLongtermSharedWaitlistLength = initialSnapshot.BedsLongtermSharedWaitlistLength;
-                }
+            await this.api.Create(data);
+            return data;
+        }
 
-                await this.database.Save();
+        private async Task InitUser(User user)
+        {
+            if (user != null)
+            {
+                // Turn context can only be accessed on a turn, so 
+                // this must be called when the bot is executing a turn.
+                user.PhoneNumber = this.turnContext.Activity.From.Id;
+                await this.api.Update(user);
             }
         }
     }
