@@ -25,7 +25,6 @@ namespace ServiceProviderBot.Bot.Utils
             dialogs.Add(new NumberPrompt<int>(IntPrompt));
             dialogs.Add(new TextPrompt(TextPrompt));
             dialogs.Add(new TextPrompt(GreetingTextPrompt, GreetingPromptValidator.Create()));
-            dialogs.Add(new TextPrompt(LocationTextPrompt, LocationPromptValidator.Create()));
             dialogs.Add(new TextPrompt(LessThanOrEqualPrompt, LessThanOrEqualPromptValidator.Create()));
         }
     }
