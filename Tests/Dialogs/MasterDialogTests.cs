@@ -4,7 +4,6 @@ using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
 using Shared;
-using Shared.ApiInterface;
 using Xunit;
 
 namespace Tests.Dialogs
@@ -22,7 +21,7 @@ namespace Tests.Dialogs
         [Fact]
         public async Task NoOrganization()
         {
-            User user = await CreateUser(organizationId: string.Empty);
+            User user = await TestHelpers.CreateUser(this.api, organizationId: string.Empty);
 
             await CreateTestFlow(MasterDialog.Name, user)
                 .Test("hi", Phrases.Greeting.NoOrganization)
@@ -32,8 +31,8 @@ namespace Tests.Dialogs
         [Fact]
         public async Task OrganizationNotVerified()
         {
-            var organization = await CreateOrganization(isVerified: false);
-            var user = await CreateUser(organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: false);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
                 .Test("hi", Phrases.Greeting.UnverifiedOrganization)
@@ -43,8 +42,8 @@ namespace Tests.Dialogs
         [Fact]
         public async Task Help()
         {
-            var organization = await CreateOrganization(isVerified: true);
-            var user = await CreateUser(organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
                 .Send(Phrases.Greeting.HelpKeyword)
@@ -56,8 +55,8 @@ namespace Tests.Dialogs
         [Fact]
         public async Task NothingToUpdate()
         {
-            var organization = await CreateOrganization(isVerified: true);
-            var user = await CreateUser(organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
                 .Send("update")

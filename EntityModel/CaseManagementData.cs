@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json.Serialization;
 
 namespace EntityModel
 {
@@ -13,14 +12,8 @@ namespace EntityModel
         public override string TableName { get { return TABLE_NAME; } }
 
         [JsonIgnore]
-        public override string ResourceId { get { return Id; } }
+        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
 
-        [Key]
-        [JsonProperty(PropertyName = "TODO")]
-        public string Id { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public string ServiceId { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int WaitlistLength { get; set; }
@@ -31,17 +24,15 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public int Open { get; set; }
 
-        // Called by Json to prevent serialization but allow deserialization.
-        public bool ShouldSerializeId()
+        public class Resolver : ContractResolver<CaseManagementData>
         {
-            return false;
-        }
+            public static Resolver Instance = new Resolver();
 
-        // Called by Json to prevent serialization but allow deserialization.
-        public bool ShouldSerializeServiceId()
-        {
-            return false;
+            private Resolver()
+            {
+                AddMap(x => x.Id, "TODO");
+                AddMap(x => x.ServiceId, "TODO");
+            }
         }
-
     }
 }

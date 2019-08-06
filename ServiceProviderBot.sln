@@ -6,13 +6,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityModel", "EntityModel\EntityModel.csproj", "{EAB706C6-67C9-4C42-BFBA-E5A746558617}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceProviderBot", "ServiceProviderBot\ServiceProviderBot.csproj", "{B361B495-77F1-4756-ACA2-B86BCA4536DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBot", "ServiceProviderBot\ServiceProviderBot.csproj", "{B361B495-77F1-4756-ACA2-B86BCA4536DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotTrigger", "BotTrigger\BotTrigger.csproj", "{BC79A314-66C2-4132-860E-3E0F3293134E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotTrigger", "BotTrigger\BotTrigger.csproj", "{BC79A314-66C2-4132-860E-3E0F3293134E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotTriggerHarness", "BotTriggerHarness\BotTriggerHarness.csproj", "{693A06D1-289E-4573-8621-862F41B5EFAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotTriggerHarness", "BotTriggerHarness\BotTriggerHarness.csproj", "{693A06D1-289E-4573-8621-862F41B5EFAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Shared\Shared.csproj", "{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{6D893DF8-5CA6-419D-9B58-AD7398FE47A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseInitializer", "DatabaseInitializer\DatabaseInitializer.csproj", "{9B2F4199-6EF8-4FC0-93EC-F560B8C36493}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,9 +48,16 @@ Global
 		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B2F4199-6EF8-4FC0-93EC-F560B8C36493}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B2F4199-6EF8-4FC0-93EC-F560B8C36493}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B2F4199-6EF8-4FC0-93EC-F560B8C36493}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B2F4199-6EF8-4FC0-93EC-F560B8C36493}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9B2F4199-6EF8-4FC0-93EC-F560B8C36493} = {6D893DF8-5CA6-419D-9B58-AD7398FE47A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF5B0EAE-936E-42E6-8D2F-9E05497B10C2}

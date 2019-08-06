@@ -1,10 +1,8 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using ServiceProviderBot.Bot.Prompts;
-using Shared;
 
-namespace ServiceProviderBot.Bot.Utils
+namespace ServiceProviderBot.Bot.Prompts
 {
-    public static class Prompts
+    public static class Prompt
     {
         public static string ChoicePrompt = "ChoicePrompt";
         public static string ConfirmPrompt = "ConfirmPrompt";

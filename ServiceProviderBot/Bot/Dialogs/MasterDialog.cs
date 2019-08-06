@@ -1,6 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
+using ServiceProviderBot.Bot.Prompts;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
 using Shared.ApiInterface;
@@ -65,7 +66,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     }
 
                     return await stepContext.PromptAsync(
-                        Utils.Prompts.GreetingTextPrompt,
+                        Prompt.GreetingTextPrompt,
                         new PromptOptions { Prompt = Phrases.Greeting.Keywords },
                         cancellationToken);
                 },

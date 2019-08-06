@@ -13,6 +13,7 @@ using ServiceProviderBot.Bot.Middleware;
 using Shared;
 using Newtonsoft.Json;
 using Shared.ApiInterface;
+using EntityModel;
 
 namespace ServiceProviderBot
 {
@@ -44,7 +45,10 @@ namespace ServiceProviderBot
             services.AddSingleton(this.configuration);
 
             // Add the Common Data Service interface.
-            services.AddScoped(_ => new CdsInterface());
+            //services.AddScoped(_ => new CdsInterface());
+
+            // Add the DB interface.
+            services.AddScoped(_ => new EfInterface(DbModelFactory.Create(configuration.DbModelConnectionString())));
 
             // Create and add the state accessors.
             var state = StateAccessors.Create(this.configuration);

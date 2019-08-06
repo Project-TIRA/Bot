@@ -1,5 +1,4 @@
-﻿
-using EntityModel;
+﻿using EntityModel;
 using Microsoft.Bot.Builder;
 using Shared.ApiInterface;
 using System.Diagnostics;
@@ -15,7 +14,8 @@ namespace Shared
         /// </summary>
         public static string GetUserToken(ITurnContext context)
         {
-            return context.Activity.From.Id;
+            return PhoneNumber.Standardize("(760)500-4495");
+            //return PhoneNumber.Standardize(context.Activity.From.Id);
         }
 
         /// <summary>
@@ -80,6 +80,6 @@ namespace Shared
                 case ServiceType.SubstanceUse: return SubstanceUseData.PRIMARY_KEY;
                 default: return string.Empty;
             }
-        }
+        }       
     }
 }

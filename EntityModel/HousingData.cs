@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json.Serialization;
 
 namespace EntityModel
 {
@@ -13,15 +12,9 @@ namespace EntityModel
         public override string TableName { get { return TABLE_NAME; } }
 
         [JsonIgnore]
-        public override string ResourceId { get { return Id; } }
+        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
 
-        [Key]
-        [JsonProperty(PropertyName = "tira_housingdataid")]
-        public string Id { get; set; }
 
-        [JsonProperty(PropertyName = "_tira_housingserviceid_value")]
-        public string ServiceId { get; set; }
-        
         [JsonProperty(PropertyName = "tira_longtemsharedbedstotal")]
         public int LongTermSharedBedsTotal { get; set; }
 
@@ -58,17 +51,15 @@ namespace EntityModel
         [JsonProperty(PropertyName = "tira_emergencyprivatebedswaitlist")]
         public int EmergencyPrivateBedsWaitlistLength { get; set; }
 
-        // Called by Json to prevent serialization but allow deserialization.
-        public bool ShouldSerializeId()
+        public class Resolver : ContractResolver<CaseManagementData>
         {
-            return false;
-        }
+            public static Resolver Instance = new Resolver();
 
-        // Called by Json to prevent serialization but allow deserialization.
-        public bool ShouldSerializeServiceId()
-        {
-            return false;
+            private Resolver()
+            {
+                AddMap(x => x.Id, "tira_housingdataid");
+                AddMap(x => x.ServiceId, "_tira_housingserviceid_value");
+            }
         }
-
     }
 }

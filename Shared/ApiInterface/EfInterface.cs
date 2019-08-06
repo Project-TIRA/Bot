@@ -1,5 +1,6 @@
 ﻿using EntityModel;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -62,7 +63,7 @@ namespace Shared.ApiInterface
             }
 
             await this.dbContext.SaveChangesAsync();
-            return model.ResourceId;
+            return model.Id;
         }
 
         /// <summary>
@@ -79,8 +80,7 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task<User> GetUser(string userToken)
         {
-            var user = await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
-            return user;
+            return await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from a user token.
         /// </summary>
-        public async Task<T> GetLatestServiceData<T>(string userToken) where T : ServiceModelBase
+        public async Task<T> GetLatestServiceData<T>(string userToken) where T : ServiceModelBase, new()
         {
             var service = await GetService<T>(userToken);
             if (service != null)
@@ -151,6 +151,21 @@ namespace Shared.ApiInterface
             return null;
         }
 
+        /// <summary>
+        /// Gets all verified organizations.
+        /// </summary>
+        public async Task<List<Organization>> GetVerifiedOrganizations()
+        {
+            return await this.dbContext.Organizations.Where(o => o.IsVerified).ToListAsync();
+        }
+
+        /// <summary>
+        /// Gets all users for an organization.
+        /// </summary>
+        public async Task<List<User>> GetUsersForOrganization(Organization organization)
+        {
+            return await this.dbContext.Users.Where(u => u.OrganizationId == organization.Id).ToListAsync();
+        }
 
         /*
         /// <summary>

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shared;
+using Shared.ApiInterface;
 using System;
 using System.Linq;
 using System.Threading;
@@ -18,8 +19,8 @@ namespace BotTrigger
     {
         private const string DbModelConnectionStringSettingName = "DbModel";
 
-        // TODO: Put in settings
-        private const string BotPhoneNumber = "+12066934709";
+        // TODO: Put these in app settings.
+        private const string BotPhoneNumber = "+12062600538";
         private const string ChannelId = "sms";
         private const string ServiceUrl = "https://sms.botframework.com";
 
@@ -35,64 +36,84 @@ namespace BotTrigger
                 .Build();
 
             var connectionString = configuration.GetConnectionString(DbModelConnectionStringSettingName);
-            await DoWork(connectionString, log);
+
+            using (var db = DbModelFactory.Create(connectionString))
+            {
+                await DoWork(new EfInterface(db), log);
+            }
         }
 
-        public static async Task DoWork(string connectionString, ILogger log = null)
+        public static async Task DoWork(IApiInterface api, ILogger log = null)
         {
-            /*
             MicrosoftAppCredentials.TrustServiceUrl(ServiceUrl);
 
-            var creds = new MicrosoftAppCredentials("b89e2ca2-abdf-4263-9d93-1428a3911e49", "fkqANJED30@^{qebvKD013!");
+            // TODO: Put these in app settings.
+            var creds = new MicrosoftAppCredentials("4cd0f1ea-6f83-419a-a4fa-24878d30dd09", "L-7r?rQY/5xo+QQ1yBJ02IEk3z9V297f");
             var credentialProvider = new SimpleCredentialProvider(creds.MicrosoftAppId, creds.MicrosoftAppPassword);
             var adapter = new BotFrameworkAdapter(credentialProvider);
             var botAccount = new ChannelAccount() { Id = BotPhoneNumber };
 
-            using (var dbContext = DbModelFactory.Create(connectionString))
+            var organizations = await api.GetVerifiedOrganizations();
+
+            LogInfo(log, $"BotTrigger: found {organizations.Count()} verified organizations");
+
+            foreach (var organization in organizations)
             {
-                var organizations = await dbContext.Organizations
-                    .Where(o => o.IsVerified)
-                    .ToListAsync();
-
-                LogInfo(log, $"BotTrigger: found {organizations.Count()} verified organizations");
-
-                foreach (var organization in organizations)
+                var users = await api.GetUsersForOrganization(organization);
+                if (users.Count == 0)
                 {
-                    LogInfo(log, $"BotTrigger: sending to {organization.Name}");
+                    continue;
+                }
 
-                    var userAccount = new ChannelAccount() { Id = organization.PhoneNumber };
-                    var convoAccount = new ConversationAccount(id: userAccount.Id);
-                    var convo = new ConversationReference(null, userAccount, botAccount, convoAccount, ChannelId, ServiceUrl);
+                // TEMP: Only using the first user for the organization.
+                var user = users[0];
 
-                    await adapter.ContinueConversationAsync(creds.MicrosoftAppId, convo, async (context, token) =>
+                LogInfo(log, $"BotTrigger: sending to {user.Name} from {organization.Name}");
+
+                var userAccount = new ChannelAccount() { Id = PhoneNumber.Standardize(user.PhoneNumber) };
+                var convoAccount = new ConversationAccount(id: userAccount.Id);
+                var convo = new ConversationReference(null, userAccount, botAccount, convoAccount, ChannelId, ServiceUrl);
+
+                await adapter.ContinueConversationAsync(creds.MicrosoftAppId, convo, async (context, token) =>
+                {
+                    try
                     {
                         await context.SendActivityAsync(Phrases.Greeting.TimeToUpdate);
-                    }, new CancellationToken());
+                    }
+                    catch (Exception e)
+                    {
+                        LogException(log, e);
+                    }
+                }, new CancellationToken());
 
 
-                    //var connector = new ConnectorClient(new Uri(ServiceUrl), creds);
+                //var connector = new ConnectorClient(new Uri(ServiceUrl), creds);
 
-                    //IMessageActivity message = Activity.CreateMessageActivity();
-                    //message.From = botAccount;
-                    //message.Recipient = userAccount;
-                    //message.Conversation = new ConversationAccount(id: userAccount.Id);
-                    //message.ChannelId = ChannelId;
-                    //message.Text = $"It's time for an update. Reply \"{Bot}";
+                //IMessageActivity message = Activity.CreateMessageActivity();
+                //message.From = botAccount;
+                //message.Recipient = userAccount;
+                //message.Conversation = new ConversationAccount(id: userAccount.Id);
+                //message.ChannelId = ChannelId;
+                //message.Text = $"It's time for an update. Reply \"{Bot}";
 
-                    //await connector.Conversations.SendToConversationAsync((Activity)message);
-                }
+                //await connector.Conversations.SendToConversationAsync((Activity)message);
             }
-            */
         }
 
         private static void LogInfo(ILogger log, string text)
         {
-            if (log == null)
+            if (log != null)
             {
-                return;
+                log.LogInformation(text);
             }
+        }
 
-            log.LogInformation(text);
+        private static void LogException(ILogger log, Exception exception)
+        {
+            if (log != null)
+            {
+                log.LogError(exception, exception.Message);
+            }
         }
     }
 }

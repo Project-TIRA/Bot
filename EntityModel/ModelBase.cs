@@ -1,11 +1,25 @@
 ﻿using Newtonsoft.Json;
-using System.Threading.Tasks;
+using Newtonsoft.Json.Serialization;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace EntityModel
 {
     public abstract class ModelBase
     {
-        public virtual string TableName { get { return string.Empty; } }
-        public virtual string ResourceId { get { return string.Empty; } }
+        [Key]
+        [JsonIgnore]
+        public string Id { get; set; }
+
+        [JsonIgnore]
+        public abstract string TableName { get; }
+
+        [JsonIgnore]
+        public abstract IContractResolver ContractResolver { get; }
+
+        public ModelBase()
+        {
+            this.Id = Guid.NewGuid().ToString();
+        }
     }
 }

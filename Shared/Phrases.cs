@@ -11,7 +11,7 @@ namespace Shared
 
         public static class Greeting
         {
-            public static string HelpKeyword = "help";
+            public static string HelpKeyword = "info";
             public static string UpdateKeyword = "update";
             public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register and link your mobile phone number");
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
@@ -31,12 +31,12 @@ namespace Shared
         {
             public static Activity GetWaitlistLength(string service)
             {
-                return MessageFactory.Text($"How long is your Waitlist for {service}?");
+                return MessageFactory.Text($"How long is your waitlist for {service}?");
             }
 
             public static Activity RetryInvalidCount(int total, Activity retryPrompt)
             {
-                return MessageFactory.Text($"Oops, the openings cannot be more than the total availablble ({total}). {retryPrompt.Text}");
+                return MessageFactory.Text($"Oops, the openings cannot be more than the total available ({total}). {retryPrompt.Text}");
             }
 
             public static class CaseManagement

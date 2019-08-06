@@ -36,7 +36,8 @@ namespace EntityModel
         public DbModel CreateDbContext(string[] args)
         {
             // Only used by EF Core Tools, so okay to hardcode to local DB.
-            return Create("data source=(LocalDb)\\MSSQLLocalDB;initial catalog=OrganizationModel;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework");
+            //return Create("data source=(LocalDb)\\MSSQLLocalDB;initial catalog=ProjectTira;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework");
+            return Create("Server=tcp:project-tira-staging.database.windows.net,1433;Initial Catalog=project-tira-staging;Persist Security Info=False;User ID=project-tira;Password=LamePassword1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
         }
 
         public static DbModel Create(string connectionString)
@@ -44,6 +45,15 @@ namespace EntityModel
             return new DbModel(new DbContextOptionsBuilder<DbModel>()
                .UseSqlServer(connectionString)
                .Options);
+        }
+
+        public static DbModel CreateWithDummyData(string connectionString)
+        {
+            var model = new DbModel(new DbContextOptionsBuilder<DbModel>()
+               .UseSqlServer(connectionString)
+               .Options);
+
+            return model;
         }
 
         public static DbModel CreateInMemory()

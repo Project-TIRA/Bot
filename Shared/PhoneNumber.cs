@@ -3,7 +3,7 @@
     public static class PhoneNumber
     {
         /// <summary>
-        /// Converts a phone number to XXXYYYZZZZ format.
+        /// Converts a phone number to +1XXXYYYZZZZ format.
         /// </summary>
         public static string Standardize(string phoneNumber)
         {
@@ -14,16 +14,16 @@
 
             phoneNumber = StripSeparators(phoneNumber);
 
-            if (phoneNumber.Length == 11 && phoneNumber.StartsWith("1"))
+            if (phoneNumber.Length == 10)
             {
-                return phoneNumber.Substring(1);
-            }
-            else if (phoneNumber.Length == 12 && phoneNumber.StartsWith("+1"))
-            {
-                return phoneNumber.Substring(2);
+                phoneNumber = "1" + phoneNumber;
             }
 
-            // Can't do anything with the number.
+            if (phoneNumber.Length == 11)
+            {
+                phoneNumber = "+" + phoneNumber;
+            }
+
             return phoneNumber;
         }
 

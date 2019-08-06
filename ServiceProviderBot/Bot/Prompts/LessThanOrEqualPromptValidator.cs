@@ -9,19 +9,14 @@ namespace ServiceProviderBot.Bot.Prompts
         {
             return async (promptContext, cancellationToken) =>
             {
-                var maxCount = promptContext.Options.Validations;
-
-                if (!(maxCount is int))
-                {
-                    return await Task.FromResult(false);
-                }
+                var maxCount = (long)promptContext.Options.Validations;
 
                 if (!int.TryParse(promptContext.Recognized.Value, out var inputValue))
                 {
                     return await Task.FromResult(false);
                 }
 
-                var success = inputValue <= (int)maxCount;
+                var success = inputValue <= maxCount;
                 return await Task.FromResult(success);
             };
         }

@@ -2,6 +2,7 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using ServiceProviderBot.Bot.Prompts;
 using Shared;
 using Shared.ApiInterface;
 using System;
@@ -73,12 +74,15 @@ namespace ServiceProviderBot.Bot.Dialogs
         }
 
         protected WaterfallStep[] GenerateUpdateSteps<T>(string serviceName, string totalPropertyName, string openPropertyName,
-            string hasWaitlistPropertyName, string waitlistLengthPropertyName, Activity prompt) where T : ServiceModelBase
+            string hasWaitlistPropertyName, string waitlistLengthPropertyName, Activity prompt) where T : ServiceModelBase, new()
         {
             return new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>
                 {
+                    // Get the service.
+                    var service = await this.api.GetService<T>(Helpers.GetUserToken(stepContext.Context));
+
                     // Get the latest snapshot.
                     var serviceData = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
                     var totalPropertyValue = (int)typeof(T).GetProperty(totalPropertyName).GetValue(serviceData);
@@ -88,7 +92,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     {
                         // Prompt for the open count.
                         return await stepContext.PromptAsync(
-                            Utils.Prompts.LessThanOrEqualPrompt,
+                            Prompt.LessThanOrEqualPrompt,
                             new PromptOptions { Prompt = prompt,
                                 RetryPrompt = Phrases.Capacity.RetryInvalidCount(totalPropertyValue, prompt),
                                 Validations = totalPropertyValue },
@@ -116,7 +120,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         {
                             // Prompt for the waitlist length.
                             return await stepContext.PromptAsync(
-                                Utils.Prompts.IntPrompt,
+                                Prompt.IntPrompt,
                                 new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(serviceName) },
                                 cancellationToken);
                         }
