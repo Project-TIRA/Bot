@@ -3,7 +3,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -17,12 +16,12 @@ namespace BotTrigger
 {
     public static class BotTrigger
     {
-        private const string DbModelConnectionStringSettingName = "DbModel";
-
-        // TODO: Put these in app settings.
-        private const string BotPhoneNumber = "+12062600538";
-        private const string ChannelId = "sms";
-        private const string ServiceUrl = "https://sms.botframework.com";
+        public static string MicrosoftAppIdSettingName = "MicrosoftAppId";
+        public static string MicrosoftAppPasswordSettingName = "MicrosoftAppPassword";
+        public static string BotPhoneNumberSettingName = "BotPhoneNumber";
+        public static string ChannelIdSettingName = "ChannelId";
+        public static string ServiceUrlSettingName = "ServiceUrl";
+        public static string DbModelConnectionStringSettingName = "DbModel";
 
         [FunctionName("BotTrigger")]
         public static async Task Run([TimerTrigger("0 0 8 * * *")]TimerInfo myTimer, ILogger log, Microsoft.Azure.WebJobs.ExecutionContext context)
@@ -36,22 +35,21 @@ namespace BotTrigger
                 .Build();
 
             var connectionString = configuration.GetConnectionString(DbModelConnectionStringSettingName);
-
             using (var db = DbModelFactory.Create(connectionString))
             {
-                await DoWork(new EfInterface(db), log);
+                await DoWork(new EfInterface(db), configuration[MicrosoftAppIdSettingName], configuration[MicrosoftAppPasswordSettingName],
+                    configuration[BotPhoneNumberSettingName], configuration[ChannelIdSettingName], configuration[ServiceUrlSettingName], log);
             }
         }
 
-        public static async Task DoWork(IApiInterface api, ILogger log = null)
+        public static async Task DoWork(IApiInterface api, string appId, string appPassword, string botPhoneNumber, string channelId, string serviceUrl, ILogger log = null)
         {
-            MicrosoftAppCredentials.TrustServiceUrl(ServiceUrl);
+            MicrosoftAppCredentials.TrustServiceUrl(serviceUrl);
 
-            // TODO: Put these in app settings.
-            var creds = new MicrosoftAppCredentials("4cd0f1ea-6f83-419a-a4fa-24878d30dd09", "L-7r?rQY/5xo+QQ1yBJ02IEk3z9V297f");
+            var creds = new MicrosoftAppCredentials(appId, appPassword);
             var credentialProvider = new SimpleCredentialProvider(creds.MicrosoftAppId, creds.MicrosoftAppPassword);
             var adapter = new BotFrameworkAdapter(credentialProvider);
-            var botAccount = new ChannelAccount() { Id = BotPhoneNumber };
+            var botAccount = new ChannelAccount() { Id = botPhoneNumber };
 
             var organizations = await api.GetVerifiedOrganizations();
 
@@ -71,7 +69,7 @@ namespace BotTrigger
 
                     var userAccount = new ChannelAccount() { Id = PhoneNumber.Standardize(user.PhoneNumber) };
                     var convoAccount = new ConversationAccount(id: userAccount.Id);
-                    var convo = new ConversationReference(null, userAccount, botAccount, convoAccount, ChannelId, ServiceUrl);
+                    var convo = new ConversationReference(null, userAccount, botAccount, convoAccount, channelId, serviceUrl);
 
                     await adapter.ContinueConversationAsync(creds.MicrosoftAppId, convo, async (context, token) =>
                     {

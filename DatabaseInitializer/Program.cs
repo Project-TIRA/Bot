@@ -25,6 +25,8 @@ namespace DatabaseInitializer
                 return;
             }
 
+            Console.WriteLine("Working...");
+
             switch (args[0])
             {
                 case CdsKeyword: await HandleCds(args); break;

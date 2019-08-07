@@ -27,7 +27,7 @@ namespace EntityModel
         public ServiceModelBase() : base()
         {
             this.CreatedOn = DateTime.UtcNow;
-            this.Name = this.CreatedOn.ToString("yyyy/MM/dd hh:mm tt");
+            this.Name = this.CreatedOn.ToString("yyyy/MM/dd hh:mm tt K");
         }
 
         public virtual void CopyStaticValues<T>(T data) where T : ServiceModelBase
