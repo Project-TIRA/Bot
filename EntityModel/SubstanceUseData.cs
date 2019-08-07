@@ -51,6 +51,15 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public int GroupOpen { get; set; }
 
+        public override void CopyTotals<T>(T data)
+        {
+            var d = data as SubstanceUseData;
+            this.DetoxTotal = d.DetoxTotal;
+            this.GroupTotal = d.GroupTotal;
+            this.InPatientTotal = d.InPatientTotal;
+            this.OutPatientTotal = d.OutPatientTotal;
+        }
+
         public class Resolver : ContractResolver<CaseManagementData>
         {
             public static Resolver Instance = new Resolver();

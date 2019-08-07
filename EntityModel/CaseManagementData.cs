@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
 
 namespace EntityModel
 {
@@ -23,6 +24,12 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "TODO")]
         public int Open { get; set; }
+
+        public override void CopyTotals<T>(T data)
+        {
+            var d = data as CaseManagementData;
+            this.Total = d.Total;
+        }
 
         public class Resolver : ContractResolver<CaseManagementData>
         {

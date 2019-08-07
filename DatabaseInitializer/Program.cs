@@ -39,7 +39,7 @@ namespace DatabaseInitializer
 
         static void PrintHelp()
         {
-            Console.WriteLine("Options");
+            Console.WriteLine("HELP");
             Console.WriteLine($"{HelpKeyword2} : Prints this help message");
             Console.WriteLine($"{CdsKeyword} : Initializes Common Data Service");
             Console.WriteLine($"{EfFormat} : Initializes Entity Framework");

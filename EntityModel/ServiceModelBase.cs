@@ -21,6 +21,8 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public bool IsComplete { get; set; }
 
+        public abstract void CopyTotals<T>(T data) where T : ServiceModelBase;
+
         public ServiceModelBase() : base()
         {
             this.CreatedOn = DateTime.UtcNow;

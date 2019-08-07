@@ -18,6 +18,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
         {
             var steps = new List<WaterfallStep>();
 
+            steps.Add(GenerateCreateDataStep<SubstanceUseData>());
+
             steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Capacity.SubstanceUse.DetoxService, nameof(SubstanceUseData.DetoxTotal),
                 nameof(SubstanceUseData.DetoxOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.DetoxWaitlistLength),
                 Phrases.Capacity.SubstanceUse.GetDetoxOpen));
@@ -33,6 +35,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Capacity.SubstanceUse.GroupService, nameof(SubstanceUseData.GroupTotal),
                 nameof(SubstanceUseData.GroupOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.GroupWaitlistLength),
                 Phrases.Capacity.SubstanceUse.GetDetoxOpen));
+
+            steps.Add(GenerateCompleteDataStep<SubstanceUseData>());
 
             // End this dialog to pop it off the stack.
             steps.Add(async (stepContext, cancellationToken) => { return await stepContext.EndDialogAsync(cancellationToken); });

@@ -73,6 +73,23 @@ namespace ServiceProviderBot.Bot.Dialogs
             return await context.ContinueDialogAsync(cancellationToken);
         }
 
+        protected WaterfallStep GenerateCreateDataStep<T>() where T : ServiceModelBase, new()
+        {
+            return async (stepContext, cancellationToken) =>
+            {
+                // Get the latest snapshot.
+                var previousData = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
+
+                // Create a new snapshot and copy the totals from the previous one.
+                var data = new T();
+                data.CopyTotals(previousData);
+                await this.api.Create(data);
+
+                // Continue to the next step.
+                return await stepContext.NextAsync(cancellationToken);
+            };
+        }
+
         protected WaterfallStep[] GenerateUpdateSteps<T>(string serviceName, string totalPropertyName, string openPropertyName,
             string hasWaitlistPropertyName, string waitlistLengthPropertyName, Activity prompt) where T : ServiceModelBase, new()
         {
@@ -84,8 +101,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                     var service = await this.api.GetService<T>(Helpers.GetUserToken(stepContext.Context));
 
                     // Get the latest snapshot.
-                    var serviceData = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
-                    var totalPropertyValue = (int)typeof(T).GetProperty(totalPropertyName).GetValue(serviceData);
+                    var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
+                    var totalPropertyValue = (int)typeof(T).GetProperty(totalPropertyName).GetValue(data);
 
                     // Check if the organization has this service.
                     if (totalPropertyValue > 0)
@@ -143,6 +160,20 @@ namespace ServiceProviderBot.Bot.Dialogs
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);
                 }
+            };
+        }
+
+        protected WaterfallStep GenerateCompleteDataStep<T>() where T : ServiceModelBase, new()
+        {
+            return async (stepContext, cancellationToken) =>
+            {
+                // Mark the snapshot as complete.
+                var data = await this.api.GetLatestServiceData<HousingData>(Helpers.GetUserToken(stepContext.Context));
+                data.IsComplete = true;
+                await this.api.Update(data);
+
+                // Continue to the next step.
+                return await stepContext.NextAsync(cancellationToken);
             };
         }
 

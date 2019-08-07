@@ -18,9 +18,13 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
         {
             var steps = new List<WaterfallStep>();
 
+            steps.Add(GenerateCreateDataStep<CaseManagementData>());
+
             steps.AddRange(GenerateUpdateSteps<CaseManagementData>(Phrases.Capacity.CaseManagement.Service, nameof(CaseManagementData.Total),
                 nameof(CaseManagementData.Open), nameof(CaseManagementData.HasWaitlist), nameof(CaseManagementData.WaitlistLength),
                 Phrases.Capacity.CaseManagement.GetSpotsOpen));
+
+            steps.Add(GenerateCompleteDataStep<CaseManagementData>());
 
             // End this dialog to pop it off the stack.
             steps.Add(async (stepContext, cancellationToken) => { return await stepContext.EndDialogAsync(cancellationToken); });

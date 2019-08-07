@@ -24,6 +24,12 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public int WaitlistLength { get; set; }
 
+        public override void CopyTotals<T>(T data)
+        {
+            var d = data as JobTrainingData;
+            this.Total = d.Total;
+        }
+
         public class Resolver : ContractResolver<CaseManagementData>
         {
             public static Resolver Instance = new Resolver();

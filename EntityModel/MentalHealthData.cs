@@ -33,6 +33,13 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public int OutPatientWaitlistLength { get; set; }
 
+        public override void CopyTotals<T>(T data)
+        {
+            var d = data as MentalHealthData;
+            this.InPatientTotal = d.InPatientTotal;
+            this.OutPatientTotal = d.OutPatientTotal;
+        }
+
         public class Resolver : ContractResolver<CaseManagementData>
         {
             public static Resolver Instance = new Resolver();
