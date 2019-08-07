@@ -65,27 +65,26 @@ namespace BotTrigger
                     continue;
                 }
 
-                // TEMP: Only using the first user for the organization.
-                var user = users[0];
-
-                LogInfo(log, $"BotTrigger: sending to {user.Name} from {organization.Name}");
-
-                var userAccount = new ChannelAccount() { Id = PhoneNumber.Standardize(user.PhoneNumber) };
-                var convoAccount = new ConversationAccount(id: userAccount.Id);
-                var convo = new ConversationReference(null, userAccount, botAccount, convoAccount, ChannelId, ServiceUrl);
-
-                await adapter.ContinueConversationAsync(creds.MicrosoftAppId, convo, async (context, token) =>
+                foreach (var user in users)
                 {
-                    try
-                    {
-                        await context.SendActivityAsync(Phrases.Greeting.TimeToUpdate);
-                    }
-                    catch (Exception e)
-                    {
-                        LogException(log, e);
-                    }
-                }, new CancellationToken());
+                    LogInfo(log, $"BotTrigger: sending to {user.Name} from {organization.Name}");
 
+                    var userAccount = new ChannelAccount() { Id = PhoneNumber.Standardize(user.PhoneNumber) };
+                    var convoAccount = new ConversationAccount(id: userAccount.Id);
+                    var convo = new ConversationReference(null, userAccount, botAccount, convoAccount, ChannelId, ServiceUrl);
+
+                    await adapter.ContinueConversationAsync(creds.MicrosoftAppId, convo, async (context, token) =>
+                    {
+                        try
+                        {
+                            await context.SendActivityAsync(Phrases.Greeting.TimeToUpdate);
+                        }
+                        catch (Exception e)
+                        {
+                            LogException(log, e);
+                        }
+                    }, new CancellationToken());
+                }
 
                 //var connector = new ConnectorClient(new Uri(ServiceUrl), creds);
 

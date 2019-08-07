@@ -39,7 +39,8 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from a user token.
         /// </summary>
-        Task<T> GetLatestServiceData<T>(string userToken) where T : ServiceModelBase, new();
+        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
+        Task<T> GetLatestServiceData<T>(string userToken, bool createdByUser = false) where T : ServiceModelBase, new();
 
         /// <summary>
         /// Gets all verified organizations.

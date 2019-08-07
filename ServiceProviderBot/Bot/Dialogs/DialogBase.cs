@@ -77,12 +77,16 @@ namespace ServiceProviderBot.Bot.Dialogs
         {
             return async (stepContext, cancellationToken) =>
             {
-                // Get the latest snapshot.
-                var previousData = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
+                var userToken = Helpers.GetUserToken(stepContext.Context);
+                var user = await this.api.GetUser(userToken);
 
-                // Create a new snapshot and copy the totals from the previous one.
+                // Get the latest snapshot.
+                var previousData = await this.api.GetLatestServiceData<T>(userToken);
+
+                // Create a new snapshot and copy the static values from the previous one.
                 var data = new T();
                 data.CopyStaticValues(previousData);
+                data.CreatedById = user.Id;
                 await this.api.Create(data);
 
                 // Continue to the next step.
@@ -100,8 +104,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                     // Get the service.
                     var service = await this.api.GetService<T>(Helpers.GetUserToken(stepContext.Context));
 
-                    // Get the latest snapshot.
-                    var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
+                    // Get the latest snapshot created by the user.
+                    var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
                     var totalPropertyValue = (int)typeof(T).GetProperty(totalPropertyName).GetValue(data);
 
                     // Check if the organization has this service.
@@ -131,8 +135,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                     {
                         var open = int.Parse((string)stepContext.Result);
 
-                        // Get the latest snapshot and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
+                        // Get the latest snapshot created by the user and update it.
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
                         typeof(T).GetProperty(openPropertyName).SetValue(data, open);
                         await this.api.Update(data);
 
@@ -156,8 +160,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                     // Check if the previous step had a result.
                     if (stepContext.Result != null)
                     {
-                        // Get the latest snapshot and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
+                        // Get the latest snapshot created by the user and update it.
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
                         typeof(T).GetProperty(waitlistLengthPropertyName).SetValue(data, (int)stepContext.Result);
                         await this.api.Update(data);
                     }
@@ -172,8 +176,8 @@ namespace ServiceProviderBot.Bot.Dialogs
         {
             return async (stepContext, cancellationToken) =>
             {
-                // Mark the snapshot as complete.
-                var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
+                // Mark the snapshot created by the user as complete.
+                var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
                 data.IsComplete = true;
                 await this.api.Update(data);
 

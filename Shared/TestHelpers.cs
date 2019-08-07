@@ -61,6 +61,7 @@ namespace Shared
                 ServiceId = serviceId,
                 Name = "Test Data",
                 CreatedOn = DateTime.UtcNow,
+                IsComplete = true,
                 HasWaitlist = hasWaitlist,
                 EmergencyPrivateBedsTotal = emergencyPrivateBedsTotal,
                 EmergencySharedBedsTotal = emergencySharedBedsTotal,

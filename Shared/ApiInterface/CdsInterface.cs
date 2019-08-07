@@ -142,7 +142,8 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from a user token.
         /// </summary>
-        public async Task<T> GetLatestServiceData<T>(string userToken) where T : ServiceModelBase, new()
+        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
+        public async Task<T> GetLatestServiceData<T>(string userToken, bool createdByUser) where T : ServiceModelBase, new()
         {
             var service = await GetService<T>(userToken);
             if (service != null)
@@ -153,7 +154,15 @@ namespace Shared.ApiInterface
                     var tableName = Helpers.GetServiceTableName(type);
                     var primaryKey = Helpers.GetServicePrimaryKey(type);
 
-                    JObject response = await GetJsonData(tableName, $"$filter={primaryKey} eq {service.Id} &$orderby=createdon desc &$top=1");
+                    string userFilter = string.Empty;
+
+                    if (createdByUser)
+                    {
+                        var user = await GetUser(userToken);
+                        userFilter = $" and tira_createdby eq {user.Id}";
+                    }
+
+                    JObject response = await GetJsonData(tableName, $"$filter={primaryKey} eq {service.Id}{userFilter} &$orderby=createdon desc &$top=1");
                     if (response != null && response["value"].HasValues)
                     {
                         return JsonConvert.DeserializeObject<T>(response["value"][0].ToString(), GetJsonSettings(new T().ContractResolver));

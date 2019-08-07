@@ -71,10 +71,10 @@ namespace DatabaseInitializer
 
         static async Task Init(IApiInterface api)
         {
-            var organization = await TestHelpers.CreateOrganization(api, isVerified: false);
+            var organization = await TestHelpers.CreateOrganization(api, isVerified: true);
             var user = await TestHelpers.CreateUser(api, organization.Id);
             var service = await TestHelpers.CreateService(api, organization.Id, ServiceType.Housing);
-            var housingData = await TestHelpers.CreateHousingData(api, service.Id, true, 0, 0, 0, 0);
+            var housingData = await TestHelpers.CreateHousingData(api, service.Id, true, 10, 10, 10, 10);
         }
 
         static void Exit()

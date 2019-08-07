@@ -15,6 +15,9 @@ namespace EntityModel
         [JsonProperty(PropertyName = "createdon")]
         public DateTime CreatedOn { get; set; }
 
+        [JsonProperty(PropertyName = "TODO")]
+        public string CreatedById { get; set; }
+
         [JsonProperty(PropertyName = "tira_haswaitlist")]
         public bool HasWaitlist { get; set; }
 

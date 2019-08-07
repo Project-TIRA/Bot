@@ -1,8 +1,10 @@
 ﻿using EntityModel;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Shared.ApiInterface
@@ -132,20 +134,32 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from a user token.
         /// </summary>
-        public async Task<T> GetLatestServiceData<T>(string userToken) where T : ServiceModelBase, new()
+        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
+        public async Task<T> GetLatestServiceData<T>(string userToken, bool createdByUser) where T : ServiceModelBase, new()
         {
             var service = await GetService<T>(userToken);
             if (service != null)
             {
+                IQueryable<ServiceModelBase> query;
+
                 var type = Helpers.GetServiceType<T>();
                 switch (type)
                 {
-                    case ServiceType.CaseManagement: return await this.dbContext.CaseManagementData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
-                    case ServiceType.Housing: return await this.dbContext.HousingData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
-                    case ServiceType.JobTraining: return await this.dbContext.JobTrainingData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
-                    case ServiceType.MentalHealth: return await this.dbContext.MentalHealthData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
-                    case ServiceType.SubstanceUse: return await this.dbContext.SubstanceUseData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
+                    case ServiceType.CaseManagement: query = this.dbContext.CaseManagementData.OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.Housing: query = this.dbContext.HousingData.OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.JobTraining: query = this.dbContext.JobTrainingData.OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.MentalHealth: query = this.dbContext.MentalHealthData.OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.SubstanceUse: query = this.dbContext.SubstanceUseData.OrderByDescending(s => s.CreatedOn); break;
+                    default: return null;
                 }
+
+                if (createdByUser)
+                {
+                    var user = await GetUser(userToken);
+                    query = query.Where(s => s.CreatedById == user.Id);
+                }
+
+                return await query.FirstOrDefaultAsync() as T;
             }
 
             return null;
