@@ -51,13 +51,15 @@ namespace EntityModel
         [JsonProperty(PropertyName = "tira_emergencyprivatebedswaitlist")]
         public int EmergencyPrivateBedsWaitlistLength { get; set; }
 
-        public override void CopyTotals<T>(T data)
+        public override void CopyStaticValues<T>(T data)
         {
             var d = data as HousingData;
             this.LongTermSharedBedsTotal = d.LongTermSharedBedsTotal;
             this.LongTermPrivateBedsTotal = d.LongTermPrivateBedsTotal;
             this.EmergencySharedBedsTotal = d.EmergencySharedBedsTotal;
             this.EmergencyPrivateBedsTotal = d.EmergencyPrivateBedsTotal;
+
+            base.CopyStaticValues(data);
         }
 
         public class Resolver : ContractResolver<CaseManagementData>

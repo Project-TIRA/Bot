@@ -54,12 +54,6 @@ namespace ServiceProviderBot
             var state = StateAccessors.Create(this.configuration);
             services.AddSingleton(state);
 
-            // Ignore null json values. Will be set to default values.
-            services.AddMvcCore().AddJsonOptions(options => 
-            {
-                options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-            });
-
             // Configure the bot.
             services.AddBot<TheBot>(options =>
             {

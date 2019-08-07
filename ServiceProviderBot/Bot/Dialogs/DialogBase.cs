@@ -82,7 +82,7 @@ namespace ServiceProviderBot.Bot.Dialogs
 
                 // Create a new snapshot and copy the totals from the previous one.
                 var data = new T();
-                data.CopyTotals(previousData);
+                data.CopyStaticValues(previousData);
                 await this.api.Create(data);
 
                 // Continue to the next step.
@@ -107,12 +107,17 @@ namespace ServiceProviderBot.Bot.Dialogs
                     // Check if the organization has this service.
                     if (totalPropertyValue > 0)
                     {
+                        var validations = new LessThanOrEqualPromptValidations()
+                        {
+                            Max = totalPropertyValue
+                        };
+
                         // Prompt for the open count.
                         return await stepContext.PromptAsync(
                             Prompt.LessThanOrEqualPrompt,
                             new PromptOptions { Prompt = prompt,
                                 RetryPrompt = Phrases.Capacity.RetryInvalidCount(totalPropertyValue, prompt),
-                                Validations = totalPropertyValue },
+                                Validations = validations },
                             cancellationToken);
                     }
 
@@ -168,7 +173,7 @@ namespace ServiceProviderBot.Bot.Dialogs
             return async (stepContext, cancellationToken) =>
             {
                 // Mark the snapshot as complete.
-                var data = await this.api.GetLatestServiceData<HousingData>(Helpers.GetUserToken(stepContext.Context));
+                var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
                 data.IsComplete = true;
                 await this.api.Update(data);
 

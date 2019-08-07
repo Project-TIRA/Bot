@@ -21,12 +21,16 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public bool IsComplete { get; set; }
 
-        public abstract void CopyTotals<T>(T data) where T : ServiceModelBase;
-
         public ServiceModelBase() : base()
         {
             this.CreatedOn = DateTime.UtcNow;
             this.Name = this.CreatedOn.ToString("yyyy/MM/dd hh:mm tt");
+        }
+
+        public virtual void CopyStaticValues<T>(T data) where T : ServiceModelBase
+        {
+            this.ServiceId = data.ServiceId;
+            this.HasWaitlist = data.HasWaitlist;
         }
     }
 }

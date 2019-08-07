@@ -25,10 +25,12 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public int Open { get; set; }
 
-        public override void CopyTotals<T>(T data)
+        public override void CopyStaticValues<T>(T data)
         {
             var d = data as CaseManagementData;
             this.Total = d.Total;
+
+            base.CopyStaticValues(data);
         }
 
         public class Resolver : ContractResolver<CaseManagementData>
