@@ -16,7 +16,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             var service = await TestHelpers.CreateService<JobTrainingData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateJobTrainingData(this.api, service.Id, true, true, TestHelpers.DefaultTotal);
+            var data = await TestHelpers.CreateJobTrainingData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateJobTrainingDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.Name))
@@ -35,7 +35,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             var service = await TestHelpers.CreateService<JobTrainingData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateJobTrainingData(this.api, service.Id, true, true, TestHelpers.DefaultTotal);
+            var data = await TestHelpers.CreateJobTrainingData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateJobTrainingDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.Name))
@@ -56,7 +56,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             var service = await TestHelpers.CreateService<JobTrainingData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateJobTrainingData(this.api, service.Id, true, false, TestHelpers.DefaultTotal);
+            var data = await TestHelpers.CreateJobTrainingData(this.api, user.Id, service.Id, true, false, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateJobTrainingDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.Name))

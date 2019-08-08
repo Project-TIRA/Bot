@@ -15,7 +15,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             var service = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateCaseManagementData(this.api, service.Id, true, true, TestHelpers.DefaultTotal);
+            var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateCaseManagementDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))
@@ -34,7 +34,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             var service = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateCaseManagementData(this.api, service.Id, true, true, TestHelpers.DefaultTotal);
+            var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateCaseManagementDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))
@@ -55,7 +55,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             var service = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateCaseManagementData(this.api, service.Id, true, false, TestHelpers.DefaultTotal);
+            var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id, true, false, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateCaseManagementDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))

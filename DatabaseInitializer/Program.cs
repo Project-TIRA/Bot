@@ -102,11 +102,11 @@ namespace DatabaseInitializer
             var mentalHealthService = await TestHelpers.CreateService<MentalHealthData>(api, organization.Id);
             var substanceUseService = await TestHelpers.CreateService<SubstanceUseData>(api, organization.Id);
 
-            var caseManagementData = await TestHelpers.CreateCaseManagementData(api, caseManagementService.Id, true, true, TestHelpers.DefaultTotal);
-            var housingData = await TestHelpers.CreateHousingData(api, housingService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
-            var jobTrainingData = await TestHelpers.CreateJobTrainingData(api, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
-            var mentalHealthData = await TestHelpers.CreateMentalHealthData(api, mentalHealthService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
-            var substanceUseData = await TestHelpers.CreateSubstanceUseData(api, substanceUseService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var caseManagementData = await TestHelpers.CreateCaseManagementData(api, user.Id, caseManagementService.Id, true, true, TestHelpers.DefaultTotal);
+            var housingData = await TestHelpers.CreateHousingData(api, user.Id, housingService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var jobTrainingData = await TestHelpers.CreateJobTrainingData(api, user.Id, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
+            var mentalHealthData = await TestHelpers.CreateMentalHealthData(api, user.Id, mentalHealthService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var substanceUseData = await TestHelpers.CreateSubstanceUseData(api, user.Id, substanceUseService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
         }
 
         static void Exit()

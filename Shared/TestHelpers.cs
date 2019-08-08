@@ -57,10 +57,12 @@ namespace Shared
             return service;
         }
 
-        public static async Task<CaseManagementData> CreateCaseManagementData(IApiInterface api, string serviceId, bool isComplete, bool hasWaitlist, int total)
+        public static async Task<CaseManagementData> CreateCaseManagementData(IApiInterface api, string createdById, string serviceId,
+            bool isComplete, bool hasWaitlist, int total)
         {
             var data = new CaseManagementData()
             {
+                CreatedById = createdById,
                 ServiceId = serviceId,
                 IsComplete = true,
                 HasWaitlist = hasWaitlist,
@@ -71,11 +73,12 @@ namespace Shared
             return data;
         }
 
-        public static async Task<HousingData> CreateHousingData(IApiInterface api, string serviceId, bool isComplete, bool hasWaitlist,
-            int emergencyPrivateBedsTotal, int emergencySharedBedsTotal, int longtermPrivateBedsTotal, int longtermSharedBedsTotal)
+        public static async Task<HousingData> CreateHousingData(IApiInterface api, string createdById, string serviceId, bool isComplete,
+            bool hasWaitlist, int emergencyPrivateBedsTotal, int emergencySharedBedsTotal, int longtermPrivateBedsTotal, int longtermSharedBedsTotal)
         {
             var data = new HousingData()
             {
+                CreatedById = createdById,
                 ServiceId = serviceId,
                 IsComplete = true,
                 HasWaitlist = hasWaitlist,
@@ -89,10 +92,12 @@ namespace Shared
             return data;
         }
 
-        public static async Task<JobTrainingData> CreateJobTrainingData(IApiInterface api, string serviceId, bool isComplete, bool hasWaitlist, int total)
+        public static async Task<JobTrainingData> CreateJobTrainingData(IApiInterface api, string createdById, string serviceId,
+            bool isComplete, bool hasWaitlist, int total)
         {
             var data = new JobTrainingData()
             {
+                CreatedById = createdById,
                 ServiceId = serviceId,
                 IsComplete = true,
                 HasWaitlist = hasWaitlist,
@@ -103,11 +108,12 @@ namespace Shared
             return data;
         }
 
-        public static async Task<MentalHealthData> CreateMentalHealthData(IApiInterface api, string serviceId, bool isComplete, bool hasWaitlist,
-            int inPatientTotal, int outPatientTotal)
+        public static async Task<MentalHealthData> CreateMentalHealthData(IApiInterface api, string createdById, string serviceId,
+            bool isComplete, bool hasWaitlist, int inPatientTotal, int outPatientTotal)
         {
             var data = new MentalHealthData()
             {
+                CreatedById = createdById,
                 ServiceId = serviceId,
                 IsComplete = true,
                 HasWaitlist = hasWaitlist,
@@ -119,11 +125,12 @@ namespace Shared
             return data;
         }
 
-        public static async Task<SubstanceUseData> CreateSubstanceUseData(IApiInterface api, string serviceId, bool isComplete, bool hasWaitlist,
-            int detoxTotal, int inPatientTotal, int outPatientTotal, int groupTotal)
+        public static async Task<SubstanceUseData> CreateSubstanceUseData(IApiInterface api, string createdById, string serviceId,
+            bool isComplete, bool hasWaitlist, int detoxTotal, int inPatientTotal, int outPatientTotal, int groupTotal)
         {
             var data = new SubstanceUseData()
             {
+                CreatedById = createdById,
                 ServiceId = serviceId,
                 IsComplete = true,
                 HasWaitlist = hasWaitlist,

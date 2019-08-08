@@ -20,11 +20,11 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var mentalHealthService = await TestHelpers.CreateService<MentalHealthData>(this.api, organization.Id);
             var substanceUseService = await TestHelpers.CreateService<SubstanceUseData>(this.api, organization.Id);
 
-            var caseManagementData = await TestHelpers.CreateCaseManagementData(this.api, caseManagementService.Id, true, true, TestHelpers.DefaultTotal);   
-            var housingData = await TestHelpers.CreateHousingData(this.api, housingService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
-            var jobTrainingData = await TestHelpers.CreateJobTrainingData(this.api, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
-            var mentalHealthData = await TestHelpers.CreateMentalHealthData(this.api, mentalHealthService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
-            var substanceUseData = await TestHelpers.CreateSubstanceUseData(this.api, substanceUseService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var caseManagementData = await TestHelpers.CreateCaseManagementData(this.api, user.Id, caseManagementService.Id, true, true, TestHelpers.DefaultTotal);   
+            var housingData = await TestHelpers.CreateHousingData(this.api, user.Id, housingService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var jobTrainingData = await TestHelpers.CreateJobTrainingData(this.api, user.Id, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
+            var mentalHealthData = await TestHelpers.CreateMentalHealthData(this.api, user.Id, mentalHealthService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var substanceUseData = await TestHelpers.CreateSubstanceUseData(this.api, user.Id, substanceUseService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateCapacityDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))

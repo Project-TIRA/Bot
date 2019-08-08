@@ -15,7 +15,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             var service = await TestHelpers.CreateService<HousingData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateHousingData(this.api, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var data = await TestHelpers.CreateHousingData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateHousingDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencySharedBeds))
@@ -40,7 +40,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             var service = await TestHelpers.CreateService<HousingData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateHousingData(this.api, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var data = await TestHelpers.CreateHousingData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateHousingDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencySharedBeds))
@@ -73,7 +73,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             var service = await TestHelpers.CreateService<HousingData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateHousingData(this.api, service.Id, true, false, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var data = await TestHelpers.CreateHousingData(this.api, user.Id, service.Id, true, false, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateHousingDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencySharedBeds))
