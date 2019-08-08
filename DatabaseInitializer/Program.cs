@@ -16,8 +16,8 @@ namespace DatabaseInitializer
 
         static string EfFormat = $"{EfKeyword} <environment>";
 
-        static string EnvironmentDevelopment = $"dev";
-        static string EnvironmentStaging = $"staging";
+        static string EnvironmentDevelopment = "dev";
+        static string EnvironmentStaging = "staging";
 
         static string ConnectionStringDevelopment = "data source=(LocalDb)\\MSSQLLocalDB;initial catalog=ProjectTira;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
         static string ConnectionStringStaging = "Server=tcp:project-tira-staging.database.windows.net,1433;Initial Catalog=project-tira-staging;Persist Security Info=False;User ID=project-tira;Password=LamePassword1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
@@ -63,7 +63,7 @@ namespace DatabaseInitializer
 
         static async Task HandleEf(string[] args)
         {
-            if (args.Length != 2 || !(args[1] == EnvironmentDevelopment || args[1] != EnvironmentStaging))
+            if (args.Length != 2 || !(args[1] == EnvironmentDevelopment || args[1] == EnvironmentStaging))
             {
                 Console.WriteLine($"Expected format: {EfFormat}");
                 return;
