@@ -47,15 +47,6 @@ namespace EntityModel
                .Options);
         }
 
-        public static DbModel CreateWithDummyData(string connectionString)
-        {
-            var model = new DbModel(new DbContextOptionsBuilder<DbModel>()
-               .UseSqlServer(connectionString)
-               .Options);
-
-            return model;
-        }
-
         public static DbModel CreateInMemory()
         {
             return new DbModel(new DbContextOptionsBuilder<DbModel>()

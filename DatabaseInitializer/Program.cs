@@ -14,7 +14,14 @@ namespace DatabaseInitializer
         const string CdsKeyword = "-cds";
         const string EfKeyword = "-ef";
 
-        static string EfFormat = $"{EfKeyword} <connection string>";
+        static string EfFormat = $"{EfKeyword} <environment>";
+
+        static string EnvironmentDevelopment = $"dev";
+        static string EnvironmentStaging = $"staging";
+
+        static string ConnectionStringDevelopment = "data source=(LocalDb)\\MSSQLLocalDB;initial catalog=ProjectTira;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
+        static string ConnectionStringStaging = "Server=tcp:project-tira-staging.database.windows.net,1433;Initial Catalog=project-tira-staging;Persist Security Info=False;User ID=project-tira;Password=LamePassword1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+
 
         static async Task Main(string[] args)
         {
@@ -45,6 +52,8 @@ namespace DatabaseInitializer
             Console.WriteLine($"{HelpKeyword2} : Prints this help message");
             Console.WriteLine($"{CdsKeyword} : Initializes Common Data Service");
             Console.WriteLine($"{EfFormat} : Initializes Entity Framework");
+
+            Console.WriteLine($"Environments : {EnvironmentDevelopment}, {EnvironmentStaging}");
         }
 
         static async Task HandleCds(string[] args)
@@ -54,13 +63,24 @@ namespace DatabaseInitializer
 
         static async Task HandleEf(string[] args)
         {
-            if (args.Length != 2)
+            if (args.Length != 2 || !(args[1] == EnvironmentDevelopment || args[1] != EnvironmentStaging))
             {
                 Console.WriteLine($"Expected format: {EfFormat}");
                 return;
             }
 
-            using (var db = DbModelFactory.Create(args[1]))
+            var connectionString = string.Empty;
+
+            if (args[1] == EnvironmentDevelopment)
+            {
+                connectionString = ConnectionStringDevelopment;
+            }
+            else if (args[1] == EnvironmentStaging)
+            {
+                connectionString = ConnectionStringStaging;
+            }
+
+            using (var db = DbModelFactory.Create(connectionString))
             {
                 if (db == null)
                 {
@@ -87,7 +107,6 @@ namespace DatabaseInitializer
             var jobTrainingData = await TestHelpers.CreateJobTrainingData(api, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
             var mentalHealthData = await TestHelpers.CreateMentalHealthData(api, mentalHealthService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
             var substanceUseData = await TestHelpers.CreateSubstanceUseData(api, substanceUseService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
-
         }
 
         static void Exit()
