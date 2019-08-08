@@ -75,8 +75,19 @@ namespace DatabaseInitializer
         {
             var organization = await TestHelpers.CreateOrganization(api, isVerified: true);
             var user = await TestHelpers.CreateUser(api, organization.Id);
-            var service = await TestHelpers.CreateService(api, organization.Id, ServiceType.Housing);
-            var housingData = await TestHelpers.CreateHousingData(api, service.Id, true, true, 10, 10, 10, 10);
+
+            var caseManagementService = await TestHelpers.CreateService<CaseManagementData>(api, organization.Id);
+            var housingService = await TestHelpers.CreateService<HousingData>(api, organization.Id);
+            var jobTrainingService = await TestHelpers.CreateService<JobTrainingData>(api, organization.Id);
+            var mentalHealthService = await TestHelpers.CreateService<MentalHealthData>(api, organization.Id);
+            var substanceUseService = await TestHelpers.CreateService<SubstanceUseData>(api, organization.Id);
+
+            var caseManagementData = await TestHelpers.CreateCaseManagementData(api, caseManagementService.Id, true, true, TestHelpers.DefaultTotal);
+            var housingData = await TestHelpers.CreateHousingData(api, housingService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var jobTrainingData = await TestHelpers.CreateJobTrainingData(api, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
+            var mentalHealthData = await TestHelpers.CreateMentalHealthData(api, mentalHealthService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+            var substanceUseData = await TestHelpers.CreateSubstanceUseData(api, substanceUseService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+
         }
 
         static void Exit()

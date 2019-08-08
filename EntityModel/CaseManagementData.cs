@@ -14,16 +14,16 @@ namespace EntityModel
 
         [JsonIgnore]
         public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
-
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int WaitlistLength { get; set; }
+        
 
         [JsonProperty(PropertyName = "TODO")]
         public int Total { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int Open { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public int WaitlistLength { get; set; }
 
         public override void CopyStaticValues<T>(T data)
         {

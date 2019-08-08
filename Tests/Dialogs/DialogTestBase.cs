@@ -9,7 +9,9 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
+using ServiceProviderBot.Bot.Middleware;
 using ServiceProviderBot.Bot.Prompts;
+using Shared;
 using Shared.ApiInterface;
 using Xunit;
 
@@ -26,12 +28,19 @@ namespace Tests.Dialogs
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;
 
+        // Turn context is only available on a turn, so this is only valid once the bot has executed a turn.
+        protected string userToken;
+
         protected DialogTestBase()
         {
             this.state = StateAccessors.Create();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
             this.api = new EfInterface(DbModelFactory.CreateInMemory());
-            this.adapter = new TestAdapter().Use(new AutoSaveStateMiddleware(state.ConversationState));
+
+            this.adapter = new TestAdapter()
+                .Use(new TrimIncomingMessageMiddleware())
+                .Use(new AutoSaveStateMiddleware(state.ConversationState));
+
             this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
 
             // Register prompts.
@@ -57,7 +66,9 @@ namespace Tests.Dialogs
 
                 if (startNewConversation)
                 {
+                    this.userToken = Helpers.GetUserToken(turnContext);
                     await InitUserPhoneNumber(user);
+                    await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
                 }
 
                 /*
@@ -73,11 +84,10 @@ namespace Tests.Dialogs
                 else if (startNewConversation)
                 {
                     // Difference for tests here is starting the given dialog instead of master so that individual dialog flows can be tested.
+                    await InitUserPhoneNumber(user);
                     await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
                 }
                 */
-
-                await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
             });
         }
 
@@ -96,9 +106,7 @@ namespace Tests.Dialogs
         {
             if (user != null)
             {
-                // Turn context can only be accessed on a turn, so 
-                // this must be called when the bot is executing a turn.
-                user.PhoneNumber = this.turnContext.Activity.From.Id;
+                user.PhoneNumber = this.userToken;
                 await this.api.Update(user);
             }
         }

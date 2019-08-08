@@ -16,48 +16,48 @@ namespace EntityModel
 
 
         [JsonProperty(PropertyName = "TODO")]
-        public int DetoxWaitlistLength { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int InPatientWaitlistLength { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int OutPatientWaitlistLength { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int GroupWaitlistLength { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
         public int DetoxTotal { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int InPatientTotal { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int OutPatientTotal { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int GroupTotal { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int DetoxOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
+        public int DetoxWaitlistLength { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public int InPatientTotal { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
         public int InPatientOpen { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public int InPatientWaitlistLength { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public int OutPatientTotal { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int OutPatientOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
+        public int OutPatientWaitlistLength { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public int GroupTotal { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
         public int GroupOpen { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public int GroupWaitlistLength { get; set; }
 
         public override void CopyStaticValues<T>(T data)
         {
             var d = data as SubstanceUseData;
             this.DetoxTotal = d.DetoxTotal;
-            this.GroupTotal = d.GroupTotal;
             this.InPatientTotal = d.InPatientTotal;
             this.OutPatientTotal = d.OutPatientTotal;
+            this.GroupTotal = d.GroupTotal;
 
             base.CopyStaticValues(data);
         }

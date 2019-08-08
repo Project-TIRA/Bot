@@ -4,7 +4,6 @@ using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
 using Shared;
-using Shared.ApiInterface;
 using Xunit;
 
 namespace Tests.Dialogs
@@ -50,38 +49,6 @@ namespace Tests.Dialogs
                 .Send(Phrases.Greeting.HelpKeyword)
                 .AssertReply(Phrases.Greeting.Welcome(user))
                 .AssertReply(Phrases.Greeting.Help)
-                .StartTestAsync();
-        }
-
-        [Fact]
-        public async Task NothingToUpdate()
-        {
-            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await TestHelpers.CreateUser(this.api, organization.Id);
-
-            await CreateTestFlow(MasterDialog.Name, user)
-                .Send("update")
-                .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Update.NothingToUpdate)
-                .StartTestAsync();
-        }
-
-        [Fact]
-        public async Task Update()
-        {
-            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await TestHelpers.CreateUser(this.api, organization.Id);
-            var service = await TestHelpers.CreateService(this.api, organization.Id, ServiceType.Housing);
-            var housingData = await TestHelpers.CreateHousingData(this.api, service.Id, true, true, 10, 10, 10, 10);
-
-            await CreateTestFlow(MasterDialog.Name, user)
-                .Send("update")
-                .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Capacity.Housing.GetEmergencySharedBedsOpen)
-                .Test("5", Phrases.Capacity.Housing.GetEmergencyPrivateBedsOpen)
-                .Test("5", Phrases.Capacity.Housing.GetLongTermSharedBedsOpen)
-                .Test("5", Phrases.Capacity.Housing.GetLongTermPrivateBedsOpen)
-                .Test("5", Phrases.Update.Closing)
                 .StartTestAsync();
         }
     }

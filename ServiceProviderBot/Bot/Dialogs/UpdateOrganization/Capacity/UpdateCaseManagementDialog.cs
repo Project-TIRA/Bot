@@ -20,9 +20,9 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 
             steps.Add(GenerateCreateDataStep<CaseManagementData>());
 
-            steps.AddRange(GenerateUpdateSteps<CaseManagementData>(Phrases.Capacity.CaseManagement.Service, nameof(CaseManagementData.Total),
+            steps.AddRange(GenerateUpdateSteps<CaseManagementData>(Phrases.Capacity.CaseManagement.ServiceName, nameof(CaseManagementData.Total),
                 nameof(CaseManagementData.Open), nameof(CaseManagementData.HasWaitlist), nameof(CaseManagementData.WaitlistLength),
-                Phrases.Capacity.CaseManagement.GetSpotsOpen));
+                Phrases.Capacity.CaseManagement.GetOpen));
 
             steps.Add(GenerateCompleteDataStep<CaseManagementData>());
 
