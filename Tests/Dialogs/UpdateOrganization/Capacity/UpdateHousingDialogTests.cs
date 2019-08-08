@@ -18,10 +18,10 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateHousingData(this.api, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateHousingDialog.Name, user)
-                .Test("test", Phrases.Capacity.Housing.GetEmergencySharedBedsOpen)
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.Housing.GetEmergencyPrivateBedsOpen)
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.Housing.GetLongTermSharedBedsOpen)
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.Housing.GetLongTermPrivateBedsOpen)
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencySharedBeds))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencyPrivateBeds))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermSharedBeds))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermPrivateBeds))
                 .Send(TestHelpers.DefaultOpen.ToString())
                 .StartTestAsync();
 
@@ -43,14 +43,14 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateHousingData(this.api, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateHousingDialog.Name, user)
-                .Test("test", Phrases.Capacity.Housing.GetEmergencySharedBedsOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.Housing.EmergencySharedBeds))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.Housing.GetEmergencyPrivateBedsOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.Housing.EmergencyPrivateBeds))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.Housing.GetLongTermSharedBedsOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.Housing.LongTermSharedBeds))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.Housing.GetLongTermPrivateBedsOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.Housing.LongTermPrivateBeds))
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencySharedBeds))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.Housing.EmergencySharedBeds))
+                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencyPrivateBeds))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.Housing.EmergencyPrivateBeds))
+                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermSharedBeds))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.Housing.LongTermSharedBeds))
+                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermPrivateBeds))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.Housing.LongTermPrivateBeds))
                 .Send(TestHelpers.DefaultWaitlistLength.ToString())
                 .StartTestAsync();
 
@@ -76,10 +76,10 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateHousingData(this.api, service.Id, true, false, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateHousingDialog.Name, user)
-                .Test("test", Phrases.Capacity.Housing.GetEmergencySharedBedsOpen)
-                .Test("0", Phrases.Capacity.Housing.GetEmergencyPrivateBedsOpen)
-                .Test("0", Phrases.Capacity.Housing.GetLongTermSharedBedsOpen)
-                .Test("0", Phrases.Capacity.Housing.GetLongTermPrivateBedsOpen)
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencySharedBeds))
+                .Test("0", Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencyPrivateBeds))
+                .Test("0", Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermSharedBeds))
+                .Test("0", Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermPrivateBeds))
                 .Send("0")
                 .StartTestAsync();
 

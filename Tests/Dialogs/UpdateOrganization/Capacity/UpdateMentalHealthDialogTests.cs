@@ -19,8 +19,8 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateMentalHealthData(this.api, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateMentalHealthDialog.Name, user)
-                .Test("test", Phrases.Capacity.MentalHealth.GetInPatientOpen)
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.MentalHealth.GetOutPatientOpen)
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
                 .Send(TestHelpers.DefaultOpen.ToString())
                 .StartTestAsync();
 
@@ -40,10 +40,10 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateMentalHealthData(this.api, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateMentalHealthDialog.Name, user)
-                .Test("test", Phrases.Capacity.MentalHealth.GetInPatientOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.MentalHealth.InPatientName))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.MentalHealth.GetOutPatientOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.MentalHealth.OutPatientName))
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.MentalHealth.InPatient))
+                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.MentalHealth.OutPatient))
                 .Send(TestHelpers.DefaultWaitlistLength.ToString())
                 .StartTestAsync();
 
@@ -65,8 +65,8 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateMentalHealthData(this.api, service.Id, true, false, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateMentalHealthDialog.Name, user)
-                .Test("test", Phrases.Capacity.MentalHealth.GetInPatientOpen)
-                .Test("0", Phrases.Capacity.MentalHealth.GetOutPatientOpen)
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
+                .Test("0", Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
                 .Send("0")
                 .StartTestAsync();
 

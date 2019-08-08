@@ -19,7 +19,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateJobTrainingData(this.api, service.Id, true, true, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateJobTrainingDialog.Name, user)
-                .Test("test", Phrases.Capacity.JobTraining.GetOpen)
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.Name))
                 .Send(TestHelpers.DefaultOpen.ToString())
                 .StartTestAsync();
 
@@ -38,8 +38,8 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateJobTrainingData(this.api, service.Id, true, true, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateJobTrainingDialog.Name, user)
-                .Test("test", Phrases.Capacity.JobTraining.GetOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.JobTraining.ServiceName))
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.Name))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.JobTraining.Name))
                 .Send(TestHelpers.DefaultWaitlistLength.ToString())
                 .StartTestAsync();
 
@@ -59,7 +59,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateJobTrainingData(this.api, service.Id, true, false, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateJobTrainingDialog.Name, user)
-                .Test("test", Phrases.Capacity.JobTraining.GetOpen)
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.Name))
                 .Send("0")
                 .StartTestAsync();
 

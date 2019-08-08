@@ -19,10 +19,10 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateSubstanceUseData(this.api, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateSubstanceUseDialog.Name, user)
-                .Test("test", Phrases.Capacity.SubstanceUse.GetDetoxOpen)
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.SubstanceUse.GetInPatientOpen)
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.SubstanceUse.GetOutPatientOpen)
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.SubstanceUse.GetGroupOpen)
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Detox))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.InPatient))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.OutPatient))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Group))
                 .Send(TestHelpers.DefaultOpen.ToString())
                 .StartTestAsync();
 
@@ -44,14 +44,14 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateSubstanceUseData(this.api, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateSubstanceUseDialog.Name, user)
-                .Test("test", Phrases.Capacity.SubstanceUse.GetDetoxOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.SubstanceUse.DetoxServiceName))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.SubstanceUse.GetInPatientOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.SubstanceUse.InPatientServiceName))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.SubstanceUse.GetOutPatientOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.SubstanceUse.OutPatientServiceName))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.SubstanceUse.GetGroupOpen)
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Capacity.SubstanceUse.GroupServiceName))
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Detox))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.SubstanceUse.Detox))
+                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.InPatient))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.SubstanceUse.InPatient))
+                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.OutPatient))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.SubstanceUse.OutPatient))
+                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Group))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.SubstanceUse.Group))
                 .Send(TestHelpers.DefaultWaitlistLength.ToString())
                 .StartTestAsync();
 
@@ -77,10 +77,10 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateSubstanceUseData(this.api, service.Id, true, false, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateSubstanceUseDialog.Name, user)
-                .Test("test", Phrases.Capacity.SubstanceUse.GetDetoxOpen)
-                .Test("0", Phrases.Capacity.SubstanceUse.GetInPatientOpen)
-                .Test("0", Phrases.Capacity.SubstanceUse.GetOutPatientOpen)
-                .Test("0", Phrases.Capacity.SubstanceUse.GetGroupOpen)
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Detox))
+                .Test("0", Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.InPatient))
+                .Test("0", Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.OutPatient))
+                .Test("0", Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Group))
                 .Send("0")
                 .StartTestAsync();
 

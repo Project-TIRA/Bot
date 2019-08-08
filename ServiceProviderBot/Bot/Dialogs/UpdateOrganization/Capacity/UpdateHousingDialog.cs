@@ -21,21 +21,17 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 
             steps.Add(GenerateCreateDataStep<HousingData>());
 
-            steps.AddRange(GenerateUpdateSteps<HousingData>(Phrases.Capacity.Housing.EmergencySharedBeds, nameof(HousingData.EmergencySharedBedsTotal),
-                nameof(HousingData.EmergencySharedBedsOpen), nameof(HousingData.HasWaitlist), nameof(HousingData.EmergencySharedBedsWaitlistLength),
-                Phrases.Capacity.Housing.GetEmergencySharedBedsOpen));
+            steps.AddRange(GenerateUpdateSteps<HousingData>(Phrases.Services.Housing.EmergencySharedBeds, nameof(HousingData.EmergencySharedBedsTotal),
+                nameof(HousingData.EmergencySharedBedsOpen), nameof(HousingData.HasWaitlist), nameof(HousingData.EmergencySharedBedsWaitlistLength)));
 
-            steps.AddRange(GenerateUpdateSteps<HousingData>(Phrases.Capacity.Housing.EmergencyPrivateBeds, nameof(HousingData.EmergencyPrivateBedsTotal),
-                nameof(HousingData.EmergencyPrivateBedsOpen), nameof(HousingData.HasWaitlist), nameof(HousingData.EmergencyPrivateBedsWaitlistLength),
-                Phrases.Capacity.Housing.GetEmergencyPrivateBedsOpen));
+            steps.AddRange(GenerateUpdateSteps<HousingData>(Phrases.Services.Housing.EmergencyPrivateBeds, nameof(HousingData.EmergencyPrivateBedsTotal),
+                nameof(HousingData.EmergencyPrivateBedsOpen), nameof(HousingData.HasWaitlist), nameof(HousingData.EmergencyPrivateBedsWaitlistLength)));
 
-            steps.AddRange(GenerateUpdateSteps<HousingData>(Phrases.Capacity.Housing.LongTermSharedBeds, nameof(HousingData.LongTermSharedBedsTotal),
-                nameof(HousingData.LongTermSharedBedsOpen), nameof(HousingData.HasWaitlist), nameof(HousingData.LongTermSharedBedsWaitlistLength),
-                Phrases.Capacity.Housing.GetLongTermSharedBedsOpen));
+            steps.AddRange(GenerateUpdateSteps<HousingData>(Phrases.Services.Housing.LongTermSharedBeds, nameof(HousingData.LongTermSharedBedsTotal),
+                nameof(HousingData.LongTermSharedBedsOpen), nameof(HousingData.HasWaitlist), nameof(HousingData.LongTermSharedBedsWaitlistLength)));
 
-            steps.AddRange(GenerateUpdateSteps<HousingData>(Phrases.Capacity.Housing.LongTermPrivateBeds, nameof(HousingData.LongTermPrivateBedsTotal),
-                nameof(HousingData.LongTermPrivateBedsOpen), nameof(HousingData.HasWaitlist), nameof(HousingData.LongTermPrivateBedsWaitlistLength),
-                Phrases.Capacity.Housing.GetLongTermPrivateBedsOpen));
+            steps.AddRange(GenerateUpdateSteps<HousingData>(Phrases.Services.Housing.LongTermPrivateBeds, nameof(HousingData.LongTermPrivateBedsTotal),
+                nameof(HousingData.LongTermPrivateBedsOpen), nameof(HousingData.HasWaitlist), nameof(HousingData.LongTermPrivateBedsWaitlistLength)));
 
             steps.Add(GenerateCompleteDataStep<HousingData>());
 

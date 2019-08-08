@@ -95,7 +95,7 @@ namespace ServiceProviderBot.Bot.Dialogs
         }
 
         protected WaterfallStep[] GenerateUpdateSteps<T>(string serviceName, string totalPropertyName, string openPropertyName,
-            string hasWaitlistPropertyName, string waitlistLengthPropertyName, Activity prompt) where T : ServiceModelBase, new()
+            string hasWaitlistPropertyName, string waitlistLengthPropertyName) where T : ServiceModelBase, new()
         {
             return new WaterfallStep[]
             {
@@ -115,6 +115,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                         {
                             Max = totalPropertyValue
                         };
+
+                        var prompt = Phrases.Capacity.GetOpenings(serviceName);
 
                         // Prompt for the open count.
                         return await stepContext.PromptAsync(
