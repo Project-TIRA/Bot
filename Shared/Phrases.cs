@@ -17,7 +17,7 @@ namespace Shared
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
             public static Activity Keywords = MessageFactory.Text($"Send \"{UpdateKeyword}\" to update your organization's current capacity or \"{HelpKeyword}\" for more information");
-            public static Activity Help = MessageFactory.Text("TODO: Help dialog");
+            public static Activity Help = MessageFactory.Text($"Project TIRA is a Trafficking Interruption Resource Agent that provides a realtime view of available resource. Visit {WebsiteUrl} for more info");
             public static Activity TimeToUpdate = MessageFactory.Text($"It's time to update! Send \"{UpdateKeyword}\" when you are ready to begin");
 
             public static Activity Welcome(User user)
