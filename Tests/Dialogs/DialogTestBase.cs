@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Prompts;
-using ServiceProviderBot.Bot.Utils;
 using Shared.ApiInterface;
 using Xunit;
 
@@ -32,9 +31,7 @@ namespace Tests.Dialogs
             this.state = StateAccessors.Create();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
             this.api = new EfInterface(DbModelFactory.CreateInMemory());
-            this.adapter = new TestAdapter()
-                .Use(new AutoSaveStateMiddleware(state.ConversationState));
-
+            this.adapter = new TestAdapter().Use(new AutoSaveStateMiddleware(state.ConversationState));
             this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
 
             // Register prompts.
@@ -60,7 +57,7 @@ namespace Tests.Dialogs
 
                 if (startNewConversation)
                 {
-                    await InitUser(user);
+                    await InitUserPhoneNumber(user);
                 }
 
                 /*
@@ -95,7 +92,7 @@ namespace Tests.Dialogs
             };
         }
 
-        private async Task InitUser(User user)
+        private async Task InitUserPhoneNumber(User user)
         {
             if (user != null)
             {

@@ -76,7 +76,7 @@ namespace DatabaseInitializer
             var organization = await TestHelpers.CreateOrganization(api, isVerified: true);
             var user = await TestHelpers.CreateUser(api, organization.Id);
             var service = await TestHelpers.CreateService(api, organization.Id, ServiceType.Housing);
-            var housingData = await TestHelpers.CreateHousingData(api, service.Id, true, 10, 10, 10, 10);
+            var housingData = await TestHelpers.CreateHousingData(api, service.Id, true, true, 10, 10, 10, 10);
         }
 
         static void Exit()

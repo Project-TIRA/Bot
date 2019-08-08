@@ -52,15 +52,12 @@ namespace Shared
             return service;
         }
 
-        public static async Task<HousingData> CreateHousingData(IApiInterface api, string serviceId, bool hasWaitlist,
+        public static async Task<HousingData> CreateHousingData(IApiInterface api, string serviceId, bool isComplete, bool hasWaitlist,
             int emergencyPrivateBedsTotal, int emergencySharedBedsTotal, int longtermPrivateBedsTotal, int longtermSharedBedsTotal)
         {
             var data = new HousingData()
             {
-                Id = Guid.NewGuid().ToString(),
                 ServiceId = serviceId,
-                Name = "Test Data",
-                CreatedOn = DateTime.UtcNow,
                 IsComplete = true,
                 HasWaitlist = hasWaitlist,
                 EmergencyPrivateBedsTotal = emergencyPrivateBedsTotal,

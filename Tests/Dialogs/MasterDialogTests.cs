@@ -4,6 +4,7 @@ using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
 using Shared;
+using Shared.ApiInterface;
 using Xunit;
 
 namespace Tests.Dialogs
@@ -65,14 +66,13 @@ namespace Tests.Dialogs
                 .StartTestAsync();
         }
 
-        /*
         [Fact]
         public async Task Update()
         {
-            var organization = await CreateOrganization(isVerified: true);
-            var user = await CreateUser(organization.Id);
-            var service = await CreateService(organization.Id, ServiceType.Housing);
-            var housingData = await CreateHousingData(service.Id, true, 10, 10, 10, 10);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+            var service = await TestHelpers.CreateService(this.api, organization.Id, ServiceType.Housing);
+            var housingData = await TestHelpers.CreateHousingData(this.api, service.Id, true, true, 10, 10, 10, 10);
 
             await CreateTestFlow(MasterDialog.Name, user)
                 .Send("update")
@@ -84,6 +84,5 @@ namespace Tests.Dialogs
                 .Test("5", Phrases.Update.Closing)
                 .StartTestAsync();
         }
-        */
     }
 }

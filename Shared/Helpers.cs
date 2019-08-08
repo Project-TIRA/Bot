@@ -14,8 +14,7 @@ namespace Shared
         /// </summary>
         public static string GetUserToken(ITurnContext context)
         {
-            return PhoneNumber.Standardize("(760)500-4495");
-            //return PhoneNumber.Standardize(context.Activity.From.Id);
+            return PhoneNumber.Standardize(context.Activity.From.Id);
         }
 
         /// <summary>
