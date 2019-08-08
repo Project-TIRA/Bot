@@ -23,8 +23,9 @@ namespace BotTrigger
         public static string ServiceUrlSettingName = "ServiceUrl";
         public static string DbModelConnectionStringSettingName = "DbModel";
 
+        // TimerTrigger is in UTC - 1600 is 9am PST.
         [FunctionName("BotTrigger")]
-        public static async Task Run([TimerTrigger("0 0 8 * * *")]TimerInfo myTimer, ILogger log, Microsoft.Azure.WebJobs.ExecutionContext context)
+        public static async Task Run([TimerTrigger("0 0 16 * * *")]TimerInfo myTimer, ILogger log, Microsoft.Azure.WebJobs.ExecutionContext context)
         {
             log.LogInformation($"BotTrigger: executed at: {DateTime.Now}");
 
@@ -42,7 +43,8 @@ namespace BotTrigger
             }
         }
 
-        public static async Task DoWork(IApiInterface api, string appId, string appPassword, string botPhoneNumber, string channelId, string serviceUrl, ILogger log = null)
+        public static async Task DoWork(IApiInterface api, string appId, string appPassword,
+            string botPhoneNumber, string channelId, string serviceUrl, ILogger log = null)
         {
             MicrosoftAppCredentials.TrustServiceUrl(serviceUrl);
 
