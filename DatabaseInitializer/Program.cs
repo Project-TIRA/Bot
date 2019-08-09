@@ -93,20 +93,42 @@ namespace DatabaseInitializer
 
         static async Task Init(IApiInterface api)
         {
-            var organization = await TestHelpers.CreateOrganization(api, isVerified: true);
-            var user = await TestHelpers.CreateUser(api, organization.Id);
+            for (int i = 0; i < 5; ++i)
+            {
+                var organization = await TestHelpers.CreateOrganization(api, isVerified: true);
+                var user = await TestHelpers.CreateUser(api, organization.Id);
 
-            var caseManagementService = await TestHelpers.CreateService<CaseManagementData>(api, organization.Id);
-            var housingService = await TestHelpers.CreateService<HousingData>(api, organization.Id);
-            var jobTrainingService = await TestHelpers.CreateService<JobTrainingData>(api, organization.Id);
-            var mentalHealthService = await TestHelpers.CreateService<MentalHealthData>(api, organization.Id);
-            var substanceUseService = await TestHelpers.CreateService<SubstanceUseData>(api, organization.Id);
+                // Randomize the services the organizations have.
+                if (new Random().Next(2) == 1)
+                {
+                    var caseManagementService = await TestHelpers.CreateService<CaseManagementData>(api, organization.Id);
+                    var caseManagementData = await TestHelpers.CreateCaseManagementData(api, user.Id, caseManagementService.Id, true, true, TestHelpers.DefaultTotal);
+                }
 
-            var caseManagementData = await TestHelpers.CreateCaseManagementData(api, user.Id, caseManagementService.Id, true, true, TestHelpers.DefaultTotal);
-            var housingData = await TestHelpers.CreateHousingData(api, user.Id, housingService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
-            var jobTrainingData = await TestHelpers.CreateJobTrainingData(api, user.Id, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
-            var mentalHealthData = await TestHelpers.CreateMentalHealthData(api, user.Id, mentalHealthService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
-            var substanceUseData = await TestHelpers.CreateSubstanceUseData(api, user.Id, substanceUseService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+                if (new Random().Next(2) == 1)
+                {
+                    var housingService = await TestHelpers.CreateService<HousingData>(api, organization.Id);
+                    var housingData = await TestHelpers.CreateHousingData(api, user.Id, housingService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+                }
+
+                if (new Random().Next(2) == 1)
+                {
+                    var jobTrainingService = await TestHelpers.CreateService<JobTrainingData>(api, organization.Id);
+                    var jobTrainingData = await TestHelpers.CreateJobTrainingData(api, user.Id, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
+                }
+
+                if (new Random().Next(2) == 1)
+                {
+                    var mentalHealthService = await TestHelpers.CreateService<MentalHealthData>(api, organization.Id);
+                    var mentalHealthData = await TestHelpers.CreateMentalHealthData(api, user.Id, mentalHealthService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+                }
+
+                if (new Random().Next(2) == 1)
+                {
+                    var substanceUseService = await TestHelpers.CreateService<SubstanceUseData>(api, organization.Id);
+                    var substanceUseData = await TestHelpers.CreateSubstanceUseData(api, user.Id, substanceUseService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+                }
+            }
         }
 
         static void Exit()

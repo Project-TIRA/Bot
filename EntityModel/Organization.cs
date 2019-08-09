@@ -23,6 +23,9 @@ namespace EntityModel
         [JsonProperty(PropertyName = "tira_updatefrequency")]
         public int UpdateFrequency { get; set; }
 
+        [JsonProperty(PropertyName = "address1_composite")]
+        public string Location { get; set; }
+
         public class Resolver : ContractResolver<CaseManagementData>
         {
             public static Resolver Instance = new Resolver();

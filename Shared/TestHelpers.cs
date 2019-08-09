@@ -17,7 +17,8 @@ namespace Shared
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = "Test Organization",
-                IsVerified = isVerified
+                IsVerified = isVerified,
+                Location = "Seattle"
             };
 
             await api.Create(organization);
@@ -31,6 +32,7 @@ namespace Shared
                 Id = Guid.NewGuid().ToString(),
                 OrganizationId = organizationId,
                 Name = "Test User",
+                PhoneNumber = Guid.NewGuid().ToString()
             };
 
             await api.Create(user);
