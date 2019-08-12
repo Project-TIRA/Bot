@@ -1,4 +1,5 @@
 ﻿using EntityModel;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Shared.ApiInterface
@@ -38,7 +39,18 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from a user token.
         /// </summary>
-        Task<T> GetLatestServiceData<T>(string userToken) where T : ServiceModelBase;
+        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
+        Task<T> GetLatestServiceData<T>(string userToken, bool createdByUser = false) where T : ServiceModelBase, new();
+
+        /// <summary>
+        /// Gets all verified organizations.
+        /// </summary>
+        Task<List<Organization>> GetVerifiedOrganizations();
+
+        /// <summary>
+        /// Gets all users for an organization.
+        /// </summary>
+        Task<List<User>> GetUsersForOrganization(Organization organization);
     }
 
     public enum ServiceType

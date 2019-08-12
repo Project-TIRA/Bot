@@ -9,21 +9,21 @@ namespace ServiceProviderBot.Bot.Prompts
         {
             return async (promptContext, cancellationToken) =>
             {
-                var maxCount = promptContext.Options.Validations;
-
-                if (!(maxCount is int))
-                {
-                    return await Task.FromResult(false);
-                }
+                var validations = (LessThanOrEqualPromptValidations)promptContext.Options.Validations;
 
                 if (!int.TryParse(promptContext.Recognized.Value, out var inputValue))
                 {
                     return await Task.FromResult(false);
                 }
 
-                var success = inputValue <= (int)maxCount;
+                var success = inputValue <= validations.Max;
                 return await Task.FromResult(success);
             };
         }
+    }
+
+    public struct LessThanOrEqualPromptValidations
+    {
+        public int Max { get; set; }
     }
 }

@@ -18,13 +18,15 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
         {
             var steps = new List<WaterfallStep>();
 
-            steps.AddRange(GenerateUpdateSteps<MentalHealthData>(Phrases.Capacity.MentalHealth.InPatient, nameof(MentalHealthData.InPatientTotal),
-                nameof(MentalHealthData.InPatientTotal), nameof(MentalHealthData.HasWaitlist), nameof(MentalHealthData.InPatientWaitlistLength),
-                Phrases.Capacity.MentalHealth.GetInPatientOpen));
+            steps.Add(GenerateCreateDataStep<MentalHealthData>());
 
-            steps.AddRange(GenerateUpdateSteps<MentalHealthData>(Phrases.Capacity.MentalHealth.OutPatient, nameof(MentalHealthData.OutPatientTotal),
-                nameof(MentalHealthData.OutPatientOpen), nameof(MentalHealthData.HasWaitlist), nameof(MentalHealthData.OutPatientWaitlistLength),
-                Phrases.Capacity.MentalHealth.GetOutPatientOpen));
+            steps.AddRange(GenerateUpdateSteps<MentalHealthData>(Phrases.Services.MentalHealth.InPatient, nameof(MentalHealthData.InPatientTotal),
+                nameof(MentalHealthData.InPatientOpen), nameof(MentalHealthData.HasWaitlist), nameof(MentalHealthData.InPatientWaitlistLength)));
+
+            steps.AddRange(GenerateUpdateSteps<MentalHealthData>(Phrases.Services.MentalHealth.OutPatient, nameof(MentalHealthData.OutPatientTotal),
+                nameof(MentalHealthData.OutPatientOpen), nameof(MentalHealthData.HasWaitlist), nameof(MentalHealthData.OutPatientWaitlistLength)));
+
+            steps.Add(GenerateCompleteDataStep<MentalHealthData>());
 
             // End this dialog to pop it off the stack.
             steps.Add(async (stepContext, cancellationToken) => { return await stepContext.EndDialogAsync(cancellationToken); });

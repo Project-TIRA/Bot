@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json.Serialization;
 
 namespace EntityModel
 {
@@ -10,12 +10,11 @@ namespace EntityModel
         [JsonIgnore]
         public override string TableName {  get { return TABLE_NAME; } }
 
-        public override string ResourceId { get { return Id; } }
+        [JsonIgnore]
+        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
 
-        [Key]
-        [JsonProperty(PropertyName = "tira_serviceid")]
-        public string Id { get; set; }
 
+        [JsonIgnore]
         [JsonProperty(PropertyName = "_tira_organizationservicesid_value")]
         public string OrganizationId { get; set; }
 
@@ -25,16 +24,14 @@ namespace EntityModel
         [JsonProperty(PropertyName = "tira_servicetype")]
         public int Type { get; set; }
 
-        // Called by Json to prevent serialization but allow deserialization.
-        public bool ShouldSerializeId()
+        public class Resolver : ContractResolver<CaseManagementData>
         {
-            return false;
-        }
+            public static Resolver Instance = new Resolver();
 
-        // Called by Json to prevent serialization but allow deserialization.
-        public bool ShouldSerializeOrganizationId()
-        {
-            return false;
+            private Resolver()
+            {
+                AddMap(x => x.Id, "tira_serviceid");
+            }
         }
     }
 }

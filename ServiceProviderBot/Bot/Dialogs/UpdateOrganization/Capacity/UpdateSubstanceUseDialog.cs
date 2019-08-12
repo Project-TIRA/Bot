@@ -18,21 +18,21 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
         {
             var steps = new List<WaterfallStep>();
 
-            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Capacity.SubstanceUse.DetoxService, nameof(SubstanceUseData.DetoxTotal),
-                nameof(SubstanceUseData.DetoxOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.DetoxWaitlistLength),
-                Phrases.Capacity.SubstanceUse.GetDetoxOpen));
+            steps.Add(GenerateCreateDataStep<SubstanceUseData>());
 
-            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Capacity.SubstanceUse.InPatientService, nameof(SubstanceUseData.InPatientTotal),
-                nameof(SubstanceUseData.InPatientOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.InPatientWaitlistLength),
-                Phrases.Capacity.SubstanceUse.GetDetoxOpen));
+            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Services.SubstanceUse.Detox, nameof(SubstanceUseData.DetoxTotal),
+                nameof(SubstanceUseData.DetoxOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.DetoxWaitlistLength)));
 
-            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Capacity.SubstanceUse.OutPatientService, nameof(SubstanceUseData.OutPatientTotal),
-                nameof(SubstanceUseData.OutPatientOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.OutPatientWaitlistLength),
-                Phrases.Capacity.SubstanceUse.GetDetoxOpen));
+            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Services.SubstanceUse.InPatient, nameof(SubstanceUseData.InPatientTotal),
+                nameof(SubstanceUseData.InPatientOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.InPatientWaitlistLength)));
 
-            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Capacity.SubstanceUse.GroupService, nameof(SubstanceUseData.GroupTotal),
-                nameof(SubstanceUseData.GroupOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.GroupWaitlistLength),
-                Phrases.Capacity.SubstanceUse.GetDetoxOpen));
+            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Services.SubstanceUse.OutPatient, nameof(SubstanceUseData.OutPatientTotal),
+                nameof(SubstanceUseData.OutPatientOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.OutPatientWaitlistLength)));
+
+            steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Services.SubstanceUse.Group, nameof(SubstanceUseData.GroupTotal),
+                nameof(SubstanceUseData.GroupOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.GroupWaitlistLength)));
+
+            steps.Add(GenerateCompleteDataStep<SubstanceUseData>());
 
             // End this dialog to pop it off the stack.
             steps.Add(async (stepContext, cancellationToken) => { return await stepContext.EndDialogAsync(cancellationToken); });

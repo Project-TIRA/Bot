@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json.Serialization;
 
 namespace EntityModel
 {
@@ -13,32 +12,8 @@ namespace EntityModel
         public override string TableName { get { return TABLE_NAME; } }
 
         [JsonIgnore]
-        public override string ResourceId { get { return Id; } }
+        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
 
-        [Key]
-        [JsonProperty(PropertyName = "tira_housingdataid")]
-        public string Id { get; set; }
-
-        [JsonProperty(PropertyName = "_tira_housingserviceid_value")]
-        public string ServiceId { get; set; }
-        
-        [JsonProperty(PropertyName = "tira_longtemsharedbedstotal")]
-        public int LongTermSharedBedsTotal { get; set; }
-
-        [JsonProperty(PropertyName = "tira_longtemsharedbedsopen")]
-        public int LongTermSharedBedsOpen { get; set; }
-
-        [JsonProperty(PropertyName = "tira_longtemsharedbedswaitlist")]
-        public int LongTermSharedBedsWaitlistLength{ get; set; }
-
-        [JsonProperty(PropertyName = "tira_longtemprivatebedstotal")]
-        public int LongTermPrivateBedsTotal { get; set; }
-
-        [JsonProperty(PropertyName = "tira_longtemprivatebedsopen")]
-        public int LongTermPrivateBedsOpen { get; set; }        
-
-        [JsonProperty(PropertyName = "tira_longtemprivatebedswaitlist")]
-        public int LongTermPrivateBedsWaitlistLength { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencysharedbedstotal")]
         public int EmergencySharedBedsTotal { get; set; }
@@ -58,17 +33,44 @@ namespace EntityModel
         [JsonProperty(PropertyName = "tira_emergencyprivatebedswaitlist")]
         public int EmergencyPrivateBedsWaitlistLength { get; set; }
 
-        // Called by Json to prevent serialization but allow deserialization.
-        public bool ShouldSerializeId()
+        [JsonProperty(PropertyName = "tira_longtemsharedbedstotal")]
+        public int LongTermSharedBedsTotal { get; set; }
+
+        [JsonProperty(PropertyName = "tira_longtemsharedbedsopen")]
+        public int LongTermSharedBedsOpen { get; set; }
+
+        [JsonProperty(PropertyName = "tira_longtemsharedbedswaitlist")]
+        public int LongTermSharedBedsWaitlistLength{ get; set; }
+
+        [JsonProperty(PropertyName = "tira_longtemprivatebedstotal")]
+        public int LongTermPrivateBedsTotal { get; set; }
+
+        [JsonProperty(PropertyName = "tira_longtemprivatebedsopen")]
+        public int LongTermPrivateBedsOpen { get; set; }        
+
+        [JsonProperty(PropertyName = "tira_longtemprivatebedswaitlist")]
+        public int LongTermPrivateBedsWaitlistLength { get; set; }
+
+        public override void CopyStaticValues<T>(T data)
         {
-            return false;
+            var d = data as HousingData;
+            this.EmergencySharedBedsTotal = d.EmergencySharedBedsTotal;
+            this.EmergencyPrivateBedsTotal = d.EmergencyPrivateBedsTotal;
+            this.LongTermSharedBedsTotal = d.LongTermSharedBedsTotal;
+            this.LongTermPrivateBedsTotal = d.LongTermPrivateBedsTotal;
+
+            base.CopyStaticValues(data);
         }
 
-        // Called by Json to prevent serialization but allow deserialization.
-        public bool ShouldSerializeServiceId()
+        public class Resolver : ContractResolver<CaseManagementData>
         {
-            return false;
-        }
+            public static Resolver Instance = new Resolver();
 
+            private Resolver()
+            {
+                AddMap(x => x.Id, "tira_housingdataid");
+                AddMap(x => x.ServiceId, "_tira_housingserviceid_value");
+            }
+        }
     }
 }

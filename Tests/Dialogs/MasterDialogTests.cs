@@ -4,7 +4,6 @@ using EntityModel;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
 using Shared;
-using Shared.ApiInterface;
 using Xunit;
 
 namespace Tests.Dialogs
@@ -22,7 +21,7 @@ namespace Tests.Dialogs
         [Fact]
         public async Task NoOrganization()
         {
-            User user = await CreateUser(organizationId: string.Empty);
+            User user = await TestHelpers.CreateUser(this.api, organizationId: string.Empty);
 
             await CreateTestFlow(MasterDialog.Name, user)
                 .Test("hi", Phrases.Greeting.NoOrganization)
@@ -32,8 +31,8 @@ namespace Tests.Dialogs
         [Fact]
         public async Task OrganizationNotVerified()
         {
-            var organization = await CreateOrganization(isVerified: false);
-            var user = await CreateUser(organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: false);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
                 .Test("hi", Phrases.Greeting.UnverifiedOrganization)
@@ -43,8 +42,8 @@ namespace Tests.Dialogs
         [Fact]
         public async Task Help()
         {
-            var organization = await CreateOrganization(isVerified: true);
-            var user = await CreateUser(organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
                 .Send(Phrases.Greeting.HelpKeyword)
@@ -54,37 +53,38 @@ namespace Tests.Dialogs
         }
 
         [Fact]
-        public async Task NothingToUpdate()
+        public async Task Enable()
         {
-            var organization = await CreateOrganization(isVerified: true);
-            var user = await CreateUser(organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Send("update")
+                .Send(Phrases.Greeting.EnableKeyword)
                 .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Update.NothingToUpdate)
+                .AssertReply(Phrases.Greeting.ContactUpdated(true))
                 .StartTestAsync();
+
+            user = await this.api.GetUser(this.userToken);
+            Assert.True(user.ContactEnabled);
         }
 
-        /*
         [Fact]
-        public async Task Update()
+        public async Task Disable()
         {
-            var organization = await CreateOrganization(isVerified: true);
-            var user = await CreateUser(organization.Id);
-            var service = await CreateService(organization.Id, ServiceType.Housing);
-            var housingData = await CreateHousingData(service.Id, true, 10, 10, 10, 10);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            user.ContactEnabled = true;
+            await this.api.Update(user);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Send("update")
+                .Send(Phrases.Greeting.DisableKeyword)
                 .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Capacity.Housing.GetEmergencySharedBedsOpen)
-                .Test("5", Phrases.Capacity.Housing.GetEmergencyPrivateBedsOpen)
-                .Test("5", Phrases.Capacity.Housing.GetLongTermSharedBedsOpen)
-                .Test("5", Phrases.Capacity.Housing.GetLongTermPrivateBedsOpen)
-                .Test("5", Phrases.Update.Closing)
+                .AssertReply(Phrases.Greeting.ContactUpdated(false))
                 .StartTestAsync();
+
+            user = await this.api.GetUser(this.userToken);
+            Assert.True(!user.ContactEnabled);
         }
-        */
     }
 }

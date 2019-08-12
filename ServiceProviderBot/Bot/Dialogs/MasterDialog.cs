@@ -1,6 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
+using ServiceProviderBot.Bot.Prompts;
 using ServiceProviderBot.Bot.Utils;
 using Shared;
 using Shared.ApiInterface;
@@ -51,37 +52,61 @@ namespace ServiceProviderBot.Bot.Dialogs
                     var incomingMessage = stepContext.Context.Activity.Text;
                     if (!string.IsNullOrEmpty(incomingMessage))
                     {
-                        if (string.Equals(incomingMessage, Phrases.Greeting.HelpKeyword, StringComparison.OrdinalIgnoreCase))
+                        bool isKeyword =
+                            string.Equals(incomingMessage, Phrases.Greeting.HelpKeyword, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(incomingMessage, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(incomingMessage, Phrases.Greeting.DisableKeyword, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(incomingMessage, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase);
+
+                        if (isKeyword)
                         {
-                            // Show help dialog.
-                            await Messages.SendAsync(Phrases.Greeting.Help, stepContext.Context, cancellationToken);
-                            return await stepContext.EndDialogAsync(cancellationToken);
-                        }
-                        else if (string.Equals(incomingMessage, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Push the update organization dialog onto the stack.
-                            return await BeginDialogAsync(stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
+                            return await stepContext.NextAsync(incomingMessage);
                         }
                     }
 
+                    // Prompt for a keyword.
                     return await stepContext.PromptAsync(
-                        Utils.Prompts.GreetingTextPrompt,
-                        new PromptOptions { Prompt = Phrases.Greeting.Keywords },
+                        Prompt.GreetingTextPrompt,
+                        new PromptOptions { Prompt = Phrases.Greeting.Keywords(user.ContactEnabled) },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
                 {
                     var result = stepContext.Result as string;
-                    if (result == null)
-                    {
-                        // Initial text was keyword so prompt wasn't needed.
-                        return await stepContext.NextAsync(cancellationToken);
-                    }
 
                     if (string.Equals(result, Phrases.Greeting.HelpKeyword, StringComparison.OrdinalIgnoreCase))
                     {
                         // Show help dialog.
                         await Messages.SendAsync(Phrases.Greeting.Help, stepContext.Context, cancellationToken);
+                        return await stepContext.EndDialogAsync(cancellationToken);
+                    }
+                    else if (string.Equals(result, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(result, Phrases.Greeting.DisableKeyword, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Enable/disable contact.
+                        var enable = string.Equals(result, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase);
+
+                        var user = await api.GetUser(Helpers.GetUserToken(stepContext.Context));
+                        if (user.ContactEnabled != enable)
+                        {
+                            user.ContactEnabled = enable;
+                            await this.api.Update(user);
+                        }
+
+                        await Messages.SendAsync(Phrases.Greeting.ContactUpdated(user.ContactEnabled), stepContext.Context, cancellationToken);
+                        return await stepContext.EndDialogAsync(cancellationToken);
+                    }
+                    else if (string.Equals(result, Phrases.Greeting.DisableKeyword, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Disable contact.
+                        var user = await api.GetUser(Helpers.GetUserToken(stepContext.Context));
+                        if (user.ContactEnabled)
+                        {
+                            user.ContactEnabled = false;
+                            await this.api.Update(user);
+                        }
+
+                        await Messages.SendAsync(Phrases.Greeting.ContactUpdated(user.ContactEnabled), stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
                     else if (string.Equals(result, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase))

@@ -7,17 +7,23 @@ namespace Shared
 {
     public static class Phrases
     {
+        public static string ProjectName = "Project TIRA";
         public static string WebsiteUrl = "tira.powerappsportals.com";
 
         public static class Greeting
         {
-            public static string HelpKeyword = "help";
+            public static string HelpKeyword = "info";
+            public static string EnableKeyword = "enable";
+            public static string DisableKeyword = "disable";
             public static string UpdateKeyword = "update";
+
+            private static string Enable = $"Send \"{EnableKeyword}\" to allow the {ProjectName} bot to contact you for your availability";
+            private static string Disable = $"Send \"{DisableKeyword}\" to stop the {ProjectName} bot from contacting you for your availability";
+
             public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register and link your mobile phone number");
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
-            public static Activity Keywords = MessageFactory.Text($"Send \"{UpdateKeyword}\" to update your organization's current capacity or \"{HelpKeyword}\" for more information");
-            public static Activity Help = MessageFactory.Text("TODO: Help dialog");
+            public static Activity Help = MessageFactory.Text($"{ProjectName} is a Trafficking Interruption Resource Agent that provides a near-realtime view of available resources. Visit {WebsiteUrl} for more info");
             public static Activity TimeToUpdate = MessageFactory.Text($"It's time to update! Send \"{UpdateKeyword}\" when you are ready to begin");
 
             public static Activity Welcome(User user)
@@ -25,24 +31,43 @@ namespace Shared
                 var name = !string.IsNullOrEmpty(user.Name) ? $" {user.Name}" : string.Empty;
                 return MessageFactory.Text($"Welcome{name}!");
             }
+
+            public static Activity Keywords(bool contactEnabled)
+            {
+                return MessageFactory.Text($"Send \"{UpdateKeyword}\" to update your organization's current capacity" + Environment.NewLine +
+                                           (contactEnabled ? Disable : Enable) + Environment.NewLine +
+                                           $"Send \"{HelpKeyword}\" for more information");
+            }
+
+            public static Activity ContactUpdated(bool contactEnabled)
+            {
+                return MessageFactory.Text($"Your contact preference has been updated. " + (contactEnabled ? Disable : Enable));
+            }
         }
 
         public static class Capacity
         {
-            public static Activity GetWaitlistLength(string service)
+            public static Activity GetOpenings(string serviceName)
             {
-                return MessageFactory.Text($"How long is your Waitlist for {service}?");
+                return MessageFactory.Text($"How many openings do you have for {serviceName}?");
+            }
+
+            public static Activity GetWaitlistLength(string serviceName)
+            {
+                return MessageFactory.Text($"How long is your waitlist for {serviceName}?");
             }
 
             public static Activity RetryInvalidCount(int total, Activity retryPrompt)
             {
-                return MessageFactory.Text($"Oops, the openings cannot be more than the total availablble ({total}). {retryPrompt.Text}");
+                return MessageFactory.Text($"Oops, the openings cannot be more than the total available ({total}). {retryPrompt.Text}");
             }
+        }
 
+        public static class Services
+        {
             public static class CaseManagement
             {
-                public static string Service = "case management";
-                public static Activity GetSpotsOpen = MessageFactory.Text($"How many openings do you have for {Service}?");
+                public static string Name = "case management";
             }
 
             public static class Housing
@@ -51,36 +76,25 @@ namespace Shared
                 public static string EmergencyPrivateBeds = "emergency private beds";
                 public static string LongTermSharedBeds = "long-term shared-space beds";
                 public static string LongTermPrivateBeds = "long-term private beds";
-                public static Activity GetEmergencySharedBedsOpen = MessageFactory.Text($"How many {EmergencySharedBeds} do you have open?");
-                public static Activity GetEmergencyPrivateBedsOpen = MessageFactory.Text($"How many {EmergencyPrivateBeds} do you have open?");
-                public static Activity GetLongTermSharedBedsOpen = MessageFactory.Text($"How many {LongTermSharedBeds} do you have open?");
-                public static Activity GetLongTermPrivateBedsOpen = MessageFactory.Text($"How many {LongTermPrivateBeds} do you have open?");
             }
 
             public static class JobTraining
             {
-                public static string Service = "job training services";
-                public static Activity GetServiceOpen = MessageFactory.Text($"How many openings do you have for {Service}?");
+                public static string Name = "job training services";
             }
 
             public static class MentalHealth
             {
                 public static string InPatient = "mental health in-patient services";
                 public static string OutPatient = "mental health out-patient services";
-                public static Activity GetInPatientOpen = MessageFactory.Text($"How many openings do you have for {InPatient}?");
-                public static Activity GetOutPatientOpen = MessageFactory.Text($"How many openings do you have for {OutPatient}?");
             }
 
             public static class SubstanceUse
             {
-                public static string DetoxService = "substance use detox services";
-                public static string InPatientService = "substance use in-patient services";
-                public static string OutPatientService = "substance use out-patient services";
-                public static string GroupService = "substance use group services";
-                public static Activity GetDetoxOpen = MessageFactory.Text($"How many openings do you have for {DetoxService}");
-                public static Activity GetInPatientOpen = MessageFactory.Text($"How many openings do you have for {InPatientService}");
-                public static Activity GetOutPatientOpen = MessageFactory.Text($"How many openings do you have for {OutPatientService}");
-                public static Activity GetGroupOpen = MessageFactory.Text($"How many openings do you have for {GroupService}");
+                public static string Detox = "substance use detox services";
+                public static string InPatient = "substance use in-patient services";
+                public static string OutPatient = "substance use out-patient services";
+                public static string Group = "substance use group services";
             }
         }
 
@@ -88,12 +102,6 @@ namespace Shared
         {
             public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
-        }
-
-        public static bool TriggerReset(ITurnContext turnContext)
-        {
-            // TODO
-            return /*!this.configuration.IsProduction() &&*/ string.Equals(turnContext.Activity.Text, "reset", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

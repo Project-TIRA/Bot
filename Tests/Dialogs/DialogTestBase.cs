@@ -9,7 +9,9 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
-using ServiceProviderBot.Bot.Utils;
+using ServiceProviderBot.Bot.Middleware;
+using ServiceProviderBot.Bot.Prompts;
+using Shared;
 using Shared.ApiInterface;
 using Xunit;
 
@@ -26,18 +28,23 @@ namespace Tests.Dialogs
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;
 
+        // Turn context is only available on a turn, so this is only valid once the bot has executed a turn.
+        protected string userToken;
+
         protected DialogTestBase()
         {
             this.state = StateAccessors.Create();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
             this.api = new EfInterface(DbModelFactory.CreateInMemory());
+
             this.adapter = new TestAdapter()
+                .Use(new TrimIncomingMessageMiddleware())
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
 
             this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
 
             // Register prompts.
-            Prompts.Register(this.dialogs);
+            Prompt.Register(this.dialogs);
         }
 
         protected TestFlow CreateTestFlow(string dialogName, User user = null)
@@ -59,7 +66,9 @@ namespace Tests.Dialogs
 
                 if (startNewConversation)
                 {
-                    await InitUser(user);
+                    this.userToken = Helpers.GetUserToken(turnContext);
+                    await InitUserPhoneNumber(user);
+                    await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
                 }
 
                 /*
@@ -75,11 +84,10 @@ namespace Tests.Dialogs
                 else if (startNewConversation)
                 {
                     // Difference for tests here is starting the given dialog instead of master so that individual dialog flows can be tested.
+                    await InitUserPhoneNumber(user);
                     await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
                 }
                 */
-
-                await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
             });
         }
 
@@ -94,78 +102,11 @@ namespace Tests.Dialogs
             };
         }
 
-        protected async Task<Organization> CreateOrganization(bool isVerified)
-        {
-            var organization = new Organization()
-            {
-                Id = Guid.NewGuid().ToString(),
-                Name = "Test Organization",
-                IsVerified = isVerified
-            };
-
-            await this.api.Create(organization);
-            return organization;
-        }
-
-        protected async Task<User> CreateUser(string organizationId)
-        {
-            var user = new User()
-            {
-                Id = Guid.NewGuid().ToString(),
-                OrganizationId = organizationId,
-                Name = "Test User",
-            };
-
-            await this.api.Create(user);
-            return user;
-        }
-
-        protected async Task<Service> CreateService(string organizationId, ServiceType type)
-        {
-            if (type == ServiceType.Invalid)
-            {
-                return null;
-            }
-
-            var service = new Service()
-            {
-                Id = Guid.NewGuid().ToString(),
-                OrganizationId = organizationId,
-                Name = $"Test Service ({type.ToString()})",
-                Type = (int)type
-            };
-                
-            await this.api.Create(service);
-            return service;
-        }
-
-        protected async Task<HousingData> CreateHousingData(string serviceId, bool hasWaitlist,
-            int emergencyPrivateBedsTotal, int emergencySharedBedsTotal, int longtermPrivateBedsTotal, int longtermSharedBedsTotal)
-        {
-            var data = new HousingData()
-            {
-                Id = Guid.NewGuid().ToString(),
-                ServiceId = serviceId,
-                Name = "Test Data",
-                CreatedOn = DateTime.UtcNow,
-                HasWaitlist = hasWaitlist,
-                EmergencyPrivateBedsTotal = emergencyPrivateBedsTotal,
-                EmergencySharedBedsTotal = emergencySharedBedsTotal,
-                LongTermPrivateBedsTotal = longtermPrivateBedsTotal,
-                LongTermSharedBedsTotal = longtermSharedBedsTotal
-            };
-
-            await this.api.Create(data);
-            return data;
-        }
-
-        private async Task InitUser(User user)
+        private async Task InitUserPhoneNumber(User user)
         {
             if (user != null)
             {
-                // Turn context can only be accessed on a turn, so 
-                // this must be called when the bot is executing a turn.
-                user.PhoneNumber = this.turnContext.Activity.From.Id;
+                user.PhoneNumber = this.userToken;
                 await this.api.Update(user);
             }
         }

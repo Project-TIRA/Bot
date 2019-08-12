@@ -2,6 +2,7 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
+using ServiceProviderBot.Bot.Prompts;
 using Shared;
 using Shared.ApiInterface;
 using System;
@@ -72,26 +73,58 @@ namespace ServiceProviderBot.Bot.Dialogs
             return await context.ContinueDialogAsync(cancellationToken);
         }
 
+        protected WaterfallStep GenerateCreateDataStep<T>() where T : ServiceModelBase, new()
+        {
+            return async (stepContext, cancellationToken) =>
+            {
+                var userToken = Helpers.GetUserToken(stepContext.Context);
+                var user = await this.api.GetUser(userToken);
+
+                // Get the latest snapshot.
+                var previousData = await this.api.GetLatestServiceData<T>(userToken);
+
+                // Create a new snapshot and copy the static values from the previous one.
+                var data = new T();
+                data.CopyStaticValues(previousData);
+                data.CreatedById = user.Id;
+                await this.api.Create(data);
+
+                // Continue to the next step.
+                return await stepContext.NextAsync(cancellationToken);
+            };
+        }
+
         protected WaterfallStep[] GenerateUpdateSteps<T>(string serviceName, string totalPropertyName, string openPropertyName,
-            string hasWaitlistPropertyName, string waitlistLengthPropertyName, Activity prompt) where T : ServiceModelBase
+            string hasWaitlistPropertyName, string waitlistLengthPropertyName) where T : ServiceModelBase, new()
         {
             return new WaterfallStep[]
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    // Get the latest snapshot.
-                    var serviceData = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
-                    var totalPropertyValue = (int)typeof(T).GetProperty(totalPropertyName).GetValue(serviceData);
+                    // Get the service.
+                    var service = await this.api.GetService<T>(Helpers.GetUserToken(stepContext.Context));
+
+                    // Get the latest snapshot created by the user.
+                    var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
+                    var totalPropertyValue = (int)typeof(T).GetProperty(totalPropertyName).GetValue(data);
 
                     // Check if the organization has this service.
                     if (totalPropertyValue > 0)
                     {
+                        var validations = new LessThanOrEqualPromptValidations()
+                        {
+                            Max = totalPropertyValue
+                        };
+
+                        var prompt = Phrases.Capacity.GetOpenings(serviceName);
+
                         // Prompt for the open count.
                         return await stepContext.PromptAsync(
-                            Utils.Prompts.LessThanOrEqualPrompt,
-                            new PromptOptions { Prompt = prompt,
+                            Prompt.LessThanOrEqualPrompt,
+                            new PromptOptions {
+                                Prompt = prompt,
                                 RetryPrompt = Phrases.Capacity.RetryInvalidCount(totalPropertyValue, prompt),
-                                Validations = totalPropertyValue },
+                                Validations = validations },
                             cancellationToken);
                     }
 
@@ -105,8 +138,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                     {
                         var open = int.Parse((string)stepContext.Result);
 
-                        // Get the latest snapshot and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
+                        // Get the latest snapshot created by the user and update it.
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
                         typeof(T).GetProperty(openPropertyName).SetValue(data, open);
                         await this.api.Update(data);
 
@@ -116,7 +149,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         {
                             // Prompt for the waitlist length.
                             return await stepContext.PromptAsync(
-                                Utils.Prompts.IntPrompt,
+                                Prompt.IntPrompt,
                                 new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(serviceName) },
                                 cancellationToken);
                         }
@@ -130,8 +163,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                     // Check if the previous step had a result.
                     if (stepContext.Result != null)
                     {
-                        // Get the latest snapshot and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context));
+                        // Get the latest snapshot created by the user and update it.
+                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
                         typeof(T).GetProperty(waitlistLengthPropertyName).SetValue(data, (int)stepContext.Result);
                         await this.api.Update(data);
                     }
@@ -139,6 +172,20 @@ namespace ServiceProviderBot.Bot.Dialogs
                     // Skip this step.
                     return await stepContext.NextAsync(null, cancellationToken);
                 }
+            };
+        }
+
+        protected WaterfallStep GenerateCompleteDataStep<T>() where T : ServiceModelBase, new()
+        {
+            return async (stepContext, cancellationToken) =>
+            {
+                // Mark the snapshot created by the user as complete.
+                var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
+                data.IsComplete = true;
+                await this.api.Update(data);
+
+                // Continue to the next step.
+                return await stepContext.NextAsync(cancellationToken);
             };
         }
 

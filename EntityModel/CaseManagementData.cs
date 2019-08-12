@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace EntityModel
 {
@@ -13,17 +13,8 @@ namespace EntityModel
         public override string TableName { get { return TABLE_NAME; } }
 
         [JsonIgnore]
-        public override string ResourceId { get { return Id; } }
-
-        [Key]
-        [JsonProperty(PropertyName = "TODO")]
-        public string Id { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public string ServiceId { get; set; }
-
-        [JsonProperty(PropertyName = "TODO")]
-        public int WaitlistLength { get; set; }
+        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
+        
 
         [JsonProperty(PropertyName = "TODO")]
         public int Total { get; set; }
@@ -31,17 +22,26 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public int Open { get; set; }
 
-        // Called by Json to prevent serialization but allow deserialization.
-        public bool ShouldSerializeId()
+        [JsonProperty(PropertyName = "TODO")]
+        public int WaitlistLength { get; set; }
+
+        public override void CopyStaticValues<T>(T data)
         {
-            return false;
+            var d = data as CaseManagementData;
+            this.Total = d.Total;
+
+            base.CopyStaticValues(data);
         }
 
-        // Called by Json to prevent serialization but allow deserialization.
-        public bool ShouldSerializeServiceId()
+        public class Resolver : ContractResolver<CaseManagementData>
         {
-            return false;
-        }
+            public static Resolver Instance = new Resolver();
 
+            private Resolver()
+            {
+                AddMap(x => x.Id, "TODO");
+                AddMap(x => x.ServiceId, "TODO");
+            }
+        }
     }
 }

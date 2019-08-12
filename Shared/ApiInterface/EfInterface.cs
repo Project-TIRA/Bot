@@ -1,7 +1,10 @@
 ﻿using EntityModel;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Shared.ApiInterface
@@ -62,7 +65,7 @@ namespace Shared.ApiInterface
             }
 
             await this.dbContext.SaveChangesAsync();
-            return model.ResourceId;
+            return model.Id;
         }
 
         /// <summary>
@@ -79,8 +82,7 @@ namespace Shared.ApiInterface
         /// </summary>
         public async Task<User> GetUser(string userToken)
         {
-            var user = await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
-            return user;
+            return await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
         }
 
         /// <summary>
@@ -132,25 +134,52 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from a user token.
         /// </summary>
-        public async Task<T> GetLatestServiceData<T>(string userToken) where T : ServiceModelBase
+        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
+        public async Task<T> GetLatestServiceData<T>(string userToken, bool createdByUser) where T : ServiceModelBase, new()
         {
             var service = await GetService<T>(userToken);
             if (service != null)
             {
+                IQueryable<ServiceModelBase> query;
+
                 var type = Helpers.GetServiceType<T>();
                 switch (type)
                 {
-                    case ServiceType.CaseManagement: return await this.dbContext.CaseManagementData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
-                    case ServiceType.Housing: return await this.dbContext.HousingData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
-                    case ServiceType.JobTraining: return await this.dbContext.JobTrainingData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
-                    case ServiceType.MentalHealth: return await this.dbContext.MentalHealthData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
-                    case ServiceType.SubstanceUse: return await this.dbContext.SubstanceUseData.OrderByDescending(s => s.CreatedOn).FirstOrDefaultAsync() as T;
+                    case ServiceType.CaseManagement: query = this.dbContext.CaseManagementData.OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.Housing: query = this.dbContext.HousingData.OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.JobTraining: query = this.dbContext.JobTrainingData.OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.MentalHealth: query = this.dbContext.MentalHealthData.OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.SubstanceUse: query = this.dbContext.SubstanceUseData.OrderByDescending(s => s.CreatedOn); break;
+                    default: return null;
                 }
+
+                if (createdByUser)
+                {
+                    var user = await GetUser(userToken);
+                    query = query.Where(s => s.CreatedById == user.Id);
+                }
+
+                return await query.FirstOrDefaultAsync() as T;
             }
 
             return null;
         }
 
+        /// <summary>
+        /// Gets all verified organizations.
+        /// </summary>
+        public async Task<List<Organization>> GetVerifiedOrganizations()
+        {
+            return await this.dbContext.Organizations.Where(o => o.IsVerified).ToListAsync();
+        }
+
+        /// <summary>
+        /// Gets all users for an organization.
+        /// </summary>
+        public async Task<List<User>> GetUsersForOrganization(Organization organization)
+        {
+            return await this.dbContext.Users.Where(u => u.OrganizationId == organization.Id).ToListAsync();
+        }
 
         /*
         /// <summary>

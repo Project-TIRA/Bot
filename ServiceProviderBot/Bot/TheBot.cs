@@ -3,6 +3,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs;
+using ServiceProviderBot.Bot.Prompts;
 using Shared.ApiInterface;
 using System;
 using System.Threading;
@@ -17,7 +18,7 @@ namespace ServiceProviderBot.Bot
         private readonly IApiInterface api;
         private readonly IConfiguration configuration;
 
-        public TheBot(IConfiguration configuration, StateAccessors state, CdsInterface api)
+        public TheBot(IConfiguration configuration, StateAccessors state, EfInterface api)
         {
             this.configuration = configuration;
 
@@ -27,7 +28,7 @@ namespace ServiceProviderBot.Bot
             this.api = api ?? throw new ArgumentNullException(nameof(api));
 
             // Register prompts.
-            Utils.Prompts.Register(this.dialogs);
+            Prompt.Register(this.dialogs);
         }
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
