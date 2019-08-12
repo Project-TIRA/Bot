@@ -53,7 +53,6 @@ namespace ServiceProviderBot.Bot.Dialogs
                     if (!string.IsNullOrEmpty(incomingMessage))
                     {
                         bool isKeyword =
-                            string.Equals(incomingMessage, Phrases.Greeting.HelpKeyword, StringComparison.OrdinalIgnoreCase) ||
                             string.Equals(incomingMessage, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase) ||
                             string.Equals(incomingMessage, Phrases.Greeting.DisableKeyword, StringComparison.OrdinalIgnoreCase) ||
                             string.Equals(incomingMessage, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase);
@@ -74,11 +73,10 @@ namespace ServiceProviderBot.Bot.Dialogs
                 {
                     var result = stepContext.Result as string;
 
-                    if (string.Equals(result, Phrases.Greeting.HelpKeyword, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(result, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase))
                     {
-                        // Show help dialog.
-                        await Messages.SendAsync(Phrases.Greeting.Help, stepContext.Context, cancellationToken);
-                        return await stepContext.EndDialogAsync(cancellationToken);
+                        // Push the update organization dialog onto the stack.
+                        return await BeginDialogAsync(stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
                     }
                     else if (string.Equals(result, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase) ||
                         string.Equals(result, Phrases.Greeting.DisableKeyword, StringComparison.OrdinalIgnoreCase))
@@ -95,24 +93,6 @@ namespace ServiceProviderBot.Bot.Dialogs
 
                         await Messages.SendAsync(Phrases.Greeting.ContactUpdated(user.ContactEnabled), stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);
-                    }
-                    else if (string.Equals(result, Phrases.Greeting.DisableKeyword, StringComparison.OrdinalIgnoreCase))
-                    {
-                        // Disable contact.
-                        var user = await api.GetUser(Helpers.GetUserToken(stepContext.Context));
-                        if (user.ContactEnabled)
-                        {
-                            user.ContactEnabled = false;
-                            await this.api.Update(user);
-                        }
-
-                        await Messages.SendAsync(Phrases.Greeting.ContactUpdated(user.ContactEnabled), stepContext.Context, cancellationToken);
-                        return await stepContext.EndDialogAsync(cancellationToken);
-                    }
-                    else if (string.Equals(result, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase))
-                    {
-                        // Push the update organization dialog onto the stack.
-                        return await BeginDialogAsync(stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
                     }
 
                     return await stepContext.NextAsync(cancellationToken);

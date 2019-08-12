@@ -12,18 +12,17 @@ namespace Shared
 
         public static class Greeting
         {
-            public static string HelpKeyword = "info";
+            public static string UpdateKeyword = "update";
             public static string EnableKeyword = "enable";
             public static string DisableKeyword = "disable";
-            public static string UpdateKeyword = "update";
 
             private static string Enable = $"Send \"{EnableKeyword}\" to allow the {ProjectName} bot to contact you for your availability";
             private static string Disable = $"Send \"{DisableKeyword}\" to stop the {ProjectName} bot from contacting you for your availability";
+            private static string Update = $"Send \"{UpdateKeyword}\" to update your availability";
 
             public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register and link your mobile phone number");
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
-            public static Activity Help = MessageFactory.Text($"{ProjectName} is a Trafficking Interruption Resource Agent that provides a near-realtime view of available resources. Visit {WebsiteUrl} for more info");
             public static Activity TimeToUpdate = MessageFactory.Text($"It's time to update! Send \"{UpdateKeyword}\" when you are ready to begin");
 
             public static Activity Welcome(User user)
@@ -34,9 +33,9 @@ namespace Shared
 
             public static Activity Keywords(bool contactEnabled)
             {
-                return MessageFactory.Text($"Send \"{UpdateKeyword}\" to update your organization's current capacity" + Environment.NewLine +
-                                           (contactEnabled ? Disable : Enable) + Environment.NewLine +
-                                           $"Send \"{HelpKeyword}\" for more information");
+                return MessageFactory.Text(
+                    "- " + Update + Environment.NewLine +
+                    "- " + (contactEnabled ? Disable : Enable) + Environment.NewLine);
             }
 
             public static Activity ContactUpdated(bool contactEnabled)
