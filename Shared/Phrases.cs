@@ -33,7 +33,7 @@ namespace Shared
 
             public static Activity Keywords(bool contactEnabled)
             {
-                return MessageFactory.Text("Options:" + Environment.NewLine +
+                return MessageFactory.Text(
                     "- " + Update + Environment.NewLine +
                     "- " + (contactEnabled ? Disable : Enable) + Environment.NewLine);
             }
