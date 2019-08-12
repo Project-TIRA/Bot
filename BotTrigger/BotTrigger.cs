@@ -67,6 +67,11 @@ namespace BotTrigger
 
                 foreach (var user in users)
                 {
+                    if (!user.ContactEnabled)
+                    {
+                        continue;
+                    }
+
                     LogInfo(log, $"BotTrigger: sending to {user.Name} from {organization.Name}");
 
                     var userAccount = new ChannelAccount() { Id = PhoneNumber.Standardize(user.PhoneNumber) };

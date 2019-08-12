@@ -121,7 +121,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                         // Prompt for the open count.
                         return await stepContext.PromptAsync(
                             Prompt.LessThanOrEqualPrompt,
-                            new PromptOptions { Prompt = prompt,
+                            new PromptOptions {
+                                Prompt = prompt,
                                 RetryPrompt = Phrases.Capacity.RetryInvalidCount(totalPropertyValue, prompt),
                                 Validations = validations },
                             cancellationToken);

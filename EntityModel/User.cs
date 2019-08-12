@@ -24,6 +24,9 @@ namespace EntityModel
         [JsonProperty(PropertyName = "mobilephone")]
         public string PhoneNumber { get; set; }
 
+        [JsonProperty(PropertyName = "TODO")]
+        public bool ContactEnabled { get; set; }
+
         public class Resolver : ContractResolver<CaseManagementData>
         {
             public static Resolver Instance = new Resolver();

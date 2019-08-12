@@ -19,8 +19,18 @@ namespace ServiceProviderBot.Bot.Prompts
                     return await Task.FromResult(true);
                 }
 
-                return await Task.FromResult(false);
+                var validations = (GreetingPromptValidations)promptContext.Options.Validations;
+
+                var valid = (validations.ContactEnabled && string.Equals(message, Phrases.Greeting.DisableKeyword, StringComparison.OrdinalIgnoreCase)) ||
+                    (!validations.ContactEnabled && string.Equals(message, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase));
+
+                return await Task.FromResult(valid);
             };
         }
+    }
+
+    public struct GreetingPromptValidations
+    {
+        public bool ContactEnabled { get; set; }
     }
 }

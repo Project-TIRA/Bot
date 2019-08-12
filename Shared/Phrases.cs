@@ -7,23 +7,40 @@ namespace Shared
 {
     public static class Phrases
     {
+        public static string ProjectName = "Project TIRA";
         public static string WebsiteUrl = "tira.powerappsportals.com";
 
         public static class Greeting
         {
             public static string HelpKeyword = "info";
+            public static string EnableKeyword = "enable";
+            public static string DisableKeyword = "disable";
             public static string UpdateKeyword = "update";
             public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register and link your mobile phone number");
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
-            public static Activity Keywords = MessageFactory.Text($"Send \"{UpdateKeyword}\" to update your organization's current capacity or \"{HelpKeyword}\" for more information");
-            public static Activity Help = MessageFactory.Text($"Project TIRA is a Trafficking Interruption Resource Agent that provides a realtime view of available resource. Visit {WebsiteUrl} for more info");
+            public static Activity Help = MessageFactory.Text($"{ProjectName} is a Trafficking Interruption Resource Agent that provides a near-realtime view of available resources. Visit {WebsiteUrl} for more info");
             public static Activity TimeToUpdate = MessageFactory.Text($"It's time to update! Send \"{UpdateKeyword}\" when you are ready to begin");
 
             public static Activity Welcome(User user)
             {
                 var name = !string.IsNullOrEmpty(user.Name) ? $" {user.Name}" : string.Empty;
                 return MessageFactory.Text($"Welcome{name}!");
+            }
+
+            public static Activity Keywords(User user)
+            {
+                var enableDisableKeyword = user.ContactEnabled ? DisableKeyword : EnableKeyword;
+
+                return MessageFactory.Text($"Send \"{UpdateKeyword}\" to update your organization's current capacity" + Environment.NewLine +
+                                           $"Send \"{enableDisableKeyword}\" to {enableDisableKeyword} being contacted by the {ProjectName} bot" + Environment.NewLine +
+                                           $"Send \"{HelpKeyword}\" for more information");
+            }
+
+            public static Activity ContactUpdated(User user)
+            {
+                var enableDisableKeyword = user.ContactEnabled ? DisableKeyword : EnableKeyword;
+                return MessageFactory.Text($"Your contact preference has been updated. Send \"{enableDisableKeyword}\" to {enableDisableKeyword} being contacted");
             }
         }
 
