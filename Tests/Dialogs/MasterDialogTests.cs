@@ -51,5 +51,40 @@ namespace Tests.Dialogs
                 .AssertReply(Phrases.Greeting.Help)
                 .StartTestAsync();
         }
+
+        [Fact]
+        public async Task Enable()
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Send(Phrases.Greeting.EnableKeyword)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Greeting.ContactUpdated(true))
+                .StartTestAsync();
+
+            user = await this.api.GetUser(this.userToken);
+            Assert.True(user.ContactEnabled);
+        }
+
+        [Fact]
+        public async Task Disable()
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            user.ContactEnabled = true;
+            await this.api.Update(user);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Send(Phrases.Greeting.DisableKeyword)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Greeting.ContactUpdated(false))
+                .StartTestAsync();
+
+            user = await this.api.GetUser(this.userToken);
+            Assert.True(!user.ContactEnabled);
+        }
     }
 }
