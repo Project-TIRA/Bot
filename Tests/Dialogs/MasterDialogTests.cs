@@ -40,19 +40,6 @@ namespace Tests.Dialogs
         }
 
         [Fact]
-        public async Task Help()
-        {
-            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await TestHelpers.CreateUser(this.api, organization.Id);
-
-            await CreateTestFlow(MasterDialog.Name, user)
-                .Send(Phrases.Greeting.HelpKeyword)
-                .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Greeting.Help)
-                .StartTestAsync();
-        }
-
-        [Fact]
         public async Task Enable()
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
