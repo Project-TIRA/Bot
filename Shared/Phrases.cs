@@ -16,6 +16,9 @@ namespace Shared
             public static string EnableKeyword = "enable";
             public static string DisableKeyword = "disable";
             public static string UpdateKeyword = "update";
+            public static string Enable = $"Send \"{EnableKeyword}\" to allow the {ProjectName} bot to contact you for your availability";
+            public static string Disable = $"Send \"{DisableKeyword}\" to stop the {ProjectName} bot from contacting you for your availability";
+
             public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register and link your mobile phone number");
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
@@ -30,17 +33,14 @@ namespace Shared
 
             public static Activity Keywords(User user)
             {
-                var enableDisableKeyword = user.ContactEnabled ? DisableKeyword : EnableKeyword;
-
                 return MessageFactory.Text($"Send \"{UpdateKeyword}\" to update your organization's current capacity" + Environment.NewLine +
-                                           $"Send \"{enableDisableKeyword}\" to {enableDisableKeyword} being contacted by the {ProjectName} bot" + Environment.NewLine +
+                                           (user.ContactEnabled ? Disable : Enable) + Environment.NewLine +
                                            $"Send \"{HelpKeyword}\" for more information");
             }
 
             public static Activity ContactUpdated(User user)
             {
-                var enableDisableKeyword = user.ContactEnabled ? DisableKeyword : EnableKeyword;
-                return MessageFactory.Text($"Your contact preference has been updated. Send \"{enableDisableKeyword}\" to {enableDisableKeyword} being contacted");
+                return MessageFactory.Text($"Your contact preference has been updated. " + (user.ContactEnabled ? Disable : Enable));
             }
         }
 

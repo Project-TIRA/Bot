@@ -64,17 +64,10 @@ namespace ServiceProviderBot.Bot.Dialogs
                         }
                     }
 
-                    var validations = new GreetingPromptValidations()
-                    {
-                        ContactEnabled = user.ContactEnabled
-                    };
-
                     // Prompt for a keyword.
                     return await stepContext.PromptAsync(
                         Prompt.GreetingTextPrompt,
-                        new PromptOptions {
-                            Prompt = Phrases.Greeting.Keywords(user),
-                            Validations = validations },
+                        new PromptOptions { Prompt = Phrases.Greeting.Keywords(user) },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>
@@ -91,8 +84,11 @@ namespace ServiceProviderBot.Bot.Dialogs
                     {
                         // Update enable contact.
                         var user = await api.GetUser(Helpers.GetUserToken(stepContext.Context));
-                        user.ContactEnabled = true;
-                        await this.api.Update(user);
+                        if (!user.ContactEnabled)
+                        {
+                            user.ContactEnabled = true;
+                            await this.api.Update(user);
+                        }
 
                         await Messages.SendAsync(Phrases.Greeting.ContactUpdated(user), stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);
@@ -101,8 +97,11 @@ namespace ServiceProviderBot.Bot.Dialogs
                     {
                         // Update disable contact.
                         var user = await api.GetUser(Helpers.GetUserToken(stepContext.Context));
-                        user.ContactEnabled = false;
-                        await this.api.Update(user);
+                        if (user.ContactEnabled)
+                        {
+                            user.ContactEnabled = false;
+                            await this.api.Update(user);
+                        }
 
                         await Messages.SendAsync(Phrases.Greeting.ContactUpdated(user), stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);

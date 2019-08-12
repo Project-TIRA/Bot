@@ -10,8 +10,6 @@ using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Utils;
 using Microsoft.Bot.Connector.Authentication;
 using ServiceProviderBot.Bot.Middleware;
-using Shared;
-using Newtonsoft.Json;
 using Shared.ApiInterface;
 using EntityModel;
 
