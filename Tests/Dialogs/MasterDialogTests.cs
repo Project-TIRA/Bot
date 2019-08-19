@@ -48,7 +48,7 @@ namespace Tests.Dialogs
             await CreateTestFlow(MasterDialog.Name, user)
                 .Send(Phrases.Greeting.EnableKeyword)
                 .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Greeting.ContactUpdated(true))
+                .AssertReply(Phrases.Greeting.ContactEnabledUpdated(true))
                 .StartTestAsync();
 
             user = await this.api.GetUser(this.userToken);
@@ -67,7 +67,7 @@ namespace Tests.Dialogs
             await CreateTestFlow(MasterDialog.Name, user)
                 .Send(Phrases.Greeting.DisableKeyword)
                 .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Greeting.ContactUpdated(false))
+                .AssertReply(Phrases.Greeting.ContactEnabledUpdated(false))
                 .StartTestAsync();
 
             user = await this.api.GetUser(this.userToken);

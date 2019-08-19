@@ -20,9 +20,6 @@ namespace EntityModel
         [JsonProperty(PropertyName = "tira_isverified")]
         public bool IsVerified { get; set; }
 
-        [JsonProperty(PropertyName = "tira_updatefrequency")]
-        public int UpdateFrequency { get; set; }
-
         [JsonProperty(PropertyName = "address1_composite")]
         public string Location { get; set; }
 

@@ -91,7 +91,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                             await this.api.Update(user);
                         }
 
-                        await Messages.SendAsync(Phrases.Greeting.ContactUpdated(user.ContactEnabled), stepContext.Context, cancellationToken);
+                        await Messages.SendAsync(Phrases.Greeting.ContactEnabledUpdated(user.ContactEnabled), stepContext.Context, cancellationToken);
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
 
