@@ -53,12 +53,17 @@ namespace BotTrigger
             var adapter = new BotFrameworkAdapter(credentialProvider);
             var botAccount = new ChannelAccount() { Id = botPhoneNumber };
 
+            // Get the current day.
+            var day = GetCurrentDay();
+
+            // Get all verified organizations.
             var organizations = await api.GetVerifiedOrganizations();
 
             LogInfo(log, $"BotTrigger: found {organizations.Count()} verified organizations");
 
             foreach (var organization in organizations)
             {
+                // Get all users for the organization.
                 var users = await api.GetUsersForOrganization(organization);
                 if (users.Count == 0)
                 {
@@ -67,7 +72,8 @@ namespace BotTrigger
 
                 foreach (var user in users)
                 {
-                    if (!user.ContactEnabled)
+                    // Make sure the user can be contacted today.
+                    if (!user.ContactEnabled || !user.UpdateFrequency.HasFlag(day))
                     {
                         continue;
                     }
@@ -82,7 +88,7 @@ namespace BotTrigger
                     {
                         try
                         {
-                            await context.SendActivityAsync(Phrases.Greeting.TimeToUpdate);
+                            await context.SendActivityAsync(Phrases.Greeting.TimeToUpdate(user, day));
                         }
                         catch (Exception e)
                         {
@@ -101,6 +107,22 @@ namespace BotTrigger
                 //message.Text = $"It's time for an update. Reply \"{Bot}";
 
                 //await connector.Conversations.SendToConversationAsync((Activity)message);
+            }
+        }
+
+        private static Day GetCurrentDay()
+        {
+            DateTime today = DateTime.UtcNow;
+            switch (today.DayOfWeek)
+            {
+                case DayOfWeek.Sunday: return Day.Sunday;
+                case DayOfWeek.Monday: return Day.Monday;
+                case DayOfWeek.Tuesday: return Day.Tuesday;
+                case DayOfWeek.Wednesday: return Day.Wednesday;
+                case DayOfWeek.Thursday: return Day.Thursday;
+                case DayOfWeek.Friday: return Day.Friday;
+                case DayOfWeek.Saturday: return Day.Saturday;
+                default: return Day.None;
             }
         }
 

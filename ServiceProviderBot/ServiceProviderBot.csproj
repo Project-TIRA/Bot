@@ -31,6 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Properties\PublishProfiles\project-tira-staging - Web Deploy.pubxml.user" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EntityModel\EntityModel.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />

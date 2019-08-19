@@ -23,12 +23,25 @@ namespace Shared
             public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register and link your mobile phone number");
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
-            public static Activity TimeToUpdate = MessageFactory.Text($"It's time to update! Send \"{UpdateKeyword}\" when you are ready to begin");
 
             public static Activity Welcome(User user)
             {
                 var name = !string.IsNullOrEmpty(user.Name) ? $" {user.Name}" : string.Empty;
                 return MessageFactory.Text($"Welcome{name}!");
+            }
+
+            public static Activity TimeToUpdate(User user, Day day)
+            {
+                var name = !string.IsNullOrEmpty(user.Name) ? $", {user.Name}" : string.Empty;
+                var greeting = string.Empty;
+
+                switch (day)
+                {
+                    case Day.Monday: greeting = $"Hope you had a great weekend{name}!"; break;
+                    default: greeting = $"Happy {day.ToString()}{name}!"; break;
+                }
+
+                return MessageFactory.Text(greeting + Environment.NewLine + Update);
             }
 
             public static Activity Keywords(bool contactEnabled)
@@ -38,7 +51,7 @@ namespace Shared
                     "- " + (contactEnabled ? Disable : Enable) + Environment.NewLine);
             }
 
-            public static Activity ContactUpdated(bool contactEnabled)
+            public static Activity ContactEnabledUpdated(bool contactEnabled)
             {
                 return MessageFactory.Text($"Your contact preference has been updated. " + (contactEnabled ? Disable : Enable));
             }
