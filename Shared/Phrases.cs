@@ -8,14 +8,14 @@ namespace Shared
 {
     public static class Phrases
     {
-        public static string ProjectName = "Project TIRA";
-        public static string WebsiteUrl = "tira.powerappsportals.com";
+        public const string ProjectName = "Project TIRA";
+        public const string WebsiteUrl = "tira.powerappsportals.com";
 
         public static class Greeting
         {
-            public static string UpdateKeyword = "update";
-            public static string EnableKeyword = "enable";
-            public static string DisableKeyword = "disable";
+            public const string UpdateKeyword = "update";
+            public const string EnableKeyword = "enable";
+            public const string DisableKeyword = "disable";
 
             public static string Enable = $"Send \"{EnableKeyword}\" to allow the {ProjectName} bot to contact you for your availability";
             public static string Disable = $"Send \"{DisableKeyword}\" to stop the {ProjectName} bot from contacting you for your availability";
@@ -79,8 +79,8 @@ namespace Shared
 
         public static class Reset
         {
-            public static string Keyword = "reset";
-            public static int TimeoutHours = 12;
+            public const string Keyword = "reset";
+            public const int TimeoutHours = 12;
 
             public static Activity Expired(User user)
             {
@@ -100,41 +100,49 @@ namespace Shared
 
         public static class Services
         {
+            public static string All = "All";
+
             public static class CaseManagement
             {
-                public static string Name = "case management";
+                public const string ServiceName = "Case Management";
+                public const string Name = "case management";
             }
 
             public static class Housing
             {
-                public static string EmergencySharedBeds = "emergency shared-space beds";
-                public static string EmergencyPrivateBeds = "emergency private beds";
-                public static string LongTermSharedBeds = "long-term shared-space beds";
-                public static string LongTermPrivateBeds = "long-term private beds";
+                public const string ServiceName = "Housing";
+                public const string EmergencySharedBeds = "emergency shared-space beds";
+                public const string EmergencyPrivateBeds = "emergency private beds";
+                public const string LongTermSharedBeds = "long-term shared-space beds";
+                public const string LongTermPrivateBeds = "long-term private beds";
             }
 
             public static class JobTraining
             {
-                public static string Name = "job training services";
+                public const string ServiceName = "Job Training";
+                public const string Name = "job training services";
             }
 
             public static class MentalHealth
             {
-                public static string InPatient = "mental health in-patient services";
-                public static string OutPatient = "mental health out-patient services";
+                public const string ServiceName = "Mental Health";
+                public const string InPatient = "mental health in-patient services";
+                public const string OutPatient = "mental health out-patient services";
             }
 
             public static class SubstanceUse
             {
-                public static string Detox = "substance use detox services";
-                public static string InPatient = "substance use in-patient services";
-                public static string OutPatient = "substance use out-patient services";
-                public static string Group = "substance use group services";
+                public const string ServiceName = "Substance Use";
+                public const string Detox = "substance use detox services";
+                public const string InPatient = "substance use in-patient services";
+                public const string OutPatient = "substance use out-patient services";
+                public const string Group = "substance use group services";
             }
         }
 
         public static class Update
         {
+            public static Activity Options = MessageFactory.Text("Which service(s) would you like to update?");
             public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
         }

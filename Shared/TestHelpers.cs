@@ -52,7 +52,7 @@ namespace Shared
                 Id = Guid.NewGuid().ToString(),
                 OrganizationId = organizationId,
                 Name = $"Test Service ({type.ToString()})",
-                Type = (int)type
+                Type = type
             };
 
             await api.Create(service);

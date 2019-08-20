@@ -124,11 +124,25 @@ namespace Shared.ApiInterface
                 var type = Helpers.GetServiceType<T>();
                 if (type != ServiceType.Invalid)
                 {
-                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.OrganizationId == organization.Id && s.Type == (int)type);
+                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.OrganizationId == organization.Id && s.Type == type);
                 }
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets all of an organization's services from a user token.
+        /// </summary>
+        public async Task<List<Service>> GetServices(string userToken)
+        {
+            Organization organization = await GetOrganization(userToken);
+            if (organization != null)
+            {
+                return await this.dbContext.Services.Where(s => s.OrganizationId == organization.Id).ToListAsync();
+            }
+
+            return new List<Service>();
         }
 
         /// <summary>
