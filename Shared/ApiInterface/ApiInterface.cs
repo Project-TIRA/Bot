@@ -58,8 +58,8 @@ namespace Shared.ApiInterface
         Task<List<User>> GetUsersForOrganization(Organization organization);
 
         /// <summary>
-        /// Clears incomplete snapshots and returns whether or not the conversation was expired.
+        /// Returns whether or not the conversation is expired.
         /// </summary>
-        Task<bool> IsUpdateExpired(string userToken, bool forceExpire);
+        Task<bool> IsUpdateExpired(string userToken);
     }
 }

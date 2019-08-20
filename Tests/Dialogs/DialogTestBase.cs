@@ -78,7 +78,7 @@ namespace Tests.Dialogs
                     {
                         // Check if the conversation is expired.
                         var forceExpire = Phrases.Reset.ShouldReset(this.configuration, turnContext);
-                        var expired = await this.api.IsUpdateExpired(this.userToken, forceExpire);
+                        var expired = forceExpire || await this.api.IsUpdateExpired(this.userToken);
 
                         if (expired)
                         {
