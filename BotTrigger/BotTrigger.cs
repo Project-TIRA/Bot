@@ -72,8 +72,8 @@ namespace BotTrigger
 
                 foreach (var user in users)
                 {
-                    // Make sure the user can be contacted today.
-                    if (!user.ContactEnabled || !user.UpdateFrequency.HasFlag(day))
+                    // Make sure the user should be reminded today.
+                    if (!user.ContactEnabled || !user.ReminderFrequency.HasFlag(day))
                     {
                         continue;
                     }
@@ -88,7 +88,7 @@ namespace BotTrigger
                     {
                         try
                         {
-                            await context.SendActivityAsync(Phrases.Greeting.TimeToUpdate(user, day));
+                            await context.SendActivityAsync(Phrases.Greeting.RemindToUpdate(user, day));
                         }
                         catch (Exception e)
                         {

@@ -83,11 +83,14 @@ namespace Shared
                 CreatedById = createdById,
                 ServiceId = serviceId,
                 IsComplete = true,
-                HasWaitlist = hasWaitlist,
                 EmergencyPrivateBedsTotal = emergencyPrivateBedsTotal,
                 EmergencySharedBedsTotal = emergencySharedBedsTotal,
                 LongTermPrivateBedsTotal = longtermPrivateBedsTotal,
-                LongTermSharedBedsTotal = longtermSharedBedsTotal
+                LongTermSharedBedsTotal = longtermSharedBedsTotal,
+                EmergencyPrivateBedsHasWaitlist = hasWaitlist,
+                EmergencySharedBedsHasWaitlist = hasWaitlist,
+                LongTermPrivateBedsHasWaitlist = hasWaitlist,
+                LongTermSharedBedsHasWaitlist = hasWaitlist
             };
 
             await api.Create(data);
@@ -118,9 +121,10 @@ namespace Shared
                 CreatedById = createdById,
                 ServiceId = serviceId,
                 IsComplete = true,
-                HasWaitlist = hasWaitlist,
                 InPatientTotal = inPatientTotal,
-                OutPatientTotal = outPatientTotal
+                OutPatientTotal = outPatientTotal,
+                InPatientHasWaitlist = hasWaitlist,
+                OutPatientHasWaitlist = hasWaitlist
             };
 
             await api.Create(data);
@@ -135,11 +139,14 @@ namespace Shared
                 CreatedById = createdById,
                 ServiceId = serviceId,
                 IsComplete = true,
-                HasWaitlist = hasWaitlist,
                 DetoxTotal = detoxTotal,
                 InPatientTotal = inPatientTotal,
                 OutPatientTotal = outPatientTotal,
-                GroupTotal = groupTotal
+                GroupTotal = groupTotal,
+                DetoxHasWaitlist = hasWaitlist,
+                InPatientHasWaitlist = hasWaitlist,
+                OutPatientHasWaitlist = hasWaitlist,
+                GroupHasWaitlist = hasWaitlist
             };
 
             await api.Create(data);

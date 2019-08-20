@@ -21,16 +21,16 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             steps.Add(GenerateCreateDataStep<SubstanceUseData>());
 
             steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Services.SubstanceUse.Detox, nameof(SubstanceUseData.DetoxTotal),
-                nameof(SubstanceUseData.DetoxOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.DetoxWaitlistLength)));
+                nameof(SubstanceUseData.DetoxOpen), nameof(SubstanceUseData.DetoxHasWaitlist), nameof(SubstanceUseData.DetoxWaitlistLength)));
 
             steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Services.SubstanceUse.InPatient, nameof(SubstanceUseData.InPatientTotal),
-                nameof(SubstanceUseData.InPatientOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.InPatientWaitlistLength)));
+                nameof(SubstanceUseData.InPatientOpen), nameof(SubstanceUseData.InPatientHasWaitlist), nameof(SubstanceUseData.InPatientWaitlistLength)));
 
             steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Services.SubstanceUse.OutPatient, nameof(SubstanceUseData.OutPatientTotal),
-                nameof(SubstanceUseData.OutPatientOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.OutPatientWaitlistLength)));
+                nameof(SubstanceUseData.OutPatientOpen), nameof(SubstanceUseData.OutPatientHasWaitlist), nameof(SubstanceUseData.OutPatientWaitlistLength)));
 
             steps.AddRange(GenerateUpdateSteps<SubstanceUseData>(Phrases.Services.SubstanceUse.Group, nameof(SubstanceUseData.GroupTotal),
-                nameof(SubstanceUseData.GroupOpen), nameof(SubstanceUseData.HasWaitlist), nameof(SubstanceUseData.GroupWaitlistLength)));
+                nameof(SubstanceUseData.GroupOpen), nameof(SubstanceUseData.GroupHasWaitlist), nameof(SubstanceUseData.GroupWaitlistLength)));
 
             steps.Add(GenerateCompleteDataStep<SubstanceUseData>());
 

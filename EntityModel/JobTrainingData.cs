@@ -22,12 +22,17 @@ namespace EntityModel
         public int Open { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
+        public bool HasWaitlist { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
         public int WaitlistLength { get; set; }
 
         public override void CopyStaticValues<T>(T data)
         {
             var d = data as JobTrainingData;
+
             this.Total = d.Total;
+            this.HasWaitlist = d.HasWaitlist;
 
             base.CopyStaticValues(data);
         }

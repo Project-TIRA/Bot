@@ -22,6 +22,9 @@ namespace EntityModel
         public int DetoxOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
+        public bool DetoxHasWaitlist { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
         public int DetoxWaitlistLength { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
@@ -29,6 +32,9 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "TODO")]
         public int InPatientOpen { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public bool InPatientHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int InPatientWaitlistLength { get; set; }
@@ -40,6 +46,9 @@ namespace EntityModel
         public int OutPatientOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
+        public bool OutPatientHasWaitlist { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
         public int OutPatientWaitlistLength { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
@@ -49,15 +58,24 @@ namespace EntityModel
         public int GroupOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
+        public bool GroupHasWaitlist { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
         public int GroupWaitlistLength { get; set; }
 
         public override void CopyStaticValues<T>(T data)
         {
             var d = data as SubstanceUseData;
+
             this.DetoxTotal = d.DetoxTotal;
             this.InPatientTotal = d.InPatientTotal;
             this.OutPatientTotal = d.OutPatientTotal;
             this.GroupTotal = d.GroupTotal;
+
+            this.DetoxHasWaitlist = d.DetoxHasWaitlist;
+            this.InPatientHasWaitlist = d.InPatientHasWaitlist;
+            this.OutPatientHasWaitlist = d.OutPatientHasWaitlist;
+            this.GroupHasWaitlist = d.GroupHasWaitlist;
 
             base.CopyStaticValues(data);
         }

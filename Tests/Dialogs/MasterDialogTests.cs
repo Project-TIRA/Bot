@@ -81,20 +81,31 @@ namespace Tests.Dialogs
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
-            var service = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id, false, true, TestHelpers.DefaultTotal);
+            var service = await TestHelpers.CreateService<MentalHealthData>(this.api, organization.Id);
+            var data = await TestHelpers.CreateMentalHealthData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
+            // Push back the time of the original snapshot so that it doesn't become the latest when the new snapshot time is pushed back.
             data.CreatedOn = DateTime.UtcNow.AddHours(-Phrases.Reset.TimeoutHours);
             await this.api.Update(data);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Send("hi")
-                .Test(Phrases.Reset.Keyword, Phrases.Reset.Expired(user))
+                .Send(Phrases.Greeting.UpdateKeyword)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
+                .Test("3", Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
                 .StartTestAsync();
 
-            // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.userToken, true);
-            Assert.Null(resultData);
+            // Push back the time of the new snapshot.
+            data = await this.api.GetLatestServiceData<MentalHealthData>(this.userToken, true);
+            data.CreatedOn = DateTime.UtcNow.AddHours(-Phrases.Reset.TimeoutHours);
+            await this.api.Update(data);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Test("4", Phrases.Reset.Expired(user))
+                .Send(Phrases.Greeting.UpdateKeyword)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
+                .StartTestAsync();
         }
 
         [Fact]

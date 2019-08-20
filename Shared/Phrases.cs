@@ -31,7 +31,7 @@ namespace Shared
                 return MessageFactory.Text($"Welcome{name}!");
             }
 
-            public static Activity TimeToUpdate(User user, Day day)
+            public static Activity RemindToUpdate(User user, Day day)
             {
                 var name = !string.IsNullOrEmpty(user.Name) ? $", {user.Name}" : string.Empty;
                 var greeting = string.Empty;
@@ -76,6 +76,27 @@ namespace Shared
             }
         }
 
+        public static class Reset
+        {
+            public static string Keyword = "reset";
+            public static int TimeoutHours = 12;
+
+            public static Activity Expired(User user)
+            {
+                return MessageFactory.Text($"Your update expired after {TimeoutHours} hours.{Environment.NewLine}{Greeting.Keywords(user.ContactEnabled).Text}");
+            }
+
+            public static Activity Forced(User user)
+            {
+                return MessageFactory.Text($"Forced reset.{Environment.NewLine}{Greeting.Keywords(user.ContactEnabled).Text}");
+            }
+
+            public static bool ShouldReset(IConfiguration configuration, ITurnContext turnContext)
+            {
+                return !configuration.IsProduction() && string.Equals(turnContext.Activity.Text, Keyword, StringComparison.OrdinalIgnoreCase);
+            }
+        }
+
         public static class Services
         {
             public static class CaseManagement
@@ -115,27 +136,6 @@ namespace Shared
         {
             public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
-        }
-
-        public static class Reset
-        {
-            public static string Keyword = "reset";
-            public static int TimeoutHours = 12;
-
-            public static Activity Expired(User user)
-            {
-                return MessageFactory.Text($"Your update expired after {TimeoutHours} hours.{Environment.NewLine}{Greeting.Keywords(user.ContactEnabled).Text}");
-            }
-
-            public static Activity Forced(User user)
-            {
-                return MessageFactory.Text($"Forced reset.{Environment.NewLine}{Greeting.Keywords(user.ContactEnabled).Text}");
-            }
-
-            public static bool ShouldReset(IConfiguration configuration, ITurnContext turnContext)
-            {
-                return !configuration.IsProduction() && string.Equals(turnContext.Activity.Text, Keyword, StringComparison.OrdinalIgnoreCase);
-            }
         }
     }
 }

@@ -18,9 +18,6 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public string CreatedById { get; set; }
 
-        [JsonProperty(PropertyName = "tira_haswaitlist")]
-        public bool HasWaitlist { get; set; }
-
         [JsonProperty(PropertyName = "TODO")]
         public bool IsComplete { get; set; }
 
@@ -33,7 +30,6 @@ namespace EntityModel
         public virtual void CopyStaticValues<T>(T data) where T : ServiceModelBase
         {
             this.ServiceId = data.ServiceId;
-            this.HasWaitlist = data.HasWaitlist;
         }
     }
 }
