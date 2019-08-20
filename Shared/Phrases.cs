@@ -25,12 +25,6 @@ namespace Shared
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
 
-            public static Activity Welcome(User user)
-            {
-                var name = !string.IsNullOrEmpty(user.Name) ? $" {user.Name}" : string.Empty;
-                return MessageFactory.Text($"Welcome{name}!");
-            }
-
             public static Activity RemindToUpdate(User user, Day day)
             {
                 var name = !string.IsNullOrEmpty(user.Name) ? $", {user.Name}" : string.Empty;
@@ -45,16 +39,23 @@ namespace Shared
                 return MessageFactory.Text(greeting + Environment.NewLine + Update);
             }
 
-            public static Activity Keywords(bool contactEnabled)
+            public static Activity Keywords(User user, bool welcomeUser = false)
             {
-                return MessageFactory.Text(
-                    "- " + Update + Environment.NewLine +
-                    "- " + (contactEnabled ? Disable : Enable) + Environment.NewLine);
+                string greeting = welcomeUser ? (Welcome(user) + Environment.NewLine) : string.Empty;
+                greeting += "- " + Update + Environment.NewLine +
+                            "- " + (user.ContactEnabled ? Disable : Enable);
+
+                return MessageFactory.Text(greeting);
             }
 
             public static Activity ContactEnabledUpdated(bool contactEnabled)
             {
                 return MessageFactory.Text($"Your contact preference has been updated. " + (contactEnabled ? Disable : Enable));
+            }
+
+            private static string Welcome(User user)
+            {
+                return !string.IsNullOrEmpty(user.Name) ? $"Welcome {user.Name}!" : "Welcome!";
             }
         }
 
@@ -83,12 +84,12 @@ namespace Shared
 
             public static Activity Expired(User user)
             {
-                return MessageFactory.Text($"Your update expired after {TimeoutHours} hours.{Environment.NewLine}{Greeting.Keywords(user.ContactEnabled).Text}");
+                return MessageFactory.Text($"Unfortunately your update expired after {TimeoutHours} hours.{Environment.NewLine}{Greeting.Keywords(user).Text}");
             }
 
             public static Activity Forced(User user)
             {
-                return MessageFactory.Text($"Forced reset.{Environment.NewLine}{Greeting.Keywords(user.ContactEnabled).Text}");
+                return MessageFactory.Text($"Forced reset.{Environment.NewLine}{Greeting.Keywords(user).Text}");
             }
 
             public static bool ShouldReset(IConfiguration configuration, ITurnContext turnContext)

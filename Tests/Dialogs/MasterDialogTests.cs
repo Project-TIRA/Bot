@@ -47,9 +47,7 @@ namespace Tests.Dialogs
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Send(Phrases.Greeting.EnableKeyword)
-                .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Greeting.ContactEnabledUpdated(true))
+                .Test(Phrases.Greeting.EnableKeyword, Phrases.Greeting.ContactEnabledUpdated(true))
                 .StartTestAsync();
 
             user = await this.api.GetUser(this.userToken);
@@ -66,9 +64,7 @@ namespace Tests.Dialogs
             await this.api.Update(user);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Send(Phrases.Greeting.DisableKeyword)
-                .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Greeting.ContactEnabledUpdated(false))
+                .Test(Phrases.Greeting.DisableKeyword, Phrases.Greeting.ContactEnabledUpdated(false))
                 .StartTestAsync();
 
             user = await this.api.GetUser(this.userToken);
@@ -89,9 +85,7 @@ namespace Tests.Dialogs
             await this.api.Update(data);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Send(Phrases.Greeting.UpdateKeyword)
-                .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
+                .Test(Phrases.Greeting.UpdateKeyword, Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
                 .Test("3", Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
                 .StartTestAsync();
 
@@ -102,9 +96,7 @@ namespace Tests.Dialogs
 
             await CreateTestFlow(MasterDialog.Name, user)
                 .Test("4", Phrases.Reset.Expired(user))
-                .Send(Phrases.Greeting.UpdateKeyword)
-                .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
+                .Test(Phrases.Greeting.UpdateKeyword, Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
                 .StartTestAsync();
         }
 
@@ -115,9 +107,7 @@ namespace Tests.Dialogs
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Send("hi")
-                .AssertReply(Phrases.Greeting.Welcome(user))
-                .AssertReply(Phrases.Greeting.Keywords(user.ContactEnabled))
+                .Test("hi", Phrases.Greeting.Keywords(user, welcomeUser: true))
                 .Test(Phrases.Reset.Keyword, Phrases.Reset.Forced(user))
                 .StartTestAsync();
         }
