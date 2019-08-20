@@ -220,28 +220,42 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Clears incomplete snapshots and returns whether or not the conversation was expired.
+        /// Returns whether or not the conversation is expired.
         /// </summary>
-        public async Task<bool> IsUpdateExpired(string userToken, bool forceExpire)
+        public async Task<bool> IsUpdateExpired(string userToken)
         {
             // Expires after 12 hours.
             var expiration = DateTime.UtcNow.AddHours(-12);
-            bool didRemove = false;
+            bool isExpired = await IsServiceDataExpired<CaseManagementData>(userToken);
 
-            didRemove |= await IsServiceDataExpired<CaseManagementData>(userToken, forceExpire);
-            didRemove |= await IsServiceDataExpired<HousingData>(userToken, forceExpire);
-            didRemove |= await IsServiceDataExpired<JobTrainingData>(userToken, forceExpire);
-            didRemove |= await IsServiceDataExpired<MentalHealthData>(userToken, forceExpire);
-            didRemove |= await IsServiceDataExpired<SubstanceUseData>(userToken, forceExpire);
+            if (!isExpired)
+            {
+                isExpired |= await IsServiceDataExpired<HousingData>(userToken);
+            }
 
-            return didRemove || forceExpire;
+            if (!isExpired)
+            {
+                isExpired |= await IsServiceDataExpired<JobTrainingData>(userToken);
+            }
+
+            if (!isExpired)
+            {
+                isExpired |= await IsServiceDataExpired<MentalHealthData>(userToken);
+            }
+
+            if (!isExpired)
+            {
+                isExpired |= await IsServiceDataExpired<SubstanceUseData>(userToken);
+            }
+
+            return isExpired;
         }
 
-        private async Task<bool> IsServiceDataExpired<T>(string userToken, bool forceExpire) where T : ServiceModelBase, new()
+        private async Task<bool> IsServiceDataExpired<T>(string userToken) where T : ServiceModelBase, new()
         {
             var expiration = DateTime.UtcNow.AddHours(-Phrases.Reset.TimeoutHours);
             var data = await GetLatestServiceData<T>(userToken, createdByUser: true);
-            return data != null && !data.IsComplete && (forceExpire || data.CreatedOn < expiration);
+            return data != null && !data.IsComplete && data.CreatedOn < expiration;
         }
 
         /// <summary>

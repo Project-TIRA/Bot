@@ -56,7 +56,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                 },
                 async (stepContext, cancellationToken) =>
                 {
-                    if (stepContext.Result != null)
+                    if (stepContext.Result != null && stepContext.Result is FoundChoice)
                     {
                         // Push the specific dialog onto the stack if one was selected.
                         switch (((FoundChoice)stepContext.Result).Value)
