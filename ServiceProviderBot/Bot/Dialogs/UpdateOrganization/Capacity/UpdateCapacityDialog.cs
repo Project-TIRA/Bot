@@ -10,8 +10,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateCapacityDialog).FullName;
 
-        public UpdateCapacityDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        public UpdateCapacityDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, string userToken)
+            : base(state, dialogs, api, configuration, userToken) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
@@ -21,7 +21,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has case management services.
-                    var service = await api.GetService<CaseManagementData>(Helpers.GetUserToken(stepContext.Context));
+                    var service = await api.GetService<CaseManagementData>(this.userToken);
                     if (service != null)
                     {
                         // Push the update case management dialog onto the stack.
@@ -34,7 +34,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has housing services.
-                    var service = await api.GetService<HousingData>(Helpers.GetUserToken(stepContext.Context));
+                    var service = await api.GetService<HousingData>(this.userToken);
                     if (service != null)
                     {
                         // Push the update housing dialog onto the stack.
@@ -47,7 +47,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has job training services.
-                    var service = await api.GetService<JobTrainingData>(Helpers.GetUserToken(stepContext.Context));
+                    var service = await api.GetService<JobTrainingData>(this.userToken);
                     if (service != null)
                     {
                         // Push the update job training dialog onto the stack.
@@ -60,7 +60,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has mental health services.
-                    var service = await api.GetService<MentalHealthData>(Helpers.GetUserToken(stepContext.Context));
+                    var service = await api.GetService<MentalHealthData>(this.userToken);
                     if (service != null)
                     {
                         // Push the update mental health dialog onto the stack.
@@ -73,7 +73,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the organization has substance use services.
-                    var service = await api.GetService<SubstanceUseData>(Helpers.GetUserToken(stepContext.Context));
+                    var service = await api.GetService<SubstanceUseData>(this.userToken);
                     if (service != null)
                     {
                         // Push the update substance use dialog onto the stack.

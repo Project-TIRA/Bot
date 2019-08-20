@@ -78,6 +78,53 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
+        /// Deletes a model.
+        /// </summary>
+        public async Task<bool> Delete<T>(T model) where T : ModelBase
+        {
+            if (model is User)
+            {
+                this.dbContext.Users.Remove(model as User);
+            }
+            else if (model is Organization)
+            {
+                this.dbContext.Organizations.Remove(model as Organization);
+            }
+            else if (model is Service)
+            {
+                this.dbContext.Services.Remove(model as Service);
+            }
+            else if (model is CaseManagementData)
+            {
+                this.dbContext.CaseManagementData.Remove(model as CaseManagementData);
+            }
+            else if (model is HousingData)
+            {
+                this.dbContext.HousingData.Remove(model as HousingData);
+            }
+            else if (model is JobTrainingData)
+            {
+                this.dbContext.JobTrainingData.Remove(model as JobTrainingData);
+            }
+            else if (model is MentalHealthData)
+            {
+                this.dbContext.MentalHealthData.Remove(model as MentalHealthData);
+            }
+            else if (model is SubstanceUseData)
+            {
+                this.dbContext.SubstanceUseData.Remove(model as SubstanceUseData);
+            }
+            else
+            {
+                Debug.Assert(false, "Add the new type");
+                return false;
+            }
+
+            await this.dbContext.SaveChangesAsync();
+            return true;
+        }
+
+        /// <summary>
         /// Gets a user from a user token.
         /// </summary>
         public async Task<User> GetUser(string userToken)
@@ -124,7 +171,7 @@ namespace Shared.ApiInterface
                 var type = Helpers.GetServiceType<T>();
                 if (type != ServiceType.Invalid)
                 {
-                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.Type == (int)type);
+                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.OrganizationId == organization.Id && s.Type == (int)type);
                 }
             }
 
@@ -145,11 +192,11 @@ namespace Shared.ApiInterface
                 var type = Helpers.GetServiceType<T>();
                 switch (type)
                 {
-                    case ServiceType.CaseManagement: query = this.dbContext.CaseManagementData.OrderByDescending(s => s.CreatedOn); break;
-                    case ServiceType.Housing: query = this.dbContext.HousingData.OrderByDescending(s => s.CreatedOn); break;
-                    case ServiceType.JobTraining: query = this.dbContext.JobTrainingData.OrderByDescending(s => s.CreatedOn); break;
-                    case ServiceType.MentalHealth: query = this.dbContext.MentalHealthData.OrderByDescending(s => s.CreatedOn); break;
-                    case ServiceType.SubstanceUse: query = this.dbContext.SubstanceUseData.OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.CaseManagement: query = this.dbContext.CaseManagementData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.Housing: query = this.dbContext.HousingData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.JobTraining: query = this.dbContext.JobTrainingData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.MentalHealth: query = this.dbContext.MentalHealthData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.SubstanceUse: query = this.dbContext.SubstanceUseData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
                     default: return null;
                 }
 
@@ -181,39 +228,35 @@ namespace Shared.ApiInterface
             return await this.dbContext.Users.Where(u => u.OrganizationId == organization.Id).ToListAsync();
         }
 
-        /*
         /// <summary>
-        /// Removes incomplete conversation data that has expired.
+        /// Clears incomplete snapshots and returns whether or not the conversation was expired.
         /// </summary>
-        public async Task<bool> CheckExpiredConversation(ITurnContext context, bool forceExpire)
+        public async Task<bool> ClearIncompleteSnapshots(string userToken, bool forceExpire)
         {
-            // Expires after 6 hours.
-            var expiration = DateTime.UtcNow.AddHours(-6);
+            // Expires after 12 hours.
+            var expiration = DateTime.UtcNow.AddHours(-12);
             bool didRemove = false;
 
-            // Check for an incomplete organization.
-            var organization = await GetOrganization(context);
+            didRemove |= await ClearIncompleteSnapshot<CaseManagementData>(userToken, forceExpire);
+            didRemove |= await ClearIncompleteSnapshot<HousingData>(userToken, forceExpire);
+            didRemove |= await ClearIncompleteSnapshot<JobTrainingData>(userToken, forceExpire);
+            didRemove |= await ClearIncompleteSnapshot<MentalHealthData>(userToken, forceExpire);
+            didRemove |= await ClearIncompleteSnapshot<SubstanceUseData>(userToken, forceExpire);
 
-            if (organization != null && 
-                (forceExpire || !organization.IsComplete && organization.DateCreated < expiration))
-            {
-                this.dbContext.Organizations.Remove(organization);
-                didRemove = true;
-            }
-
-            // Check for an incomplete snapshot.
-            var snapshot = await GetSnapshot(context);
-
-            if (snapshot != null &&
-                (forceExpire || !snapshot.IsComplete && snapshot.Date < expiration))
-            {
-                this.dbContext.Snapshots.Remove(snapshot);
-                didRemove = true;
-            }
-
-            await Save();
             return didRemove || forceExpire;
         }
-        */
-    }
+
+        private async Task<bool> ClearIncompleteSnapshot<T>(string userToken, bool forceExpire) where T : ServiceModelBase, new()
+        {
+            var expiration = DateTime.UtcNow.AddHours(-Phrases.Reset.TimeoutHours);
+
+            var data = await GetLatestServiceData<T>(userToken, createdByUser: true);
+            if (data != null && !data.IsComplete && (forceExpire || data.CreatedOn < expiration))
+            {
+                return await this.Delete(data);
+            }
+
+            return false;
+        }
+    }    
 }

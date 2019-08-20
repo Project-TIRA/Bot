@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 
-namespace ServiceProviderBot.Bot.Utils
+namespace Shared
 {
     public static class ConfigurationExtensions
     {
@@ -46,11 +46,6 @@ namespace ServiceProviderBot.Bot.Utils
         private const string CosmosCollectionSettingName = "CosmosDb:Collection";
 
         /// <summary>
-        /// The name of the setting that contains the Azure Maps subscription key.
-        /// </summary>
-        private const string MapsKeySettingName = "MapsKey";
-
-        /// <summary>
         /// The name of the setting that contains the CosmosDB collection.
         /// </summary>
         private const string SnapshotCollectorConfigurationSettingName = "SnapshotCollectorConfiguration";
@@ -93,11 +88,6 @@ namespace ServiceProviderBot.Bot.Utils
         public static string CosmosCollection(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(CosmosCollectionSettingName);
-        }
-
-        public static string MapsKey(this IConfiguration configuration)
-        {
-            return configuration.GetValue<string>(MapsKeySettingName);
         }
 
         public static IConfigurationSection SnapshotCollectorConfiguration(this IConfiguration configuration)

@@ -68,6 +68,19 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
+        /// Deletes a model.
+        /// </summary>
+        public async Task<bool> Delete<T>(T model) where T : ModelBase
+        {
+            if (string.IsNullOrEmpty(model.Id))
+            {
+                return false;
+            }
+
+            return await DeleteJsonData(model.TableName, model.Id);
+        }
+
+        /// <summary>
         /// Gets a user from a user token.
         /// </summary>
         public async Task<User> GetUser(string userToken)
@@ -202,6 +215,37 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
+        /// Clears incomplete snapshots and returns whether or not the conversation was expired.
+        /// </summary>
+        public async Task<bool> ClearIncompleteSnapshots(string userToken, bool forceExpire)
+        {
+            // Expires after 12 hours.
+            var expiration = DateTime.UtcNow.AddHours(-12);
+            bool didRemove = false;
+
+            didRemove |= await ClearIncompleteSnapshot<CaseManagementData>(userToken, forceExpire);
+            didRemove |= await ClearIncompleteSnapshot<HousingData>(userToken, forceExpire);
+            didRemove |= await ClearIncompleteSnapshot<JobTrainingData>(userToken, forceExpire);
+            didRemove |= await ClearIncompleteSnapshot<MentalHealthData>(userToken, forceExpire);
+            didRemove |= await ClearIncompleteSnapshot<SubstanceUseData>(userToken, forceExpire);
+
+            return didRemove || forceExpire;
+        }
+
+        private async Task<bool> ClearIncompleteSnapshot<T>(string userToken, bool forceExpire) where T : ServiceModelBase, new()
+        {
+            var expiration = DateTime.UtcNow.AddHours(-Phrases.Reset.TimeoutHours);
+
+            var data = await GetLatestServiceData<T>(userToken, createdByUser: true);
+            if (data != null && !data.IsComplete && (forceExpire || data.CreatedOn < expiration))
+            {
+                return await this.Delete(data);
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Gets JSON data from the API.
         /// </summary>
         private async Task<JObject> GetJsonData(string tableName, string paramString)
@@ -239,6 +283,7 @@ namespace Shared.ApiInterface
                 return values.First();
             }
 
+
             return string.Empty;
         }
 
@@ -251,6 +296,17 @@ namespace Shared.ApiInterface
             string url = Path.Combine(API_URL, tableName) + "(" + resourceId + ")";
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await this.client.PatchAsync(url, content);
+            return response.IsSuccessStatusCode;
+        }
+
+        /// <summary>
+        /// Deletes JSON data from the API.
+        /// </summary>
+        public async Task<bool> DeleteJsonData(string tableName, string resourceId)
+        {
+            await EnsureAuthHeader();
+            string url = Path.Combine(API_URL, tableName) + "(" + resourceId + ")";
+            HttpResponseMessage response = await this.client.DeleteAsync(url);
             return response.IsSuccessStatusCode;
         }
 

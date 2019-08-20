@@ -12,8 +12,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateHousingDialog).FullName;
 
-        public UpdateHousingDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        public UpdateHousingDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, string userToken)
+            : base(state, dialogs, api, configuration, userToken) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {

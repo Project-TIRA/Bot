@@ -1,6 +1,5 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Prompts;
 using Shared;
@@ -17,13 +16,15 @@ namespace ServiceProviderBot.Bot.Dialogs
         protected readonly DialogSet dialogs;
         protected readonly IApiInterface api;
         protected readonly IConfiguration configuration;
+        protected readonly string userToken;
 
-        public DialogBase(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+        public DialogBase(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, string userToken)
         {
             this.state = state;
             this.dialogs = dialogs;
             this.api = api;
             this.configuration = configuration;
+            this.userToken = userToken;
         }
 
         public virtual WaterfallDialog GetWaterfallDialog()
@@ -77,8 +78,7 @@ namespace ServiceProviderBot.Bot.Dialogs
         {
             return async (stepContext, cancellationToken) =>
             {
-                var userToken = Helpers.GetUserToken(stepContext.Context);
-                var user = await this.api.GetUser(userToken);
+                var user = await this.api.GetUser(this.userToken);
 
                 // Get the latest snapshot.
                 var previousData = await this.api.GetLatestServiceData<T>(userToken);
@@ -102,10 +102,10 @@ namespace ServiceProviderBot.Bot.Dialogs
                 async (stepContext, cancellationToken) =>
                 {
                     // Get the service.
-                    var service = await this.api.GetService<T>(Helpers.GetUserToken(stepContext.Context));
+                    var service = await this.api.GetService<T>(this.userToken);
 
                     // Get the latest snapshot created by the user.
-                    var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
+                    var data = await this.api.GetLatestServiceData<T>(this.userToken, createdByUser: true);
                     var totalPropertyValue = (int)typeof(T).GetProperty(totalPropertyName).GetValue(data);
 
                     // Check if the organization has this service.
@@ -139,7 +139,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         var open = int.Parse((string)stepContext.Result);
 
                         // Get the latest snapshot created by the user and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
+                        var data = await this.api.GetLatestServiceData<T>(this.userToken, createdByUser: true);
                         typeof(T).GetProperty(openPropertyName).SetValue(data, open);
                         await this.api.Update(data);
 
@@ -164,7 +164,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     if (stepContext.Result != null)
                     {
                         // Get the latest snapshot created by the user and update it.
-                        var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
+                        var data = await this.api.GetLatestServiceData<T>(this.userToken, createdByUser: true);
                         typeof(T).GetProperty(waitlistLengthPropertyName).SetValue(data, (int)stepContext.Result);
                         await this.api.Update(data);
                     }
@@ -180,7 +180,7 @@ namespace ServiceProviderBot.Bot.Dialogs
             return async (stepContext, cancellationToken) =>
             {
                 // Mark the snapshot created by the user as complete.
-                var data = await this.api.GetLatestServiceData<T>(Helpers.GetUserToken(stepContext.Context), createdByUser: true);
+                var data = await this.api.GetLatestServiceData<T>(this.userToken, createdByUser: true);
                 data.IsComplete = true;
                 await this.api.Update(data);
 
@@ -196,7 +196,7 @@ namespace ServiceProviderBot.Bot.Dialogs
             if (type != null && type.IsSubclassOf(typeof(DialogBase)))
             {
                 // Create an instance of the dialog and add it to the dialog set.
-                return (DialogBase)Activator.CreateInstance(type, this.state, this.dialogs, this.api, this.configuration);
+                return (DialogBase)Activator.CreateInstance(type, this.state, this.dialogs, this.api, this.configuration, this.userToken);
             }
 
             return null;
