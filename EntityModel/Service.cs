@@ -22,7 +22,7 @@ namespace EntityModel
         public string Name { get; set; }
 
         [JsonProperty(PropertyName = "tira_servicetype")]
-        public int Type { get; set; }
+        public ServiceType Type { get; set; }
 
         public class Resolver : ContractResolver<CaseManagementData>
         {
@@ -33,5 +33,15 @@ namespace EntityModel
                 AddMap(x => x.Id, "tira_serviceid");
             }
         }
+    }
+
+    public enum ServiceType : int
+    {
+        Invalid = 0,
+        Housing = 1,
+        CaseManagement = 2,
+        MentalHealth = 3,
+        SubstanceUse = 4,
+        JobTraining = 5
     }
 }

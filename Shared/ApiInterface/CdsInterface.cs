@@ -128,7 +128,7 @@ namespace Shared.ApiInterface
                 var type = Helpers.GetServiceType<T>();
                 if (type != ServiceType.Invalid)
                 {
-                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {(int)type}");
+                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {type}");
                     if (response != null && response["value"].HasValues)
                     {
                         return JsonConvert.DeserializeObject<Service>(response["value"][0].ToString(), GetJsonSettings(Service.Resolver.Instance));
@@ -137,6 +137,24 @@ namespace Shared.ApiInterface
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Gets all of an organization's services from a user token.
+        /// </summary>
+        public async Task<List<Service>> GetServices(string userToken)
+        {
+            Organization organization = await GetOrganization(userToken);
+            if (organization != null)
+            {
+                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id}");
+                if (response != null && response["value"].HasValues)
+                {
+                    return JsonConvert.DeserializeObject<List<Service>>(response["value"].ToString(), GetJsonSettings(User.Resolver.Instance));
+                }
+            }
+
+            return new List<Service>();
         }
 
         /// <summary>

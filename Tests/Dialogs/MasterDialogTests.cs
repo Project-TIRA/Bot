@@ -15,7 +15,7 @@ namespace Tests.Dialogs
         public async Task NotRegistered()
         {
             await CreateTestFlow(MasterDialog.Name, user: null)
-                .Test("hi", Phrases.Greeting.NotRegistered)
+                .Test("test", Phrases.Greeting.NotRegistered)
                 .StartTestAsync();
         }
 
@@ -25,7 +25,7 @@ namespace Tests.Dialogs
             User user = await TestHelpers.CreateUser(this.api, organizationId: string.Empty);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test("hi", Phrases.Greeting.NoOrganization)
+                .Test("test", Phrases.Greeting.NoOrganization)
                 .StartTestAsync();
         }
 
@@ -36,7 +36,7 @@ namespace Tests.Dialogs
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test("hi", Phrases.Greeting.UnverifiedOrganization)
+                .Test("test", Phrases.Greeting.UnverifiedOrganization)
                 .StartTestAsync();
         }
 
@@ -107,7 +107,7 @@ namespace Tests.Dialogs
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test("hi", Phrases.Greeting.Keywords(user, welcomeUser: true))
+                .Test("test", Phrases.Greeting.Keywords(user, welcomeUser: true))
                 .Test(Phrases.Reset.Keyword, Phrases.Reset.Forced(user))
                 .StartTestAsync();
         }

@@ -1,4 +1,5 @@
-﻿using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
+﻿using EntityModel;
+using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
 using Shared;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,6 +16,59 @@ namespace Tests.Dialogs.UpdateOrganization
 
             await CreateTestFlow(UpdateOrganizationDialog.Name, user)
                 .Test("test", Phrases.Update.NothingToUpdate)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task SingleService()
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            var service = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
+            var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal);
+
+            await CreateTestFlow(UpdateOrganizationDialog.Name, user)
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task MultipleServicesUpdateAll()
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            var service1 = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
+            var data1 = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service1.Id, true, true, TestHelpers.DefaultTotal);
+
+            var service2 = await TestHelpers.CreateService<JobTrainingData>(this.api, organization.Id);
+            var data2 = await TestHelpers.CreateJobTrainingData(this.api, user.Id, service2.Id, true, true, TestHelpers.DefaultTotal);
+
+            await CreateTestFlow(UpdateOrganizationDialog.Name, user)
+                .Test("test", StartsWith(Phrases.Update.Options))
+                .Test(Phrases.Services.All, Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.Name))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Update.Closing)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task MultipleServicesUpdateOne()
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            var service1 = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
+            var data1 = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service1.Id, true, true, TestHelpers.DefaultTotal);
+
+            var service2 = await TestHelpers.CreateService<JobTrainingData>(this.api, organization.Id);
+            var data2 = await TestHelpers.CreateJobTrainingData(this.api, user.Id, service2.Id, true, true, TestHelpers.DefaultTotal);
+
+            await CreateTestFlow(UpdateOrganizationDialog.Name, user)
+                .Test("test", StartsWith(Phrases.Update.Options))
+                .Test(Phrases.Services.JobTraining.ServiceName, Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.Name))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Update.Closing)
                 .StartTestAsync();
         }
     }

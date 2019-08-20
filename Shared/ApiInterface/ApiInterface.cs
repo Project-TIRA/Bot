@@ -30,11 +30,16 @@ namespace Shared.ApiInterface
         /// Gets the count of an organization's services from a user token.
         /// </summary>
         Task<int> GetServiceCount(string userToken);
-
+        
         /// <summary>
         /// Gets an organization's service by type from a user token.
         /// </summary>
         Task<Service> GetService<T>(string userToken) where T : ServiceModelBase;
+
+        /// <summary>
+        /// Gets all of an organization's services from a user token.
+        /// </summary>
+        Task<List<Service>> GetServices(string userToken);
 
         /// <summary>
         /// Gets the latest shapshot for a service from a user token.
@@ -56,15 +61,5 @@ namespace Shared.ApiInterface
         /// Clears incomplete snapshots and returns whether or not the conversation was expired.
         /// </summary>
         Task<bool> IsUpdateExpired(string userToken, bool forceExpire);
-    }
-
-    public enum ServiceType
-    {
-        Invalid = 0,
-        Housing = 1,
-        CaseManagement = 2,
-        MentalHealth = 3,
-        SubstanceUse = 4,
-        JobTraining = 5
     }
 }
