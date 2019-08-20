@@ -56,10 +56,5 @@ namespace Shared.ApiInterface
         /// Gets all users for an organization.
         /// </summary>
         Task<List<User>> GetUsersForOrganization(Organization organization);
-
-        /// <summary>
-        /// Returns whether or not the conversation is expired.
-        /// </summary>
-        Task<bool> IsUpdateExpired(string userToken);
     }
 }

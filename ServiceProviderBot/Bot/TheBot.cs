@@ -47,30 +47,19 @@ namespace ServiceProviderBot.Bot
                 // Create the master dialog.
                 var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration, this.userToken);
 
+                // If the user sends the update keyword, clear the dialog stack and start a new update.
+                if (string.Equals(turnContext.Activity.Text, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
+                {
+                    await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                }
+
+                // Attempt to continue any existing conversation.
+                DialogTurnResult result = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
+
                 // Start a new conversation if there isn't one already.
-                if (dialogContext.Stack.Count == 0)
+                if (result.Status == DialogTurnStatus.Empty)
                 {
                     await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
-                }
-                else
-                {
-                    // Check if the conversation is expired.
-                    var forceExpire = Phrases.Reset.ShouldReset(this.configuration, turnContext);
-                    var expired = forceExpire || await this.api.IsUpdateExpired(this.userToken);
-
-                    if (expired)
-                    {
-                        await dialogContext.CancelAllDialogsAsync(cancellationToken);
-
-                        var user = await api.GetUser(this.userToken);
-                        await Messages.SendAsync(forceExpire ? Phrases.Reset.Forced(user) : Phrases.Reset.Expired(user), turnContext, cancellationToken);
-                    }
-                    else
-                    {
-                        // Attempt to continue any existing conversation.
-                        DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
-                        Debug.Assert(results.Status != DialogTurnStatus.Empty, "Should have an existing conversation");
-                    }
                 }
             }
         }
