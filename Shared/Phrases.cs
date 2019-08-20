@@ -11,16 +11,21 @@ namespace Shared
         public const string ProjectName = "Project TIRA";
         public const string WebsiteUrl = "tira.powerappsportals.com";
 
+        public static string ExceptionMessage = $"Sorry, it looks like something went wrong. If this continues to happen, try sending \"{Keywords.Update}\" to start a new update";
+
+        public static class Keywords
+        {
+            public const string Update = "update";
+            public const string Enable = "enable";
+            public const string Disable = "disable";
+
+            public static string HowToEnable = $"Send \"{Enable}\" to allow the {ProjectName} bot to contact you for your availability";
+            public static string HowToDisable = $"Send \"{Disable}\" to stop the {ProjectName} bot from contacting you for your availability";
+            public static string HowToUpdate = $"Send \"{Update}\" to update your availability";
+        }
+
         public static class Greeting
         {
-            public const string UpdateKeyword = "update";
-            public const string EnableKeyword = "enable";
-            public const string DisableKeyword = "disable";
-
-            public static string Enable = $"Send \"{EnableKeyword}\" to allow the {ProjectName} bot to contact you for your availability";
-            public static string Disable = $"Send \"{DisableKeyword}\" to stop the {ProjectName} bot from contacting you for your availability";
-            public static string Update = $"Send \"{UpdateKeyword}\" to update your availability";
-
             public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register and link your mobile phone number");
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
@@ -36,21 +41,21 @@ namespace Shared
                     default: greeting = $"Happy {day.ToString()}{name}!"; break;
                 }
 
-                return MessageFactory.Text(greeting + Environment.NewLine + Update);
+                return MessageFactory.Text(greeting + Environment.NewLine + Keywords.HowToUpdate);
             }
 
-            public static Activity Keywords(User user, bool welcomeUser = false)
+            public static Activity GetKeywords(User user, bool welcomeUser = false)
             {
                 string greeting = welcomeUser ? (Welcome(user) + Environment.NewLine) : string.Empty;
-                greeting += "- " + Update + Environment.NewLine +
-                            "- " + (user.ContactEnabled ? Disable : Enable);
+                greeting += "- " + Keywords.HowToUpdate + Environment.NewLine +
+                            "- " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable);
 
                 return MessageFactory.Text(greeting);
             }
 
             public static Activity ContactEnabledUpdated(bool contactEnabled)
             {
-                return MessageFactory.Text($"Your contact preference has been updated. " + (contactEnabled ? Disable : Enable));
+                return MessageFactory.Text($"Your contact preference has been updated. " + (contactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable));
             }
 
             private static string Welcome(User user)
@@ -74,27 +79,6 @@ namespace Shared
             public static Activity RetryInvalidCount(int total, Activity retryPrompt)
             {
                 return MessageFactory.Text($"Oops, the openings cannot be more than the total available ({total}). {retryPrompt.Text}");
-            }
-        }
-
-        public static class Reset
-        {
-            public const string Keyword = "reset";
-            public const int TimeoutHours = 12;
-
-            public static Activity Expired(User user)
-            {
-                return MessageFactory.Text($"Unfortunately your update expired after {TimeoutHours} hours.{Environment.NewLine}{Greeting.Keywords(user).Text}");
-            }
-
-            public static Activity Forced(User user)
-            {
-                return MessageFactory.Text($"Forced reset.{Environment.NewLine}{Greeting.Keywords(user).Text}");
-            }
-
-            public static bool ShouldReset(IConfiguration configuration, ITurnContext turnContext)
-            {
-                return !configuration.IsProduction() && string.Equals(turnContext.Activity.Text, Keyword, StringComparison.OrdinalIgnoreCase);
             }
         }
 

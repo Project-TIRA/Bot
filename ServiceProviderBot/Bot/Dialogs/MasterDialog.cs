@@ -50,9 +50,9 @@ namespace ServiceProviderBot.Bot.Dialogs
                     if (!string.IsNullOrEmpty(incomingMessage))
                     {
                         bool isKeyword =
-                            string.Equals(incomingMessage, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(incomingMessage, Phrases.Greeting.DisableKeyword, StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(incomingMessage, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase);
+                            string.Equals(incomingMessage, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(incomingMessage, Phrases.Keywords.Disable, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(incomingMessage, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase);
 
                         if (isKeyword)
                         {
@@ -64,8 +64,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                     return await stepContext.PromptAsync(
                         Prompt.GreetingTextPrompt,
                         new PromptOptions {
-                            Prompt = Phrases.Greeting.Keywords(user, welcomeUser: true),
-                            RetryPrompt = Phrases.Greeting.Keywords(user)
+                            Prompt = Phrases.Greeting.GetKeywords(user, welcomeUser: true),
+                            RetryPrompt = Phrases.Greeting.GetKeywords(user)
                         },
                         cancellationToken);
                 },
@@ -73,16 +73,16 @@ namespace ServiceProviderBot.Bot.Dialogs
                 {
                     var result = stepContext.Result as string;
 
-                    if (string.Equals(result, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(result, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
                     {
                         // Push the update organization dialog onto the stack.
                         return await BeginDialogAsync(stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
                     }
-                    else if (string.Equals(result, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase) ||
-                        string.Equals(result, Phrases.Greeting.DisableKeyword, StringComparison.OrdinalIgnoreCase))
+                    else if (string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase) ||
+                             string.Equals(result, Phrases.Keywords.Disable, StringComparison.OrdinalIgnoreCase))
                     {
                         // Enable/disable contact.
-                        var enable = string.Equals(result, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase);
+                        var enable = string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase);
 
                         var user = await api.GetUser(this.userToken);
                         if (user.ContactEnabled != enable)

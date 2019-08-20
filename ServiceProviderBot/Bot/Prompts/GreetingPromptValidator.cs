@@ -13,9 +13,9 @@ namespace ServiceProviderBot.Bot.Prompts
             {
                 var message = promptContext.Recognized.Value;
 
-                if (string.Equals(message, Phrases.Greeting.UpdateKeyword, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(message, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase) ||
-                    string.Equals(message, Phrases.Greeting.DisableKeyword, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(message, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(message, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(message, Phrases.Keywords.Disable, StringComparison.OrdinalIgnoreCase))
                 {
                     return await Task.FromResult(true);
                 }
