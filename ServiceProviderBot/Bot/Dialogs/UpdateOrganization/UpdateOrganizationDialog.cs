@@ -13,8 +13,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
     {
         public static string Name = typeof(UpdateOrganizationDialog).FullName;
 
-        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, string userToken)
+            : base(state, dialogs, api, configuration, userToken) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
@@ -23,7 +23,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             {
                 async (stepContext, cancellationToken) =>
                 {
-                    var needsUpdate = await NeedsUpdate(state, api, stepContext.Context);
+                    var needsUpdate = await NeedsUpdate(state, api, stepContext.Context, this.userToken);
                     if (!needsUpdate)
                     {
                         // Nothing to update.
@@ -47,9 +47,9 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
             });
         }
 
-        private static async Task<bool> NeedsUpdate(StateAccessors state, IApiInterface api, ITurnContext context)
+        private static async Task<bool> NeedsUpdate(StateAccessors state, IApiInterface api, ITurnContext context, string userToken)
         {
-            var serviceCount = await api.GetServiceCount(Helpers.GetUserToken(context));
+            var serviceCount = await api.GetServiceCount(userToken);
             return serviceCount > 0;
         }
     }

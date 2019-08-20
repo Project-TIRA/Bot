@@ -66,7 +66,7 @@ namespace Shared
             {
                 CreatedById = createdById,
                 ServiceId = serviceId,
-                IsComplete = true,
+                IsComplete = isComplete,
                 HasWaitlist = hasWaitlist,
                 Total = total
             };

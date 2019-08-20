@@ -1,6 +1,7 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace Shared
@@ -16,9 +17,9 @@ namespace Shared
             public static string EnableKeyword = "enable";
             public static string DisableKeyword = "disable";
 
-            private static string Enable = $"Send \"{EnableKeyword}\" to allow the {ProjectName} bot to contact you for your availability";
-            private static string Disable = $"Send \"{DisableKeyword}\" to stop the {ProjectName} bot from contacting you for your availability";
-            private static string Update = $"Send \"{UpdateKeyword}\" to update your availability";
+            public static string Enable = $"Send \"{EnableKeyword}\" to allow the {ProjectName} bot to contact you for your availability";
+            public static string Disable = $"Send \"{DisableKeyword}\" to stop the {ProjectName} bot from contacting you for your availability";
+            public static string Update = $"Send \"{UpdateKeyword}\" to update your availability";
 
             public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register and link your mobile phone number");
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
@@ -114,6 +115,27 @@ namespace Shared
         {
             public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
+        }
+
+        public static class Reset
+        {
+            public static string Keyword = "reset";
+            public static int TimeoutHours = 12;
+
+            public static Activity Expired(User user)
+            {
+                return MessageFactory.Text($"Your update expired after {TimeoutHours} hours.{Environment.NewLine}{Greeting.Keywords(user.ContactEnabled).Text}");
+            }
+
+            public static Activity Forced(User user)
+            {
+                return MessageFactory.Text($"Forced reset.{Environment.NewLine}{Greeting.Keywords(user.ContactEnabled).Text}");
+            }
+
+            public static bool ShouldReset(IConfiguration configuration, ITurnContext turnContext)
+            {
+                return !configuration.IsProduction() && string.Equals(turnContext.Activity.Text, Keyword, StringComparison.OrdinalIgnoreCase);
+            }
         }
     }
 }

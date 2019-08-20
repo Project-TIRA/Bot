@@ -13,8 +13,8 @@ namespace ServiceProviderBot.Bot.Dialogs
     {
         public static string Name = typeof(MasterDialog).FullName;
 
-        public MasterDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        public MasterDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, string userToken)
+            : base(state, dialogs, api, configuration, userToken) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
@@ -23,7 +23,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                 async (stepContext, cancellationToken) =>
                 {
                     // Check if the user is already registered.
-                    var user = await api.GetUser(Helpers.GetUserToken(stepContext.Context));
+                    var user = await api.GetUser(this.userToken);
                     if (user == null)
                     {
                         await Messages.SendAsync(Phrases.Greeting.NotRegistered, stepContext.Context, cancellationToken);
@@ -31,7 +31,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     }
 
                     // Check if we already have an organization for the user.
-                    var organization = await api.GetOrganization(Helpers.GetUserToken(stepContext.Context));
+                    var organization = await api.GetOrganization(this.userToken);
                     if (organization == null)
                     {
                         await Messages.SendAsync(Phrases.Greeting.NoOrganization, stepContext.Context, cancellationToken);
@@ -84,7 +84,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         // Enable/disable contact.
                         var enable = string.Equals(result, Phrases.Greeting.EnableKeyword, StringComparison.OrdinalIgnoreCase);
 
-                        var user = await api.GetUser(Helpers.GetUserToken(stepContext.Context));
+                        var user = await api.GetUser(this.userToken);
                         if (user.ContactEnabled != enable)
                         {
                             user.ContactEnabled = enable;

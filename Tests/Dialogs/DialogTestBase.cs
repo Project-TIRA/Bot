@@ -11,6 +11,7 @@ using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Middleware;
 using ServiceProviderBot.Bot.Prompts;
+using ServiceProviderBot.Bot.Utils;
 using Shared;
 using Shared.ApiInterface;
 using Xunit;
@@ -54,40 +55,39 @@ namespace Tests.Dialogs
                 this.turnContext = turnContext;
                 this.cancellationToken = cancellationToken;
 
-                // Initialize the dialog context.
-                DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
+                // Tests must init the user once there is a turn context.
+                this.userToken = Helpers.GetUserToken(turnContext);
+                await InitUserPhoneNumber(user);
 
-                // Create the master dialog.
-                var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
-
-                // Attempt to continue any existing conversation.
-                DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
-                var startNewConversation = turnContext.Activity.Type == ActivityTypes.Message && results.Status == DialogTurnStatus.Empty;
-
-                if (startNewConversation)
+                if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
-                    this.userToken = Helpers.GetUserToken(turnContext);
-                    await InitUserPhoneNumber(user);
-                    await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
-                }
+                    // Initialize the dialog context.
+                    DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                /*
-                // Check if the conversation is expired.
-                var forceExpire = Phrases.TriggerReset(turnContext);
-                var expired = await this.database.CheckExpiredConversation(turnContext, forceExpire);
+                    // Check if the conversation is expired.
+                    var forceExpire = Phrases.Reset.ShouldReset(this.configuration, turnContext);
+                    var expired = await this.api.ClearIncompleteSnapshots(this.userToken, forceExpire);
 
-                if (expired)
-                {
-                    await dialogContext.CancelAllDialogsAsync(cancellationToken);
-                    await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
+                    if (expired)
+                    {
+                        await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                        await Messages.SendAsync(forceExpire ? Phrases.Reset.Forced(user) : Phrases.Reset.Expired(user), turnContext, cancellationToken);
+                        return;
+                    }
+
+                    // Create the master dialog.
+                    var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration, this.userToken);
+
+                    // Attempt to continue any existing conversation.
+                    DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
+
+                    // Start a new conversation if there isn't one already.
+                    if (results.Status == DialogTurnStatus.Empty)
+                    {
+                        // Difference for tests here is beginning the given dialog instead of master so that individual dialog flows can be tested.
+                        await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
+                    }
                 }
-                else if (startNewConversation)
-                {
-                    // Difference for tests here is starting the given dialog instead of master so that individual dialog flows can be tested.
-                    await InitUserPhoneNumber(user);
-                    await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
-                }
-                */
             });
         }
 

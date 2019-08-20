@@ -11,8 +11,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateMentalHealthDialog).FullName;
 
-        public UpdateMentalHealthDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
-            : base(state, dialogs, api, configuration) { }
+        public UpdateMentalHealthDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, string userToken)
+            : base(state, dialogs, api, configuration, userToken) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {

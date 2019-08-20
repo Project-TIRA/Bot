@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Schema;
@@ -72,6 +73,42 @@ namespace Tests.Dialogs
 
             user = await this.api.GetUser(this.userToken);
             Assert.True(!user.ContactEnabled);
+        }
+
+        [Fact]
+        public async Task Expired()
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            var service = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
+            var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id, false, true, TestHelpers.DefaultTotal);
+
+            data.CreatedOn = DateTime.UtcNow.AddHours(-Phrases.Reset.TimeoutHours);
+            await this.api.Update(data);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Send("hi")
+                .Test(Phrases.Reset.Keyword, Phrases.Reset.Expired(user))
+                .StartTestAsync();
+
+            // Validate the results.
+            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.userToken, true);
+            Assert.Null(resultData);
+        }
+
+        [Fact]
+        public async Task ForceReset()
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Send("hi")
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Greeting.Keywords(user.ContactEnabled))
+                .Test(Phrases.Reset.Keyword, Phrases.Reset.Forced(user))
+                .StartTestAsync();
         }
     }
 }

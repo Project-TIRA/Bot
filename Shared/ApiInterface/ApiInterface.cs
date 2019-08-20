@@ -17,6 +17,11 @@ namespace Shared.ApiInterface
         Task<bool> Update<T>(T model) where T : ModelBase;
 
         /// <summary>
+        /// Deletes a model.
+        /// </summary>
+        Task<bool> Delete<T>(T model) where T : ModelBase;
+
+        /// <summary>
         /// Gets a user from a user token.
         /// </summary>
         Task<User> GetUser(string userToken);
@@ -51,6 +56,11 @@ namespace Shared.ApiInterface
         /// Gets all users for an organization.
         /// </summary>
         Task<List<User>> GetUsersForOrganization(Organization organization);
+
+        /// <summary>
+        /// Clears incomplete snapshots and returns whether or not the conversation was expired.
+        /// </summary>
+        Task<bool> ClearIncompleteSnapshots(string userToken, bool forceExpire);
     }
 
     public enum ServiceType

@@ -7,11 +7,12 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceProviderBot.Bot;
-using ServiceProviderBot.Bot.Utils;
 using Microsoft.Bot.Connector.Authentication;
 using ServiceProviderBot.Bot.Middleware;
 using Shared.ApiInterface;
 using EntityModel;
+using Shared;
+using Microsoft.Bot.Builder.TraceExtensions;
 
 namespace ServiceProviderBot
 {
@@ -65,6 +66,8 @@ namespace ServiceProviderBot
                 {
                     Debug.WriteLine(exception.Message);
                     this.telemetry.TrackException(exception);
+
+                    await context.TraceActivityAsync("Bot exception", exception);
                     await context.SendActivityAsync("Sorry, it looks like something went wrong.");
 
                     if (!configuration.IsProduction())
@@ -74,11 +77,12 @@ namespace ServiceProviderBot
                     }
                 };
 
+                // Auto-save the state after each turn.
+                // This should be the first middleware called in order to catch state changes by any other middleware or the bot.
+                options.Middleware.Add(new AutoSaveStateMiddleware(state.ConversationState));
+
                 // Trim the incoming message.
                 options.Middleware.Add(new TrimIncomingMessageMiddleware());
-
-                // Auto-save the state after each turn.
-                options.Middleware.Add(new AutoSaveStateMiddleware(state.ConversationState));
             });
         }
 
