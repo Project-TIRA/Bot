@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityModel;
@@ -64,28 +65,33 @@ namespace Tests.Dialogs
                     // Initialize the dialog context.
                     DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
-                    // Check if the conversation is expired.
-                    var forceExpire = Phrases.Reset.ShouldReset(this.configuration, turnContext);
-                    var expired = await this.api.ClearIncompleteSnapshots(this.userToken, forceExpire);
-
-                    if (expired)
-                    {
-                        await dialogContext.CancelAllDialogsAsync(cancellationToken);
-                        await Messages.SendAsync(forceExpire ? Phrases.Reset.Forced(user) : Phrases.Reset.Expired(user), turnContext, cancellationToken);
-                        return;
-                    }
-
                     // Create the master dialog.
                     var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration, this.userToken);
 
-                    // Attempt to continue any existing conversation.
-                    DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
-
                     // Start a new conversation if there isn't one already.
-                    if (results.Status == DialogTurnStatus.Empty)
+                    if (dialogContext.Stack.Count == 0)
                     {
                         // Difference for tests here is beginning the given dialog instead of master so that individual dialog flows can be tested.
                         await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
+                    }
+                    else
+                    {
+                        // Check if the conversation is expired.
+                        var forceExpire = Phrases.Reset.ShouldReset(this.configuration, turnContext);
+                        var expired = await this.api.IsUpdateExpired(this.userToken, forceExpire);
+
+                        if (expired)
+                        {
+                            await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                            await Messages.SendAsync(forceExpire ? Phrases.Reset.Forced(user) : Phrases.Reset.Expired(user), turnContext, cancellationToken);
+                            return;
+                        }
+                        else
+                        {
+                            // Attempt to continue any existing conversation.
+                            DialogTurnResult results = await masterDialog.ContinueDialogAsync(dialogContext, cancellationToken);
+                            Debug.Assert(results.Status != DialogTurnStatus.Empty, "Should have an existing conversation");
+                        }
                     }
                 }
             });

@@ -45,9 +45,6 @@ namespace ServiceProviderBot.Bot.Dialogs
                         return await stepContext.EndDialogAsync(cancellationToken);
                     }
 
-                    // Send the welcome message.
-                    await Messages.SendAsync(Phrases.Greeting.Welcome(user), stepContext.Context, cancellationToken);
-
                     // Check if the initial message is one of the keywords.
                     var incomingMessage = stepContext.Context.Activity.Text;
                     if (!string.IsNullOrEmpty(incomingMessage))
@@ -66,7 +63,10 @@ namespace ServiceProviderBot.Bot.Dialogs
                     // Prompt for a keyword.
                     return await stepContext.PromptAsync(
                         Prompt.GreetingTextPrompt,
-                        new PromptOptions { Prompt = Phrases.Greeting.Keywords(user.ContactEnabled) },
+                        new PromptOptions {
+                            Prompt = Phrases.Greeting.Keywords(user, welcomeUser: true),
+                            RetryPrompt = Phrases.Greeting.Keywords(user)
+                        },
                         cancellationToken);
                 },
                 async (stepContext, cancellationToken) =>

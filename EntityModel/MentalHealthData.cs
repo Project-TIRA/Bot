@@ -22,6 +22,9 @@ namespace EntityModel
         public int InPatientOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
+        public bool InPatientHasWaitlist { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
         public int InPatientWaitlistLength { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
@@ -31,13 +34,20 @@ namespace EntityModel
         public int OutPatientOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
+        public bool OutPatientHasWaitlist { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
         public int OutPatientWaitlistLength { get; set; }
 
         public override void CopyStaticValues<T>(T data)
         {
             var d = data as MentalHealthData;
+
             this.InPatientTotal = d.InPatientTotal;
             this.OutPatientTotal = d.OutPatientTotal;
+
+            this.InPatientHasWaitlist = d.InPatientHasWaitlist;
+            this.OutPatientHasWaitlist = d.OutPatientHasWaitlist;
 
             base.CopyStaticValues(data);
         }

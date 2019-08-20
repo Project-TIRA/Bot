@@ -26,7 +26,7 @@ namespace EntityModel
         public string PhoneNumber { get; set; }
 
         [JsonProperty(PropertyName = "tira_updatefrequency")]
-        public Day UpdateFrequency { get; set; }
+        public Day ReminderFrequency { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public bool ContactEnabled { get; set; }

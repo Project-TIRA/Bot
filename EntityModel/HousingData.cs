@@ -21,6 +21,9 @@ namespace EntityModel
         [JsonProperty(PropertyName = "tira_emergencysharedbedsopen")]
         public int EmergencySharedBedsOpen { get; set; }
 
+        [JsonProperty(PropertyName = "TODO")]
+        public bool EmergencySharedBedsHasWaitlist { get; set; }
+
         [JsonProperty(PropertyName = "tira_emergencysharedbedswaitlist")]
         public int EmergencySharedBedsWaitlistLength { get; set; }
 
@@ -29,6 +32,9 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "tira_emergencyprivatebedsopen")]
         public int EmergencyPrivateBedsOpen { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public bool EmergencyPrivateBedsHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencyprivatebedswaitlist")]
         public int EmergencyPrivateBedsWaitlistLength { get; set; }
@@ -39,6 +45,9 @@ namespace EntityModel
         [JsonProperty(PropertyName = "tira_longtemsharedbedsopen")]
         public int LongTermSharedBedsOpen { get; set; }
 
+        [JsonProperty(PropertyName = "TODO")]
+        public bool LongTermSharedBedsHasWaitlist { get; set; }
+
         [JsonProperty(PropertyName = "tira_longtemsharedbedswaitlist")]
         public int LongTermSharedBedsWaitlistLength{ get; set; }
 
@@ -46,7 +55,10 @@ namespace EntityModel
         public int LongTermPrivateBedsTotal { get; set; }
 
         [JsonProperty(PropertyName = "tira_longtemprivatebedsopen")]
-        public int LongTermPrivateBedsOpen { get; set; }        
+        public int LongTermPrivateBedsOpen { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public bool LongTermPrivateBedsHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "tira_longtemprivatebedswaitlist")]
         public int LongTermPrivateBedsWaitlistLength { get; set; }
@@ -54,10 +66,16 @@ namespace EntityModel
         public override void CopyStaticValues<T>(T data)
         {
             var d = data as HousingData;
+
             this.EmergencySharedBedsTotal = d.EmergencySharedBedsTotal;
             this.EmergencyPrivateBedsTotal = d.EmergencyPrivateBedsTotal;
             this.LongTermSharedBedsTotal = d.LongTermSharedBedsTotal;
             this.LongTermPrivateBedsTotal = d.LongTermPrivateBedsTotal;
+
+            this.EmergencySharedBedsHasWaitlist = d.EmergencySharedBedsHasWaitlist;
+            this.EmergencyPrivateBedsHasWaitlist = d.EmergencyPrivateBedsHasWaitlist;
+            this.LongTermSharedBedsHasWaitlist = d.LongTermSharedBedsHasWaitlist;
+            this.LongTermPrivateBedsHasWaitlist = d.LongTermPrivateBedsHasWaitlist;
 
             base.CopyStaticValues(data);
         }
