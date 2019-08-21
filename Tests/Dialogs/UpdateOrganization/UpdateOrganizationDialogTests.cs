@@ -29,7 +29,7 @@ namespace Tests.Dialogs.UpdateOrganization
             var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateOrganizationDialog.Name, user)
-                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.ServiceName))
                 .StartTestAsync();
         }
 
@@ -47,8 +47,8 @@ namespace Tests.Dialogs.UpdateOrganization
 
             await CreateTestFlow(UpdateOrganizationDialog.Name, user)
                 .Test("test", StartsWith(Phrases.Update.Options))
-                .Test(Phrases.Services.All, Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.Name))
+                .Test(Phrases.Services.All, Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.ServiceName))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.ServiceName))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Update.Closing)
                 .StartTestAsync();
         }
@@ -67,7 +67,7 @@ namespace Tests.Dialogs.UpdateOrganization
 
             await CreateTestFlow(UpdateOrganizationDialog.Name, user)
                 .Test("test", StartsWith(Phrases.Update.Options))
-                .Test(Phrases.Services.JobTraining.ServiceName, Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.Name))
+                .Test(Phrases.Services.JobTraining.ServiceName, Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.ServiceName))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Update.Closing)
                 .StartTestAsync();
         }

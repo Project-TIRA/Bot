@@ -20,7 +20,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 
             steps.Add(GenerateCreateDataStep<CaseManagementData>());
 
-            steps.AddRange(GenerateUpdateSteps<CaseManagementData>(Phrases.Services.CaseManagement.Name, nameof(CaseManagementData.Total),
+            steps.AddRange(GenerateUpdateSteps<CaseManagementData>(Phrases.Services.CaseManagement.ServiceName, nameof(CaseManagementData.Total),
                 nameof(CaseManagementData.Open), nameof(CaseManagementData.HasWaitlist), nameof(CaseManagementData.WaitlistLength)));
 
             steps.Add(GenerateCompleteDataStep<CaseManagementData>());

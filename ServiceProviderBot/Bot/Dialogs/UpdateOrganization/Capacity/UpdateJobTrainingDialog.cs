@@ -20,7 +20,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
 
             steps.Add(GenerateCreateDataStep<JobTrainingData>());
 
-            steps.AddRange(GenerateUpdateSteps<JobTrainingData>(Phrases.Services.JobTraining.Name, nameof(JobTrainingData.Total),
+            steps.AddRange(GenerateUpdateSteps<JobTrainingData>(Phrases.Services.JobTraining.ServiceName, nameof(JobTrainingData.Total),
                 nameof(JobTrainingData.Open), nameof(JobTrainingData.HasWaitlist), nameof(JobTrainingData.WaitlistLength)));
 
             steps.Add(GenerateCompleteDataStep<JobTrainingData>());

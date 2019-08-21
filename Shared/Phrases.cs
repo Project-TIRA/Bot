@@ -3,6 +3,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 
 namespace Shared
 {
@@ -18,6 +19,8 @@ namespace Shared
             public const string Update = "update";
             public const string Enable = "enable";
             public const string Disable = "disable";
+
+            public static List<string> List = new List<string>() { Update, Enable, Disable };
 
             public static string HowToEnable = $"Send \"{Enable}\" to allow the {ProjectName} bot to contact you for your availability";
             public static string HowToDisable = $"Send \"{Disable}\" to stop the {ProjectName} bot from contacting you for your availability";
@@ -89,38 +92,36 @@ namespace Shared
             public static class CaseManagement
             {
                 public const string ServiceName = "Case Management";
-                public const string Name = "case management";
             }
 
             public static class Housing
             {
                 public const string ServiceName = "Housing";
-                public const string EmergencySharedBeds = "emergency shared-space beds";
-                public const string EmergencyPrivateBeds = "emergency private beds";
-                public const string LongTermSharedBeds = "long-term shared-space beds";
-                public const string LongTermPrivateBeds = "long-term private beds";
+                public const string EmergencySharedBeds = "Emergency Shared-Space Beds";
+                public const string EmergencyPrivateBeds = "Emergency Private Beds";
+                public const string LongTermSharedBeds = "Long-term shared-space Beds";
+                public const string LongTermPrivateBeds = "Long-term Private Beds";
             }
 
             public static class JobTraining
             {
                 public const string ServiceName = "Job Training";
-                public const string Name = "job training services";
             }
 
             public static class MentalHealth
             {
                 public const string ServiceName = "Mental Health";
-                public const string InPatient = "mental health in-patient services";
-                public const string OutPatient = "mental health out-patient services";
+                public const string InPatient = "Mental Health In-Patient";
+                public const string OutPatient = "Mental Health Out-Patient";
             }
 
             public static class SubstanceUse
             {
                 public const string ServiceName = "Substance Use";
-                public const string Detox = "substance use detox services";
-                public const string InPatient = "substance use in-patient services";
-                public const string OutPatient = "substance use out-patient services";
-                public const string Group = "substance use group services";
+                public const string Detox = "Substance Use Detox";
+                public const string InPatient = "Substance Use In-Patient";
+                public const string OutPatient = "Substance Use Out-Patient";
+                public const string Group = "Substance Use Group Services";
             }
         }
 
