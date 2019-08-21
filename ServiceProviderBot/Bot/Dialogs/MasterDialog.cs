@@ -6,6 +6,7 @@ using ServiceProviderBot.Bot.Utils;
 using Shared;
 using Shared.ApiInterface;
 using System;
+using System.Linq;
 
 namespace ServiceProviderBot.Bot.Dialogs
 {
@@ -49,11 +50,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     var incomingMessage = stepContext.Context.Activity.Text;
                     if (!string.IsNullOrEmpty(incomingMessage))
                     {
-                        bool isKeyword =
-                            string.Equals(incomingMessage, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(incomingMessage, Phrases.Keywords.Disable, StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(incomingMessage, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase);
-
+                        bool isKeyword = Phrases.Keywords.List.Any(k => string.Equals(incomingMessage, k, StringComparison.OrdinalIgnoreCase));
                         if (isKeyword)
                         {
                             return await stepContext.NextAsync(incomingMessage);

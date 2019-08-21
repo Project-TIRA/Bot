@@ -18,7 +18,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateCaseManagementDialog.Name, user)
-                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.ServiceName))
                 .Send(TestHelpers.DefaultOpen.ToString())
                 .StartTestAsync();
 
@@ -37,8 +37,8 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id, true, true, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateCaseManagementDialog.Name, user)
-                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.CaseManagement.Name))
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.ServiceName))
+                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.CaseManagement.ServiceName))
                 .Send(TestHelpers.DefaultWaitlistLength.ToString())
                 .StartTestAsync();
 
@@ -58,7 +58,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id, true, false, TestHelpers.DefaultTotal);
 
             await CreateTestFlow(UpdateCaseManagementDialog.Name, user)
-                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.Name))
+                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.ServiceName))
                 .Send("0")
                 .StartTestAsync();
 
