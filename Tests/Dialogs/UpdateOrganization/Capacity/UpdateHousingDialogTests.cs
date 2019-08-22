@@ -26,7 +26,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<HousingData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<HousingData>(this.turnContext, true);
             Assert.Equal(TestHelpers.DefaultOpen, resultData.EmergencySharedBedsOpen);
             Assert.Equal(TestHelpers.DefaultOpen, resultData.EmergencyPrivateBedsOpen);
             Assert.Equal(TestHelpers.DefaultOpen, resultData.LongTermSharedBedsOpen);
@@ -55,7 +55,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<HousingData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<HousingData>(this.turnContext, true);
             Assert.Equal(0, resultData.EmergencySharedBedsOpen);
             Assert.Equal(0, resultData.EmergencyPrivateBedsOpen);
             Assert.Equal(0, resultData.LongTermSharedBedsOpen);
@@ -84,7 +84,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<HousingData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<HousingData>(this.turnContext, true);
             Assert.Equal(0, resultData.EmergencySharedBedsOpen);
             Assert.Equal(0, resultData.EmergencyPrivateBedsOpen);
             Assert.Equal(0, resultData.LongTermSharedBedsOpen);

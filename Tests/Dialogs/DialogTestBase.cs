@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot;
@@ -30,9 +30,6 @@ namespace Tests.Dialogs
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;
 
-        // Turn context is only available on a turn, so this is only valid once the bot has executed a turn.
-        protected string userToken;
-
         protected DialogTestBase()
         {
             this.state = StateAccessors.Create();
@@ -49,24 +46,32 @@ namespace Tests.Dialogs
             Prompt.Register(this.dialogs);
         }
 
-        protected TestFlow CreateTestFlow(string dialogName, User user = null)
+        protected TestFlow CreateTestFlow(string dialogName, User user = null, string channelOverride = null)
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
                 this.turnContext = turnContext;
                 this.cancellationToken = cancellationToken;
 
-                // Tests must init the user once there is a turn context.
-                this.userToken = Helpers.GetUserToken(turnContext);
-                await InitUserPhoneNumber(user);
+                // Read configuration to test specific channel.
+                var channelId = channelOverride ?? this.configuration.TestChannel();
+                Assert.True(!string.IsNullOrEmpty(channelId));
+                this.turnContext.Activity.ChannelId = channelId;
 
                 if (turnContext.Activity.Type == ActivityTypes.Message)
                 {
                     // Initialize the dialog context.
                     DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
+                    // Make sure this channel is supported.
+                    if (!Phrases.ValidChannels.Contains(turnContext.Activity.ChannelId))
+                    {
+                        await Messages.SendAsync(Phrases.Greeting.InvalidChannel(turnContext), turnContext, cancellationToken);
+                        return;
+                    }
+
                     // Create the master dialog.
-                    var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration, this.userToken);
+                    var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
 
                     // If the user sends the update keyword, clear the dialog stack and start a new update.
                     if (string.Equals(turnContext.Activity.Text, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
@@ -81,6 +86,9 @@ namespace Tests.Dialogs
                     // Start a new conversation if there isn't one already.
                     if (result.Status == DialogTurnStatus.Empty)
                     {
+                        // Tests must init the user once there is a turn context.
+                        await InitUser(user);
+
                         // Difference for tests here is beginning the given dialog instead of master so that individual dialog flows can be tested.
                         await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
                     }
@@ -99,11 +107,19 @@ namespace Tests.Dialogs
             };
         }
 
-        private async Task InitUserPhoneNumber(User user)
+        private async Task InitUser(User user)
         {
             if (user != null)
             {
-                user.PhoneNumber = this.userToken;
+                var userToken = Helpers.GetUserToken(this.turnContext);
+
+                switch (turnContext.Activity.ChannelId)
+                {
+                    case Channels.Emulator: user.Name = userToken; break;
+                    case Channels.Sms: user.PhoneNumber = userToken; break;
+                    default: Assert.True(false, "Missing channel type"); return;
+                }
+
                 await this.api.Update(user);
             }
         }

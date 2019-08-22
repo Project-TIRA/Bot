@@ -25,7 +25,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.turnContext, true);
             Assert.Equal(TestHelpers.DefaultOpen, resultData.InPatientOpen);
             Assert.Equal(TestHelpers.DefaultOpen, resultData.OutPatientOpen);
         }
@@ -48,7 +48,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.turnContext, true);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
             Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.InPatientWaitlistIsOpen);
@@ -71,7 +71,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.turnContext, true);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
             Assert.False(resultData.InPatientWaitlistIsOpen);

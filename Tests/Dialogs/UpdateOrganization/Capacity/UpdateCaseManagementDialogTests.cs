@@ -23,7 +23,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.turnContext, true);
             Assert.Equal(TestHelpers.DefaultOpen, resultData.Open);
         }
 
@@ -43,7 +43,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.turnContext, true);
             Assert.Equal(0, resultData.Open);
             Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.WaitlistIsOpen);
         }
@@ -63,7 +63,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.turnContext, true);
             Assert.Equal(0, resultData.Open);
             Assert.False(resultData.WaitlistIsOpen);
         }

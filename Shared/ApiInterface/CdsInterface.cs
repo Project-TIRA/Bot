@@ -11,6 +11,9 @@ using Newtonsoft.Json;
 using EntityModel;
 using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder;
+using System.Diagnostics;
 
 namespace Shared.ApiInterface
 {
@@ -68,11 +71,21 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets a user from a user token.
+        /// Gets a user from the turn context.
         /// </summary>
-        public async Task<User> GetUser(string userToken)
+        public async Task<User> GetUser(ITurnContext turnContext)
         {
-            JObject response = await GetJsonData(User.TABLE_NAME, $"$filter=contains(mobilephone,'{userToken}')");
+            var userToken = Helpers.GetUserToken(turnContext);
+            var field = string.Empty;
+
+            switch (turnContext.Activity.ChannelId)
+            {
+                case Channels.Emulator: field = "firstname"; break;
+                case Channels.Sms: field = "mobilephone"; break;
+                default: Debug.Fail("Missing channel type"); return null;
+            }
+
+            JObject response = await GetJsonData(User.TABLE_NAME, $"$filter=contains({field},'{userToken}')");
             if (response != null && response["value"].HasValues)
             {
                 return JsonConvert.DeserializeObject<User>(response["value"].ToString(), GetJsonSettings(User.Resolver.Instance));
@@ -82,11 +95,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets an organization from a user token.
+        /// Gets an organization from the turn context.
         /// </summary>
-        public async Task<Organization> GetOrganization(string userToken)
+        public async Task<Organization> GetOrganization(ITurnContext turnContext)
         {
-            var user = await GetUser(userToken);
+            var user = await GetUser(turnContext);
             if (user != null)
             {
                 JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + user.OrganizationId);
@@ -100,11 +113,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the count of an organization's services from a user token.
+        /// Gets the count of an organization's services from the turn context.
         /// </summary>
-        public async Task<int> GetServiceCount(string userToken)
+        public async Task<int> GetServiceCount(ITurnContext turnContext)
         {
-            Organization organization = await GetOrganization(userToken);
+            Organization organization = await GetOrganization(turnContext);
             if (organization != null)
             {
                 JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} &$count=true");
@@ -118,11 +131,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets an organization's service by type from a user token.
+        /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(string userToken) where T : ServiceModelBase
+        public async Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceModelBase
         {
-            Organization organization = await GetOrganization(userToken);
+            Organization organization = await GetOrganization(turnContext);
             if (organization != null)
             {
                 var type = Helpers.GetServiceType<T>();
@@ -140,11 +153,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets all of an organization's services from a user token.
+        /// Gets all of an organization's services from the turn context.
         /// </summary>
-        public async Task<List<Service>> GetServices(string userToken)
+        public async Task<List<Service>> GetServices(ITurnContext turnContext)
         {
-            Organization organization = await GetOrganization(userToken);
+            Organization organization = await GetOrganization(turnContext);
             if (organization != null)
             {
                 JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id}");
@@ -158,12 +171,12 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the latest shapshot for a service from a user token.
+        /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        public async Task<T> GetLatestServiceData<T>(string userToken, bool createdByUser) where T : ServiceModelBase, new()
+        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser) where T : ServiceModelBase, new()
         {
-            var service = await GetService<T>(userToken);
+            var service = await GetService<T>(turnContext);
             if (service != null)
             {
                 var type = Helpers.GetServiceType<T>();
@@ -176,7 +189,7 @@ namespace Shared.ApiInterface
 
                     if (createdByUser)
                     {
-                        var user = await GetUser(userToken);
+                        var user = await GetUser(turnContext);
                         userFilter = $" and tira_createdby eq {user.Id}";
                     }
 

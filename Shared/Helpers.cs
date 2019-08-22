@@ -1,5 +1,6 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Connector;
 using System.Diagnostics;
 
 namespace Shared
@@ -8,16 +9,20 @@ namespace Shared
     {
         /// <summary>
         /// Gets a user token from the turn context.
-        /// This will vary based on the channel the bot is running in.
-        /// i.e. Phone number for SMS, GUID for emulator
+        /// This will vary based on the channel the message is rec.
         /// </summary>
-        public static string GetUserToken(ITurnContext context)
+        public static string GetUserToken(ITurnContext turnContext)
         {
-            return PhoneNumber.Standardize(context.Activity.From.Id);
+            switch (turnContext.Activity.ChannelId)
+            {
+                case Channels.Emulator: return turnContext.Activity.From.Id;
+                case Channels.Sms: return PhoneNumber.Standardize(turnContext.Activity.From.Id);
+                default: Debug.Fail("Missing channel type"); return string.Empty;
+            }
         }
 
         /// <summary>
-        /// Gets the table name for a service.
+        /// Gets the service type for a service model.
         /// </summary>
         public static ServiceType GetServiceType<T>() where T : ServiceModelBase
         {

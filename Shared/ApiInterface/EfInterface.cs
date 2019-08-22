@@ -1,4 +1,6 @@
 ﻿using EntityModel;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Connector;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -78,19 +80,26 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets a user from a user token.
+        /// Gets a user from the turn context.
         /// </summary>
-        public async Task<User> GetUser(string userToken)
+        public async Task<User> GetUser(ITurnContext turnContext)
         {
-            return await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
+            var userToken = Helpers.GetUserToken(turnContext);
+
+            switch (turnContext.Activity.ChannelId)
+            {
+                case Channels.Emulator: return await this.dbContext.Users.FirstOrDefaultAsync(u => u.Name == userToken);
+                case Channels.Sms: return await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
+                default: Debug.Fail("Missing channel type"); return null;
+            }
         }
 
         /// <summary>
-        /// Gets an organization from a user token.
+        /// Gets an organization from the turn context.
         /// </summary>
-        public async Task<Organization> GetOrganization(string userToken)
+        public async Task<Organization> GetOrganization(ITurnContext turnContext)
         {
-            var user = await GetUser(userToken);
+            var user = await GetUser(turnContext);
             if (user != null)
             {
                 return await this.dbContext.Organizations.FirstOrDefaultAsync(o => o.Id == user.OrganizationId);
@@ -100,11 +109,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the count of an organization's services from a user token.
+        /// Gets the count of an organization's services from the turn context.
         /// </summary>
-        public async Task<int> GetServiceCount(string userToken)
+        public async Task<int> GetServiceCount(ITurnContext turnContext)
         {
-            Organization organization = await GetOrganization(userToken);
+            Organization organization = await GetOrganization(turnContext);
             if (organization != null)
             {
                 return await this.dbContext.Services.CountAsync(s => s.OrganizationId == organization.Id);
@@ -114,11 +123,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets an organization's service by type from a user token.
+        /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(string userToken) where T : ServiceModelBase
+        public async Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceModelBase
         {
-            Organization organization = await GetOrganization(userToken);
+            Organization organization = await GetOrganization(turnContext);
             if (organization != null)
             {
                 var type = Helpers.GetServiceType<T>();
@@ -132,11 +141,11 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets all of an organization's services from a user token.
+        /// Gets all of an organization's services from the turn context.
         /// </summary>
-        public async Task<List<Service>> GetServices(string userToken)
+        public async Task<List<Service>> GetServices(ITurnContext turnContext)
         {
-            Organization organization = await GetOrganization(userToken);
+            Organization organization = await GetOrganization(turnContext);
             if (organization != null)
             {
                 return await this.dbContext.Services.Where(s => s.OrganizationId == organization.Id).ToListAsync();
@@ -146,12 +155,12 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the latest shapshot for a service from a user token.
+        /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        public async Task<T> GetLatestServiceData<T>(string userToken, bool createdByUser) where T : ServiceModelBase, new()
+        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser) where T : ServiceModelBase, new()
         {
-            var service = await GetService<T>(userToken);
+            var service = await GetService<T>(turnContext);
             if (service != null)
             {
                 IQueryable<ServiceModelBase> query;
@@ -169,7 +178,7 @@ namespace Shared.ApiInterface
 
                 if (createdByUser)
                 {
-                    var user = await GetUser(userToken);
+                    var user = await GetUser(turnContext);
                     query = query.Where(s => s.CreatedById == user.Id);
                 }
 

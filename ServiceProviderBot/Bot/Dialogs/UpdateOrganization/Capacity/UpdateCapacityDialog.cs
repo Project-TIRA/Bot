@@ -10,83 +10,83 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateCapacityDialog).FullName;
 
-        public UpdateCapacityDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, string userToken)
-            : base(state, dialogs, api, configuration, userToken) { }
+        public UpdateCapacityDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+            : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
             // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
                     // Check if the organization has case management services.
-                    var service = await api.GetService<CaseManagementData>(this.userToken);
+                    var service = await api.GetService<CaseManagementData>(dialogContext.Context);
                     if (service != null)
                     {
                         // Push the update case management dialog onto the stack.
-                        return await BeginDialogAsync(stepContext, UpdateCaseManagementDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(dialogContext, UpdateCaseManagementDialog.Name, null, cancellationToken);
                     }
 
                     // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
+                    return await dialogContext.NextAsync(null, cancellationToken);
                 },
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
                     // Check if the organization has housing services.
-                    var service = await api.GetService<HousingData>(this.userToken);
+                    var service = await api.GetService<HousingData>(dialogContext.Context);
                     if (service != null)
                     {
                         // Push the update housing dialog onto the stack.
-                        return await BeginDialogAsync(stepContext, UpdateHousingDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(dialogContext, UpdateHousingDialog.Name, null, cancellationToken);
                     }
 
                     // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
+                    return await dialogContext.NextAsync(null, cancellationToken);
                 },
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
                     // Check if the organization has job training services.
-                    var service = await api.GetService<JobTrainingData>(this.userToken);
+                    var service = await api.GetService<JobTrainingData>(dialogContext.Context);
                     if (service != null)
                     {
                         // Push the update job training dialog onto the stack.
-                        return await BeginDialogAsync(stepContext, UpdateJobTrainingDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(dialogContext, UpdateJobTrainingDialog.Name, null, cancellationToken);
                     }
 
                     // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
+                    return await dialogContext.NextAsync(null, cancellationToken);
                 },
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
                     // Check if the organization has mental health services.
-                    var service = await api.GetService<MentalHealthData>(this.userToken);
+                    var service = await api.GetService<MentalHealthData>(dialogContext.Context);
                     if (service != null)
                     {
                         // Push the update mental health dialog onto the stack.
-                        return await BeginDialogAsync(stepContext, UpdateMentalHealthDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(dialogContext, UpdateMentalHealthDialog.Name, null, cancellationToken);
                     }
 
                     // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
+                    return await dialogContext.NextAsync(null, cancellationToken);
                 },
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
                     // Check if the organization has substance use services.
-                    var service = await api.GetService<SubstanceUseData>(this.userToken);
+                    var service = await api.GetService<SubstanceUseData>(dialogContext.Context);
                     if (service != null)
                     {
                         // Push the update substance use dialog onto the stack.
-                        return await BeginDialogAsync(stepContext, UpdateSubstanceUseDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(dialogContext, UpdateSubstanceUseDialog.Name, null, cancellationToken);
                     }
 
                     // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
+                    return await dialogContext.NextAsync(null, cancellationToken);
                 },
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
                     // End this dialog to pop it off the stack.
-                    return await stepContext.EndDialogAsync(cancellationToken);
+                    return await dialogContext.EndDialogAsync(cancellationToken);
                 }
             });
         }

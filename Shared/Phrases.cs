@@ -1,5 +1,6 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -11,6 +12,7 @@ namespace Shared
     {
         public const string ProjectName = "Project TIRA";
         public const string WebsiteUrl = "tira.powerappsportals.com";
+        public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms };
 
         public static string ExceptionMessage = $"Sorry, it looks like something went wrong. If this continues to happen, try sending \"{Keywords.Update}\" to start a new update";
 
@@ -29,9 +31,23 @@ namespace Shared
 
         public static class Greeting
         {
-            public static Activity NotRegistered = MessageFactory.Text($"It looks like you aren't registered - Visit {WebsiteUrl} to register and link your mobile phone number");
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
+
+            private static string Welcome(User user)
+            {
+                return !string.IsNullOrEmpty(user.Name) ? $"Welcome {user.Name}!" : "Welcome!";
+            }
+
+            public static Activity InvalidChannel(ITurnContext turnContext)
+            {
+                return MessageFactory.Text($"Channel \"{turnContext.Activity.ChannelId}\" is not yet supported");
+            }
+
+            public static Activity NotRegistered(ITurnContext turnContext)
+            {
+                return MessageFactory.Text($"It looks like you aren't registered for channel \"{turnContext.Activity.ChannelId}\". Visit {WebsiteUrl} for more information");
+            }
 
             public static Activity RemindToUpdate(User user, Day day)
             {
@@ -59,11 +75,6 @@ namespace Shared
             public static Activity ContactEnabledUpdated(bool contactEnabled)
             {
                 return MessageFactory.Text($"Your contact preference has been updated. " + (contactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable));
-            }
-
-            private static string Welcome(User user)
-            {
-                return !string.IsNullOrEmpty(user.Name) ? $"Welcome {user.Name}!" : "Welcome!";
             }
         }
 

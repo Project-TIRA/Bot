@@ -14,25 +14,25 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
     {
         public static string Name = typeof(UpdateOrganizationDialog).FullName;
 
-        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, string userToken)
-            : base(state, dialogs, api, configuration, userToken) { }
+        public UpdateOrganizationDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+            : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
             // Define the dialog and add it to the set.
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
-                    var services = await this.api.GetServices(this.userToken);
+                    var services = await this.api.GetServices(dialogContext.Context);
 
                     if (services.Count == 0)
                     {
                         // Nothing to update.
-                        await Messages.SendAsync(Phrases.Update.NothingToUpdate, stepContext.Context, cancellationToken);
+                        await Messages.SendAsync(Phrases.Update.NothingToUpdate, dialogContext.Context, cancellationToken);
 
                         // End this dialog to pop it off the stack.
-                        return await stepContext.EndDialogAsync(cancellationToken);
+                        return await dialogContext.EndDialogAsync(cancellationToken);
                     }
 
                     if (services.Count > 1)
@@ -42,7 +42,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                         choices.Add(new Choice { Value = Phrases.Services.All });
                         services.ForEach(s => choices.Add(new Choice { Value = Helpers.GetServiceName(s.Type) }));
 
-                        return await stepContext.PromptAsync(
+                        return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
                             new PromptOptions() {
                                 Prompt = Phrases.Update.Options,
@@ -52,34 +52,34 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                     }
 
                     // Skip this step.
-                    return await stepContext.NextAsync(null, cancellationToken);
+                    return await dialogContext.NextAsync(null, cancellationToken);
                 },
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
-                    if (stepContext.Result != null && stepContext.Result is FoundChoice)
+                    if (dialogContext.Result != null && dialogContext.Result is FoundChoice)
                     {
                         // Push the specific dialog onto the stack if one was selected.
-                        switch (((FoundChoice)stepContext.Result).Value)
+                        switch (((FoundChoice)dialogContext.Result).Value)
                         {
-                            case Phrases.Services.CaseManagement.ServiceName: return await BeginDialogAsync(stepContext, UpdateCaseManagementDialog.Name, null, cancellationToken);
-                            case Phrases.Services.Housing.ServiceName: return await BeginDialogAsync(stepContext, UpdateHousingDialog.Name, null, cancellationToken);
-                            case Phrases.Services.JobTraining.ServiceName: return await BeginDialogAsync(stepContext, UpdateJobTrainingDialog.Name, null, cancellationToken);
-                            case Phrases.Services.MentalHealth.ServiceName: return await BeginDialogAsync(stepContext, UpdateMentalHealthDialog.Name, null, cancellationToken);
-                            case Phrases.Services.SubstanceUse.ServiceName: return await BeginDialogAsync(stepContext, UpdateSubstanceUseDialog.Name, null, cancellationToken);
+                            case Phrases.Services.CaseManagement.ServiceName: return await BeginDialogAsync(dialogContext, UpdateCaseManagementDialog.Name, null, cancellationToken);
+                            case Phrases.Services.Housing.ServiceName: return await BeginDialogAsync(dialogContext, UpdateHousingDialog.Name, null, cancellationToken);
+                            case Phrases.Services.JobTraining.ServiceName: return await BeginDialogAsync(dialogContext, UpdateJobTrainingDialog.Name, null, cancellationToken);
+                            case Phrases.Services.MentalHealth.ServiceName: return await BeginDialogAsync(dialogContext, UpdateMentalHealthDialog.Name, null, cancellationToken);
+                            case Phrases.Services.SubstanceUse.ServiceName: return await BeginDialogAsync(dialogContext, UpdateSubstanceUseDialog.Name, null, cancellationToken);
                         }
                     }
 
                     // Push the update capacity dialog onto the stack.
-                    return await BeginDialogAsync(stepContext, UpdateCapacityDialog.Name, null, cancellationToken);
+                    return await BeginDialogAsync(dialogContext, UpdateCapacityDialog.Name, null, cancellationToken);
 
                 },
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
                     // Send the closing message.
-                    await Messages.SendAsync(Phrases.Update.Closing, stepContext.Context, cancellationToken);
+                    await Messages.SendAsync(Phrases.Update.Closing, dialogContext.Context, cancellationToken);
 
                     // End this dialog to pop it off the stack.
-                    return await stepContext.EndDialogAsync(cancellationToken);
+                    return await dialogContext.EndDialogAsync(cancellationToken);
                 }
             });
         }
