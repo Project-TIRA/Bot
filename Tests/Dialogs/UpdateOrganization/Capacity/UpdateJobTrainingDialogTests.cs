@@ -39,14 +39,14 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
 
             await CreateTestFlow(UpdateJobTrainingDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.ServiceName))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.JobTraining.ServiceName))
-                .Send(TestHelpers.DefaultWaitlistLength.ToString())
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.JobTraining.ServiceName)))
+                .Send(TestHelpers.DefaultWaitlistIsOpen.ToString())
                 .StartTestAsync();
 
             // Validate the results.
             var resultData = await this.api.GetLatestServiceData<JobTrainingData>(this.userToken, true);
             Assert.Equal(0, resultData.Open);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.WaitlistLength);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.WaitlistIsOpen);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             // Validate the results.
             var resultData = await this.api.GetLatestServiceData<JobTrainingData>(this.userToken, true);
             Assert.Equal(0, resultData.Open);
-            Assert.Equal(0, resultData.WaitlistLength);
+            Assert.False(resultData.WaitlistIsOpen);
         }
     }
 }

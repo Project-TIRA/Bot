@@ -21,7 +21,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             steps.Add(GenerateCreateDataStep<CaseManagementData>());
 
             steps.AddRange(GenerateUpdateSteps<CaseManagementData>(Phrases.Services.CaseManagement.ServiceName, nameof(CaseManagementData.Total),
-                nameof(CaseManagementData.Open), nameof(CaseManagementData.HasWaitlist), nameof(CaseManagementData.WaitlistLength)));
+                nameof(CaseManagementData.Open), nameof(CaseManagementData.HasWaitlist), nameof(CaseManagementData.WaitlistIsOpen)));
 
             steps.Add(GenerateCompleteDataStep<CaseManagementData>());
 

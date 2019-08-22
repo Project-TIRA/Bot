@@ -25,7 +25,7 @@ namespace EntityModel
         public bool DetoxHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int DetoxWaitlistLength { get; set; }
+        public bool DetoxWaitlistIsOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int InPatientTotal { get; set; }
@@ -37,7 +37,7 @@ namespace EntityModel
         public bool InPatientHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int InPatientWaitlistLength { get; set; }
+        public bool InPatientWaitlistIsOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int OutPatientTotal { get; set; }
@@ -49,7 +49,7 @@ namespace EntityModel
         public bool OutPatientHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int OutPatientWaitlistLength { get; set; }
+        public bool OutPatientWaitlistIsOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int GroupTotal { get; set; }
@@ -61,7 +61,7 @@ namespace EntityModel
         public bool GroupHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int GroupWaitlistLength { get; set; }
+        public bool GroupWaitlistIsOpen { get; set; }
 
         public override void CopyStaticValues<T>(T data)
         {

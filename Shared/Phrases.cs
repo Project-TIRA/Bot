@@ -74,9 +74,9 @@ namespace Shared
                 return MessageFactory.Text($"How many openings do you have for {serviceName}?");
             }
 
-            public static Activity GetWaitlistLength(string serviceName)
+            public static Activity GetWaitlistIsOpen(string serviceName)
             {
-                return MessageFactory.Text($"How long is your waitlist for {serviceName}?");
+                return MessageFactory.Text($"Is your waitlist open for {serviceName}?");
             }
 
             public static Activity RetryInvalidCount(int total, Activity retryPrompt)

@@ -95,7 +95,7 @@ namespace ServiceProviderBot.Bot.Dialogs
         }
 
         protected WaterfallStep[] GenerateUpdateSteps<T>(string serviceName, string totalPropertyName, string openPropertyName,
-            string hasWaitlistPropertyName, string waitlistLengthPropertyName) where T : ServiceModelBase, new()
+            string hasWaitlistPropertyName, string waitlistIsOpenPropertyName) where T : ServiceModelBase, new()
         {
             return new WaterfallStep[]
             {
@@ -147,10 +147,10 @@ namespace ServiceProviderBot.Bot.Dialogs
                         var hasWaitlist = (bool)typeof(T).GetProperty(hasWaitlistPropertyName).GetValue(data);
                         if (hasWaitlist && open == 0)
                         {
-                            // Prompt for the waitlist length.
+                            // Prompt for if the waitlist is open.
                             return await stepContext.PromptAsync(
-                                Prompt.IntPrompt,
-                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistLength(serviceName) },
+                                Prompt.ConfirmPrompt,
+                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistIsOpen(serviceName) },
                                 cancellationToken);
                         }
                     }
@@ -165,7 +165,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     {
                         // Get the latest snapshot created by the user and update it.
                         var data = await this.api.GetLatestServiceData<T>(this.userToken, createdByUser: true);
-                        typeof(T).GetProperty(waitlistLengthPropertyName).SetValue(data, (int)stepContext.Result);
+                        typeof(T).GetProperty(waitlistIsOpenPropertyName).SetValue(data, (bool)stepContext.Result);
                         await this.api.Update(data);
                     }
 
