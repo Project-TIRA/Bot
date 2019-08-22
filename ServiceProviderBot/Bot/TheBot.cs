@@ -44,8 +44,15 @@ namespace ServiceProviderBot.Bot
                 // Establish context for our dialog from the turn context.
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
+                // Make sure this channel is supported.
+                if (!Phrases.ValidChannels.Contains(turnContext.Activity.ChannelId))
+                {
+                    await Messages.SendAsync(Phrases.Greeting.InvalidChannel(turnContext), turnContext, cancellationToken);
+                    return;
+                }
+
                 // Create the master dialog.
-                var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration, this.userToken);
+                var masterDialog = new MasterDialog(this.state, this.dialogs, this.api, this.configuration);
 
                 // If the user sends the update keyword, clear the dialog stack and start a new update.
                 if (string.Equals(turnContext.Activity.Text, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))

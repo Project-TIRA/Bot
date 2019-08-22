@@ -14,51 +14,51 @@ namespace ServiceProviderBot.Bot.Dialogs
     {
         public static string Name = typeof(MasterDialog).FullName;
 
-        public MasterDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, string userToken)
-            : base(state, dialogs, api, configuration, userToken) { }
+        public MasterDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+            : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
             return new WaterfallDialog(Name, new WaterfallStep[]
             {
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
                     // Check if the user is already registered.
-                    var user = await api.GetUser(this.userToken);
+                    var user = await api.GetUser(dialogContext.Context);
                     if (user == null)
                     {
-                        await Messages.SendAsync(Phrases.Greeting.NotRegistered, stepContext.Context, cancellationToken);
-                        return await stepContext.EndDialogAsync(cancellationToken);
+                        await Messages.SendAsync(Phrases.Greeting.NotRegistered(dialogContext.Context), dialogContext.Context, cancellationToken);
+                        return await dialogContext.EndDialogAsync(cancellationToken);
                     }
 
                     // Check if we already have an organization for the user.
-                    var organization = await api.GetOrganization(this.userToken);
+                    var organization = await api.GetOrganization(dialogContext.Context);
                     if (organization == null)
                     {
-                        await Messages.SendAsync(Phrases.Greeting.NoOrganization, stepContext.Context, cancellationToken);
-                        return await stepContext.EndDialogAsync(cancellationToken);
+                        await Messages.SendAsync(Phrases.Greeting.NoOrganization, dialogContext.Context, cancellationToken);
+                        return await dialogContext.EndDialogAsync(cancellationToken);
                     }
 
                     // Check if the organization is verified.
                     if (!organization.IsVerified)
                     {
-                        await Messages.SendAsync(Phrases.Greeting.UnverifiedOrganization, stepContext.Context, cancellationToken);
-                        return await stepContext.EndDialogAsync(cancellationToken);
+                        await Messages.SendAsync(Phrases.Greeting.UnverifiedOrganization, dialogContext.Context, cancellationToken);
+                        return await dialogContext.EndDialogAsync(cancellationToken);
                     }
 
                     // Check if the initial message is one of the keywords.
-                    var incomingMessage = stepContext.Context.Activity.Text;
+                    var incomingMessage = dialogContext.Context.Activity.Text;
                     if (!string.IsNullOrEmpty(incomingMessage))
                     {
                         bool isKeyword = Phrases.Keywords.List.Any(k => string.Equals(incomingMessage, k, StringComparison.OrdinalIgnoreCase));
                         if (isKeyword)
                         {
-                            return await stepContext.NextAsync(incomingMessage);
+                            return await dialogContext.NextAsync(incomingMessage);
                         }
                     }
 
                     // Prompt for a keyword.
-                    return await stepContext.PromptAsync(
+                    return await dialogContext.PromptAsync(
                         Prompt.GreetingTextPrompt,
                         new PromptOptions {
                             Prompt = Phrases.Greeting.GetKeywords(user, welcomeUser: true),
@@ -66,14 +66,14 @@ namespace ServiceProviderBot.Bot.Dialogs
                         },
                         cancellationToken);
                 },
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
-                    var result = stepContext.Result as string;
+                    var result = dialogContext.Result as string;
 
                     if (string.Equals(result, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
                     {
                         // Push the update organization dialog onto the stack.
-                        return await BeginDialogAsync(stepContext, UpdateOrganizationDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(dialogContext, UpdateOrganizationDialog.Name, null, cancellationToken);
                     }
                     else if (string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase) ||
                              string.Equals(result, Phrases.Keywords.Disable, StringComparison.OrdinalIgnoreCase))
@@ -81,23 +81,23 @@ namespace ServiceProviderBot.Bot.Dialogs
                         // Enable/disable contact.
                         var enable = string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase);
 
-                        var user = await api.GetUser(this.userToken);
+                        var user = await api.GetUser(dialogContext.Context);
                         if (user.ContactEnabled != enable)
                         {
                             user.ContactEnabled = enable;
                             await this.api.Update(user);
                         }
 
-                        await Messages.SendAsync(Phrases.Greeting.ContactEnabledUpdated(user.ContactEnabled), stepContext.Context, cancellationToken);
-                        return await stepContext.EndDialogAsync(cancellationToken);
+                        await Messages.SendAsync(Phrases.Greeting.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
+                        return await dialogContext.EndDialogAsync(cancellationToken);
                     }
 
-                    return await stepContext.NextAsync(cancellationToken);
+                    return await dialogContext.NextAsync(cancellationToken);
                 },
-                async (stepContext, cancellationToken) =>
+                async (dialogContext, cancellationToken) =>
                 {
                     // End this dialog to pop it off the stack.
-                    return await stepContext.EndDialogAsync(cancellationToken);
+                    return await dialogContext.EndDialogAsync(cancellationToken);
                 }
             });
         }

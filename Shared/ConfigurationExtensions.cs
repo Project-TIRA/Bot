@@ -50,6 +50,11 @@ namespace Shared
         /// </summary>
         private const string SnapshotCollectorConfigurationSettingName = "SnapshotCollectorConfiguration";
 
+        /// <summary>
+        /// The name of the setting that contains the channel ID for tests.
+        /// </summary>
+        private const string TestChannelSettingName = "TestChannel";
+
         public static string Environment(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(EnvironmentSettingName);
@@ -93,6 +98,11 @@ namespace Shared
         public static IConfigurationSection SnapshotCollectorConfiguration(this IConfiguration configuration)
         {
             return configuration.GetSection(SnapshotCollectorConfigurationSettingName);
+        }
+
+        public static string TestChannel(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(TestChannelSettingName);
         }
 
         public static bool IsProduction(this IConfiguration configuration)

@@ -27,7 +27,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(this.turnContext, true);
             Assert.Equal(TestHelpers.DefaultOpen, resultData.DetoxOpen);
             Assert.Equal(TestHelpers.DefaultOpen, resultData.InPatientOpen);
             Assert.Equal(TestHelpers.DefaultOpen, resultData.OutPatientOpen);
@@ -56,7 +56,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(this.turnContext, true);
             Assert.Equal(0, resultData.DetoxOpen);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
@@ -85,7 +85,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(this.userToken, true);
+            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(this.turnContext, true);
             Assert.Equal(0, resultData.DetoxOpen);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);

@@ -11,8 +11,8 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
     {
         public static string Name = typeof(UpdateMentalHealthDialog).FullName;
 
-        public UpdateMentalHealthDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration, string userToken)
-            : base(state, dialogs, api, configuration, userToken) { }
+        public UpdateMentalHealthDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+            : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
         {
@@ -29,7 +29,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             steps.Add(GenerateCompleteDataStep<MentalHealthData>());
 
             // End this dialog to pop it off the stack.
-            steps.Add(async (stepContext, cancellationToken) => { return await stepContext.EndDialogAsync(cancellationToken); });
+            steps.Add(async (dialogContext, cancellationToken) => { return await dialogContext.EndDialogAsync(cancellationToken); });
 
             return new WaterfallDialog(Name, steps);
         }

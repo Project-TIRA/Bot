@@ -1,7 +1,6 @@
-﻿
-using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using EntityModel;
+using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
 using Shared;
@@ -12,10 +11,48 @@ namespace Tests.Dialogs
     public class MasterDialogTests : DialogTestBase
     {
         [Fact]
+        public async Task InvalidChannel()
+        {
+            await CreateTestFlow(MasterDialog.Name, user: null, channelOverride: Channels.Webchat)
+                .Send("test")
+                .StartTestAsync();
+
+            // Can't access turnContext before the first turn, so must split the message and response apart.
+            await CreateTestFlow(MasterDialog.Name, user: null)
+                .AssertReply(Phrases.Greeting.InvalidChannel(this.turnContext))
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task EmulatorChannel()
+        {
+            User user = await TestHelpers.CreateUser(this.api, organizationId: string.Empty);
+
+            await CreateTestFlow(MasterDialog.Name, user, channelOverride: Channels.Emulator)
+                .Test("test", Phrases.Greeting.NoOrganization)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task SmsChannel()
+        {
+            User user = await TestHelpers.CreateUser(this.api, organizationId: string.Empty);
+
+            await CreateTestFlow(MasterDialog.Name, user, channelOverride: Channels.Sms)
+                .Test("test", Phrases.Greeting.NoOrganization)
+                .StartTestAsync();
+        }
+
+        [Fact]
         public async Task NotRegistered()
         {
             await CreateTestFlow(MasterDialog.Name, user: null)
-                .Test("test", Phrases.Greeting.NotRegistered)
+                .Send("test")
+                .StartTestAsync();
+
+            // Can't access turnContext before the first turn, so must split the message and response apart.
+            await CreateTestFlow(MasterDialog.Name, user: null)
+                .AssertReply(Phrases.Greeting.NotRegistered(this.turnContext))
                 .StartTestAsync();
         }
 
@@ -50,7 +87,7 @@ namespace Tests.Dialogs
                 .Test(Phrases.Keywords.Enable, Phrases.Greeting.ContactEnabledUpdated(true))
                 .StartTestAsync();
 
-            user = await this.api.GetUser(this.userToken);
+            user = await this.api.GetUser(this.turnContext);
             Assert.True(user.ContactEnabled);
         }
 
@@ -67,7 +104,7 @@ namespace Tests.Dialogs
                 .Test(Phrases.Keywords.Disable, Phrases.Greeting.ContactEnabledUpdated(false))
                 .StartTestAsync();
 
-            user = await this.api.GetUser(this.userToken);
+            user = await this.api.GetUser(this.turnContext);
             Assert.True(!user.ContactEnabled);
         }
 
