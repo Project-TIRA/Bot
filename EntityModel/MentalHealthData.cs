@@ -25,7 +25,7 @@ namespace EntityModel
         public bool InPatientHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int InPatientWaitlistLength { get; set; }
+        public bool InPatientWaitlistIsOpen { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public int OutPatientTotal { get; set; }
@@ -37,7 +37,7 @@ namespace EntityModel
         public bool OutPatientHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int OutPatientWaitlistLength { get; set; }
+        public bool OutPatientWaitlistIsOpen { get; set; }
 
         public override void CopyStaticValues<T>(T data)
         {

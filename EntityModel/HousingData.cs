@@ -25,7 +25,7 @@ namespace EntityModel
         public bool EmergencySharedBedsHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencysharedbedswaitlist")]
-        public int EmergencySharedBedsWaitlistLength { get; set; }
+        public bool EmergencySharedBedsWaitlistIsOpen { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencyprivatebedstotal")]
         public int EmergencyPrivateBedsTotal { get; set; }
@@ -37,7 +37,7 @@ namespace EntityModel
         public bool EmergencyPrivateBedsHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "tira_emergencyprivatebedswaitlist")]
-        public int EmergencyPrivateBedsWaitlistLength { get; set; }
+        public bool EmergencyPrivateBedsWaitlistIsOpen { get; set; }
 
         [JsonProperty(PropertyName = "tira_longtemsharedbedstotal")]
         public int LongTermSharedBedsTotal { get; set; }
@@ -49,7 +49,7 @@ namespace EntityModel
         public bool LongTermSharedBedsHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "tira_longtemsharedbedswaitlist")]
-        public int LongTermSharedBedsWaitlistLength{ get; set; }
+        public bool LongTermSharedBedsWaitlistIsOpen { get; set; }
 
         [JsonProperty(PropertyName = "tira_longtemprivatebedstotal")]
         public int LongTermPrivateBedsTotal { get; set; }
@@ -61,7 +61,7 @@ namespace EntityModel
         public bool LongTermPrivateBedsHasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "tira_longtemprivatebedswaitlist")]
-        public int LongTermPrivateBedsWaitlistLength { get; set; }
+        public bool LongTermPrivateBedsWaitlistIsOpen { get; set; }
 
         public override void CopyStaticValues<T>(T data)
         {

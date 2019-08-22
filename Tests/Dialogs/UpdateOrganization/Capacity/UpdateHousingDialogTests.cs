@@ -44,14 +44,14 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
 
             await CreateTestFlow(UpdateHousingDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencySharedBeds))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.Housing.EmergencySharedBeds))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencyPrivateBeds))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.Housing.EmergencyPrivateBeds))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermSharedBeds))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.Housing.LongTermSharedBeds))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermPrivateBeds))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.Housing.LongTermPrivateBeds))
-                .Send(TestHelpers.DefaultWaitlistLength.ToString())
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.Housing.EmergencySharedBeds)))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencyPrivateBeds))
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.Housing.EmergencyPrivateBeds)))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermSharedBeds))
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.Housing.LongTermSharedBeds)))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermPrivateBeds))
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.Housing.LongTermPrivateBeds)))
+                .Send(TestHelpers.DefaultWaitlistIsOpen.ToString())
                 .StartTestAsync();
 
             // Validate the results.
@@ -60,10 +60,10 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             Assert.Equal(0, resultData.EmergencyPrivateBedsOpen);
             Assert.Equal(0, resultData.LongTermSharedBedsOpen);
             Assert.Equal(0, resultData.LongTermPrivateBedsOpen);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.EmergencySharedBedsWaitlistLength);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.EmergencyPrivateBedsWaitlistLength);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.LongTermSharedBedsWaitlistLength);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.LongTermPrivateBedsWaitlistLength);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.EmergencySharedBedsWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.LongTermPrivateBedsWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.LongTermSharedBedsWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.LongTermPrivateBedsWaitlistIsOpen);
         }
 
         [Fact]
@@ -89,6 +89,10 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             Assert.Equal(0, resultData.EmergencyPrivateBedsOpen);
             Assert.Equal(0, resultData.LongTermSharedBedsOpen);
             Assert.Equal(0, resultData.LongTermPrivateBedsOpen);
+            Assert.False(resultData.EmergencySharedBedsWaitlistIsOpen);
+            Assert.False(resultData.EmergencyPrivateBedsWaitlistIsOpen);
+            Assert.False(resultData.LongTermSharedBedsWaitlistIsOpen);
+            Assert.False(resultData.LongTermPrivateBedsWaitlistIsOpen);
         }
     }
 }

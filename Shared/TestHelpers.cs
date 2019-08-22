@@ -9,7 +9,7 @@ namespace Shared
     {
         public static int DefaultTotal = 10;
         public static int DefaultOpen = 5;
-        public static int DefaultWaitlistLength = 1;
+        public static bool DefaultWaitlistIsOpen = true;
 
         public static async Task<Organization> CreateOrganization(IApiInterface api, bool isVerified)
         {

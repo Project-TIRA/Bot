@@ -1,6 +1,5 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder;
-using Shared.ApiInterface;
 using System.Diagnostics;
 
 namespace Shared
@@ -79,6 +78,22 @@ namespace Shared
                 case ServiceType.SubstanceUse: return SubstanceUseData.PRIMARY_KEY;
                 default: return string.Empty;
             }
-        }       
+        }
+
+        /// <summary>
+        /// Gets the name for a service.
+        /// </summary>
+        public static string GetServiceName(ServiceType serviceType)
+        {
+            switch (serviceType)
+            {
+                case ServiceType.CaseManagement: return Phrases.Services.CaseManagement.ServiceName;
+                case ServiceType.Housing: return Phrases.Services.Housing.ServiceName;
+                case ServiceType.JobTraining: return Phrases.Services.JobTraining.ServiceName;
+                case ServiceType.MentalHealth: return Phrases.Services.MentalHealth.ServiceName;
+                case ServiceType.SubstanceUse: return Phrases.Services.SubstanceUse.ServiceName;
+                default: return string.Empty;
+            }
+        }
     }
 }

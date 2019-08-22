@@ -25,7 +25,7 @@ namespace EntityModel
         public bool HasWaitlist { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
-        public int WaitlistLength { get; set; }
+        public bool WaitlistIsOpen { get; set; }
 
         public override void CopyStaticValues<T>(T data)
         {

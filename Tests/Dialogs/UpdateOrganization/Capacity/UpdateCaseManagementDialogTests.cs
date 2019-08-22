@@ -38,14 +38,14 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
 
             await CreateTestFlow(UpdateCaseManagementDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.ServiceName))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.CaseManagement.ServiceName))
-                .Send(TestHelpers.DefaultWaitlistLength.ToString())
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.CaseManagement.ServiceName)))
+                .Send(TestHelpers.DefaultWaitlistIsOpen.ToString())
                 .StartTestAsync();
 
             // Validate the results.
             var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.userToken, true);
             Assert.Equal(0, resultData.Open);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.WaitlistLength);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.WaitlistIsOpen);
         }
 
         [Fact]
@@ -65,7 +65,7 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             // Validate the results.
             var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.userToken, true);
             Assert.Equal(0, resultData.Open);
-            Assert.Equal(0, resultData.WaitlistLength);
+            Assert.False(resultData.WaitlistIsOpen);
         }
     }
 }

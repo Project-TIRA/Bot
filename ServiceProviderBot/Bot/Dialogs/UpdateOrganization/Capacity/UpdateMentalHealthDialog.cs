@@ -21,10 +21,10 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
             steps.Add(GenerateCreateDataStep<MentalHealthData>());
 
             steps.AddRange(GenerateUpdateSteps<MentalHealthData>(Phrases.Services.MentalHealth.InPatient, nameof(MentalHealthData.InPatientTotal),
-                nameof(MentalHealthData.InPatientOpen), nameof(MentalHealthData.InPatientHasWaitlist), nameof(MentalHealthData.InPatientWaitlistLength)));
+                nameof(MentalHealthData.InPatientOpen), nameof(MentalHealthData.InPatientHasWaitlist), nameof(MentalHealthData.InPatientWaitlistIsOpen)));
 
             steps.AddRange(GenerateUpdateSteps<MentalHealthData>(Phrases.Services.MentalHealth.OutPatient, nameof(MentalHealthData.OutPatientTotal),
-                nameof(MentalHealthData.OutPatientOpen), nameof(MentalHealthData.OutPatientHasWaitlist), nameof(MentalHealthData.OutPatientWaitlistLength)));
+                nameof(MentalHealthData.OutPatientOpen), nameof(MentalHealthData.OutPatientHasWaitlist), nameof(MentalHealthData.OutPatientWaitlistIsOpen)));
 
             steps.Add(GenerateCompleteDataStep<MentalHealthData>());
 

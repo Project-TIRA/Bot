@@ -41,18 +41,18 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
 
             await CreateTestFlow(UpdateMentalHealthDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.MentalHealth.InPatient))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.MentalHealth.OutPatient))
-                .Send(TestHelpers.DefaultWaitlistLength.ToString())
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.MentalHealth.InPatient)))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.MentalHealth.OutPatient)))
+                .Send(TestHelpers.DefaultWaitlistIsOpen.ToString())
                 .StartTestAsync();
 
             // Validate the results.
             var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.userToken, true);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.InPatientWaitlistLength);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.OutPatientWaitlistLength);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.InPatientWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.OutPatientWaitlistIsOpen);
         }
 
         [Fact]
@@ -74,6 +74,8 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.userToken, true);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
+            Assert.False(resultData.InPatientWaitlistIsOpen);
+            Assert.False(resultData.OutPatientWaitlistIsOpen);
         }
     }
 }

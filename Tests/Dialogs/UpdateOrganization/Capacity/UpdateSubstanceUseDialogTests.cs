@@ -45,14 +45,14 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
 
             await CreateTestFlow(UpdateSubstanceUseDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Detox))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.SubstanceUse.Detox))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.InPatient))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.SubstanceUse.InPatient))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.OutPatient))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.SubstanceUse.OutPatient))
-                .Test(TestHelpers.DefaultWaitlistLength.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Group))
-                .Test("0", Phrases.Capacity.GetWaitlistLength(Phrases.Services.SubstanceUse.Group))
-                .Send(TestHelpers.DefaultWaitlistLength.ToString())
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.SubstanceUse.Detox)))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.InPatient))
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.SubstanceUse.InPatient)))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.OutPatient))
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.SubstanceUse.OutPatient)))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Group))
+                .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.SubstanceUse.Group)))
+                .Send(TestHelpers.DefaultWaitlistIsOpen.ToString())
                 .StartTestAsync();
 
             // Validate the results.
@@ -61,10 +61,10 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
             Assert.Equal(0, resultData.GroupOpen);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.DetoxWaitlistLength);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.InPatientWaitlistLength);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.OutPatientWaitlistLength);
-            Assert.Equal(TestHelpers.DefaultWaitlistLength, resultData.GroupWaitlistLength);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.DetoxWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.InPatientWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.OutPatientWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.GroupWaitlistIsOpen);
         }
 
         [Fact]
@@ -90,6 +90,10 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
             Assert.Equal(0, resultData.GroupOpen);
+            Assert.False(resultData.DetoxWaitlistIsOpen);
+            Assert.False(resultData.InPatientWaitlistIsOpen);
+            Assert.False(resultData.OutPatientWaitlistIsOpen);
+            Assert.False(resultData.GroupWaitlistIsOpen);
         }
     }
 }
