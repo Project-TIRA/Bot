@@ -87,6 +87,7 @@ namespace DatabaseInitializer
                     Console.WriteLine("Failed to create database. Invalid connection string?");
                 }
 
+                Console.WriteLine("DB should have been created heres!");
                 await Init(new EfInterface(db));
             }
         }
