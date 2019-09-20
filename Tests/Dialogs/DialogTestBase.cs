@@ -12,7 +12,6 @@ using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Middleware;
 using ServiceProviderBot.Bot.Prompts;
-using ServiceProviderBot.Bot.Utils;
 using Shared;
 using Shared.ApiInterface;
 using Xunit;

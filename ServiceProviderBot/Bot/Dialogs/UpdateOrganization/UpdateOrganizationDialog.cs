@@ -3,7 +3,6 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity;
 using ServiceProviderBot.Bot.Prompts;
-using ServiceProviderBot.Bot.Utils;
 using Shared;
 using Shared.ApiInterface;
 using System.Collections.Generic;
