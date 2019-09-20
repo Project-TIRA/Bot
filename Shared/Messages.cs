@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 
-namespace ServiceProviderBot.Bot.Utils
+namespace Shared
 {
     public static class Messages
     {
