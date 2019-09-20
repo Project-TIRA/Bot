@@ -60,6 +60,10 @@ namespace Shared.ApiInterface
             {
                 await this.dbContext.SubstanceUseData.AddAsync(model as SubstanceUseData);
             }
+            else if (model is Feedback)
+            {
+                await this.dbContext.Feedback.AddAsync(model as Feedback);
+            }
             else
             {
                 Debug.Assert(false, "Add the new type");

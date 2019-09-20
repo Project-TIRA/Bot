@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using EntityModel;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
 using ServiceProviderBot.Bot.Prompts;
@@ -89,6 +90,11 @@ namespace ServiceProviderBot.Bot.Dialogs
 
                         await Messages.SendAsync(Phrases.Greeting.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
                         return await dialogContext.EndDialogAsync(cancellationToken);
+                    }
+                    else if (string.Equals(result, Phrases.Keywords.Feedback, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Push the feedback dialog onto the stack.
+                        
                     }
 
                     return await dialogContext.NextAsync(cancellationToken);

@@ -21,12 +21,14 @@ namespace Shared
             public const string Update = "update";
             public const string Enable = "enable";
             public const string Disable = "disable";
+            public const string Feedback = "feedback";
 
-            public static List<string> List = new List<string>() { Update, Enable, Disable };
+            public static List<string> List = new List<string>() { Update, Enable, Disable, Feedback };
 
+            public static string HowToUpdate = $"Send \"{Update}\" to update your availability";
             public static string HowToEnable = $"Send \"{Enable}\" to allow the {ProjectName} bot to contact you for your availability";
             public static string HowToDisable = $"Send \"{Disable}\" to stop the {ProjectName} bot from contacting you for your availability";
-            public static string HowToUpdate = $"Send \"{Update}\" to update your availability";
+            public static string HowToFeedback = $"Send \"{Feedback}\" to provide feedback";
         }
 
         public static class Greeting
@@ -67,7 +69,8 @@ namespace Shared
             {
                 string greeting = welcomeUser ? (Welcome(user) + Environment.NewLine) : string.Empty;
                 greeting += "- " + Keywords.HowToUpdate + Environment.NewLine +
-                            "- " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable);
+                            "- " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable) + Environment.NewLine +
+                            "- " + Keywords.HowToFeedback;
 
                 return MessageFactory.Text(greeting);
             }
