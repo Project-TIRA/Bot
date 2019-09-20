@@ -94,7 +94,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     else if (string.Equals(result, Phrases.Keywords.Feedback, StringComparison.OrdinalIgnoreCase))
                     {
                         // Push the feedback dialog onto the stack.
-                        
+                        return await BeginDialogAsync(dialogContext, FeedbackDialog.Name, null, cancellationToken);
                     }
 
                     return await dialogContext.NextAsync(cancellationToken);
