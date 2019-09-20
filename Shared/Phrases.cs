@@ -62,7 +62,7 @@ namespace Shared
                     default: greeting = $"Happy {day.ToString()}{name}!"; break;
                 }
 
-                return MessageFactory.Text(greeting + Environment.NewLine + Keywords.HowToUpdate);
+                return MessageFactory.Text(greeting + Environment.NewLine + GetKeywords(user));
             }
 
             public static Activity GetKeywords(User user, bool welcomeUser = false)
@@ -79,6 +79,12 @@ namespace Shared
             {
                 return MessageFactory.Text($"Your contact preference has been updated. " + (contactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable));
             }
+        }
+
+        public static class Feedback
+        {
+            public static Activity GetFeedback = MessageFactory.Text($"What would you like to let the {ProjectName} team know?");
+            public static Activity Thanks = MessageFactory.Text($"Thanks for the feedback!");
         }
 
         public static class Capacity
