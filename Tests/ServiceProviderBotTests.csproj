@@ -14,10 +14,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Dialogs\UpdateOrganization\" />
-    <Folder Include="Dialogs\UpdateOrganization\Capacity\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\ServiceProviderBot\ServiceProviderBot.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>

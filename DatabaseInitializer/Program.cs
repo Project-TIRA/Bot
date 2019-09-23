@@ -113,8 +113,8 @@ namespace DatabaseInitializer
 
                 if (new Random().Next(2) == 1)
                 {
-                    var jobTrainingService = await TestHelpers.CreateService<JobTrainingData>(api, organization.Id);
-                    var jobTrainingData = await TestHelpers.CreateJobTrainingData(api, user.Id, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
+                    var employmentService = await TestHelpers.CreateService<EmploymentData>(api, organization.Id);
+                    var employmentData = await TestHelpers.CreatEmploymentData(api, user.Id, employmentService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
                 }
 
                 if (new Random().Next(2) == 1)

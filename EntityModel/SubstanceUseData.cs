@@ -3,7 +3,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace EntityModel
 {
-    public class SubstanceUseData : ServiceModelBase
+    public class SubstanceUseData : ServiceDataBase
     {
         public static string TABLE_NAME = "tira_substanceusedatas";
         public static string PRIMARY_KEY = "_tira_substanceuseserviceid_value";

@@ -125,9 +125,13 @@ namespace Shared
                 public const string LongTermPrivateBeds = "Long-term Private Beds";
             }
 
-            public static class JobTraining
+            public static class Employment
             {
-                public const string ServiceName = "Job Training";
+                public const string ServiceName = "Employment";
+                public const string JobReadinessTraining = "Job Readiness Training";
+                public const string PaidInternships = "Paid Internships";
+                public const string VocationalTraining = "Vocational Training";
+                public const string EmploymentPlacement = "Employment Placement";
             }
 
             public static class MentalHealth

@@ -62,7 +62,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                         {
                             case Phrases.Services.CaseManagement.ServiceName: return await BeginDialogAsync(dialogContext, UpdateCaseManagementDialog.Name, null, cancellationToken);
                             case Phrases.Services.Housing.ServiceName: return await BeginDialogAsync(dialogContext, UpdateHousingDialog.Name, null, cancellationToken);
-                            case Phrases.Services.JobTraining.ServiceName: return await BeginDialogAsync(dialogContext, UpdateJobTrainingDialog.Name, null, cancellationToken);
+                            case Phrases.Services.Employment.ServiceName: return await BeginDialogAsync(dialogContext, UpdateEmploymentDialog.Name, null, cancellationToken);
                             case Phrases.Services.MentalHealth.ServiceName: return await BeginDialogAsync(dialogContext, UpdateMentalHealthDialog.Name, null, cancellationToken);
                             case Phrases.Services.SubstanceUse.ServiceName: return await BeginDialogAsync(dialogContext, UpdateSubstanceUseDialog.Name, null, cancellationToken);
                         }

@@ -39,7 +39,7 @@ namespace Shared
             return user;
         }
 
-        public static async Task<Service> CreateService<T>(IApiInterface api, string organizationId) where T : ServiceModelBase
+        public static async Task<Service> CreateService<T>(IApiInterface api, string organizationId) where T : ServiceDataBase
         {
             var type = Helpers.GetServiceType<T>();
             if (type == ServiceType.Invalid)
@@ -97,16 +97,22 @@ namespace Shared
             return data;
         }
 
-        public static async Task<JobTrainingData> CreateJobTrainingData(IApiInterface api, string createdById, string serviceId,
-            bool isComplete, bool hasWaitlist, int total)
+        public static async Task<EmploymentData> CreatEmploymentData(IApiInterface api, string createdById, string serviceId, bool isComplete,
+            bool hasWaitlist, int jobReadinessTotal, int paidInternshipTotal, int vocationalTrainingTotal, int employmentPlacementTotal)
         {
-            var data = new JobTrainingData()
+            var data = new EmploymentData()
             {
                 CreatedById = createdById,
                 ServiceId = serviceId,
                 IsComplete = true,
-                HasWaitlist = hasWaitlist,
-                Total = total
+                JobReadinessTrainingTotal = jobReadinessTotal,
+                PaidInternshipTotal = paidInternshipTotal,
+                VocationalTrainingTotal = vocationalTrainingTotal,
+                EmploymentPlacementTotal = employmentPlacementTotal,
+                JobReadinessTrainingHasWaitlist = hasWaitlist,
+                PaidInternshipHasWaitlist = hasWaitlist,
+                VocationalTrainingHasWaitlist = hasWaitlist,
+                EmploymentPlacementHasWaitlist = hasWaitlist
             };
 
             await api.Create(data);
