@@ -73,7 +73,7 @@ namespace ServiceProviderBot.Bot.Dialogs
             return await dialogContext.ContinueDialogAsync(cancellationToken);
         }
 
-        protected WaterfallStep GenerateCreateDataStep<T>() where T : ServiceModelBase, new()
+        protected WaterfallStep GenerateCreateDataStep<T>() where T : ServiceDataBase, new()
         {
             return async (dialogContext, cancellationToken) =>
             {
@@ -94,7 +94,7 @@ namespace ServiceProviderBot.Bot.Dialogs
         }
 
         protected WaterfallStep[] GenerateUpdateSteps<T>(string serviceName, string totalPropertyName, string openPropertyName,
-            string hasWaitlistPropertyName, string waitlistIsOpenPropertyName) where T : ServiceModelBase, new()
+            string hasWaitlistPropertyName, string waitlistIsOpenPropertyName) where T : ServiceDataBase, new()
         {
             return new WaterfallStep[]
             {
@@ -174,7 +174,7 @@ namespace ServiceProviderBot.Bot.Dialogs
             };
         }
 
-        protected WaterfallStep GenerateCompleteDataStep<T>() where T : ServiceModelBase, new()
+        protected WaterfallStep GenerateCompleteDataStep<T>() where T : ServiceDataBase, new()
         {
             return async (dialogContext, cancellationToken) =>
             {

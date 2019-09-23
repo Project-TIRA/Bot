@@ -11,7 +11,7 @@ namespace EntityModel
         public DbSet<Service> Services { get; set; }
         public DbSet<CaseManagementData> CaseManagementData { get; set; }
         public DbSet<HousingData> HousingData { get; set; }
-        public DbSet<JobTrainingData> JobTrainingData { get; set; }
+        public DbSet<EmploymentData> EmploymentData { get; set; }
         public DbSet<MentalHealthData> MentalHealthData { get; set; }
         public DbSet<SubstanceUseData> SubstanceUseData { get; set; }
         public DbSet<Feedback> Feedback { get; set; }

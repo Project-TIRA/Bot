@@ -24,7 +24,7 @@ namespace Shared
         /// <summary>
         /// Gets the service type for a service model.
         /// </summary>
-        public static ServiceType GetServiceType<T>() where T : ServiceModelBase
+        public static ServiceType GetServiceType<T>() where T : ServiceDataBase
         {
             var type = typeof(T);
 
@@ -36,9 +36,9 @@ namespace Shared
             {
                 return ServiceType.Housing;
             }
-            else if (type == typeof(JobTrainingData))
+            else if (type == typeof(EmploymentData))
             {
-                return ServiceType.JobTraining;
+                return ServiceType.Employment;
             }
             else if (type == typeof(MentalHealthData))
             {
@@ -62,7 +62,7 @@ namespace Shared
             {
                 case ServiceType.CaseManagement: return CaseManagementData.TABLE_NAME;
                 case ServiceType.Housing: return HousingData.TABLE_NAME;
-                case ServiceType.JobTraining: return JobTrainingData.TABLE_NAME;
+                case ServiceType.Employment: return EmploymentData.TABLE_NAME;
                 case ServiceType.MentalHealth: return MentalHealthData.TABLE_NAME;
                 case ServiceType.SubstanceUse: return SubstanceUseData.TABLE_NAME;
                 default: return string.Empty;
@@ -78,7 +78,7 @@ namespace Shared
             {
                 case ServiceType.CaseManagement: return CaseManagementData.PRIMARY_KEY;
                 case ServiceType.Housing: return HousingData.PRIMARY_KEY;
-                case ServiceType.JobTraining: return JobTrainingData.PRIMARY_KEY;
+                case ServiceType.Employment: return EmploymentData.PRIMARY_KEY;
                 case ServiceType.MentalHealth: return MentalHealthData.PRIMARY_KEY;
                 case ServiceType.SubstanceUse: return SubstanceUseData.PRIMARY_KEY;
                 default: return string.Empty;
@@ -94,7 +94,7 @@ namespace Shared
             {
                 case ServiceType.CaseManagement: return Phrases.Services.CaseManagement.ServiceName;
                 case ServiceType.Housing: return Phrases.Services.Housing.ServiceName;
-                case ServiceType.JobTraining: return Phrases.Services.JobTraining.ServiceName;
+                case ServiceType.Employment: return Phrases.Services.Employment.ServiceName;
                 case ServiceType.MentalHealth: return Phrases.Services.MentalHealth.ServiceName;
                 case ServiceType.SubstanceUse: return Phrases.Services.SubstanceUse.ServiceName;
                 default: return string.Empty;

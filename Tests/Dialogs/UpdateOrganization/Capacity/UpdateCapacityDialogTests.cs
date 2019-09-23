@@ -16,13 +16,13 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
 
             var caseManagementService = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
             var housingService = await TestHelpers.CreateService<HousingData>(this.api, organization.Id);
-            var jobTrainingService = await TestHelpers.CreateService<JobTrainingData>(this.api, organization.Id);
+            var employmentService = await TestHelpers.CreateService<EmploymentData>(this.api, organization.Id);
             var mentalHealthService = await TestHelpers.CreateService<MentalHealthData>(this.api, organization.Id);
             var substanceUseService = await TestHelpers.CreateService<SubstanceUseData>(this.api, organization.Id);
 
             var caseManagementData = await TestHelpers.CreateCaseManagementData(this.api, user.Id, caseManagementService.Id, true, true, TestHelpers.DefaultTotal);   
             var housingData = await TestHelpers.CreateHousingData(this.api, user.Id, housingService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
-            var jobTrainingData = await TestHelpers.CreateJobTrainingData(this.api, user.Id, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
+            var employmentData = await TestHelpers.CreatEmploymentData(this.api, user.Id, employmentService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
             var mentalHealthData = await TestHelpers.CreateMentalHealthData(this.api, user.Id, mentalHealthService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
             var substanceUseData = await TestHelpers.CreateSubstanceUseData(this.api, user.Id, substanceUseService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
 
@@ -32,7 +32,10 @@ namespace Tests.Dialogs.UpdateOrganization.Capacity
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.EmergencyPrivateBeds))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermSharedBeds))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Housing.LongTermPrivateBeds))
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.JobTraining.ServiceName))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.JobReadinessTraining))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.PaidInternships))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.VocationalTraining))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.EmploymentPlacement))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Detox))

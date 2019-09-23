@@ -4,7 +4,7 @@ using System;
 
 namespace EntityModel
 {
-    public abstract class ServiceModelBase : ModelBase
+    public abstract class ServiceDataBase : ModelBase
     {
         [JsonIgnore]
         public string ServiceId { get; set; }
@@ -21,13 +21,13 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public bool IsComplete { get; set; }
 
-        public ServiceModelBase() : base()
+        public ServiceDataBase() : base()
         {
             this.CreatedOn = DateTime.UtcNow;
             this.Name = this.CreatedOn.ToString("yyyy/MM/dd hh:mm tt");
         }
 
-        public virtual void CopyStaticValues<T>(T data) where T : ServiceModelBase
+        public virtual void CopyStaticValues<T>(T data) where T : ServiceDataBase
         {
             this.ServiceId = data.ServiceId;
         }

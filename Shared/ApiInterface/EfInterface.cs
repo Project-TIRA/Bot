@@ -48,9 +48,9 @@ namespace Shared.ApiInterface
             {
                 await this.dbContext.HousingData.AddAsync(model as HousingData);
             }
-            else if (model is JobTrainingData)
+            else if (model is EmploymentData)
             {
-                await this.dbContext.JobTrainingData.AddAsync(model as JobTrainingData);
+                await this.dbContext.EmploymentData.AddAsync(model as EmploymentData);
             }
             else if (model is MentalHealthData)
             {
@@ -129,7 +129,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceModelBase
+        public async Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceDataBase
         {
             Organization organization = await GetOrganization(turnContext);
             if (organization != null)
@@ -162,19 +162,19 @@ namespace Shared.ApiInterface
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser) where T : ServiceModelBase, new()
+        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser) where T : ServiceDataBase, new()
         {
             var service = await GetService<T>(turnContext);
             if (service != null)
             {
-                IQueryable<ServiceModelBase> query;
+                IQueryable<ServiceDataBase> query;
 
                 var type = Helpers.GetServiceType<T>();
                 switch (type)
                 {
                     case ServiceType.CaseManagement: query = this.dbContext.CaseManagementData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
                     case ServiceType.Housing: query = this.dbContext.HousingData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
-                    case ServiceType.JobTraining: query = this.dbContext.JobTrainingData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
+                    case ServiceType.Employment: query = this.dbContext.EmploymentData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
                     case ServiceType.MentalHealth: query = this.dbContext.MentalHealthData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
                     case ServiceType.SubstanceUse: query = this.dbContext.SubstanceUseData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
                     default: return null;

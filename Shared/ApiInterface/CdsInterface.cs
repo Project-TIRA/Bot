@@ -133,7 +133,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceModelBase
+        public async Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceDataBase
         {
             Organization organization = await GetOrganization(turnContext);
             if (organization != null)
@@ -174,7 +174,7 @@ namespace Shared.ApiInterface
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser) where T : ServiceModelBase, new()
+        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser) where T : ServiceDataBase, new()
         {
             var service = await GetService<T>(turnContext);
             if (service != null)

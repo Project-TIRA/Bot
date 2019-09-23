@@ -47,11 +47,11 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity
                 async (dialogContext, cancellationToken) =>
                 {
                     // Check if the organization has job training services.
-                    var service = await api.GetService<JobTrainingData>(dialogContext.Context);
+                    var service = await api.GetService<EmploymentData>(dialogContext.Context);
                     if (service != null)
                     {
                         // Push the update job training dialog onto the stack.
-                        return await BeginDialogAsync(dialogContext, UpdateJobTrainingDialog.Name, null, cancellationToken);
+                        return await BeginDialogAsync(dialogContext, UpdateEmploymentDialog.Name, null, cancellationToken);
                     }
 
                     // Skip this step.

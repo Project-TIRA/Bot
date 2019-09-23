@@ -42,6 +42,6 @@ namespace EntityModel
         CaseManagement = 2,
         MentalHealth = 3,
         SubstanceUse = 4,
-        JobTraining = 5
+        Employment = 5
     }
 }
