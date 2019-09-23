@@ -2,7 +2,6 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
@@ -156,6 +155,11 @@ namespace Shared
             public static Activity Options = MessageFactory.Text("Which service(s) would you like to update?");
             public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
+        }
+
+        public static class Intents
+        {
+            public static Activity Unknown = MessageFactory.Text("Sorry, could you rephrase that?");
         }
     }
 }

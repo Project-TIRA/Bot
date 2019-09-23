@@ -1,20 +1,22 @@
-﻿using System.Diagnostics;
+﻿using EntityModel;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using Microsoft.Bot.Builder.TraceExtensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ServiceProviderBot.Bot;
 using Microsoft.Bot.Connector.Authentication;
-using ServiceProviderBot.Bot.Middleware;
-using Shared.ApiInterface;
-using EntityModel;
+using SearchBot.Bot;
+using SearchBot.Bot.Middleware;
+using SearchBot.Bot.Luis;
+using SearchBot.Bot.State;
 using Shared;
-using Microsoft.Bot.Builder.TraceExtensions;
+using Shared.ApiInterface;
+using System.Diagnostics;
 
-namespace ServiceProviderBot
+namespace SearchBot
 {
     public class Startup
     {

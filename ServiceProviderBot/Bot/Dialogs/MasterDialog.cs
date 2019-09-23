@@ -1,9 +1,9 @@
-﻿using EntityModel;
-using Microsoft.Bot.Builder.Dialogs;
+﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.Feedback;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
 using ServiceProviderBot.Bot.Prompts;
+using ServiceProviderBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
 using System;

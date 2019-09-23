@@ -3,7 +3,7 @@ using Microsoft.Bot.Schema;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ServiceProviderBot.Bot.Middleware
+namespace SearchBot.Bot.Middleware
 {
     public class TrimIncomingMessageMiddleware : IMiddleware
     {

@@ -1,7 +1,7 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
-using Shared;
+using ServiceProviderBot.Bot.State;
 using Shared.ApiInterface;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity

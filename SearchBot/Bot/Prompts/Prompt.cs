@@ -1,6 +1,6 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 
-namespace ServiceProviderBot.Bot.Prompts
+namespace SearchBot.Bot.Prompts
 {
     public static class Prompt
     {

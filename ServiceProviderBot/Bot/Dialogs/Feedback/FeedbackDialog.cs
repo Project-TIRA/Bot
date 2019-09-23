@@ -1,11 +1,9 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
-using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity;
 using ServiceProviderBot.Bot.Prompts;
+using ServiceProviderBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
-using System.Collections.Generic;
 
 namespace ServiceProviderBot.Bot.Dialogs.Feedback
 {
