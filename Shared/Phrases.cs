@@ -22,10 +22,12 @@ namespace Shared
             public const string Enable = "enable";
             public const string Disable = "disable";
             public const string Feedback = "feedback";
+            public const string Options = "options";
 
             public static List<string> List = new List<string>() { Update, Enable, Disable, Feedback };
 
             public static string HowToUpdate = $"Send \"{Update}\" to update your availability";
+            public static string HowToUpdateOrOptions = $"Send \"{Update}\" to update your availability or \"{Options}\" for more options";
             public static string HowToEnable = $"Send \"{Enable}\" to allow the {ProjectName} bot to contact you for your availability";
             public static string HowToDisable = $"Send \"{Disable}\" to stop the {ProjectName} bot from contacting you for your availability";
             public static string HowToFeedback = $"Send \"{Feedback}\" to provide feedback";
@@ -62,7 +64,7 @@ namespace Shared
                     default: greeting = $"Happy {day.ToString()}{name}!"; break;
                 }
 
-                return MessageFactory.Text(greeting + Environment.NewLine + GetKeywords(user));
+                return MessageFactory.Text(greeting + Keywords.HowToUpdateOrOptions);
             }
 
             public static Activity GetKeywords(User user, bool welcomeUser = false)
