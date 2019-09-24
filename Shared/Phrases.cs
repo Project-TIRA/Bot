@@ -13,7 +13,11 @@ namespace Shared
         public const string WebsiteUrl = "tira.powerappsportals.com";
         public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms };
 
-        public static string ExceptionMessage = $"Sorry, it looks like something went wrong. If this continues to happen, try sending \"{Keywords.Update}\" to start a new update";
+        public static class Exceptions
+        {
+            public static string ServiceProvider = $"Sorry, it looks like something went wrong. If this continues to happen, try sending \"{Keywords.Update}\" to start a new update";
+            public static string Search = $"Sorry, it looks like something went wrong";
+        }
 
         public static class Keywords
         {
@@ -103,12 +107,18 @@ namespace Shared
         public static class Feedback
         {
             public static Activity GetFeedback = MessageFactory.Text($"What would you like to let the {ProjectName} team know?");
-            public static Activity Thanks = MessageFactory.Text($"Thanks for the feedback!");
+            public static Activity Thanks = MessageFactory.Text("Thanks for the feedback!");
         }
 
-        public static class Location
+        public static class Search
         {
-            public static Activity GetLocation = MessageFactory.Text($"In what city area you looking for services?");
+            public static Activity GetServiceType = MessageFactory.Text("What type of service are you looking for?");
+            public static Activity GetHousingType = MessageFactory.Text("What type of housing are you looking for?");
+
+            public static Activity GetLocation(string serviceType)
+            {
+                return MessageFactory.Text($"In what city are you looking for {(string.IsNullOrEmpty(serviceType) ? "services" : serviceType)}?") ;
+            }
         }
 
         public static class Services
@@ -123,6 +133,8 @@ namespace Shared
             public static class Housing
             {
                 public const string ServiceName = "Housing";
+                public const string Emergency = "Emergency";
+                public const string LongTerm = "Long-term";
                 public const string EmergencySharedBeds = "Emergency Shared-Space Beds";
                 public const string EmergencyPrivateBeds = "Emergency Private Beds";
                 public const string LongTermSharedBeds = "Long-term shared-space Beds";

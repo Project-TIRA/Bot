@@ -76,7 +76,7 @@ namespace ServiceProviderBot
                         await context.SendActivityAsync(exception.StackTrace);
                     }
 
-                    await context.SendActivityAsync(Phrases.ExceptionMessage);
+                    await context.SendActivityAsync(Phrases.Exceptions.ServiceProvider);
                 };
 
                 // Auto-save the state after each turn.

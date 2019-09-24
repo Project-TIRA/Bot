@@ -32,18 +32,18 @@ namespace Luis
             public string[] CaseManangement;
 
             public string[] Employment;
-            public string[] Internship;
+            public string[] EmploymentInternship;
 
             public string[] Housing;
-            public string[] Emergency;
-            public string[] Longterm;
+            public string[] HousingEmergency;
+            public string[] HousingLongTerm;
 
             public string[] Location;
 
             public string[] MentalHealth;
 
             public string[] SubstanceUse;
-            public string[] Detox;
+            public string[] SubstanceUseDetox;
 
             // Instance
             public class _Instance

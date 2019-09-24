@@ -77,7 +77,7 @@ namespace SearchBot
                         await context.SendActivityAsync(exception.StackTrace);
                     }
 
-                    await context.SendActivityAsync(Phrases.ExceptionMessage);
+                    await context.SendActivityAsync(Phrases.Exceptions.Search);
                 };
 
                 // Auto-save the state after each turn.

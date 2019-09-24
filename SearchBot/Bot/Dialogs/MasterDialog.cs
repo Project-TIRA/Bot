@@ -21,11 +21,10 @@ namespace SearchBot.Bot.Dialogs
             {
                 async (dialogContext, cancellationToken) =>
                 {
+                    // Get the LUIS result and save any context.
                     var luisResult = await new LuisHelper(this.configuration).RecognizeAsync<LuisModel>(dialogContext.Context, cancellationToken);
-
-                    // Save any relevant state.
-                    var conversationContext = await this.state.GetConversationContext(dialogContext.Context);
-                    conversationContext.AddContext(luisResult);
+                    var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
+                    conversationContext.SetLuisResult(luisResult);
 
                     // Handle the intent.
                     var topIntent = luisResult.TopIntent();
@@ -40,6 +39,9 @@ namespace SearchBot.Bot.Dialogs
                 },
                 async (dialogContext, cancellationToken) =>
                 {
+                    // Clear the conversation context.
+                    await this.state.ClearConversationContext(dialogContext.Context, cancellationToken);
+
                     // End this dialog to pop it off the stack.
                     return await dialogContext.EndDialogAsync(cancellationToken);
                 }
