@@ -1,13 +1,13 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
-using Shared;
+using SearchBot.Bot.State;
 using Shared.ApiInterface;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ServiceProviderBot.Bot.Dialogs
+namespace SearchBot.Bot.Dialogs
 {
     public abstract class DialogBase
     {

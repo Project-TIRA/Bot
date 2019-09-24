@@ -46,6 +46,21 @@ namespace Shared
         private const string CosmosCollectionSettingName = "CosmosDb:Collection";
 
         /// <summary>
+        /// The name of the setting that contains the LUIS app ID.
+        /// </summary>
+        private const string LuisAppIdSettingName = "Luis:AppId";
+
+        /// <summary>
+        /// The name of the setting that contains the LUIS subscription key.
+        /// </summary>
+        private const string LuisSubscriptionKeySettingName = "Luis:SubscriptionKey";
+
+        /// <summary>
+        /// The name of the setting that contains the LUIS endpoint URL.
+        /// </summary>
+        private const string LuisEndpointUrlSettingName = "Luis:EndpointUrl";
+
+        /// <summary>
         /// The name of the setting that contains the CosmosDB collection.
         /// </summary>
         private const string SnapshotCollectorConfigurationSettingName = "SnapshotCollectorConfiguration";
@@ -93,6 +108,21 @@ namespace Shared
         public static string CosmosCollection(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(CosmosCollectionSettingName);
+        }
+
+        public static string LuisAppId(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(LuisAppIdSettingName);
+        }
+
+        public static string LuisSubscriptionKey(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(LuisSubscriptionKeySettingName);
+        }
+
+        public static string LuisEndpointUrl(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(LuisEndpointUrlSettingName);
         }
 
         public static IConfigurationSection SnapshotCollectorConfiguration(this IConfiguration configuration)

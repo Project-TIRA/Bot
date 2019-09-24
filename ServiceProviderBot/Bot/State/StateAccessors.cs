@@ -5,7 +5,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Shared;
 
-namespace ServiceProviderBot.Bot
+namespace ServiceProviderBot.Bot.State
 {
     public class StateAccessors
     {

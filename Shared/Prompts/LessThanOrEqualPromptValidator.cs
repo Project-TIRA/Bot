@@ -1,7 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using System.Threading.Tasks;
 
-namespace ServiceProviderBot.Bot.Prompts
+namespace Shared.Prompts
 {
     public static class LessThanOrEqualPromptValidator
     {

@@ -1,11 +1,9 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
-using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity;
-using ServiceProviderBot.Bot.Prompts;
+using ServiceProviderBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
-using System.Collections.Generic;
+using Shared.Prompts;
 
 namespace ServiceProviderBot.Bot.Dialogs.Feedback
 {
@@ -33,7 +31,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Feedback
                 },
                 async (dialogContext, cancellationToken) =>
                 {
-                    var user = await api.GetUser(dialogContext.Context);
+                    var user = await this.api.GetUser(dialogContext.Context);
 
                     // Save the feedback.
                     var feedback = new EntityModel.Feedback();

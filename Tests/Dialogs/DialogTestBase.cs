@@ -8,12 +8,12 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using ServiceProviderBot.Bot;
 using ServiceProviderBot.Bot.Dialogs;
 using ServiceProviderBot.Bot.Middleware;
-using ServiceProviderBot.Bot.Prompts;
+using ServiceProviderBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
+using Shared.Prompts;
 using Xunit;
 
 namespace Tests.Dialogs

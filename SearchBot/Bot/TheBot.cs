@@ -1,17 +1,17 @@
-﻿using Microsoft.Bot.Builder;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using ServiceProviderBot.Bot.Dialogs;
-using ServiceProviderBot.Bot.Prompts;
+using SearchBot.Bot.Dialogs;
+using SearchBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
+using Shared.Prompts;
 
-namespace ServiceProviderBot.Bot
+namespace SearchBot.Bot
 {
     public class TheBot : IBot
     {
