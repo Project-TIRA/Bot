@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ServiceProviderBot.Bot.Prompts
+namespace Shared.Prompts
 {
     public static class GreetingPromptValidator
     {

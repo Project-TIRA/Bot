@@ -5,11 +5,11 @@ using Shared.ApiInterface;
 
 namespace SearchBot.Bot.Dialogs
 {
-    public class ServiceDialog : DialogBase
+    public class HousingDialog : DialogBase
     {
-        public static string Name = typeof(ServiceDialog).FullName;
+        public static string Name = typeof(HousingDialog).FullName;
 
-        public ServiceDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+        public HousingDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
@@ -18,13 +18,15 @@ namespace SearchBot.Bot.Dialogs
             {
                 async (dialogContext, cancellationToken) =>
                 {
-                    // Push the location dialog onto the stack.
-                    return await dialogContext.BeginDialogAsync(LocationDialog.Name, null, cancellationToken);
-                },
-                async (dialogContext, cancellationToken) =>
-                {
-                    // Push the housing dialog onto the stack.
-                    return await dialogContext.BeginDialogAsync(HousingDialog.Name, null, cancellationToken);
+                    // Check if housing was mentioned but not sepcified.
+                    var conversationContext = await this.state.GetConversationContext(dialogContext.Context);
+                    if (conversationContext.Housing && !conversationContext.EmergencyHousing && !conversationContext.LongtermHousing)
+                    {
+                        // Prompt for the type of housing
+                    }
+
+                    // Skip this step.
+                    return await dialogContext.NextAsync();
                 },
                 async (dialogContext, cancellationToken) =>
                 {

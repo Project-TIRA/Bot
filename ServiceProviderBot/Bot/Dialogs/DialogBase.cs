@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
-using ServiceProviderBot.Bot.Prompts;
 using ServiceProviderBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
+using Shared.Prompts;
 
 namespace ServiceProviderBot.Bot.Dialogs
 {

@@ -82,12 +82,6 @@ namespace Shared
             }
         }
 
-        public static class Feedback
-        {
-            public static Activity GetFeedback = MessageFactory.Text($"What would you like to let the {ProjectName} team know?");
-            public static Activity Thanks = MessageFactory.Text($"Thanks for the feedback!");
-        }
-
         public static class Capacity
         {
             public static Activity GetOpenings(string serviceName)
@@ -104,6 +98,17 @@ namespace Shared
             {
                 return MessageFactory.Text($"Oops, the openings cannot be more than the total available ({total}). {retryPrompt.Text}");
             }
+        }
+
+        public static class Feedback
+        {
+            public static Activity GetFeedback = MessageFactory.Text($"What would you like to let the {ProjectName} team know?");
+            public static Activity Thanks = MessageFactory.Text($"Thanks for the feedback!");
+        }
+
+        public static class Location
+        {
+            public static Activity GetLocation = MessageFactory.Text($"In what city area you looking for services?");
         }
 
         public static class Services

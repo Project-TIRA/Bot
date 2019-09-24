@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Dialogs;
@@ -56,6 +57,12 @@ namespace SearchBot.Bot.State
             this.ConversationState = conversationState ?? throw new ArgumentNullException(nameof(conversationState));
             this.DialogContextAccessor = conversationState.CreateProperty<DialogState>(DialogContextName);
             this.ConversationContextAccessor = conversationState.CreateProperty<ConversationContext>(ConversationContextName);
+        }
+
+        public async Task<ConversationContext> GetConversationContext(ITurnContext turnContext)
+        {
+            return await this.ConversationContextAccessor.GetAsync(turnContext, () => 
+                { return new ConversationContext(); }).ConfigureAwait(false);
         }
 
         /// <summary>

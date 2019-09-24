@@ -1,6 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-namespace ServiceProviderBot.Bot.Prompts
+
+namespace Shared.Prompts
 {
     public class CustomConfirmPrompt : ConfirmPrompt
     {

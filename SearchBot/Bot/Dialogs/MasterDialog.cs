@@ -24,7 +24,7 @@ namespace SearchBot.Bot.Dialogs
                     var luisResult = await new LuisHelper(this.configuration).RecognizeAsync<LuisModel>(dialogContext.Context, cancellationToken);
 
                     // Save any relevant state.
-                    var conversationContext = await this.state.ConversationContextAccessor.GetAsync(dialogContext.Context, () => { return new ConversationContext(); }, cancellationToken).ConfigureAwait(false);
+                    var conversationContext = await this.state.GetConversationContext(dialogContext.Context);
                     conversationContext.AddContext(luisResult);
 
                     // Handle the intent.
