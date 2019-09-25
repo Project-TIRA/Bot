@@ -19,7 +19,6 @@ namespace ServiceProviderBot.Bot
         private readonly DialogSet dialogs;
         private readonly IApiInterface api;
         private readonly IConfiguration configuration;
-        private string userToken;
 
         public TheBot(IConfiguration configuration, StateAccessors state, EfInterface api)
         {
@@ -36,8 +35,6 @@ namespace ServiceProviderBot.Bot
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
-            this.userToken = Helpers.GetUserToken(turnContext);
-
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
                 // Establish context for our dialog from the turn context.

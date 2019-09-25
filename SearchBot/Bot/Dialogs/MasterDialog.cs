@@ -1,6 +1,7 @@
 ﻿using Luis;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
+using SearchBot.Bot.Dialogs.Service;
 using SearchBot.Bot.Luis;
 using SearchBot.Bot.State;
 using Shared;
@@ -24,7 +25,7 @@ namespace SearchBot.Bot.Dialogs
                     // Get the LUIS result and save any context.
                     var luisResult = await new LuisHelper(this.configuration).RecognizeAsync<LuisModel>(dialogContext.Context, cancellationToken);
                     var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
-                    conversationContext.SetLuisResult(luisResult);
+                    conversationContext.AddLuisResult(luisResult);
 
                     // Handle the intent.
                     var topIntent = luisResult.TopIntent();

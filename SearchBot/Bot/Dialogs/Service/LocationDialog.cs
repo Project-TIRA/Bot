@@ -1,19 +1,17 @@
-﻿using Luis;
-using Microsoft.Bot.Builder.Dialogs;
+﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
-using SearchBot.Bot.Luis;
 using SearchBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
 
-namespace SearchBot.Bot.Dialogs
+namespace SearchBot.Bot.Dialogs.Service
 {
-    public class ServiceTypeDialog : DialogBase
+    public class LocationDialog : DialogBase
     {
-        public static string Name = typeof(ServiceTypeDialog).FullName;
+        public static string Name = typeof(LocationDialog).FullName;
 
-        public ServiceTypeDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
+        public LocationDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration) { }
 
         public override WaterfallDialog GetWaterfallDialog()
@@ -22,18 +20,18 @@ namespace SearchBot.Bot.Dialogs
             {
                 async (dialogContext, cancellationToken) =>
                 {
-                    // Check if any service types were mentioned.
+                    // Check if the location is known.
                     var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
-                    if (conversationContext.GetServiceTypes().Count == 0)
+                    if (string.IsNullOrEmpty(conversationContext.Location))
                     {
-                        // Prompt for the service type.
+                        // Prompt for the location.
                         return await dialogContext.PromptAsync(
                             Prompt.TextPrompt,
                             new PromptOptions {
-                                Prompt = Phrases.Search.GetServiceType
+                                Prompt = Phrases.Search.GetLocation(conversationContext.GetServicesString())
                             },
                             cancellationToken);
-                    }
+                        }
 
                     // Skip this step.
                     return await dialogContext.NextAsync();
@@ -42,17 +40,14 @@ namespace SearchBot.Bot.Dialogs
                 {
                     if (dialogContext.Result != null)
                     {
-                        // Get the LUIS result and save any context.
-                        var luisResult = await new LuisHelper(this.configuration).RecognizeAsync<LuisModel>(dialogContext.Context, cancellationToken);
+                        // Save the location.
+                        // TODO: Validate with Maps API
                         var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
-                        conversationContext.SetLuisResult(luisResult);
-
-                        // Restart this dialog.
-                        return await dialogContext.ReplaceDialogAsync(Name, null, cancellationToken);
+                        conversationContext.Location = (string)dialogContext.Result;
                     }
 
                     // End this dialog to pop it off the stack.
-                    return await dialogContext.EndDialogAsync();
+                    return await dialogContext.EndDialogAsync(cancellationToken);
                 }
             });
         }

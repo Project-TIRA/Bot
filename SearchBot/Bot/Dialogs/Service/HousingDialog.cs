@@ -7,7 +7,7 @@ using Shared.ApiInterface;
 using Shared.Prompts;
 using System.Collections.Generic;
 
-namespace SearchBot.Bot.Dialogs
+namespace SearchBot.Bot.Dialogs.Service
 {
     public class HousingDialog : DialogBase
     {

@@ -61,9 +61,9 @@ namespace Shared
         private const string LuisEndpointUrlSettingName = "Luis:EndpointUrl";
 
         /// <summary>
-        /// The name of the setting that contains the CosmosDB collection.
+        /// The name of the setting that contains the ApplicationInsights config.
         /// </summary>
-        private const string SnapshotCollectorConfigurationSettingName = "SnapshotCollectorConfiguration";
+        private const string ApplicationInsightsSettingName = "ApplicationInsights";
 
         /// <summary>
         /// The name of the setting that contains the channel ID for tests.
@@ -125,9 +125,9 @@ namespace Shared
             return configuration.GetValue<string>(LuisEndpointUrlSettingName);
         }
 
-        public static IConfigurationSection SnapshotCollectorConfiguration(this IConfiguration configuration)
+        public static string ApplicationInsightsConfiguration(this IConfiguration configuration)
         {
-            return configuration.GetSection(SnapshotCollectorConfigurationSettingName);
+            return configuration.GetValue<string>(ApplicationInsightsSettingName);
         }
 
         public static string TestChannel(this IConfiguration configuration)
