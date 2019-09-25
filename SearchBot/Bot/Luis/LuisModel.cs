@@ -38,26 +38,30 @@ namespace Luis
             public string[] HousingEmergency;
             public string[] HousingLongTerm;
 
-            public string[] Location;
-
             public string[] MentalHealth;
 
             public string[] SubstanceUse;
             public string[] SubstanceUseDetox;
+
+            // Built-in entities
+            public DateTimeSpec[] datetime;
+
+            public GeographyV2[] geographyV2;
 
             // Instance
             public class _Instance
             {
                 public InstanceData[] CaseManangement;
                 public InstanceData[] Employment;
-                public InstanceData[] Internship;
+                public InstanceData[] EmploymentInternship;
                 public InstanceData[] Housing;
-                public InstanceData[] Emergency;
-                public InstanceData[] Longterm;
-                public InstanceData[] Location;
+                public InstanceData[] HousingEmergency;
+                public InstanceData[] HousingLongTerm;
                 public InstanceData[] MentalHealth;
                 public InstanceData[] SubstanceUse;
-                public InstanceData[] Detox;
+                public InstanceData[] SubstanceUseDetox;
+                public InstanceData[] datetime;
+                public InstanceData[] geographyV2;
             }
             [JsonProperty("$instance")]
             public _Instance _instance;

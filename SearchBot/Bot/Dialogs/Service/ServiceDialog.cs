@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SearchBot.Bot.Dialogs
+namespace SearchBot.Bot.Dialogs.Service
 {
     public class ServiceDialog : DialogBase
     {

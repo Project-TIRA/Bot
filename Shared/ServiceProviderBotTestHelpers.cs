@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Shared
 {
-    public static class TestHelpers
+    public static class ServiceProviderBotTestHelpers
     {
         public static int DefaultTotal = 10;
         public static int DefaultOpen = 5;

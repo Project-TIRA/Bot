@@ -9,11 +9,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Bot.Connector.Authentication;
 using ServiceProviderBot.Bot;
-using ServiceProviderBot.Bot.Middleware;
 using ServiceProviderBot.Bot.State;
 using Shared.ApiInterface;
 using Shared;
 using System.Diagnostics;
+using Shared.Middleware;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace ServiceProviderBot
 {
@@ -31,7 +32,9 @@ namespace ServiceProviderBot
                 .AddEnvironmentVariables();
             this.configuration = builder.Build();
 
-            this.telemetry = new TelemetryClient();
+            var appInsightsConfigString = this.configuration.ApplicationInsightsConfiguration();
+            var config = string.IsNullOrEmpty(appInsightsConfigString) ? TelemetryConfiguration.CreateDefault() : TelemetryConfiguration.CreateFromConfiguration(appInsightsConfigString);
+            this.telemetry = new TelemetryClient(config);
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.

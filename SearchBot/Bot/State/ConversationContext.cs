@@ -1,9 +1,9 @@
 ﻿using EntityModel;
 using Luis;
-using Microsoft.Bot.Configuration;
 using Shared;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace SearchBot.Bot.State
 {
@@ -21,19 +21,53 @@ namespace SearchBot.Bot.State
         private bool HasHousing { get { return this.Housing || this.HousingEmergency || this.HousingLongTerm; } }
         private bool HasEmployment { get { return this.Employment || this.EmploymentInternship; } }
 
-        public void SetLuisResult(LuisModel luisModel)
+        public override int GetHashCode()
         {
-            if (luisModel.Entities.Location != null && luisModel.Entities.Location.Length > 0)
+            return this.Location.GetHashCode() ^
+                this.Housing.GetHashCode() ^ this.HousingEmergency.GetHashCode() ^ this.HousingLongTerm.GetHashCode() ^
+                this.Employment.GetHashCode() ^ this.EmploymentInternship.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+
+            if (GetType() != obj.GetType())
+                return false;
+
+            ConversationContext ctx = (ConversationContext)obj;
+            return ctx.Location == this.Location &&
+                ctx.Housing == this.Housing &&
+                ctx.HousingEmergency == this.HousingEmergency &&
+                ctx.HousingLongTerm == this.HousingLongTerm &&
+                ctx.Employment == this.Employment &&
+                ctx.EmploymentInternship == this.EmploymentInternship;
+        }
+
+        public static bool operator ==(ConversationContext c1, ConversationContext c2)
+        {
+            return Object.Equals(c1, c2);
+        }
+
+        public static bool operator !=(ConversationContext c1, ConversationContext c2)
+        {
+            return !Object.Equals(c1, c2);
+        }
+
+        public void AddLuisResult(LuisModel luisModel)
+        {
+            if (luisModel.Entities?.geographyV2 != null && luisModel.Entities.geographyV2.Length > 0)
             {
-                this.Location = luisModel.Entities.Location[0];
+                this.Location = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(luisModel.Entities.geographyV2[0].Location);
             }
 
-            this.Housing = luisModel.Entities.Housing != null && luisModel.Entities.Housing.Length > 0;
-            this.HousingEmergency = luisModel.Entities.HousingEmergency != null && luisModel.Entities.HousingEmergency.Length > 0;
-            this.HousingLongTerm = luisModel.Entities.HousingLongTerm != null && luisModel.Entities.HousingLongTerm.Length > 0;
+            this.Housing = luisModel.Entities?.Housing != null && luisModel.Entities.Housing.Length > 0;
+            this.HousingEmergency = luisModel.Entities?.HousingEmergency != null && luisModel.Entities.HousingEmergency.Length > 0;
+            this.HousingLongTerm = luisModel.Entities?.HousingLongTerm != null && luisModel.Entities.HousingLongTerm.Length > 0;
 
-            this.Employment = luisModel.Entities.Employment != null && luisModel.Entities.Employment.Length > 0;
-            this.EmploymentInternship = luisModel.Entities.EmploymentInternship != null && luisModel.Entities.EmploymentInternship.Length > 0;
+            this.Employment = luisModel.Entities?.Employment != null && luisModel.Entities.Employment.Length > 0;
+            this.EmploymentInternship = luisModel.Entities?.EmploymentInternship != null && luisModel.Entities.EmploymentInternship.Length > 0;
         }
 
         public List<ServiceType> GetServiceTypes()
