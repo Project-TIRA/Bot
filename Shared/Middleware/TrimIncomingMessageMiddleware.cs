@@ -12,7 +12,7 @@ namespace Shared.Middleware
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
                 // Trim the incoming text.
-                turnContext.Activity.Text.Trim();
+                turnContext.Activity.Text = turnContext.Activity.Text.Trim();
             }
 
             // Invoke the next middleware.
