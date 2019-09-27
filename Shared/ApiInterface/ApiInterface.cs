@@ -35,7 +35,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceModelBase;
+        Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceDataBase;
 
         /// <summary>
         /// Gets all of an organization's services from the turn context.
@@ -46,7 +46,7 @@ namespace Shared.ApiInterface
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser = false) where T : ServiceModelBase, new();
+        Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser = false) where T : ServiceDataBase, new();
 
         /// <summary>
         /// Gets all verified organizations.

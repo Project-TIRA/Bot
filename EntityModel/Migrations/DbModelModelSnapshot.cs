@@ -47,6 +47,74 @@ namespace EntityModel.Migrations
                     b.ToTable("CaseManagementData");
                 });
 
+            modelBuilder.Entity("EntityModel.EmploymentData", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("CreatedById");
+
+                    b.Property<DateTime>("CreatedOn");
+
+                    b.Property<bool>("EmploymentPlacementHasWaitlist");
+
+                    b.Property<int>("EmploymentPlacementOpen");
+
+                    b.Property<int>("EmploymentPlacementTotal");
+
+                    b.Property<bool>("EmploymentPlacementWaitlistIsOpen");
+
+                    b.Property<bool>("IsComplete");
+
+                    b.Property<bool>("JobReadinessTrainingHasWaitlist");
+
+                    b.Property<int>("JobReadinessTrainingOpen");
+
+                    b.Property<int>("JobReadinessTrainingTotal");
+
+                    b.Property<bool>("JobReadinessTrainingWaitlistIsOpen");
+
+                    b.Property<string>("Name");
+
+                    b.Property<bool>("PaidInternshipHasWaitlist");
+
+                    b.Property<int>("PaidInternshipOpen");
+
+                    b.Property<int>("PaidInternshipTotal");
+
+                    b.Property<bool>("PaidInternshipWaitlistIsOpen");
+
+                    b.Property<string>("ServiceId");
+
+                    b.Property<bool>("VocationalTrainingHasWaitlist");
+
+                    b.Property<int>("VocationalTrainingOpen");
+
+                    b.Property<int>("VocationalTrainingTotal");
+
+                    b.Property<bool>("VocationalTrainingWaitlistIsOpen");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmploymentData");
+                });
+
+            modelBuilder.Entity("EntityModel.Feedback", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedOn");
+
+                    b.Property<string>("SenderId");
+
+                    b.Property<string>("Text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Feedback");
+                });
+
             modelBuilder.Entity("EntityModel.HousingData", b =>
                 {
                     b.Property<string>("Id")
@@ -97,34 +165,6 @@ namespace EntityModel.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("HousingData");
-                });
-
-            modelBuilder.Entity("EntityModel.JobTrainingData", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CreatedById");
-
-                    b.Property<DateTime>("CreatedOn");
-
-                    b.Property<bool>("HasWaitlist");
-
-                    b.Property<bool>("IsComplete");
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("Open");
-
-                    b.Property<string>("ServiceId");
-
-                    b.Property<int>("Total");
-
-                    b.Property<bool>("WaitlistIsOpen");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("JobTrainingData");
                 });
 
             modelBuilder.Entity("EntityModel.MentalHealthData", b =>

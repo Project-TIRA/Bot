@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+    <ApplicationInsightsResourceId>/subscriptions/1ec36331-5d68-4acf-b0d6-dff45050de48/resourcegroups/ServiceProviderBot/providers/microsoft.insights/components/ServiceProviderBot</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/1ec36331-5d68-4acf-b0d6-dff45050de48/resourcegroups/ServiceProviderBot/providers/microsoft.insights/components/ServiceProviderBot</ApplicationInsightsAnnotationResourceId>
+    <UserSecretsId>1cf5c9fd-215b-4551-b3df-b6b61e2cc244</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Bot\Dialogs\NewOrganization\**" />
+    <Content Remove="Bot\Dialogs\NewOrganization\**" />
+    <EmbeddedResource Remove="Bot\Dialogs\NewOrganization\**" />
+    <None Remove="Bot\Dialogs\NewOrganization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Bot.Builder" Version="4.5.2" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.5.2" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.5.2" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.5.2" />
+    <PackageReference Include="Microsoft.Bot.Builder.Azure" Version="4.5.2" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\project-tira-staging - Web Deploy.pubxml.user" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EntityModel\EntityModel.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
+  </ItemGroup>
+
+</Project>

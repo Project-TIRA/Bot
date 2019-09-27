@@ -96,38 +96,38 @@ namespace DatabaseInitializer
         {
             for (int i = 0; i < 5; ++i)
             {
-                var organization = await TestHelpers.CreateOrganization(api, isVerified: true);
-                var user = await TestHelpers.CreateUser(api, organization.Id);
+                var organization = await ServiceProviderBotTestHelpers.CreateOrganization(api, isVerified: true);
+                var user = await ServiceProviderBotTestHelpers.CreateUser(api, organization.Id);
 
                 // Randomize the services the organizations have.
                 if (new Random().Next(2) == 1)
                 {
-                    var caseManagementService = await TestHelpers.CreateService<CaseManagementData>(api, organization.Id);
-                    var caseManagementData = await TestHelpers.CreateCaseManagementData(api, user.Id, caseManagementService.Id, true, true, TestHelpers.DefaultTotal);
+                    var caseManagementService = await ServiceProviderBotTestHelpers.CreateService<CaseManagementData>(api, organization.Id);
+                    var caseManagementData = await ServiceProviderBotTestHelpers.CreateCaseManagementData(api, user.Id, caseManagementService.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal);
                 }
 
                 if (new Random().Next(2) == 1)
                 {
-                    var housingService = await TestHelpers.CreateService<HousingData>(api, organization.Id);
-                    var housingData = await TestHelpers.CreateHousingData(api, user.Id, housingService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+                    var housingService = await ServiceProviderBotTestHelpers.CreateService<HousingData>(api, organization.Id);
+                    var housingData = await ServiceProviderBotTestHelpers.CreateHousingData(api, user.Id, housingService.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
                 }
 
                 if (new Random().Next(2) == 1)
                 {
-                    var jobTrainingService = await TestHelpers.CreateService<JobTrainingData>(api, organization.Id);
-                    var jobTrainingData = await TestHelpers.CreateJobTrainingData(api, user.Id, jobTrainingService.Id, true, true, TestHelpers.DefaultTotal);
+                    var employmentService = await ServiceProviderBotTestHelpers.CreateService<EmploymentData>(api, organization.Id);
+                    var employmentData = await ServiceProviderBotTestHelpers.CreatEmploymentData(api, user.Id, employmentService.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
                 }
 
                 if (new Random().Next(2) == 1)
                 {
-                    var mentalHealthService = await TestHelpers.CreateService<MentalHealthData>(api, organization.Id);
-                    var mentalHealthData = await TestHelpers.CreateMentalHealthData(api, user.Id, mentalHealthService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+                    var mentalHealthService = await ServiceProviderBotTestHelpers.CreateService<MentalHealthData>(api, organization.Id);
+                    var mentalHealthData = await ServiceProviderBotTestHelpers.CreateMentalHealthData(api, user.Id, mentalHealthService.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
                 }
 
                 if (new Random().Next(2) == 1)
                 {
-                    var substanceUseService = await TestHelpers.CreateService<SubstanceUseData>(api, organization.Id);
-                    var substanceUseData = await TestHelpers.CreateSubstanceUseData(api, user.Id, substanceUseService.Id, true, true, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal, TestHelpers.DefaultTotal);
+                    var substanceUseService = await ServiceProviderBotTestHelpers.CreateService<SubstanceUseData>(api, organization.Id);
+                    var substanceUseData = await ServiceProviderBotTestHelpers.CreateSubstanceUseData(api, user.Id, substanceUseService.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
                 }
             }
         }

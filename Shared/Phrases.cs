@@ -2,7 +2,6 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
@@ -14,19 +13,27 @@ namespace Shared
         public const string WebsiteUrl = "tira.powerappsportals.com";
         public static List<string> ValidChannels = new List<string>() { Channels.Emulator, Channels.Sms };
 
-        public static string ExceptionMessage = $"Sorry, it looks like something went wrong. If this continues to happen, try sending \"{Keywords.Update}\" to start a new update";
+        public static class Exceptions
+        {
+            public static string ServiceProvider = $"Sorry, it looks like something went wrong. If this continues to happen, try sending \"{Keywords.Update}\" to start a new update";
+            public static string Search = $"Sorry, it looks like something went wrong";
+        }
 
         public static class Keywords
         {
             public const string Update = "update";
+            public const string Feedback = "feedback";
             public const string Enable = "enable";
             public const string Disable = "disable";
+            public const string Options = "options";
 
-            public static List<string> List = new List<string>() { Update, Enable, Disable };
+            public static List<string> List = new List<string>() { Update, Feedback, Enable, Disable };
 
+            public static string HowToUpdate = $"Send \"{Update}\" to update your availability";
+            public static string HowToUpdateOrOptions = $"Send \"{Update}\" to update your availability or \"{Options}\" for more options";
+            public static string HowToFeedback = $"Send \"{Feedback}\" to provide feedback";
             public static string HowToEnable = $"Send \"{Enable}\" to allow the {ProjectName} bot to contact you for your availability";
             public static string HowToDisable = $"Send \"{Disable}\" to stop the {ProjectName} bot from contacting you for your availability";
-            public static string HowToUpdate = $"Send \"{Update}\" to update your availability";
         }
 
         public static class Greeting
@@ -60,13 +67,14 @@ namespace Shared
                     default: greeting = $"Happy {day.ToString()}{name}!"; break;
                 }
 
-                return MessageFactory.Text(greeting + Environment.NewLine + Keywords.HowToUpdate);
+                return MessageFactory.Text(greeting + Keywords.HowToUpdateOrOptions);
             }
 
             public static Activity GetKeywords(User user, bool welcomeUser = false)
             {
                 string greeting = welcomeUser ? (Welcome(user) + Environment.NewLine) : string.Empty;
                 greeting += "- " + Keywords.HowToUpdate + Environment.NewLine +
+                            "- " + Keywords.HowToFeedback + Environment.NewLine +
                             "- " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable);
 
                 return MessageFactory.Text(greeting);
@@ -96,6 +104,23 @@ namespace Shared
             }
         }
 
+        public static class Feedback
+        {
+            public static Activity GetFeedback = MessageFactory.Text($"What would you like to let the {ProjectName} team know?");
+            public static Activity Thanks = MessageFactory.Text("Thanks for the feedback!");
+        }
+
+        public static class Search
+        {
+            public static Activity GetServiceType = MessageFactory.Text("What type of service are you looking for?");
+            public static Activity GetHousingType = MessageFactory.Text("What type of housing are you looking for?");
+
+            public static Activity GetLocation(string serviceType)
+            {
+                return MessageFactory.Text($"In what city are you looking for {(string.IsNullOrEmpty(serviceType) ? "services" : serviceType)}?") ;
+            }
+        }
+
         public static class Services
         {
             public static string All = "All";
@@ -108,15 +133,21 @@ namespace Shared
             public static class Housing
             {
                 public const string ServiceName = "Housing";
+                public const string Emergency = "Emergency";
+                public const string LongTerm = "Long-term";
                 public const string EmergencySharedBeds = "Emergency Shared-Space Beds";
                 public const string EmergencyPrivateBeds = "Emergency Private Beds";
                 public const string LongTermSharedBeds = "Long-term shared-space Beds";
                 public const string LongTermPrivateBeds = "Long-term Private Beds";
             }
 
-            public static class JobTraining
+            public static class Employment
             {
-                public const string ServiceName = "Job Training";
+                public const string ServiceName = "Employment";
+                public const string JobReadinessTraining = "Job Readiness Training";
+                public const string PaidInternships = "Paid Internships";
+                public const string VocationalTraining = "Vocational Training";
+                public const string EmploymentPlacement = "Employment Placement";
             }
 
             public static class MentalHealth
@@ -141,6 +172,11 @@ namespace Shared
             public static Activity Options = MessageFactory.Text("Which service(s) would you like to update?");
             public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
+        }
+
+        public static class Intents
+        {
+            public static Activity Unknown = MessageFactory.Text("Sorry, I'm not able to understand that. What services can I help you find?");
         }
     }
 }

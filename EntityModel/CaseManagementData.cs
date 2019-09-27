@@ -3,7 +3,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace EntityModel
 {
-    public class CaseManagementData : ServiceModelBase
+    public class CaseManagementData : ServiceDataBase
     {
         public static string TABLE_NAME = "TODO";
         public static string PRIMARY_KEY = "TODO";
