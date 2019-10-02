@@ -2,11 +2,9 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Shared.ApiInterface

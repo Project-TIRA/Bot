@@ -14,6 +14,7 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder;
 using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
 
 namespace Shared.ApiInterface
 {
@@ -22,19 +23,21 @@ namespace Shared.ApiInterface
     /// </summary>
     public class CdsInterface : IApiInterface
     {
-        // TODO: Put these in app settings.
-        const string CLIENT_ID = "4cd0f1ea-6f83-419a-a4fa-24878d30dd09";
-        const string CLIENT_SECRET = "L-7r?rQY/5xo+QQ1yBJ02IEk3z9V297f";
+        // TODO: Put these in app settings and get from configuration.
+        const string APP_ID = "";
+        const string APP_SECRET = "";
         const string TENANT_ID = "72f988bf-86f1-41af-91ab-2d7cd011db47";
         const string RESOURCE_URL = "https://obsdev.api.crm.dynamics.com";
         const string AUTH_URL = "https://login.microsoftonline.com/{0}/oauth2/token";
         const string API_URL = "https://obsdev.api.crm.dynamics.com/api/data/v9.1/";
 
+        IConfiguration configuration;
         HttpClient client;
         string authToken;
 
-        public CdsInterface()
+        public CdsInterface(IConfiguration configuration)
         {
+            this.configuration = configuration;
             this.client = new HttpClient();
             this.client.BaseAddress = new Uri(API_URL);
         }
@@ -310,7 +313,7 @@ namespace Shared.ApiInterface
             string authorityUrl = string.Format(AUTH_URL, TENANT_ID);
             var authContext = new AuthenticationContext(authorityUrl, false);
 
-            ClientCredential clientCred = new ClientCredential(CLIENT_ID, CLIENT_SECRET);
+            ClientCredential clientCred = new ClientCredential(APP_ID, APP_SECRET);
             AuthenticationResult authResult = await authContext.AcquireTokenAsync(RESOURCE_URL, clientCred);
 
             this.authToken = authResult.AccessToken;

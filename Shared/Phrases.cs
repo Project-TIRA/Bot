@@ -67,7 +67,7 @@ namespace Shared
                     default: greeting = $"Happy {day.ToString()}{name}!"; break;
                 }
 
-                return MessageFactory.Text(greeting + Keywords.HowToUpdateOrOptions);
+                return MessageFactory.Text(greeting + " " + Keywords.HowToUpdateOrOptions);
             }
 
             public static Activity GetKeywords(User user, bool welcomeUser = false)
