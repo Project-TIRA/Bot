@@ -1,20 +1,20 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System;
+﻿using EntityModel;
 using Newtonsoft.Json.Linq;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
-using EntityModel;
-using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder;
-using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Shared.ApiInterface
 {
@@ -100,12 +100,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization from the turn context.
         /// </summary>
-        public async Task<Organization> GetOrganization(ITurnContext turnContext)
+        public async Task<Organization> GetOrganization(ITurnContext turnContext, string organizationId)
         {
-            var user = await GetUser(turnContext);
-            if (user != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + user.OrganizationId);
+                JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + organizationId);
                 if (response != null && response["value"].HasValues)
                 {
                     return JsonConvert.DeserializeObject<Organization>(response["value"][0].ToString(), GetJsonSettings(Organization.Resolver.Instance));
@@ -118,12 +117,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the count of an organization's services from the turn context.
         /// </summary>
-        public async Task<int> GetServiceCount(ITurnContext turnContext)
+        public async Task<int> GetServiceCount(ITurnContext turnContext, string organizationId)
         {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} &$count=true");
+                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organizationId} &$count=true");
                 if (response != null)
                 {
                     return (int)response["@odata.count"];
@@ -136,15 +134,14 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceDataBase
+        public async Task<Service> GetService<T>(ITurnContext turnContext, string organizationId) where T : ServiceDataBase
         {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
                 var type = Helpers.GetServiceType<T>();
                 if (type != ServiceType.Invalid)
                 {
-                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {type}");
+                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organizationId} and tira_servicetype eq {type}");
                     if (response != null && response["value"].HasValues)
                     {
                         return JsonConvert.DeserializeObject<Service>(response["value"][0].ToString(), GetJsonSettings(Service.Resolver.Instance));
@@ -158,12 +155,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets all of an organization's services from the turn context.
         /// </summary>
-        public async Task<List<Service>> GetServices(ITurnContext turnContext)
+        public async Task<List<Service>> GetServices(ITurnContext turnContext, string organizationId)
         {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id}");
+                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organizationId}");
                 if (response != null && response["value"].HasValues)
                 {
                     return JsonConvert.DeserializeObject<List<Service>>(response["value"].ToString(), GetJsonSettings(User.Resolver.Instance));
@@ -176,10 +172,10 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
-        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser) where T : ServiceDataBase, new()
+        /// <param name="createdByUser">Optionally pass whether to get the latest data created by the current user</param>
+        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, string organizationId, bool createdByUser = false) where T : ServiceDataBase, new()
         {
-            var service = await GetService<T>(turnContext);
+            var service = await GetService<T>(turnContext, organizationId);
             if (service != null)
             {
                 var type = Helpers.GetServiceType<T>();

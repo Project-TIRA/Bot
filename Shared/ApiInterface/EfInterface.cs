@@ -99,12 +99,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization from the turn context.
         /// </summary>
-        public async Task<Organization> GetOrganization(ITurnContext turnContext)
-        {
-            var user = await GetUser(turnContext);
-            if (user != null)
+        public async Task<Organization> GetOrganization(ITurnContext turnContext, string organizationId)
+        {            
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                return await this.dbContext.Organizations.FirstOrDefaultAsync(o => o.Id == user.OrganizationId);
+                return await this.dbContext.Organizations.FirstOrDefaultAsync(o => o.Id == organizationId);
             }
 
             return null;
@@ -113,12 +112,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the count of an organization's services from the turn context.
         /// </summary>
-        public async Task<int> GetServiceCount(ITurnContext turnContext)
-        {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+        public async Task<int> GetServiceCount(ITurnContext turnContext, string organizationId)
+        { 
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                return await this.dbContext.Services.CountAsync(s => s.OrganizationId == organization.Id);
+                return await this.dbContext.Services.CountAsync(s => s.OrganizationId == organizationId);
             }
 
             return 0;
@@ -127,15 +125,14 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceDataBase
+        public async Task<Service> GetService<T>(ITurnContext turnContext, string organizationId) where T : ServiceDataBase
         {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
                 var type = Helpers.GetServiceType<T>();
                 if (type != ServiceType.Invalid)
                 {
-                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.OrganizationId == organization.Id && s.Type == type);
+                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.OrganizationId == organizationId && s.Type == type);
                 }
             }
 
@@ -145,12 +142,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets all of an organization's services from the turn context.
         /// </summary>
-        public async Task<List<Service>> GetServices(ITurnContext turnContext)
+        public async Task<List<Service>> GetServices(ITurnContext turnContext, string organizationId)
         {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                return await this.dbContext.Services.Where(s => s.OrganizationId == organization.Id).ToListAsync();
+                return await this.dbContext.Services.Where(s => s.OrganizationId == organizationId).ToListAsync();
             }
 
             return new List<Service>();
@@ -159,10 +155,10 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
-        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser) where T : ServiceDataBase, new()
+        /// <param name="createdByUser">Optionally pass whether to get the latest data created by the current user</param>
+        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, string organizationId, bool createdByUser = false) where T : ServiceDataBase, new()
         {
-            var service = await GetService<T>(turnContext);
+            var service = await GetService<T>(turnContext, organizationId);
             if (service != null)
             {
                 IQueryable<ServiceDataBase> query;

@@ -1,7 +1,7 @@
 ﻿using EntityModel;
+using Microsoft.Bot.Builder;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 
 namespace Shared.ApiInterface
 {
@@ -25,28 +25,28 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization from the turn context.
         /// </summary>
-        Task<Organization> GetOrganization(ITurnContext turnContext);
+        Task<Organization> GetOrganization(ITurnContext turnContext, string organizationId);
 
         /// <summary>
         /// Gets the count of an organization's services from the turn context.
         /// </summary>
-        Task<int> GetServiceCount(ITurnContext turnContext);
-        
+        Task<int> GetServiceCount(ITurnContext turnContext, string organizationId);
+
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceDataBase;
+        Task<Service> GetService<T>(ITurnContext turnContext, string organizationId) where T : ServiceDataBase;
 
         /// <summary>
         /// Gets all of an organization's services from the turn context.
         /// </summary>
-        Task<List<Service>> GetServices(ITurnContext turnContext);
+        Task<List<Service>> GetServices(ITurnContext turnContext, string organizationId);
 
         /// <summary>
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
-        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser = false) where T : ServiceDataBase, new();
+        /// <param name="createdByUser">Optionally pass whether to get the latest data created by the current user</param>
+        Task<T> GetLatestServiceData<T>(ITurnContext turnContext, string organizationId, bool createdByUser = false) where T : ServiceDataBase, new();
 
         /// <summary>
         /// Gets all verified organizations.

@@ -60,12 +60,12 @@ namespace ServiceProviderBot.Bot.Dialogs
             foreach (var entry in dialogContext.Stack)
             {
                 // Only create the dialog if it doesn't exist.
-                if (dialogs.Find(entry.Id) == null)
+                if (this.dialogs.Find(entry.Id) == null)
                 {
                     var dialog = CreateFromDialogId(entry.Id);
                     if (dialog != null)
                     {
-                        dialogs.Add(dialog.GetWaterfallDialog());
+                        this.dialogs.Add(dialog.GetWaterfallDialog());
                     }
                 }
             }
@@ -77,15 +77,15 @@ namespace ServiceProviderBot.Bot.Dialogs
         {
             return async (dialogContext, cancellationToken) =>
             {
-                var user = await this.api.GetUser(dialogContext.Context);
+                var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
                 // Get the latest snapshot.
-                var previousData = await this.api.GetLatestServiceData<T>(dialogContext.Context);
+                var previousData = await this.api.GetLatestServiceData<T>(dialogContext.Context, userContext.OrganizationId);
 
                 // Create a new snapshot and copy the static values from the previous one.
                 var data = new T();
                 data.CopyStaticValues(previousData);
-                data.CreatedById = user.Id;
+                data.CreatedById = userContext.UserId;
                 await this.api.Create(data);
 
                 // Continue to the next step.
@@ -100,11 +100,13 @@ namespace ServiceProviderBot.Bot.Dialogs
             {
                 async (dialogContext, cancellationToken) =>
                 {
+                    var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+
                     // Get the service.
-                    var service = await this.api.GetService<T>(dialogContext.Context);
+                    var service = await this.api.GetService<T>(dialogContext.Context, userContext.OrganizationId);
 
                     // Get the latest snapshot created by the user.
-                    var data = await this.api.GetLatestServiceData<T>(dialogContext.Context, createdByUser: true);
+                    var data = await this.api.GetLatestServiceData<T>(dialogContext.Context, userContext.OrganizationId, createdByUser: true);
                     var totalPropertyValue = (int)typeof(T).GetProperty(totalPropertyName).GetValue(data);
 
                     // Check if the organization has this service.
@@ -137,8 +139,10 @@ namespace ServiceProviderBot.Bot.Dialogs
                     {
                         var open = int.Parse((string)dialogContext.Result);
 
+                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+
                         // Get the latest snapshot created by the user and update it.
-                        var data = await this.api.GetLatestServiceData<T>(dialogContext.Context, createdByUser: true);
+                        var data = await this.api.GetLatestServiceData<T>(dialogContext.Context, userContext.OrganizationId, createdByUser: true);
                         typeof(T).GetProperty(openPropertyName).SetValue(data, open);
                         await this.api.Update(data);
 
@@ -162,8 +166,10 @@ namespace ServiceProviderBot.Bot.Dialogs
                     // Check if the previous step had a result.
                     if (dialogContext.Result != null)
                     {
+                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+
                         // Get the latest snapshot created by the user and update it.
-                        var data = await this.api.GetLatestServiceData<T>(dialogContext.Context, createdByUser: true);
+                        var data = await this.api.GetLatestServiceData<T>(dialogContext.Context, userContext.OrganizationId, createdByUser: true);
                         typeof(T).GetProperty(waitlistIsOpenPropertyName).SetValue(data, (bool)dialogContext.Result);
                         await this.api.Update(data);
                     }
@@ -178,8 +184,10 @@ namespace ServiceProviderBot.Bot.Dialogs
         {
             return async (dialogContext, cancellationToken) =>
             {
+                var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+
                 // Mark the snapshot created by the user as complete.
-                var data = await this.api.GetLatestServiceData<T>(dialogContext.Context, createdByUser: true);
+                var data = await this.api.GetLatestServiceData<T>(dialogContext.Context, userContext.OrganizationId, createdByUser: true);
                 data.IsComplete = true;
                 await this.api.Update(data);
 

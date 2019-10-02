@@ -26,7 +26,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<HousingData>(this.turnContext, true);
+            var resultData = await this.api.GetLatestServiceData<HousingData>(this.turnContext, organization.Id, true);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.EmergencySharedBedsOpen);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.EmergencyPrivateBedsOpen);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.LongTermSharedBedsOpen);
@@ -55,7 +55,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<HousingData>(this.turnContext, true);
+            var resultData = await this.api.GetLatestServiceData<HousingData>(this.turnContext, organization.Id, true);
             Assert.Equal(0, resultData.EmergencySharedBedsOpen);
             Assert.Equal(0, resultData.EmergencyPrivateBedsOpen);
             Assert.Equal(0, resultData.LongTermSharedBedsOpen);
@@ -84,7 +84,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<HousingData>(this.turnContext, true);
+            var resultData = await this.api.GetLatestServiceData<HousingData>(this.turnContext, organization.Id, true);
             Assert.Equal(0, resultData.EmergencySharedBedsOpen);
             Assert.Equal(0, resultData.EmergencyPrivateBedsOpen);
             Assert.Equal(0, resultData.LongTermSharedBedsOpen);

@@ -120,6 +120,12 @@ namespace SearchProviderBotTests.Dialogs
                 }
 
                 await this.api.Update(user);
+
+                // Save the user ID and organization ID to the user context so that
+                // they can be accessed by other dialogs without API lookups.
+                var userContext = await this.state.GetUserContext(this.turnContext, this.cancellationToken);
+                userContext.UserId = user.Id;
+                userContext.OrganizationId = user.OrganizationId;
             }
         }
     }
