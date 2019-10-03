@@ -26,7 +26,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<EmploymentData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<EmploymentData>(organization.Id, this.turnContext);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.JobReadinessTrainingOpen);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.PaidInternshipOpen);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.VocationalTrainingOpen);
@@ -55,7 +55,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<EmploymentData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<EmploymentData>(organization.Id, this.turnContext);
             Assert.Equal(0, resultData.JobReadinessTrainingOpen);
             Assert.Equal(0, resultData.PaidInternshipOpen);
             Assert.Equal(0, resultData.VocationalTrainingOpen);
@@ -84,7 +84,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<EmploymentData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<EmploymentData>(organization.Id, this.turnContext);
             Assert.Equal(0, resultData.JobReadinessTrainingOpen);
             Assert.Equal(0, resultData.PaidInternshipOpen);
             Assert.Equal(0, resultData.VocationalTrainingOpen);

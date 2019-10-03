@@ -82,7 +82,7 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets a user from the turn context.
+        /// Gets a user from a turn context.
         /// </summary>
         public async Task<User> GetUser(ITurnContext turnContext)
         {
@@ -94,12 +94,12 @@ namespace Shared.ApiInterface
                 case Channels.Sms: return await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
                 default: Debug.Fail("Missing channel type"); return null;
             }
-        }
+        } 
 
         /// <summary>
         /// Gets an organization from the turn context.
         /// </summary>
-        public async Task<Organization> GetOrganization(ITurnContext turnContext, string organizationId)
+        public async Task<Organization> GetOrganization(string organizationId)
         {            
             if (!string.IsNullOrEmpty(organizationId))
             {
@@ -112,7 +112,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the count of an organization's services from the turn context.
         /// </summary>
-        public async Task<int> GetServiceCount(ITurnContext turnContext, string organizationId)
+        public async Task<int> GetServiceCount(string organizationId)
         { 
             if (!string.IsNullOrEmpty(organizationId))
             {
@@ -125,7 +125,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(ITurnContext turnContext, string organizationId) where T : ServiceDataBase
+        public async Task<Service> GetService<T>(string organizationId) where T : ServiceDataBase
         {
             if (!string.IsNullOrEmpty(organizationId))
             {
@@ -142,7 +142,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets all of an organization's services from the turn context.
         /// </summary>
-        public async Task<List<Service>> GetServices(ITurnContext turnContext, string organizationId)
+        public async Task<List<Service>> GetServices(string organizationId)
         {
             if (!string.IsNullOrEmpty(organizationId))
             {
@@ -155,10 +155,10 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
-        /// <param name="createdByUser">Optionally pass whether to get the latest data created by the current user</param>
-        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, string organizationId, bool createdByUser = false) where T : ServiceDataBase, new()
+        /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
+        public async Task<T> GetLatestServiceData<T>(string organizationId, ITurnContext createdByUserTurnContext = null) where T : ServiceDataBase, new()
         {
-            var service = await GetService<T>(turnContext, organizationId);
+            var service = await GetService<T>(organizationId);
             if (service != null)
             {
                 IQueryable<ServiceDataBase> query;
@@ -174,9 +174,9 @@ namespace Shared.ApiInterface
                     default: return null;
                 }
 
-                if (createdByUser)
+                if (createdByUserTurnContext != null)
                 {
-                    var user = await GetUser(turnContext);
+                    var user = await GetUser(createdByUserTurnContext);
                     query = query.Where(s => s.CreatedById == user.Id);
                 }
 

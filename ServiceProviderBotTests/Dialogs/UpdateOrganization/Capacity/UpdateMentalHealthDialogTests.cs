@@ -24,7 +24,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id, this.turnContext);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.InPatientOpen);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.OutPatientOpen);
         }
@@ -47,7 +47,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id, this.turnContext);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen, resultData.InPatientWaitlistIsOpen);
@@ -70,7 +70,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id, this.turnContext);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
             Assert.False(resultData.InPatientWaitlistIsOpen);

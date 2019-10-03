@@ -26,7 +26,7 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                 {
                     var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
-                    var services = await this.api.GetServices(dialogContext.Context, userContext.OrganizationId);
+                    var services = await this.api.GetServices(userContext.OrganizationId);
                     if (services.Count == 0)
                     {
                         // Nothing to update.

@@ -33,7 +33,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     }
 
                     // Check if we already have an organization for the user.
-                    var organization = await api.GetOrganization(dialogContext.Context, user.OrganizationId);
+                    var organization = await api.GetOrganization(user.OrganizationId);
                     if (organization == null)
                     {
                         await Messages.SendAsync(Phrases.Greeting.NoOrganization, dialogContext.Context, cancellationToken);

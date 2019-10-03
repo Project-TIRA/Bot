@@ -23,7 +23,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(organization.Id, this.turnContext);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.Open);
         }
 
@@ -43,7 +43,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(organization.Id, this.turnContext);
             Assert.Equal(0, resultData.Open);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen, resultData.WaitlistIsOpen);
         }
@@ -63,7 +63,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<CaseManagementData>(organization.Id, this.turnContext);
             Assert.Equal(0, resultData.Open);
             Assert.False(resultData.WaitlistIsOpen);
         }

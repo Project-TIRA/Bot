@@ -26,7 +26,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(organization.Id, this.turnContext);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.DetoxOpen);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.InPatientOpen);
             Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.OutPatientOpen);
@@ -55,7 +55,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(organization.Id, this.turnContext);
             Assert.Equal(0, resultData.DetoxOpen);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
@@ -84,7 +84,7 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
                 .StartTestAsync();
 
             // Validate the results.
-            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(this.turnContext, organization.Id, true);
+            var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(organization.Id, this.turnContext);
             Assert.Equal(0, resultData.DetoxOpen);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
