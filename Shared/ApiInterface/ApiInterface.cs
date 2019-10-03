@@ -1,7 +1,7 @@
 ﻿using EntityModel;
+using Microsoft.Bot.Builder;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Bot.Builder;
 
 namespace Shared.ApiInterface
 {
@@ -18,35 +18,35 @@ namespace Shared.ApiInterface
         Task<bool> Update<T>(T model) where T : ModelBase;
 
         /// <summary>
-        /// Gets a user from the turn context.
+        /// Gets a user from a turn context.
         /// </summary>
         Task<User> GetUser(ITurnContext turnContext);
 
         /// <summary>
-        /// Gets an organization from the turn context.
+        /// Gets an organization.
         /// </summary>
-        Task<Organization> GetOrganization(ITurnContext turnContext);
+        Task<Organization> GetOrganization(string organizationId);
 
         /// <summary>
-        /// Gets the count of an organization's services from the turn context.
+        /// Gets the count of an organization's services.
         /// </summary>
-        Task<int> GetServiceCount(ITurnContext turnContext);
-        
-        /// <summary>
-        /// Gets an organization's service by type from the turn context.
-        /// </summary>
-        Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceDataBase;
+        Task<int> GetServiceCount(string organizationId);
 
         /// <summary>
-        /// Gets all of an organization's services from the turn context.
+        /// Gets an organization's service by type.
         /// </summary>
-        Task<List<Service>> GetServices(ITurnContext turnContext);
+        Task<Service> GetService<T>(string organizationId) where T : ServiceDataBase;
+
+        /// <summary>
+        /// Gets all of an organization's services.
+        /// </summary>
+        Task<List<Service>> GetServices(string organizationId);
 
         /// <summary>
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
-        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser = false) where T : ServiceDataBase, new();
+        /// <param name="createdByUserTurnContext">Optionally pass a turn context to get the latest data created by the user</param>
+        Task<T> GetLatestServiceData<T>(string organizationId, ITurnContext createdByUserTurnContext = null) where T : ServiceDataBase, new();
 
         /// <summary>
         /// Gets all verified organizations.
