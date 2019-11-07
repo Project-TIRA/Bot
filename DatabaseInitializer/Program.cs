@@ -57,7 +57,8 @@ namespace DatabaseInitializer
 
         private static async Task HandleCds(string[] args)
         {
-            await Init(new CdsInterface());
+            // TODO: Pass configuration with CDS params.
+            await Init(new CdsInterface(null));
         }
 
         private static async Task HandleEf(string[] args)

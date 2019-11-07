@@ -2,11 +2,9 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Shared.ApiInterface
@@ -84,7 +82,7 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets a user from the turn context.
+        /// Gets a user from a turn context.
         /// </summary>
         public async Task<User> GetUser(ITurnContext turnContext)
         {
@@ -96,17 +94,16 @@ namespace Shared.ApiInterface
                 case Channels.Sms: return await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
                 default: Debug.Fail("Missing channel type"); return null;
             }
-        }
+        } 
 
         /// <summary>
         /// Gets an organization from the turn context.
         /// </summary>
-        public async Task<Organization> GetOrganization(ITurnContext turnContext)
-        {
-            var user = await GetUser(turnContext);
-            if (user != null)
+        public async Task<Organization> GetOrganization(string organizationId)
+        {            
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                return await this.dbContext.Organizations.FirstOrDefaultAsync(o => o.Id == user.OrganizationId);
+                return await this.dbContext.Organizations.FirstOrDefaultAsync(o => o.Id == organizationId);
             }
 
             return null;
@@ -115,12 +112,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the count of an organization's services from the turn context.
         /// </summary>
-        public async Task<int> GetServiceCount(ITurnContext turnContext)
-        {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+        public async Task<int> GetServiceCount(string organizationId)
+        { 
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                return await this.dbContext.Services.CountAsync(s => s.OrganizationId == organization.Id);
+                return await this.dbContext.Services.CountAsync(s => s.OrganizationId == organizationId);
             }
 
             return 0;
@@ -129,15 +125,14 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceDataBase
+        public async Task<Service> GetService<T>(string organizationId) where T : ServiceDataBase
         {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
                 var type = Helpers.GetServiceType<T>();
                 if (type != ServiceType.Invalid)
                 {
-                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.OrganizationId == organization.Id && s.Type == type);
+                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.OrganizationId == organizationId && s.Type == type);
                 }
             }
 
@@ -147,12 +142,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets all of an organization's services from the turn context.
         /// </summary>
-        public async Task<List<Service>> GetServices(ITurnContext turnContext)
+        public async Task<List<Service>> GetServices(string organizationId)
         {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                return await this.dbContext.Services.Where(s => s.OrganizationId == organization.Id).ToListAsync();
+                return await this.dbContext.Services.Where(s => s.OrganizationId == organizationId).ToListAsync();
             }
 
             return new List<Service>();
@@ -176,10 +170,10 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
-        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser) where T : ServiceDataBase, new()
+        /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
+        public async Task<T> GetLatestServiceData<T>(string organizationId, ITurnContext createdByUserTurnContext = null) where T : ServiceDataBase, new()
         {
-            var service = await GetService<T>(turnContext);
+            var service = await GetService<T>(organizationId);
             if (service != null)
             {
                 IQueryable<ServiceDataBase> query;
@@ -195,9 +189,9 @@ namespace Shared.ApiInterface
                     default: return null;
                 }
 
-                if (createdByUser)
+                if (createdByUserTurnContext != null)
                 {
-                    var user = await GetUser(turnContext);
+                    var user = await GetUser(createdByUserTurnContext);
                     query = query.Where(s => s.CreatedById == user.Id);
                 }
 

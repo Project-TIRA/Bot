@@ -78,7 +78,11 @@ namespace BotTrigger
                         continue;
                     }
 
-                    LogInfo(log, $"BotTrigger: sending to {user.Name} from {organization.Name}");
+
+                    // Get the latest availability for their services as a reminder.
+
+
+                    LogInfo(log, $"BotTrigger: sending to {user.Name} at {organization.Name}");
 
                     var userAccount = new ChannelAccount() { Id = PhoneNumber.Standardize(user.PhoneNumber) };
                     var convoAccount = new ConversationAccount(id: userAccount.Id);
@@ -96,17 +100,6 @@ namespace BotTrigger
                         }
                     }, new CancellationToken());
                 }
-
-                //var connector = new ConnectorClient(new Uri(ServiceUrl), creds);
-
-                //IMessageActivity message = Activity.CreateMessageActivity();
-                //message.From = botAccount;
-                //message.Recipient = userAccount;
-                //message.Conversation = new ConversationAccount(id: userAccount.Id);
-                //message.ChannelId = ChannelId;
-                //message.Text = $"It's time for an update. Reply \"{Bot}";
-
-                //await connector.Conversations.SendToConversationAsync((Activity)message);
             }
         }
 

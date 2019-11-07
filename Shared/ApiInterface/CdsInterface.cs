@@ -1,19 +1,20 @@
-﻿using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System;
+﻿using EntityModel;
 using Newtonsoft.Json.Linq;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
-using EntityModel;
-using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Shared.ApiInterface
 {
@@ -22,19 +23,21 @@ namespace Shared.ApiInterface
     /// </summary>
     public class CdsInterface : IApiInterface
     {
-        // TODO: Put these in app settings.
-        const string CLIENT_ID = "4cd0f1ea-6f83-419a-a4fa-24878d30dd09";
-        const string CLIENT_SECRET = "L-7r?rQY/5xo+QQ1yBJ02IEk3z9V297f";
+        // TODO: Put these in app settings and get from configuration.
+        const string APP_ID = "";
+        const string APP_SECRET = "";
         const string TENANT_ID = "72f988bf-86f1-41af-91ab-2d7cd011db47";
         const string RESOURCE_URL = "https://obsdev.api.crm.dynamics.com";
         const string AUTH_URL = "https://login.microsoftonline.com/{0}/oauth2/token";
         const string API_URL = "https://obsdev.api.crm.dynamics.com/api/data/v9.1/";
 
+        IConfiguration configuration;
         HttpClient client;
         string authToken;
 
-        public CdsInterface()
+        public CdsInterface(IConfiguration configuration)
         {
+            this.configuration = configuration;
             this.client = new HttpClient();
             this.client.BaseAddress = new Uri(API_URL);
         }
@@ -97,12 +100,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization from the turn context.
         /// </summary>
-        public async Task<Organization> GetOrganization(ITurnContext turnContext)
+        public async Task<Organization> GetOrganization(string organizationId)
         {
-            var user = await GetUser(turnContext);
-            if (user != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + user.OrganizationId);
+                JObject response = await GetJsonData(Organization.TABLE_NAME, "$filter=accountid eq " + organizationId);
                 if (response != null && response["value"].HasValues)
                 {
                     return JsonConvert.DeserializeObject<Organization>(response["value"][0].ToString(), GetJsonSettings(Organization.Resolver.Instance));
@@ -115,12 +117,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the count of an organization's services from the turn context.
         /// </summary>
-        public async Task<int> GetServiceCount(ITurnContext turnContext)
+        public async Task<int> GetServiceCount(string organizationId)
         {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} &$count=true");
+                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organizationId} &$count=true");
                 if (response != null)
                 {
                     return (int)response["@odata.count"];
@@ -133,15 +134,14 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(ITurnContext turnContext) where T : ServiceDataBase
+        public async Task<Service> GetService<T>(string organizationId) where T : ServiceDataBase
         {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
                 var type = Helpers.GetServiceType<T>();
                 if (type != ServiceType.Invalid)
                 {
-                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id} and tira_servicetype eq {type}");
+                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organizationId} and tira_servicetype eq {type}");
                     if (response != null && response["value"].HasValues)
                     {
                         return JsonConvert.DeserializeObject<Service>(response["value"][0].ToString(), GetJsonSettings(Service.Resolver.Instance));
@@ -155,12 +155,11 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets all of an organization's services from the turn context.
         /// </summary>
-        public async Task<List<Service>> GetServices(ITurnContext turnContext)
+        public async Task<List<Service>> GetServices(string organizationId)
         {
-            Organization organization = await GetOrganization(turnContext);
-            if (organization != null)
+            if (!string.IsNullOrEmpty(organizationId))
             {
-                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id}");
+                JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organizationId}");
                 if (response != null && response["value"].HasValues)
                 {
                     return JsonConvert.DeserializeObject<List<Service>>(response["value"].ToString(), GetJsonSettings(User.Resolver.Instance));
@@ -173,10 +172,10 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
-        /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
-        public async Task<T> GetLatestServiceData<T>(ITurnContext turnContext, bool createdByUser) where T : ServiceDataBase, new()
+        /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
+        public async Task<T> GetLatestServiceData<T>(string organizationId, ITurnContext createdByUserTurnContext = null) where T : ServiceDataBase, new()
         {
-            var service = await GetService<T>(turnContext);
+            var service = await GetService<T>(organizationId);
             if (service != null)
             {
                 var type = Helpers.GetServiceType<T>();
@@ -187,9 +186,9 @@ namespace Shared.ApiInterface
 
                     string userFilter = string.Empty;
 
-                    if (createdByUser)
+                    if (createdByUserTurnContext != null)
                     {
-                        var user = await GetUser(turnContext);
+                        var user = await GetUser(createdByUserTurnContext);
                         userFilter = $" and tira_createdby eq {user.Id}";
                     }
 
@@ -326,7 +325,7 @@ namespace Shared.ApiInterface
             string authorityUrl = string.Format(AUTH_URL, TENANT_ID);
             var authContext = new AuthenticationContext(authorityUrl, false);
 
-            ClientCredential clientCred = new ClientCredential(CLIENT_ID, CLIENT_SECRET);
+            ClientCredential clientCred = new ClientCredential(APP_ID, APP_SECRET);
             AuthenticationResult authResult = await authContext.AcquireTokenAsync(RESOURCE_URL, clientCred);
 
             this.authToken = authResult.AccessToken;

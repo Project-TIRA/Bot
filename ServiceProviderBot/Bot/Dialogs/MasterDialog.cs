@@ -33,7 +33,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                     }
 
                     // Check if we already have an organization for the user.
-                    var organization = await api.GetOrganization(dialogContext.Context);
+                    var organization = await api.GetOrganization(user.OrganizationId);
                     if (organization == null)
                     {
                         await Messages.SendAsync(Phrases.Greeting.NoOrganization, dialogContext.Context, cancellationToken);
@@ -46,6 +46,12 @@ namespace ServiceProviderBot.Bot.Dialogs
                         await Messages.SendAsync(Phrases.Greeting.UnverifiedOrganization, dialogContext.Context, cancellationToken);
                         return await dialogContext.EndDialogAsync(cancellationToken);
                     }
+
+                    // Save the user ID and organization ID to the user context so that
+                    // they can be accessed by other dialogs without API lookups.
+                    var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                    userContext.UserId = user.Id;
+                    userContext.OrganizationId = user.OrganizationId;
 
                     // Check if the initial message is one of the keywords.
                     var incomingMessage = dialogContext.Context.Activity.Text;

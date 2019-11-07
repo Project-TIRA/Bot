@@ -48,7 +48,7 @@ namespace ServiceProviderBot
             services.AddSingleton(this.configuration);
 
             // Add the Common Data Service interface.
-            //services.AddScoped(_ => new CdsInterface());
+            //services.AddScoped(_ => new CdsInterface(this.configuration));
 
             // Add the DB interface.
             services.AddScoped(_ => new EfInterface(DbModelFactory.Create(configuration.DbModelConnectionString())));
