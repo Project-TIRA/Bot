@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Bot.Schema;
+﻿using Microsoft.Bot.Schema;
 using SearchBot.Bot.Dialogs.Service;
 using SearchBot.Bot.State;
 using Shared;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SearchBotTests.Dialogs
@@ -55,6 +55,18 @@ namespace SearchBotTests.Dialogs
             await CreateTestFlow(ServiceDialog.Name, initialContext)
                 .Test("test", Phrases.Search.GetLocation(initialContext.GetServicesString()))
                 .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task MultipleServicesRecomendation()
+        {
+            var Services = Phrases.Services.Housing.ServiceName + " " + Phrases.Services.Employment.ServiceName;
+            await CreateTestFlow(ServiceTypeDialog.Name)
+              .Test("test", StartsWith(Phrases.Search.GetServiceType))
+               //.Test(Services, StartsWith(Phrases.Search.GetLocation(Services)))
+               //.Test(System.Enum.GetName(typeof(SearchBotTestHelpers.Location), 1), StartsWith(Phrases.Search.GetHousingType))
+               //.Test("1", StartsWith(Phrases.Services.Responsestart))
+               .StartTestAsync();
         }
     }
 }

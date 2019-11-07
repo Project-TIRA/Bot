@@ -117,7 +117,7 @@ namespace Shared
 
             public static Activity GetLocation(string serviceType)
             {
-                return MessageFactory.Text($"In what city are you looking for {(string.IsNullOrEmpty(serviceType) ? "services" : serviceType)}?") ;
+                return MessageFactory.Text($"In what city are you looking for {(string.IsNullOrEmpty(serviceType) ? "services" : serviceType)}?");
             }
         }
 
@@ -164,6 +164,12 @@ namespace Shared
                 public const string InPatient = "Substance Use In-Patient";
                 public const string OutPatient = "Substance Use Out-Patient";
                 public const string Group = "Substance Use Group Services";
+            }
+
+            public static Activity Responsestart = MessageFactory.Text("Here's an organization that can help with");
+            public static Activity Response(string service, string location, string orgname)
+            {
+                return MessageFactory.Text($"{Responsestart.Text} {service} in {location} {orgname}");
             }
         }
 

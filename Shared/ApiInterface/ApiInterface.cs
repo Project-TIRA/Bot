@@ -31,7 +31,7 @@ namespace Shared.ApiInterface
         /// Gets the count of an organization's services from the turn context.
         /// </summary>
         Task<int> GetServiceCount(ITurnContext turnContext);
-        
+
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
@@ -52,6 +52,13 @@ namespace Shared.ApiInterface
         /// Gets all verified organizations.
         /// </summary>
         Task<List<Organization>> GetVerifiedOrganizations();
+
+        /// <summary>
+        /// Gets the list of services from an organization
+        /// </summary>
+        /// <param name="organization"></param>
+        /// <returns> List of services </returns>
+        Task<List<Service>> GetServicesForOrganization(Organization organization);
 
         /// <summary>
         /// Gets all users for an organization.

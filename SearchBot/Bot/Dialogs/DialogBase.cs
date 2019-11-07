@@ -1,5 +1,4 @@
-﻿using EntityModel;
-using Microsoft.Bot.Builder.Dialogs;
+﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using SearchBot.Bot.State;
 using Shared.ApiInterface;

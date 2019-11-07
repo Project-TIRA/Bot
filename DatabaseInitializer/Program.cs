@@ -7,23 +7,22 @@ using System.Threading.Tasks;
 
 namespace DatabaseInitializer
 {
-    class Program
+    internal class Program
     {
-        const string HelpKeyword1 = "/?";
-        const string HelpKeyword2 = "-help";
-        const string CdsKeyword = "-cds";
-        const string EfKeyword = "-ef";
+        private const string HelpKeyword1 = "/?";
+        private const string HelpKeyword2 = "-help";
+        private const string CdsKeyword = "-cds";
+        private const string EfKeyword = "-ef";
 
-        static string EfFormat = $"{EfKeyword} <environment>";
+        private static string EfFormat = $"{EfKeyword} <environment>";
 
-        static string EnvironmentDevelopment = "dev";
-        static string EnvironmentStaging = "staging";
+        private static string EnvironmentDevelopment = "dev";
+        private static string EnvironmentStaging = "staging";
 
-        static string ConnectionStringDevelopment = "data source=(LocalDb)\\MSSQLLocalDB;initial catalog=ProjectTira;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
-        static string ConnectionStringStaging = "Server=tcp:project-tira-staging.database.windows.net,1433;Initial Catalog=project-tira-staging;Persist Security Info=False;User ID=project-tira;Password=LamePassword1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private static string ConnectionStringDevelopment = "data source=(LocalDb)\\MSSQLLocalDB;initial catalog=ProjectTira;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework";
+        private static string ConnectionStringStaging = "Server=tcp:project-tira-staging.database.windows.net,1433;Initial Catalog=project-tira-staging;Persist Security Info=False;User ID=project-tira;Password=LamePassword1;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
-
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
             if (args.Length == 0 || (args.Length == 1 && (args[0] == HelpKeyword1 || args[0] == HelpKeyword2)))
             {
@@ -46,7 +45,7 @@ namespace DatabaseInitializer
             return;
         }
 
-        static void PrintHelp()
+        private static void PrintHelp()
         {
             Console.WriteLine("HELP");
             Console.WriteLine($"{HelpKeyword2} : Prints this help message");
@@ -56,12 +55,12 @@ namespace DatabaseInitializer
             Console.WriteLine($"Environments : {EnvironmentDevelopment}, {EnvironmentStaging}");
         }
 
-        static async Task HandleCds(string[] args)
+        private static async Task HandleCds(string[] args)
         {
             await Init(new CdsInterface());
         }
 
-        static async Task HandleEf(string[] args)
+        private static async Task HandleEf(string[] args)
         {
             if (args.Length != 2 || !(args[1] == EnvironmentDevelopment || args[1] == EnvironmentStaging))
             {
@@ -92,7 +91,7 @@ namespace DatabaseInitializer
             }
         }
 
-        static async Task Init(IApiInterface api)
+        private static async Task Init(IApiInterface api)
         {
             for (int i = 0; i < 5; ++i)
             {
@@ -132,7 +131,7 @@ namespace DatabaseInitializer
             }
         }
 
-        static void Exit()
+        private static void Exit()
         {
             Console.WriteLine();
             Console.WriteLine("Press 'Enter' to exit");

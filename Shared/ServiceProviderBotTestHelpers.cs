@@ -10,15 +10,17 @@ namespace Shared
         public static int DefaultTotal = 10;
         public static int DefaultOpen = 5;
         public static bool DefaultWaitlistIsOpen = true;
+        public static string[] Locations = System.Enum.GetNames(typeof(SearchBotTestHelpers.Location));
+        public static int index = 0;
 
         public static async Task<Organization> CreateOrganization(IApiInterface api, bool isVerified)
         {
             var organization = new Organization()
             {
                 Id = Guid.NewGuid().ToString(),
-                Name = "Test Organization",
+                Name = "Test Organization" + index,
                 IsVerified = isVerified,
-                Location = "Seattle"
+                Location = Locations[(index++) % Locations.Length]
             };
 
             await api.Create(organization);
@@ -31,7 +33,7 @@ namespace Shared
             {
                 Id = Guid.NewGuid().ToString(),
                 OrganizationId = organizationId,
-                Name = "Test User",
+                Name = "Test User" + index,
                 PhoneNumber = Guid.NewGuid().ToString()
             };
 

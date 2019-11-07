@@ -9,7 +9,7 @@ namespace EntityModel
 
         [JsonIgnore]
         public override string TableName { get { return TABLE_NAME; } }
-   
+
         [JsonIgnore]
         public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
 

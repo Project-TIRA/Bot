@@ -8,11 +8,10 @@ namespace EntityModel
         public static string TABLE_NAME = "tira_services";
 
         [JsonIgnore]
-        public override string TableName {  get { return TABLE_NAME; } }
+        public override string TableName { get { return TABLE_NAME; } }
 
         [JsonIgnore]
         public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
-
 
         [JsonIgnore]
         [JsonProperty(PropertyName = "_tira_organizationservicesid_value")]

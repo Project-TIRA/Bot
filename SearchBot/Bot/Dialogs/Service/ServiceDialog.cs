@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using SearchBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -57,11 +58,8 @@ namespace SearchBot.Bot.Dialogs.Service
             // Get the verified organizations.
             var organizations = await this.api.GetVerifiedOrganizations();
 
-
-            // Check if there is one organization that meets all criteria.
-
-
             // TODO: Filter by location.
+            var userLocation = conversationContext.Location;
 
             /*
             if (conversationContext.HousingEmergency)
@@ -70,13 +68,44 @@ namespace SearchBot.Bot.Dialogs.Service
             }
             */
 
-            var results = organizations.Where(o => o.Location == "");
-
+            // replace this with a valid location filter that will sort organizations based on distance
+            organizations = organizations.Where(o => o.Location.ToLower().Contains(userLocation.ToLower())).ToList();
 
             // If not, recommend multiple for the different needs.
 
+            // Check if there is one organization that meets all criteria.
+            organizations = this.GetOrganizationsRecommendation(conversationContext.GetServicesString(), organizations);
 
-            return $"Here's an organization that can help with {conversationContext.GetServicesString()} in {conversationContext.Location}!";
+            return Shared.Phrases.Services.Response(conversationContext.GetServicesString(), conversationContext.Location, organizations.First().Name).Text;
+        }
+
+        /// <summary>
+        /// Ranks the organizations on the basis of the amount of services requested they provide
+        /// </summary>
+        /// <param name="serviceAsked"> A list of the services asked</param>
+        /// <param name="orginaztions"> A list of organizations</param>
+        /// <returns> A sorted list of organization </returns>
+        private List<EntityModel.Organization> GetOrganizationsRecommendation(string serviceAsked, List<EntityModel.Organization> orginaztions)
+        {
+            List<(EntityModel.Organization, int)> result = new List<(EntityModel.Organization, int)>();
+            var serviceRequested = serviceAsked.Split(new string[] { ",", "and" }, System.StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToList();
+            foreach (var organization in orginaztions)
+            {
+                int score = 0;
+                // find a way to get a string out of the array of services
+
+                var servicesProvided = this.api.GetServicesForOrganization(organization).Result.ToList();
+
+                foreach (var service in serviceRequested)
+                {
+
+                    score += servicesProvided.FindAll(x => Helpers.GetServiceName(x.Type) == service).Count();
+
+
+                }
+                result.Add((organization, score));
+            }
+            return result.OrderByDescending((x => x.Item2)).Select(x => x.Item1).ToList();
         }
     }
 }

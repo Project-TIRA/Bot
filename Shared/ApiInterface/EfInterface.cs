@@ -159,6 +159,21 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
+        /// Gets the list of services from an organization
+        /// </summary>
+        /// <param name="organization"></param>
+        /// <returns> List of services </returns>
+        public async Task<List<Service>> GetServicesForOrganization(Organization organization)
+        {
+            if (organization != null)
+            {
+                return await this.dbContext.Services.Where(s => s.OrganizationId == organization.Id).ToListAsync();
+            }
+
+            return new List<Service>();
+        }
+
+        /// <summary>
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUser">Whether or not to get the latest token that was created by the given user</param>
@@ -207,5 +222,5 @@ namespace Shared.ApiInterface
         {
             return await this.dbContext.Users.Where(u => u.OrganizationId == organization.Id).ToListAsync();
         }
-    }    
+    }
 }

@@ -233,6 +233,22 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
+        /// Gets the list of services from an organization
+        /// </summary>
+        /// <param name="organization"></param>
+        /// <returns> List of services </returns>
+        public async Task<List<Service>> GetServicesForOrganization(Organization organization)
+        {
+            JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organization.Id}");
+            if (response != null && response["value"].HasValues)
+            {
+                return JsonConvert.DeserializeObject<List<Service>>(response["value"].ToString(), GetJsonSettings(User.Resolver.Instance));
+            }
+
+            return new List<Service>();
+        }
+
+        /// <summary>
         /// Gets JSON data from the API.
         /// </summary>
         private async Task<JObject> GetJsonData(string tableName, string paramString)
