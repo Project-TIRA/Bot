@@ -1,9 +1,13 @@
-﻿using Microsoft.Bot.Builder;
+﻿using EntityModel;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
+using SearchBot.Bot.Models;
 using SearchBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -61,21 +65,48 @@ namespace SearchBot.Bot.Dialogs.Service
             Debug.Assert(conversationContext.IsValid());
 
             // Get the verified organizations.
-            var organizations = await this.api.GetVerifiedOrganizations();
+            var verifiedOrganizations = await this.api.GetVerifiedOrganizations();
 
+            // Get the user's location.
+            var userLocation = await GetUserLocation(conversationContext);
 
-            // Check if there is one organization that meets all criteria.
+            // Score the organizations against the user's request.
+            var organizationScores = new List<OrganizationScore>();
 
-
-            // TODO: Filter by location.
-
-            /*
-            if (conversationContext.HousingEmergency)
+            foreach (var org in verifiedOrganizations)
             {
-                organizations.Where(o => o.)
-            }
-            */
+                var distance = CalcDistance(userLocation.lat, userLocation.lon, Convert.ToDouble(org.Latitude), Convert.ToDouble(org.Longitude));
+                var serviceScore = await GetOrganizationServiceScore(org, conversationContext);
 
+                organizationScores.Add(new OrganizationScore
+                {
+                    Organization = org,
+                    ServiceScore = serviceScore,
+                    Distance = distance
+                });
+            }
+
+            // Check if any organizations fully matched the user's request.
+            var fullMatches = organizationScores.Where(m => m.AllServicesMatch && m.IsWithinDistance);
+            if (fullMatches.Count() >= 1)
+            {
+                // Either take the only match or the closest match.
+                var match = fullMatches.Count() == 1 ?
+                    fullMatches.First() :
+                    fullMatches.Aggregate((m1, m2) => m1.Distance >= m2.Distance ? m1 : m2);
+
+                return $"It looks like {match.Organization.Name} has availability for {conversationContext.GetServicesString()} services!" +
+                    Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
+            }
+            else
+            {
+                // No full matches. Need to recommend multiple organizations.
+                return $"TODO: multiple orgs or no org!";
+            }
+        }
+
+        private async Task<Position> GetUserLocation(ConversationContext conversationContext)
+        {
             string sub_key = "ay41VKwaVczc7rlvS9krCupc_OQybqGBLGFz9IsDZoc";
             string query = conversationContext.Location;
 
@@ -87,33 +118,108 @@ namespace SearchBot.Bot.Dialogs.Service
 
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(result));
             RootObject data = (RootObject)serializer.ReadObject(ms);
-
-            string userLat = Convert.ToString(data.results[0].position.lat);
-            string userLon = Convert.ToString(data.results[0].position.lon);
-
-            
-            var results = organizations.Where(o => CalcDistance(userLat, userLon, o.Latitude, o.Longitude) < 50.0).ToList();
-
-
-            // If not, recommend multiple for the different needs.
-            string res = "";
-            for(int i = 0; i < results.Count; i++)
-            {
-                res = res + " " + Convert.ToString(results[i].Name);
-            }
-            return res;
-            //return $"Here's an organization that can help with {conversationContext.GetServicesString()} in {conversationContext.Location}!";
+            return data.results[0].position;
         }
 
-        private double CalcDistance(string lat1, string lon1, string lat2, string lon2)
+        private double CalcDistance(double lat1, double lon1, double lat2, double lon2)
         {
-
             double R = 6371;
-            double dLat = (Math.PI / 180) * (Convert.ToDouble(lat2) - Convert.ToDouble(lat1));
-            double dLon = (Math.PI / 180) * (Convert.ToDouble(lon2) - Convert.ToDouble(lon1));
-            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) + Math.Cos((Math.PI / 180) * (Convert.ToDouble(lat1))) * Math.Cos((Math.PI / 180) * (Convert.ToDouble(lat2))) * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            double dLat = (Math.PI / 180) * (lat2 - lat1);
+            double dLon = (Math.PI / 180) * (lon2 - lon1);
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) + Math.Cos((Math.PI / 180) * lat1) * Math.Cos((Math.PI / 180) * lat2) * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
             double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return R * c;
+            return R* c;
+        }
+
+        private async Task<float> GetOrganizationServiceScore(Organization organization, ConversationContext conversationContext)
+        {
+            int totalServicesRequested = 0;
+            int matchedServices = 0;
+
+            if (conversationContext.HasCaseManagement)
+            {
+                // Get the latest service data for the org. Returns null if they don't have the service.
+                var data = await this.api.GetLatestServiceData<CaseManagementData>(organization.Id);
+
+                totalServicesRequested++;
+                matchedServices += (data != null && data.Open > 0) ? 1 : 0;
+            }
+
+            if (conversationContext.HasEmployment)
+            {
+                // Get the latest service data for the org. Returns null if they don't have the service.
+                var data = await this.api.GetLatestServiceData<EmploymentData>(organization.Id);
+
+                if (conversationContext.EmploymentInternship)
+                {
+                    totalServicesRequested++;
+                    matchedServices += (data != null && data.PaidInternshipOpen > 0) ? 1 : 0;
+                }
+                else
+                {
+                    // If not looking for an internship, check if any other types are open.
+                    totalServicesRequested++;
+                    matchedServices += (data != null &&
+                        (data.EmploymentPlacementOpen > 0 ||
+                         data.JobReadinessTrainingOpen > 0 ||
+                         data.VocationalTrainingOpen > 0)) ? 1 : 0;
+                }
+            }
+
+            if (conversationContext.HasHousing)
+            {
+                // Get the latest service data for the org. Returns null if they don't have the service.
+                var data = await this.api.GetLatestServiceData<HousingData>(organization.Id);
+
+                if (conversationContext.HousingEmergency)
+                {
+                    totalServicesRequested++;
+                    matchedServices += (data != null &&
+                        (data.EmergencyPrivateBedsOpen > 0 ||
+                         data.EmergencySharedBedsOpen > 0)) ? 1 : 0;
+                }
+                else if (conversationContext.HousingLongTerm)
+                {
+                    totalServicesRequested++;
+                    matchedServices += (data != null &&
+                        (data.LongTermPrivateBedsOpen > 0 ||
+                         data.LongTermSharedBedsOpen > 0)) ? 1 : 0;
+                }
+            }
+
+            if (conversationContext.HasMentalHealth)
+            {
+                // Get the latest service data for the org. Returns null if they don't have the service.
+                var data = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id);
+
+                totalServicesRequested++;
+                matchedServices += (data != null &&
+                    (data.InPatientOpen > 0 ||
+                     data.OutPatientOpen > 0)) ? 1 : 0;
+            }
+
+            if (conversationContext.HasSubstanceUse)
+            {
+                // Get the latest service data for the org. Returns null if they don't have the service.
+                var data = await this.api.GetLatestServiceData<SubstanceUseData>(organization.Id);
+
+                if (conversationContext.SubstanceUseDetox)
+                {
+                    totalServicesRequested++;
+                    matchedServices += (data != null && data.DetoxOpen > 0) ? 1 : 0;
+                }
+                else
+                {
+                    // If not looking for detox, check if any other types are open.
+                    totalServicesRequested++;
+                    matchedServices += (data != null &&
+                        (data.InPatientOpen > 0 ||
+                         data.OutPatientOpen > 0 ||
+                         data.GroupOpen > 0)) ? 1 : 0;
+                }
+            }
+
+            return matchedServices / (float)totalServicesRequested;
         }
     }
 }

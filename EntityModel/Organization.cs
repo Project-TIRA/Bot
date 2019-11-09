@@ -20,8 +20,11 @@ namespace EntityModel
         [JsonProperty(PropertyName = "tira_isverified")]
         public bool IsVerified { get; set; }
 
+        [JsonProperty(PropertyName = "TODO")]
+        public string PhoneNumber { get; set; }
+
         [JsonProperty(PropertyName = "address1_composite")]
-        public string Location { get; set; }
+        public string Address { get; set; }
 
         [JsonProperty(PropertyName = "to_do")]
         public string Latitude { get; set; }

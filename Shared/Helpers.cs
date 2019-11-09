@@ -1,6 +1,7 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
+using Shared.ApiInterface;
 using System.Diagnostics;
 
 namespace Shared
@@ -13,7 +14,6 @@ namespace Shared
         /// </summary>
         public static string GetUserToken(ITurnContext turnContext)
         {
-            return "JB";
             switch (turnContext.Activity.ChannelId)
             {
                 case Channels.Emulator: return turnContext.Activity.From.Id;
@@ -89,17 +89,21 @@ namespace Shared
         /// <summary>
         /// Gets the name for a service.
         /// </summary>
-        public static string GetServiceName(ServiceType serviceType)
+        public static string GetServiceName(ServiceType serviceType, bool toLower = false)
         {
+            var result = string.Empty;
+
             switch (serviceType)
             {
-                case ServiceType.CaseManagement: return Phrases.Services.CaseManagement.ServiceName;
-                case ServiceType.Housing: return Phrases.Services.Housing.ServiceName;
-                case ServiceType.Employment: return Phrases.Services.Employment.ServiceName;
-                case ServiceType.MentalHealth: return Phrases.Services.MentalHealth.ServiceName;
-                case ServiceType.SubstanceUse: return Phrases.Services.SubstanceUse.ServiceName;
+                case ServiceType.CaseManagement: result = Phrases.Services.CaseManagement.ServiceName; break;
+                case ServiceType.Housing: result = Phrases.Services.Housing.ServiceName; break;
+                case ServiceType.Employment: result = Phrases.Services.Employment.ServiceName; break;
+                case ServiceType.MentalHealth: result = Phrases.Services.MentalHealth.ServiceName; break;
+                case ServiceType.SubstanceUse: result = Phrases.Services.SubstanceUse.ServiceName; break;
                 default: return string.Empty;
             }
+
+            return toLower ? result.ToLower() : result;
         }
     }
 }
