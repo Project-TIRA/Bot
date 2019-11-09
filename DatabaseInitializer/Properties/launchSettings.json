@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DatabaseInitializer": {
+      "commandName": "Project",
+      "commandLineArgs": "-ef dev"
+    }
+  }
+}
