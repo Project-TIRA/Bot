@@ -23,6 +23,12 @@ namespace EntityModel
         [JsonProperty(PropertyName = "address1_composite")]
         public string Location { get; set; }
 
+        [JsonProperty(PropertyName = "to_do")]
+        public string Latitude { get; set; }
+
+        [JsonProperty(PropertyName = "to_do")]
+        public string Longitude { get; set; }
+
         public class Resolver : ContractResolver<CaseManagementData>
         {
             public static Resolver Instance = new Resolver();
