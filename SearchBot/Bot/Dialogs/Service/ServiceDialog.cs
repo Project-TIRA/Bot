@@ -67,13 +67,15 @@ namespace SearchBot.Bot.Dialogs.Service
             // Get the verified organizations.
             var verifiedOrganizations = await this.api.GetVerifiedOrganizations();
 
+            // Get the user's location.
+            var userLocation = await GetUserLocation(conversationContext);
+
             // Score the organizations against the user's request.
             var organizationScores = new List<OrganizationScore>();
 
             foreach (var org in verifiedOrganizations)
             {
-                // TODO: get actual distance.
-                var distance = new Random().Next(1, 25);;
+                var distance = CalcDistance(userLocation.lat, userLocation.lon, Convert.ToDouble(org.Latitude), Convert.ToDouble(org.Longitude));
                 var serviceScore = await GetOrganizationServiceScore(org, conversationContext);
 
                 organizationScores.Add(new OrganizationScore
@@ -101,6 +103,32 @@ namespace SearchBot.Bot.Dialogs.Service
                 // No full matches. Need to recommend multiple organizations.
                 return $"TODO: multiple orgs or no org!";
             }
+        }
+
+        private async Task<Position> GetUserLocation(ConversationContext conversationContext)
+        {
+            string sub_key = "ay41VKwaVczc7rlvS9krCupc_OQybqGBLGFz9IsDZoc";
+            string query = conversationContext.Location;
+
+            var http = new HttpClient();
+            var url = string.Format("https://atlas.microsoft.com/search/fuzzy/json?api-version=1.0&subscription-key={0}&format=json&query={1}", sub_key, query);
+            var response = await http.GetAsync(url);
+            var result = await response.Content.ReadAsStringAsync();
+            var serializer = new DataContractJsonSerializer(typeof(RootObject));
+
+            var ms = new MemoryStream(Encoding.UTF8.GetBytes(result));
+            RootObject data = (RootObject)serializer.ReadObject(ms);
+            return data.results[0].position;
+        }
+
+        private double CalcDistance(double lat1, double lon1, double lat2, double lon2)
+        {
+            double R = 6371;
+            double dLat = (Math.PI / 180) * (lat2 - lat1);
+            double dLon = (Math.PI / 180) * (lon2 - lon1);
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) + Math.Cos((Math.PI / 180) * lat1) * Math.Cos((Math.PI / 180) * lat2) * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return R* c;
         }
 
         private async Task<float> GetOrganizationServiceScore(Organization organization, ConversationContext conversationContext)
@@ -131,9 +159,9 @@ namespace SearchBot.Bot.Dialogs.Service
                 {
                     // If not looking for an internship, check if any other types are open.
                     totalServicesRequested++;
-                    matchedServices += (data != null && 
-                        (data.EmploymentPlacementOpen > 0 || 
-                         data.JobReadinessTrainingOpen > 0 || 
+                    matchedServices += (data != null &&
+                        (data.EmploymentPlacementOpen > 0 ||
+                         data.JobReadinessTrainingOpen > 0 ||
                          data.VocationalTrainingOpen > 0)) ? 1 : 0;
                 }
             }
@@ -159,27 +187,10 @@ namespace SearchBot.Bot.Dialogs.Service
                 }
             }
 
-            string sub_key = "ay41VKwaVczc7rlvS9krCupc_OQybqGBLGFz9IsDZoc";
-            string query = conversationContext.Location;
-
-            var http = new HttpClient();
             if (conversationContext.HasMentalHealth)
             {
                 // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id);
-            var url = string.Format("https://atlas.microsoft.com/search/fuzzy/json?api-version=1.0&subscription-key={0}&format=json&query={1}", sub_key, query);
-            var response = await http.GetAsync(url);
-            var result = await response.Content.ReadAsStringAsync();
-            var serializer = new DataContractJsonSerializer(typeof(RootObject));
-
-            var ms = new MemoryStream(Encoding.UTF8.GetBytes(result));
-            RootObject data = (RootObject)serializer.ReadObject(ms);
-
-            string userLat = Convert.ToString(data.results[0].position.lat);
-            string userLon = Convert.ToString(data.results[0].position.lon);
-
-            
-            var results = organizations.Where(o => CalcDistance(userLat, userLon, o.Latitude, o.Longitude) < 50.0).ToList();
 
                 totalServicesRequested++;
                 matchedServices += (data != null &&
@@ -188,20 +199,10 @@ namespace SearchBot.Bot.Dialogs.Service
             }
 
             if (conversationContext.HasSubstanceUse)
-            string res = "";
-            for(int i = 0; i < results.Count; i++)
-            {
             {
                 // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<SubstanceUseData>(organization.Id);
-                res = res + " " + Convert.ToString(results[i].Name);
-            }
-            return res;
-            //return $"Here's an organization that can help with {conversationContext.GetServicesString()} in {conversationContext.Location}!";
-        }
 
-        private double CalcDistance(string lat1, string lon1, string lat2, string lon2)
-        {
                 if (conversationContext.SubstanceUseDetox)
                 {
                     totalServicesRequested++;
@@ -218,19 +219,7 @@ namespace SearchBot.Bot.Dialogs.Service
                 }
             }
 
-            double R = 6371;
-            double dLat = (Math.PI / 180) * (Convert.ToDouble(lat2) - Convert.ToDouble(lat1));
-            double dLon = (Math.PI / 180) * (Convert.ToDouble(lon2) - Convert.ToDouble(lon1));
-            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) + Math.Cos((Math.PI / 180) * (Convert.ToDouble(lat1))) * Math.Cos((Math.PI / 180) * (Convert.ToDouble(lat2))) * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return R * c;
             return matchedServices / (float)totalServicesRequested;
-        }
-
-        private bool IsOrganizationWithinReasonableDistance(Organization organization)
-        {
-            // TODO: Determine what a reasonable distance is.
-            return true;
         }
     }
 }
