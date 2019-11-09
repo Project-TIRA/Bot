@@ -28,7 +28,7 @@ namespace SearchBotTests.Dialogs
             initialContext.Housing = true;
 
             await CreateTestFlow(ServiceDialog.Name, initialContext)
-                .Test("test", Phrases.Search.GetLocation(initialContext.GetServicesString()))
+                .Test("test", Phrases.Search.GetLocation)
                 .StartTestAsync();
         }
 
@@ -53,7 +53,7 @@ namespace SearchBotTests.Dialogs
             initialContext.Employment = true;
 
             await CreateTestFlow(ServiceDialog.Name, initialContext)
-                .Test("test", Phrases.Search.GetLocation(initialContext.GetServicesString()))
+                .Test("test", Phrases.Search.GetLocation)
                 .StartTestAsync();
         }
     }

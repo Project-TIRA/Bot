@@ -112,13 +112,9 @@ namespace Shared
 
         public static class Search
         {
+            public static Activity GetLocation = MessageFactory.Text("In what city are you looking for services?");
             public static Activity GetServiceType = MessageFactory.Text("What type of service are you looking for?");
             public static Activity GetHousingType = MessageFactory.Text("What type of housing are you looking for?");
-
-            public static Activity GetLocation(string serviceType)
-            {
-                return MessageFactory.Text($"In what city are you looking for {(string.IsNullOrEmpty(serviceType) ? "services" : serviceType)}?") ;
-            }
         }
 
         public static class Services
@@ -176,7 +172,7 @@ namespace Shared
 
         public static class Intents
         {
-            public static Activity Unknown = MessageFactory.Text("Sorry, I'm not able to understand that. What services can I help you find?");
+            public static Activity Unknown = MessageFactory.Text("Hi, what services can I help you find?");
         }
     }
 }

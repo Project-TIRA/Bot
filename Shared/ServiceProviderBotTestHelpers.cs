@@ -18,7 +18,7 @@ namespace Shared
                 Id = Guid.NewGuid().ToString(),
                 Name = "Test Organization",
                 IsVerified = isVerified,
-                Location = "Seattle"
+                Address = "Seattle"
             };
 
             await api.Create(organization);

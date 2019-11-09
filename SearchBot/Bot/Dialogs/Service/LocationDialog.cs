@@ -28,7 +28,7 @@ namespace SearchBot.Bot.Dialogs.Service
                         return await dialogContext.PromptAsync(
                             Prompt.TextPrompt,
                             new PromptOptions {
-                                Prompt = Phrases.Search.GetLocation(conversationContext.GetServicesString())
+                                Prompt = Phrases.Search.GetLocation
                             },
                             cancellationToken);
                         }

@@ -1,9 +1,13 @@
-﻿using Microsoft.Bot.Builder;
+﻿using EntityModel;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
+using SearchBot.Bot.Models;
 using SearchBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -61,25 +65,108 @@ namespace SearchBot.Bot.Dialogs.Service
             Debug.Assert(conversationContext.IsValid());
 
             // Get the verified organizations.
-            var organizations = await this.api.GetVerifiedOrganizations();
+            var verifiedOrganizations = await this.api.GetVerifiedOrganizations();
 
+            // Score the organizations against the user's request.
+            var organizationScores = new List<OrganizationScore>();
 
-            // Check if there is one organization that meets all criteria.
-
-
-            // TODO: Filter by location.
-
-            /*
-            if (conversationContext.HousingEmergency)
+            foreach (var org in verifiedOrganizations)
             {
-                organizations.Where(o => o.)
+                // TODO: get actual distance.
+                var distance = new Random().Next(1, 25);;
+                var serviceScore = await GetOrganizationServiceScore(org, conversationContext);
+
+                organizationScores.Add(new OrganizationScore
+                {
+                    Organization = org,
+                    ServiceScore = serviceScore,
+                    Distance = distance
+                });
             }
-            */
+
+            // Check if any organizations fully matched the user's request.
+            var fullMatches = organizationScores.Where(m => m.AllServicesMatch && m.IsWithinDistance);
+            if (fullMatches.Count() >= 1)
+            {
+                // Either take the only match or the closest match.
+                var match = fullMatches.Count() == 1 ?
+                    fullMatches.First() :
+                    fullMatches.Aggregate((m1, m2) => m1.Distance >= m2.Distance ? m1 : m2);
+
+                return $"It looks like {match.Organization.Name} has availability for {conversationContext.GetServicesString()} services!" +
+                    Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
+            }
+            else
+            {
+                // No full matches. Need to recommend multiple organizations.
+                return $"TODO: multiple orgs or no org!";
+            }
+        }
+
+        private async Task<float> GetOrganizationServiceScore(Organization organization, ConversationContext conversationContext)
+        {
+            int totalServicesRequested = 0;
+            int matchedServices = 0;
+
+            if (conversationContext.HasCaseManagement)
+            {
+                // Get the latest service data for the org. Returns null if they don't have the service.
+                var data = await this.api.GetLatestServiceData<CaseManagementData>(organization.Id);
+
+                totalServicesRequested++;
+                matchedServices += (data != null && data.Open > 0) ? 1 : 0;
+            }
+
+            if (conversationContext.HasEmployment)
+            {
+                // Get the latest service data for the org. Returns null if they don't have the service.
+                var data = await this.api.GetLatestServiceData<EmploymentData>(organization.Id);
+
+                if (conversationContext.EmploymentInternship)
+                {
+                    totalServicesRequested++;
+                    matchedServices += (data != null && data.PaidInternshipOpen > 0) ? 1 : 0;
+                }
+                else
+                {
+                    // If not looking for an internship, check if any other types are open.
+                    totalServicesRequested++;
+                    matchedServices += (data != null && 
+                        (data.EmploymentPlacementOpen > 0 || 
+                         data.JobReadinessTrainingOpen > 0 || 
+                         data.VocationalTrainingOpen > 0)) ? 1 : 0;
+                }
+            }
+
+            if (conversationContext.HasHousing)
+            {
+                // Get the latest service data for the org. Returns null if they don't have the service.
+                var data = await this.api.GetLatestServiceData<HousingData>(organization.Id);
+
+                if (conversationContext.HousingEmergency)
+                {
+                    totalServicesRequested++;
+                    matchedServices += (data != null &&
+                        (data.EmergencyPrivateBedsOpen > 0 ||
+                         data.EmergencySharedBedsOpen > 0)) ? 1 : 0;
+                }
+                else if (conversationContext.HousingLongTerm)
+                {
+                    totalServicesRequested++;
+                    matchedServices += (data != null &&
+                        (data.LongTermPrivateBedsOpen > 0 ||
+                         data.LongTermSharedBedsOpen > 0)) ? 1 : 0;
+                }
+            }
 
             string sub_key = "ay41VKwaVczc7rlvS9krCupc_OQybqGBLGFz9IsDZoc";
             string query = conversationContext.Location;
 
             var http = new HttpClient();
+            if (conversationContext.HasMentalHealth)
+            {
+                // Get the latest service data for the org. Returns null if they don't have the service.
+                var data = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id);
             var url = string.Format("https://atlas.microsoft.com/search/fuzzy/json?api-version=1.0&subscription-key={0}&format=json&query={1}", sub_key, query);
             var response = await http.GetAsync(url);
             var result = await response.Content.ReadAsStringAsync();
@@ -94,11 +181,19 @@ namespace SearchBot.Bot.Dialogs.Service
             
             var results = organizations.Where(o => CalcDistance(userLat, userLon, o.Latitude, o.Longitude) < 50.0).ToList();
 
+                totalServicesRequested++;
+                matchedServices += (data != null &&
+                    (data.InPatientOpen > 0 ||
+                     data.OutPatientOpen > 0)) ? 1 : 0;
+            }
 
-            // If not, recommend multiple for the different needs.
+            if (conversationContext.HasSubstanceUse)
             string res = "";
             for(int i = 0; i < results.Count; i++)
             {
+            {
+                // Get the latest service data for the org. Returns null if they don't have the service.
+                var data = await this.api.GetLatestServiceData<SubstanceUseData>(organization.Id);
                 res = res + " " + Convert.ToString(results[i].Name);
             }
             return res;
@@ -107,6 +202,21 @@ namespace SearchBot.Bot.Dialogs.Service
 
         private double CalcDistance(string lat1, string lon1, string lat2, string lon2)
         {
+                if (conversationContext.SubstanceUseDetox)
+                {
+                    totalServicesRequested++;
+                    matchedServices += (data != null && data.DetoxOpen > 0) ? 1 : 0;
+                }
+                else
+                {
+                    // If not looking for detox, check if any other types are open.
+                    totalServicesRequested++;
+                    matchedServices += (data != null &&
+                        (data.InPatientOpen > 0 ||
+                         data.OutPatientOpen > 0 ||
+                         data.GroupOpen > 0)) ? 1 : 0;
+                }
+            }
 
             double R = 6371;
             double dLat = (Math.PI / 180) * (Convert.ToDouble(lat2) - Convert.ToDouble(lat1));
@@ -114,6 +224,13 @@ namespace SearchBot.Bot.Dialogs.Service
             double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) + Math.Cos((Math.PI / 180) * (Convert.ToDouble(lat1))) * Math.Cos((Math.PI / 180) * (Convert.ToDouble(lat2))) * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
             double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
             return R * c;
+            return matchedServices / (float)totalServicesRequested;
+        }
+
+        private bool IsOrganizationWithinReasonableDistance(Organization organization)
+        {
+            // TODO: Determine what a reasonable distance is.
+            return true;
         }
     }
 }

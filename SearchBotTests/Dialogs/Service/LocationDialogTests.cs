@@ -13,7 +13,7 @@ namespace SearchBotTests.Dialogs
         public async Task NoLocation()
         {
             await CreateTestFlow(LocationDialog.Name)
-                .Test("test", Phrases.Search.GetLocation(string.Empty))
+                .Test("test", Phrases.Search.GetLocation)
                 .Send(SearchBotTestHelpers.DefaultLocation)
                 .StartTestAsync();
 
