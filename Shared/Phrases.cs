@@ -1,4 +1,4 @@
-﻿using EntityModel;
+﻿﻿using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -113,6 +113,7 @@ namespace Shared
         public static class Search
         {
             public static Activity GetLocation = MessageFactory.Text("In what city are you looking for services?");
+            public static Activity RetryGetLocation = MessageFactory.Text($"Oops, I couldn't find that location. {GetLocation.Text}");
             public static Activity GetServiceType = MessageFactory.Text("What type of service are you looking for?");
             public static Activity GetHousingType = MessageFactory.Text("What type of housing are you looking for?");
         }

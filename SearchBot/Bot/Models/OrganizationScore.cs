@@ -11,6 +11,11 @@ namespace SearchBot.Bot.Models
         public double Distance { get; set; }
 
         public bool AllServicesMatch { get { return this.ServiceScore == 1; } }
-        public bool IsWithinDistance {  get { return this.Distance <= REASONABLE_DISTANCE;  } }
+        public bool SomeServicesMatch { get { return this.ServiceScore > 0 && this.ServiceScore < 1; } }
+
+        public static bool IsWithinDistance(double distance)
+        {
+            return distance <= REASONABLE_DISTANCE;
+        }
     }
 }

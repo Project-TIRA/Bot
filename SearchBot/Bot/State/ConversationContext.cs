@@ -1,6 +1,7 @@
 ﻿using EntityModel;
 using Luis;
 using Shared;
+using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,6 +11,7 @@ namespace SearchBot.Bot.State
     public class ConversationContext
     {
         public string Location { get; set; }
+        public LocationPosition LocationPosition { get; set; }
 
         public bool CaseManagement { get; set; }
 
@@ -96,8 +98,6 @@ namespace SearchBot.Bot.State
 
             this.SubstanceUse = luisModel.Entities?.SubstanceUse != null;
             this.SubstanceUseDetox = luisModel.Entities?.SubstanceUseDetox != null;
-
-
         }
 
         public List<ServiceType> GetServiceTypes()

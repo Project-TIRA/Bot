@@ -1,8 +1,13 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
-using Shared.ApiInterface;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Shared.Models;
 using System.Diagnostics;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Shared
 {
@@ -104,6 +109,26 @@ namespace Shared
             }
 
             return toLower ? result.ToLower() : result;
+        }
+
+        public static async Task<LocationPosition> LocationToPosition(IConfiguration configuration, string location)
+        {
+            var url = string.Format(configuration.MapsSearchUrlFormat(), configuration.MapsSubscriptionKey(), location);
+            var response = await new HttpClient().GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var data = JsonConvert.DeserializeObject<LocationApiResponse>(responseContent);
+            if (data == null && data.Summary.NumResults == 0)
+            {
+                return null;
+            }
+
+            // Return the first city in the results.
+            return data.Results.FirstOrDefault(r => r.EntityType == EntityType.Municipality)?.Position;
         }
     }
 }

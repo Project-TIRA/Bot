@@ -46,7 +46,7 @@ namespace Shared
         private const string CosmosCollectionSettingName = "CosmosDb:Collection";
 
         /// <summary>
-        /// The name of the setting that contains the LUIS app ID.
+        /// The name of the setting that contains the ApplicationInsights config.
         /// </summary>
         private const string LuisAppIdSettingName = "Luis:AppId";
 
@@ -59,6 +59,16 @@ namespace Shared
         /// The name of the setting that contains the LUIS endpoint URL.
         /// </summary>
         private const string LuisEndpointUrlSettingName = "Luis:EndpointUrl";
+
+        /// <summary>
+        /// The name of the setting that contains the maps subscription key.
+        /// </summary>
+        private const string MapsSubscriptionKeySettingName = "Maps:SubscriptionKey";
+
+        /// <summary>
+        /// The name of the setting that contains the maps search URL format.
+        /// </summary>
+        private const string MapsSearchUrlFormatSettingName = "Maps:SearchUrlFormat";
 
         /// <summary>
         /// The name of the setting that contains the ApplicationInsights config.
@@ -109,7 +119,6 @@ namespace Shared
         {
             return configuration.GetValue<string>(CosmosCollectionSettingName);
         }
-
         public static string LuisAppId(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(LuisAppIdSettingName);
@@ -125,9 +134,19 @@ namespace Shared
             return configuration.GetValue<string>(LuisEndpointUrlSettingName);
         }
 
+        public static string MapsSubscriptionKey(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(MapsSubscriptionKeySettingName);
+        }
+
+        public static string MapsSearchUrlFormat(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(MapsSearchUrlFormatSettingName);
+        }
+
         public static string ApplicationInsightsConfiguration(this IConfiguration configuration)
         {
-            return configuration.GetValue<string>(ApplicationInsightsSettingName);
+            return configuration.GetValue<string>(LuisAppIdSettingName);
         }
 
         public static string TestChannel(this IConfiguration configuration)

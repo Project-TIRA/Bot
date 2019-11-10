@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 
 namespace Shared.Prompts
 {
@@ -15,7 +16,7 @@ namespace Shared.Prompts
         /// <summary>
         /// Adds each prompt to the master dialog set
         /// </summary>
-        public static void Register(DialogSet dialogs)
+        public static void Register(DialogSet dialogs, IConfiguration configuration)
         {
 
             dialogs.Add(new CustomChoicePrompt(ChoicePrompt));
@@ -24,6 +25,7 @@ namespace Shared.Prompts
             dialogs.Add(new TextPrompt(TextPrompt));
             dialogs.Add(new TextPrompt(GreetingTextPrompt, GreetingPromptValidator.Create()));
             dialogs.Add(new TextPrompt(LessThanOrEqualPrompt, LessThanOrEqualPromptValidator.Create()));
+            dialogs.Add(new TextPrompt(LocationTextPrompt, LocationPromptValidator.Create(configuration)));
         }
     }
 }

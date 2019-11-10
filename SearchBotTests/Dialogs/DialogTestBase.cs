@@ -29,6 +29,8 @@ namespace SearchBotTests.Dialogs
 
         protected DialogTestBase()
         {
+            this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
+
             this.state = StateAccessors.Create();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
             this.api = new EfInterface(DbModelFactory.CreateInMemory());
@@ -37,10 +39,8 @@ namespace SearchBotTests.Dialogs
                 .Use(new TrimIncomingMessageMiddleware())
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
 
-            this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
-
             // Register prompts.
-            Prompt.Register(this.dialogs);
+            Prompt.Register(this.dialogs, this.configuration);
         }
 
         protected TestFlow CreateTestFlow(string dialogName, ConversationContext conversationContext = null)
