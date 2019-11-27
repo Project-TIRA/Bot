@@ -9,6 +9,9 @@ namespace EntityModel
         public static string PRIMARY_KEY = "TODO";
 
         [JsonIgnore]
+        public override ServiceType ServiceType { get { return ServiceType.CaseManagement; } }
+
+        [JsonIgnore]
         public override string TableName { get { return TABLE_NAME; } }
 
         [JsonIgnore]

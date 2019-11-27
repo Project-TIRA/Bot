@@ -35,7 +35,7 @@ namespace SearchBot.Bot.Dialogs
                         return await BeginDialogAsync(dialogContext, ServiceDialog.Name, null, cancellationToken);
                     }
 
-                    await Messages.SendAsync(Phrases.Intents.Unknown, dialogContext.Context, cancellationToken);
+                    await Messages.SendAsync(Phrases.Search.GetServiceType, dialogContext.Context, cancellationToken);
                     return await dialogContext.NextAsync(cancellationToken);
                 },
                 async (dialogContext, cancellationToken) =>

@@ -67,27 +67,16 @@ namespace SearchBot.Bot.Dialogs.Service
             var userLocation = conversationContext.LocationPosition;
 
             // Score the organizations against the user's request.
-            var organizationScores = new List<OrganizationScore>();
+            var organizationScores = new List<OrganizationMatch>();
 
             foreach (var org in verifiedOrganizations)
             {
-                // Filter out organizations that aren't within distance.
+                // Get the organization's distance from the location.
                 var distance = CalcDistance(userLocation.Lat, userLocation.Lon, Convert.ToDouble(org.Latitude), Convert.ToDouble(org.Longitude));
 
-                if (!OrganizationScore.IsWithinDistance(distance))
-                {
-                    continue;
-                }
-
                 // Calculate how much the organization matches the user's request.
-                var serviceScore = await GetServiceScore(org, conversationContext);
-
-                organizationScores.Add(new OrganizationScore
-                {
-                    Organization = org,
-                    ServiceScore = serviceScore,
-                    Distance = distance
-                });
+                var score = await GetOrganizationScore(org, distance, conversationContext);
+                organizationScores.Add(score);
             }
 
             // Check if any organizations fully matched the user's request.
@@ -99,7 +88,7 @@ namespace SearchBot.Bot.Dialogs.Service
                     fullMatches.First() :
                     fullMatches.Aggregate((m1, m2) => m1.Distance >= m2.Distance ? m1 : m2);
 
-                return $"It looks like {match.Organization.Name} has availability for {conversationContext.GetServicesString()} services!" +
+                return $"It looks like {match.Organization.Name} has availability for {conversationContext.ServicesString} services!" +
                     Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
             }
 
@@ -111,7 +100,7 @@ namespace SearchBot.Bot.Dialogs.Service
             }
 
             // TODO: Allow to search in another location.
-            return $"Unfortunately it looks like no organizations nearby have availability for {conversationContext.GetServicesString()} services";
+            return $"Unfortunately it looks like no organizations near {conversationContext.Location} have availability for {conversationContext.ServicesString} services";
         }
 
         private double CalcDistance(double lat1, double lon1, double lat2, double lon2)
@@ -124,97 +113,132 @@ namespace SearchBot.Bot.Dialogs.Service
             return R* c;
         }
 
-        private async Task<float> GetServiceScore(Organization organization, ConversationContext conversationContext)
+        private async Task<OrganizationMatch> GetOrganizationScore(Organization organization, double distance, ConversationContext conversationContext)
         {
+            var match = new OrganizationMatch();
+            match.Organization = organization;
+            match.Distance = distance;
+
+            // Filter out organizations that aren't within distance.
+            if (!match.IsWithinDistance())
+            {
+                return match;
+            }
+
+
+
             // TODO: Make sure the most recent update was within reasonable time.
 
-            int totalServicesRequested = 0;
-            int matchedServices = 0;
 
-            if (conversationContext.HasCaseManagement)
+
+            if (conversationContext.HasService(ServiceType.CaseManagement))
             {
                 // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<CaseManagementData>(organization.Id);
+                if (data != null)
+                {
+                    match.ServiceData.Add(data);
 
-                totalServicesRequested++;
-                matchedServices += (data != null && data.Open > 0) ? 1 : 0;
+                    if (data.Open > 0)
+                    {
+                        match.ServiceFlags |= ServiceFlags.CaseManagement;
+                    }
+                }
             }
 
-            if (conversationContext.HasEmployment)
+            if (conversationContext.HasService(ServiceType.Employment))
             {
                 // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<EmploymentData>(organization.Id);
+                if (data != null)
+                {
+                    match.ServiceData.Add(data);
 
-                if (conversationContext.EmploymentInternship)
-                {
-                    totalServicesRequested++;
-                    matchedServices += (data != null && data.PaidInternshipOpen > 0) ? 1 : 0;
-                }
-                else
-                {
-                    // If not looking for an internship, check if any other types are open.
-                    totalServicesRequested++;
-                    matchedServices += (data != null &&
-                        (data.EmploymentPlacementOpen > 0 ||
-                         data.JobReadinessTrainingOpen > 0 ||
-                         data.VocationalTrainingOpen > 0)) ? 1 : 0;
+                    if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.EmploymentInternship))
+                    {
+                        if (data.PaidInternshipOpen > 0)
+                        {
+                            match.ServiceFlags |= ServiceFlags.EmploymentInternship;
+                        }
+                    }
+                    else
+                    {
+                        // If not looking for an internship, check if any other types are open.
+                        if (data.EmploymentPlacementOpen > 0 ||  data.JobReadinessTrainingOpen > 0 || data.VocationalTrainingOpen > 0)
+                        {
+                            match.ServiceFlags |= ServiceFlags.Employment;
+                        }
+                    }
                 }
             }
 
-            if (conversationContext.HasHousing)
+            if (conversationContext.HasService(ServiceType.Housing))
             {
                 // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<HousingData>(organization.Id);
+                if (data != null)
+                {
+                    match.ServiceData.Add(data);
 
-                if (conversationContext.HousingEmergency)
-                {
-                    totalServicesRequested++;
-                    matchedServices += (data != null &&
-                        (data.EmergencyPrivateBedsOpen > 0 ||
-                         data.EmergencySharedBedsOpen > 0)) ? 1 : 0;
-                }
-                else if (conversationContext.HousingLongTerm)
-                {
-                    totalServicesRequested++;
-                    matchedServices += (data != null &&
-                        (data.LongTermPrivateBedsOpen > 0 ||
-                         data.LongTermSharedBedsOpen > 0)) ? 1 : 0;
+                    if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.HousingEmergency))
+                    {
+                        if (data.EmergencyPrivateBedsOpen > 0 || data.EmergencySharedBedsOpen > 0)
+                        {
+                            match.ServiceFlags |= ServiceFlags.HousingEmergency;
+                        }
+                    }
+                    else if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.HousingLongTerm))
+                    {
+                        if (data.LongTermPrivateBedsOpen > 0 || data.LongTermSharedBedsOpen > 0)
+                        {
+                            match.ServiceFlags |= ServiceFlags.HousingLongTerm;
+                        }
+                    }
                 }
             }
 
-            if (conversationContext.HasMentalHealth)
+            if (conversationContext.HasService(ServiceType.MentalHealth))
             {
                 // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id);
+                if (data != null)
+                {
+                    match.ServiceData.Add(data);
 
-                totalServicesRequested++;
-                matchedServices += (data != null &&
-                    (data.InPatientOpen > 0 ||
-                     data.OutPatientOpen > 0)) ? 1 : 0;
+                    if (data.InPatientOpen > 0 || data.OutPatientOpen > 0)
+                    {
+                        match.ServiceFlags |= ServiceFlags.MentalHealth;
+                    }
+                }
             }
 
-            if (conversationContext.HasSubstanceUse)
+            if (conversationContext.HasService(ServiceType.SubstanceUse))
             {
                 // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<SubstanceUseData>(organization.Id);
+                if (data != null)
+                {
+                    match.ServiceData.Add(data);
 
-                if (conversationContext.SubstanceUseDetox)
-                {
-                    totalServicesRequested++;
-                    matchedServices += (data != null && data.DetoxOpen > 0) ? 1 : 0;
-                }
-                else
-                {
-                    // If not looking for detox, check if any other types are open.
-                    totalServicesRequested++;
-                    matchedServices += (data != null &&
-                        (data.InPatientOpen > 0 ||
-                         data.OutPatientOpen > 0 ||
-                         data.GroupOpen > 0)) ? 1 : 0;
+                    if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.SubstanceUseDetox))
+                    {
+                        if (data.DetoxOpen > 0)
+                        {
+                            match.ServiceFlags |= ServiceFlags.SubstanceUseDetox;
+                        }
+                    }
+                    else
+                    {
+                        // If not looking for detox, check if any other types are open.
+                        if (data.InPatientOpen > 0 || data.OutPatientOpen > 0 || data.GroupOpen > 0)
+                        {
+                            match.ServiceFlags |= ServiceFlags.SubstanceUse;
+                        }
+                    }
                 }
             }
 
-            return matchedServices / (float)totalServicesRequested;
+            return match;
         }
     }
 }

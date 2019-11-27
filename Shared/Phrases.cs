@@ -4,6 +4,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shared
 {
@@ -114,7 +115,7 @@ namespace Shared
         {
             public static Activity GetLocation = MessageFactory.Text("In what city are you looking for services?");
             public static Activity RetryGetLocation = MessageFactory.Text($"Oops, I couldn't find that location. {GetLocation.Text}");
-            public static Activity GetServiceType = MessageFactory.Text("What type of service are you looking for?");
+            public static Activity GetServiceType = MessageFactory.Text($"What type of service are you looking for? I can help with {Helpers.GetServicesString(Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>().ToList())} services");
             public static Activity GetHousingType = MessageFactory.Text("What type of housing are you looking for?");
         }
 
@@ -169,11 +170,6 @@ namespace Shared
             public static Activity Options = MessageFactory.Text("Which service(s) would you like to update?");
             public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
-        }
-
-        public static class Intents
-        {
-            public static Activity Unknown = MessageFactory.Text("Hi, what services can I help you find?");
         }
     }
 }

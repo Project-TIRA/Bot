@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Schema;
 using SearchBot.Bot.Dialogs;
+using SearchBot.Bot.Models;
 using SearchBot.Bot.State;
 using Shared;
 using Xunit;
@@ -13,7 +15,7 @@ namespace SearchBotTests.Dialogs
         public async Task UnknownIntent()
         {
             await CreateTestFlow(MasterDialog.Name)
-                .Test("test", Phrases.Intents.Unknown)
+                .Test("test", Phrases.Search.GetServiceType)
                 .StartTestAsync();
         }
 
@@ -22,7 +24,7 @@ namespace SearchBotTests.Dialogs
         {
             var initialContext = new ConversationContext();
             initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
-            initialContext.Housing = true;
+            initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
 
             await CreateTestFlow(MasterDialog.Name)
                 .Send($"where can I find {Phrases.Services.Housing.ServiceName} in {SearchBotTestHelpers.DefaultLocation}")
@@ -38,8 +40,8 @@ namespace SearchBotTests.Dialogs
         {
             var initialContext = new ConversationContext();
             initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
-            initialContext.Housing = true;
-            initialContext.Employment = true;
+            initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
+            initialContext.CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.Employment);
 
             await CreateTestFlow(MasterDialog.Name)
                 .Send($"where can I find {Phrases.Services.Housing.ServiceName} and {Phrases.Services.Employment.ServiceName} in {SearchBotTestHelpers.DefaultLocation}")

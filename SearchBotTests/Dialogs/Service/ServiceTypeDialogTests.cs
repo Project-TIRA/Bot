@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Schema;
 using SearchBot.Bot.Dialogs.Service;
+using SearchBot.Bot.Models;
 using SearchBot.Bot.State;
 using Shared;
 using Xunit;
@@ -18,7 +20,7 @@ namespace SearchBotTests.Dialogs
                 .StartTestAsync();
 
             var expectedContext = new ConversationContext();
-            expectedContext.Housing = true;
+            expectedContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
 
             // Validate the results.
             var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);

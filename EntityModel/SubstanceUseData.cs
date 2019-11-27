@@ -9,6 +9,9 @@ namespace EntityModel
         public static string PRIMARY_KEY = "_tira_substanceuseserviceid_value";
 
         [JsonIgnore]
+        public override ServiceType ServiceType { get { return ServiceType.SubstanceUse; } }
+
+        [JsonIgnore]
         public override string TableName { get { return TABLE_NAME; } }
 
         [JsonIgnore]

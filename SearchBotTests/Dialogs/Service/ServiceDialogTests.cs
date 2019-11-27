@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
+using EntityModel;
 using Microsoft.Bot.Schema;
 using SearchBot.Bot.Dialogs.Service;
+using SearchBot.Bot.Models;
 using SearchBot.Bot.State;
 using Shared;
 using Xunit;
@@ -14,7 +16,7 @@ namespace SearchBotTests.Dialogs
         {
             var initialContext = new ConversationContext();
             initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
-            initialContext.Housing = true;
+            initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
 
             await CreateTestFlow(ServiceDialog.Name, initialContext)
                 .Test("test", StartsWith(Phrases.Search.GetHousingType))
@@ -25,7 +27,7 @@ namespace SearchBotTests.Dialogs
         public async Task NoLocation()
         {
             var initialContext = new ConversationContext();
-            initialContext.Housing = true;
+            initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
 
             await CreateTestFlow(ServiceDialog.Name, initialContext)
                 .Test("test", Phrases.Search.GetLocation)
@@ -37,8 +39,8 @@ namespace SearchBotTests.Dialogs
         {
             var initialContext = new ConversationContext();
             initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
-            initialContext.Housing = true;
-            initialContext.Employment = true;
+            initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
+            initialContext.CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.Employment);
 
             await CreateTestFlow(ServiceDialog.Name, initialContext)
                 .Test("test", StartsWith(Phrases.Search.GetHousingType))
@@ -49,8 +51,8 @@ namespace SearchBotTests.Dialogs
         public async Task MultipleServicesNoLocation()
         {
             var initialContext = new ConversationContext();
-            initialContext.Housing = true;
-            initialContext.Employment = true;
+            initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
+            initialContext.CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.Employment);
 
             await CreateTestFlow(ServiceDialog.Name, initialContext)
                 .Test("test", Phrases.Search.GetLocation)

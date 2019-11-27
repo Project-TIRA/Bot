@@ -1,53 +1,36 @@
 ﻿using EntityModel;
 using Luis;
 using Microsoft.Extensions.Configuration;
+using SearchBot.Bot.Models;
 using Shared;
 using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SearchBot.Bot.State
 {
     public class ConversationContext
     {
+        private List<ServiceContext> ServiceContexts { get; set; }
+
+        public ServiceFlags ServiceFlags { get; private set; }
+
         // Use SetLocation() to set location.
         public string Location { get; private set; }
         public LocationPosition LocationPosition { get; private set; }
 
-        public bool CaseManagement { get; set; }
+        public bool HasServices { get { return this.ServiceContexts.Count > 0; } }
 
-        public bool Housing { get; set; }
-        public bool HousingEmergency { get; set; }
-        public bool HousingLongTerm { get; set; }
-
-        public bool Employment { get; set; }
-        public bool EmploymentInternship { get; set; }
-
-        public bool MentalHealth { get; set; }
-
-        public bool SubstanceUse { get; set; }
-        public bool SubstanceUseDetox { get; set; }
-
-
-        public bool HasCaseManagement { get { return this.CaseManagement; } }
-        public bool HasEmployment { get { return this.Employment || this.EmploymentInternship; } }
-        public bool HasHousing { get { return this.Housing || this.HousingEmergency || this.HousingLongTerm; } }
-        public bool HasMentalHealth { get { return this.MentalHealth; } }
-        public bool HasSubstanceUse { get { return this.SubstanceUse || this.SubstanceUseDetox; } }
-
-        public bool HasServices { get { return this.HasCaseManagement || this.HasEmployment ||
-            this.HasHousing || this.HasMentalHealth || this.HasSubstanceUse; } }
+        public string ServicesString {  get { return Helpers.GetServicesString(GetServiceTypes()); } }
 
         public override int GetHashCode()
         {
-            return this.Location.GetHashCode() ^
-                this.CaseManagement.GetHashCode() ^
-                this.Housing.GetHashCode() ^ this.HousingEmergency.GetHashCode() ^ this.HousingLongTerm.GetHashCode() ^
-                this.Employment.GetHashCode() ^ this.EmploymentInternship.GetHashCode() ^
-                this.MentalHealth.GetHashCode() ^
-                this.SubstanceUse.GetHashCode() ^ this.SubstanceUseDetox.GetHashCode();
+            return this.ServiceFlags.GetHashCode() ^
+                this.Location.GetHashCode() ^
+                this.LocationPosition.GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -59,16 +42,7 @@ namespace SearchBot.Bot.State
                 return false;
 
             ConversationContext ctx = (ConversationContext)obj;
-            return ctx.Location == this.Location &&
-                ctx.CaseManagement == this.CaseManagement &&
-                ctx.Housing == this.Housing &&
-                ctx.HousingEmergency == this.HousingEmergency &&
-                ctx.HousingLongTerm == this.HousingLongTerm &&
-                ctx.Employment == this.Employment &&
-                ctx.EmploymentInternship == this.EmploymentInternship &&
-                ctx.MentalHealth == this.MentalHealth &&
-                ctx.SubstanceUse == this.SubstanceUse &&
-                ctx.SubstanceUseDetox == this.SubstanceUseDetox;
+            return ctx.ServiceFlags == this.ServiceFlags && ctx.Location == this.Location;
         }
 
         public static bool operator ==(ConversationContext c1, ConversationContext c2)
@@ -97,76 +71,77 @@ namespace SearchBot.Bot.State
                 await SetLocation(configuration, luisModel.Entities.geographyV2[0].Location);
             }
 
-            this.CaseManagement = luisModel.Entities?.CaseManangement != null;
+            if (luisModel.Entities?.CaseManangement != null && luisModel.Entities.CaseManangement.Length > 0)
+            {
+                CreateOrUpdateServiceContext(ServiceType.CaseManagement, ServiceFlags.CaseManagement);
+            }
 
-            this.Housing = luisModel.Entities?.Housing != null && luisModel.Entities.Housing.Length > 0;
-            this.HousingEmergency = luisModel.Entities?.HousingEmergency != null && luisModel.Entities.HousingEmergency.Length > 0;
-            this.HousingLongTerm = luisModel.Entities?.HousingLongTerm != null && luisModel.Entities.HousingLongTerm.Length > 0;
+            if (luisModel.Entities?.Employment != null && luisModel.Entities.Employment.Length > 0)
+            {
+                CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.Employment);
+            }
 
-            this.Employment = luisModel.Entities?.Employment != null && luisModel.Entities.Employment.Length > 0;
-            this.EmploymentInternship = luisModel.Entities?.EmploymentInternship != null && luisModel.Entities.EmploymentInternship.Length > 0;
+            if (luisModel.Entities?.EmploymentInternship != null && luisModel.Entities.EmploymentInternship.Length > 0)
+            {
+                CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.EmploymentInternship);
+            }
 
-            this.MentalHealth = luisModel.Entities?.MentalHealth != null;
+            if (luisModel.Entities?.Housing != null && luisModel.Entities.Housing.Length > 0)
+            {
+                // If no specific type of housing was requested then it needs to be clarified.
+                CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
+            }
 
-            this.SubstanceUse = luisModel.Entities?.SubstanceUse != null;
-            this.SubstanceUseDetox = luisModel.Entities?.SubstanceUseDetox != null;
+            if (luisModel.Entities?.HousingEmergency != null && luisModel.Entities.HousingEmergency.Length > 0)
+            {
+                CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingEmergency);
+            }
+
+            if (luisModel.Entities?.HousingLongTerm != null && luisModel.Entities.HousingLongTerm.Length > 0)
+            {
+                CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingLongTerm);
+            }
+
+            if (luisModel.Entities?.MentalHealth != null && luisModel.Entities.MentalHealth.Length > 0)
+            {
+                CreateOrUpdateServiceContext(ServiceType.MentalHealth, ServiceFlags.MentalHealth);
+            }
+
+            if (luisModel.Entities?.SubstanceUse != null && luisModel.Entities.SubstanceUse.Length > 0)
+            {
+                CreateOrUpdateServiceContext(ServiceType.SubstanceUse, ServiceFlags.SubstanceUse);
+            }
+
+            if (luisModel.Entities?.SubstanceUseDetox != null && luisModel.Entities.SubstanceUseDetox.Length > 0)
+            {
+                CreateOrUpdateServiceContext(ServiceType.SubstanceUse, ServiceFlags.SubstanceUseDetox);
+            }
         }
 
-        public List<ServiceType> GetServiceTypes()
+        public void CreateOrUpdateServiceContext(ServiceType serviceType, ServiceFlags serviceFlags)
         {
-            var serviceTypes = new List<ServiceType>();
-
-            foreach (ServiceType serviceType in Enum.GetValues(typeof(ServiceType)))
+            var context = this.ServiceContexts.FirstOrDefault(c => c.ServiceType == serviceType);
+            if (context != null)
             {
-                bool hasService = false;
-
-                switch (serviceType)
-                {
-                    case ServiceType.CaseManagement: hasService = this.CaseManagement; break;
-                    case ServiceType.Housing: hasService = this.HasHousing; break;
-                    case ServiceType.Employment: hasService = this.HasEmployment; break;
-                    case ServiceType.MentalHealth: hasService = this.HasMentalHealth; break;
-                    case ServiceType.SubstanceUse: hasService = this.HasSubstanceUse; break;
-                    default: hasService = false; break;
-                }
-
-                if (hasService)
-                {
-                    serviceTypes.Add(serviceType);
-                }
-            }
-
-            return serviceTypes;
-        }
-
-        public string GetServicesString()
-        {
-            var serviceTypes = GetServiceTypes();
-
-            if (serviceTypes.Count == 0)
-            {
-                return string.Empty;
-            }
-            else if (serviceTypes.Count == 1)
-            {
-                return Helpers.GetServiceName(serviceTypes[0], toLower: true);
-            }
-            else if (serviceTypes.Count == 2)
-            {
-                return $"{Helpers.GetServiceName(serviceTypes[0], toLower: true)} and {Helpers.GetServiceName(serviceTypes[1], toLower: true)}";
+                context.ServiceFlags |= serviceFlags;
             }
             else
             {
-                string result = string.Empty;
-
-                for (int i = 0; i < serviceTypes.Count; ++i)
-                {
-                    var separator = (i == serviceTypes.Count - 1) ? ", and " : (i > 0 ? ", " : string.Empty);
-                    result += separator + Helpers.GetServiceName(serviceTypes[i], toLower: true);
-                }
-
-                return result;
+                this.ServiceContexts.Add(new ServiceContext(serviceType, serviceFlags));
             }
+
+            this.ServiceFlags |= serviceFlags;
+        }
+
+        public bool HasService(ServiceType serviceType)
+        {
+            return this.ServiceContexts.FirstOrDefault(c => c.ServiceType == serviceType) != null;
+        }
+
+        public bool IsServiceInvalid(ServiceType serviceType)
+        {
+            var context = this.ServiceContexts.FirstOrDefault(c => c.ServiceType == serviceType);
+            return context != null && !context.IsValid;
         }
 
         public bool IsValid()
@@ -176,11 +151,23 @@ namespace SearchBot.Bot.State
             // Must have location.
             isValid &= !string.IsNullOrEmpty(this.Location);
 
-            // Housing-only will be set if it wasn't clear which type of housing they are looking for.
-            // Only once the specific type of housing is set is this service valid.
-            isValid &= !this.Housing || this.HousingEmergency || this.HousingLongTerm;
+            // All service contexts must be valid.
+            this.ServiceContexts.ForEach(c => isValid &= c.IsValid);
 
-            return isValid; 
+            return isValid;
+        }
+
+        private List<ServiceType> GetServiceTypes()
+        {
+            var serviceTypes = new List<ServiceType>();
+            this.ServiceContexts.ForEach(c => serviceTypes.Add(c.ServiceType));
+            return serviceTypes;
+        }
+        private ServiceFlags GetServiceFlags()
+        {
+            ServiceFlags flags = ServiceFlags.None;
+            this.ServiceContexts.ForEach(c => flags |= c.ServiceFlags);
+            return flags;
         }
 
         public void TEST_SetLocation(string location, LocationPosition position)

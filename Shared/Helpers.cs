@@ -4,6 +4,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Shared.Models;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -109,6 +110,37 @@ namespace Shared
             }
 
             return toLower ? result.ToLower() : result;
+        }
+
+        /// <summary>
+        /// Gets the string from a list of services types.
+        /// </summary>
+        public static string GetServicesString(List<ServiceType> serviceTypes)
+        {
+            if (serviceTypes.Count == 0)
+            {
+                return string.Empty;
+            }
+            else if (serviceTypes.Count == 1)
+            {
+                return GetServiceName(serviceTypes[0], toLower: true);
+            }
+            else if (serviceTypes.Count == 2)
+            {
+                return $"{GetServiceName(serviceTypes[0], toLower: true)} and {GetServiceName(serviceTypes[1], toLower: true)}";
+            }
+            else
+            {
+                string result = string.Empty;
+
+                for (int i = 0; i < serviceTypes.Count; ++i)
+                {
+                    var separator = (i == serviceTypes.Count - 1) ? ", and " : (!string.IsNullOrEmpty(result) ? ", " : string.Empty);
+                    result += separator + GetServiceName(serviceTypes[i], toLower: true);
+                }
+
+                return result;
+            }
         }
 
         public static async Task<LocationPosition> LocationToPosition(IConfiguration configuration, string location)

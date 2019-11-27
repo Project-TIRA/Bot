@@ -1,11 +1,14 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using EntityModel;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
+using SearchBot.Bot.Models;
 using SearchBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SearchBot.Bot.Dialogs.Service
 {
@@ -22,9 +25,10 @@ namespace SearchBot.Bot.Dialogs.Service
             {
                 async (dialogContext, cancellationToken) =>
                 {
-                    // Check if housing was mentioned but not sepcified.
+                    // Check if housing was mentioned but the type was not specified.
                     var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
-                    if (conversationContext.Housing && !conversationContext.HousingEmergency && !conversationContext.HousingLongTerm)
+
+                    if (conversationContext.IsServiceInvalid(ServiceType.Housing))
                     {
                         // Prompt for the type of housing.
                         var choices = new List<Choice>() { new Choice { Value = Phrases.Services.Housing.Emergency }, new Choice { Value = Phrases.Services.Housing.LongTerm } };
@@ -50,8 +54,8 @@ namespace SearchBot.Bot.Dialogs.Service
                         // Update the type of housing.
                         switch (((FoundChoice)dialogContext.Result).Value)
                         {
-                            case Phrases.Services.Housing.Emergency: conversationContext.HousingEmergency = true; break;
-                            case Phrases.Services.Housing.LongTerm: conversationContext.HousingLongTerm = true; break;
+                            case Phrases.Services.Housing.Emergency: conversationContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingEmergency); break;
+                            case Phrases.Services.Housing.LongTerm: conversationContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingLongTerm); break;
                         }
                     }
 

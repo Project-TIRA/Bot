@@ -7,6 +7,9 @@ namespace EntityModel
     public abstract class ServiceDataBase : ModelBase
     {
         [JsonIgnore]
+        public abstract ServiceType ServiceType { get; }
+
+        [JsonIgnore]
         public string ServiceId { get; set; }
 
         [JsonProperty(PropertyName = "tira_name")]
