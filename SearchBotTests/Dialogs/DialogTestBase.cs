@@ -22,7 +22,7 @@ namespace SearchBotTests.Dialogs
         protected readonly DialogSet dialogs;
         protected readonly IApiInterface api;
         protected readonly TestAdapter adapter;
-        private readonly IConfiguration configuration;
+        protected readonly IConfiguration configuration;
 
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;

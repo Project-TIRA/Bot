@@ -41,12 +41,9 @@ namespace SearchBot.Bot.Dialogs.Service
                 {
                     if (dialogContext.Result != null)
                     {
-                        var location = (string)dialogContext.Result;
-
                         // Save the location.
                         var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
-                        conversationContext.Location = location;
-                        conversationContext.LocationPosition = await Helpers.LocationToPosition(configuration, location);
+                        await conversationContext.SetLocation(this.configuration, (string)dialogContext.Result);
                     }
 
                     // End this dialog to pop it off the stack.

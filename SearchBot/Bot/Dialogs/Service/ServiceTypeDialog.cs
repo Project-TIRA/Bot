@@ -45,7 +45,7 @@ namespace SearchBot.Bot.Dialogs.Service
                         // Get the LUIS result and save any context.
                         var luisResult = await new LuisHelper(this.configuration).RecognizeAsync<LuisModel>(dialogContext.Context, cancellationToken);
                         var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
-                        conversationContext.AddLuisResult(luisResult);
+                        await conversationContext.AddLuisResult(this.configuration, luisResult);
 
                         // Restart this dialog.
                         return await dialogContext.ReplaceDialogAsync(Name, null, cancellationToken);

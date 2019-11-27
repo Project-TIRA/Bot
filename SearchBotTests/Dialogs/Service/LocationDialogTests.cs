@@ -18,7 +18,7 @@ namespace SearchBotTests.Dialogs
                 .StartTestAsync();
 
             var expectedContext = new ConversationContext();
-            expectedContext.Location = SearchBotTestHelpers.DefaultLocation;
+            expectedContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
 
             // Validate the results.
             var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);
