@@ -26,9 +26,10 @@ namespace SearchBot.Bot.Dialogs.Service
                     {
                         // Prompt for the location.
                         return await dialogContext.PromptAsync(
-                            Prompt.TextPrompt,
+                            Prompt.LocationTextPrompt,
                             new PromptOptions {
-                                Prompt = Phrases.Search.GetLocation
+                                Prompt = Phrases.Search.GetLocation,
+                                RetryPrompt = Phrases.Search.RetryGetLocation
                             },
                             cancellationToken);
                         }
@@ -41,9 +42,8 @@ namespace SearchBot.Bot.Dialogs.Service
                     if (dialogContext.Result != null)
                     {
                         // Save the location.
-                        // TODO: Validate with Maps API
                         var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
-                        conversationContext.Location = (string)dialogContext.Result;
+                        await conversationContext.SetLocation(this.configuration, (string)dialogContext.Result);
                     }
 
                     // End this dialog to pop it off the stack.

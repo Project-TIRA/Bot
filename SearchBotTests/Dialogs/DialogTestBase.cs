@@ -22,13 +22,15 @@ namespace SearchBotTests.Dialogs
         protected readonly DialogSet dialogs;
         protected readonly IApiInterface api;
         protected readonly TestAdapter adapter;
-        private readonly IConfiguration configuration;
+        protected readonly IConfiguration configuration;
 
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;
 
         protected DialogTestBase()
         {
+            this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
+
             this.state = StateAccessors.Create();
             this.dialogs = new DialogSet(state.DialogContextAccessor);
             this.api = new EfInterface(DbModelFactory.CreateInMemory());
@@ -37,10 +39,8 @@ namespace SearchBotTests.Dialogs
                 .Use(new TrimIncomingMessageMiddleware())
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
 
-            this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
-
             // Register prompts.
-            Prompt.Register(this.dialogs);
+            Prompt.Register(this.dialogs, this.configuration);
         }
 
         protected TestFlow CreateTestFlow(string dialogName, ConversationContext conversationContext = null)

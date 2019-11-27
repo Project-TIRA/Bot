@@ -21,7 +21,7 @@ namespace SearchBotTests.Dialogs
         public async Task GetServices()
         {
             var initialContext = new ConversationContext();
-            initialContext.Location = SearchBotTestHelpers.DefaultLocation;
+            initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
             initialContext.Housing = true;
 
             await CreateTestFlow(MasterDialog.Name)
@@ -37,7 +37,7 @@ namespace SearchBotTests.Dialogs
         public async Task GetMultipleServices()
         {
             var initialContext = new ConversationContext();
-            initialContext.Location = SearchBotTestHelpers.DefaultLocation;
+            initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
             initialContext.Housing = true;
             initialContext.Employment = true;
 

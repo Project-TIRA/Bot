@@ -42,7 +42,7 @@ namespace SearchProviderBotTests.Dialogs
             this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
 
             // Register prompts.
-            Prompt.Register(this.dialogs);
+            Prompt.Register(this.dialogs, this.configuration);
         }
 
         protected TestFlow CreateTestFlow(string dialogName, User user = null, string channelOverride = null)

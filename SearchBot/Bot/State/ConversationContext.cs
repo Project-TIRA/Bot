@@ -1,15 +1,20 @@
 ﻿using EntityModel;
 using Luis;
+using Microsoft.Extensions.Configuration;
 using Shared;
+using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace SearchBot.Bot.State
 {
     public class ConversationContext
     {
-        public string Location { get; set; }
+        // Use SetLocation() to set location.
+        public string Location { get; private set; }
+        public LocationPosition LocationPosition { get; private set; }
 
         public bool CaseManagement { get; set; }
 
@@ -76,11 +81,20 @@ namespace SearchBot.Bot.State
             return !Equals(c1, c2);
         }
 
-        public void AddLuisResult(LuisModel luisModel)
+        public async Task SetLocation(IConfiguration configuration, string location)
+        {
+            this.LocationPosition = await Helpers.LocationToPosition(configuration, location);
+            if (this.LocationPosition != null)
+            {
+                this.Location = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(location);
+            }
+        }
+
+        public async Task AddLuisResult(IConfiguration configuration, LuisModel luisModel)
         {
             if (luisModel.Entities?.geographyV2 != null && luisModel.Entities.geographyV2.Length > 0)
             {
-                this.Location = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(luisModel.Entities.geographyV2[0].Location);
+                await SetLocation(configuration, luisModel.Entities.geographyV2[0].Location);
             }
 
             this.CaseManagement = luisModel.Entities?.CaseManangement != null;
@@ -96,8 +110,6 @@ namespace SearchBot.Bot.State
 
             this.SubstanceUse = luisModel.Entities?.SubstanceUse != null;
             this.SubstanceUseDetox = luisModel.Entities?.SubstanceUseDetox != null;
-
-
         }
 
         public List<ServiceType> GetServiceTypes()
@@ -169,6 +181,12 @@ namespace SearchBot.Bot.State
             isValid &= !this.Housing || this.HousingEmergency || this.HousingLongTerm;
 
             return isValid; 
+        }
+
+        public void TEST_SetLocation(string location, LocationPosition position)
+        {
+            this.Location = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(location);
+            this.LocationPosition = position;
         }
     }
 }
