@@ -14,17 +14,21 @@ namespace SearchBot.Bot.State
 {
     public class ConversationContext
     {
-        private List<ServiceContext> ServiceContexts { get; set; }
+        public List<ServiceContext> ServiceContexts { get; set; }
+        public ServiceFlags ServiceFlags { get; set; }
 
-        public ServiceFlags ServiceFlags { get; private set; }
-
-        // Use SetLocation() to set location.
-        public string Location { get; private set; }
-        public LocationPosition LocationPosition { get; private set; }
+        // These setters must be public for initializing conversation
+        // state, but SetLocation() should be used to set location and position.
+        public string Location { get; set; }
+        public LocationPosition LocationPosition { get; set; }
 
         public bool HasServices { get { return this.ServiceContexts.Count > 0; } }
-
         public string ServicesString {  get { return Helpers.GetServicesString(GetServiceTypes()); } }
+
+        public ConversationContext()
+        {
+            this.ServiceContexts = new List<ServiceContext>();
+        }
 
         public override int GetHashCode()
         {

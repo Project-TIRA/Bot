@@ -12,8 +12,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Net.Http;
-using Newtonsoft.Json;
 
 namespace SearchBot.Bot.Dialogs.Service
 {
@@ -67,20 +65,20 @@ namespace SearchBot.Bot.Dialogs.Service
             var userLocation = conversationContext.LocationPosition;
 
             // Score the organizations against the user's request.
-            var organizationScores = new List<OrganizationMatch>();
+            var matchData = new List<MatchData>();
 
             foreach (var org in verifiedOrganizations)
             {
                 // Get the organization's distance from the location.
                 var distance = CalcDistance(userLocation.Lat, userLocation.Lon, Convert.ToDouble(org.Latitude), Convert.ToDouble(org.Longitude));
 
-                // Calculate how much the organization matches the user's request.
-                var score = await GetOrganizationScore(org, distance, conversationContext);
-                organizationScores.Add(score);
+                // Generate the organization match data.
+                var match = await GetOrganizationMatchData(org, distance, conversationContext);
+                matchData.Add(match);
             }
 
-            // Check if any organizations fully matched the user's request.
-            var fullMatches = organizationScores.Where(m => m.AllServicesMatch);
+            // Check if any organizations fully matches the user's request.
+            var fullMatches = matchData.Where(m => m.IsFullMatch);
             if (fullMatches.Count() >= 1)
             {
                 // Either take the only match or the closest match.
@@ -92,15 +90,34 @@ namespace SearchBot.Bot.Dialogs.Service
                     Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
             }
 
-            // Check if any organizations partially matches the user's request.
-            var partialMatches = organizationScores.Where(m => m.SomeServicesMatch);
-            if (partialMatches.Count() >= 1)
+            // Check for multiple organizations that result in a full match.
+            var comboMatches = GetMatchCombinations(matchData);
+            if (comboMatches.Count >= 1)
             {
-                return "TODO: partial matches";
+                // Either take the only match or the closest matches.
+                var combo = comboMatches.Count() == 1 ?
+                    comboMatches.First() :
+                    comboMatches.Aggregate((c1, c2) => c1.Sum(m => m.Distance) >= c2.Sum(m => m.Distance) ? c1 : c2);
+
+                var result = $"It looks like {combo.Count} organizations can help!";
+
+                foreach (var match in combo)
+                {
+                    result += Environment.NewLine + Environment.NewLine;
+                    result += $"{match.Organization.Name} has availability for {match.ServicesString} services." +
+                        Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
+                }
+
+                return result;
             }
 
+            // If there are no combination matches, just return the closest organization for each service type.
+            return "TODO: No single or combo match";
+
+
+
             // TODO: Allow to search in another location.
-            return $"Unfortunately it looks like no organizations near {conversationContext.Location} have availability for {conversationContext.ServicesString} services";
+            //return $"Unfortunately it looks like no organizations near {conversationContext.Location} have availability for {conversationContext.ServicesString} services";
         }
 
         private double CalcDistance(double lat1, double lon1, double lat2, double lon2)
@@ -113,14 +130,15 @@ namespace SearchBot.Bot.Dialogs.Service
             return R* c;
         }
 
-        private async Task<OrganizationMatch> GetOrganizationScore(Organization organization, double distance, ConversationContext conversationContext)
+        private async Task<MatchData> GetOrganizationMatchData(Organization organization, double distance, ConversationContext conversationContext)
         {
-            var match = new OrganizationMatch();
+            var match = new MatchData();
             match.Organization = organization;
             match.Distance = distance;
+            match.RequestedServiceFlags = conversationContext.ServiceFlags;
 
             // Filter out organizations that aren't within distance.
-            if (!match.IsWithinDistance())
+            if (!match.IsWithinDistance)
             {
                 return match;
             }
@@ -133,32 +151,30 @@ namespace SearchBot.Bot.Dialogs.Service
 
             if (conversationContext.HasService(ServiceType.CaseManagement))
             {
-                // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<CaseManagementData>(organization.Id);
                 if (data != null)
                 {
-                    match.ServiceData.Add(data);
+                    match.OrganizationServiceTypes.Add(data.ServiceType);
 
                     if (data.Open > 0)
                     {
-                        match.ServiceFlags |= ServiceFlags.CaseManagement;
+                        match.OrganizationServiceFlags |= ServiceFlags.CaseManagement;
                     }
                 }
             }
 
             if (conversationContext.HasService(ServiceType.Employment))
             {
-                // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<EmploymentData>(organization.Id);
                 if (data != null)
                 {
-                    match.ServiceData.Add(data);
+                    match.OrganizationServiceTypes.Add(data.ServiceType);
 
                     if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.EmploymentInternship))
                     {
                         if (data.PaidInternshipOpen > 0)
                         {
-                            match.ServiceFlags |= ServiceFlags.EmploymentInternship;
+                            match.OrganizationServiceFlags |= ServiceFlags.EmploymentInternship;
                         }
                     }
                     else
@@ -166,7 +182,7 @@ namespace SearchBot.Bot.Dialogs.Service
                         // If not looking for an internship, check if any other types are open.
                         if (data.EmploymentPlacementOpen > 0 ||  data.JobReadinessTrainingOpen > 0 || data.VocationalTrainingOpen > 0)
                         {
-                            match.ServiceFlags |= ServiceFlags.Employment;
+                            match.OrganizationServiceFlags |= ServiceFlags.Employment;
                         }
                     }
                 }
@@ -174,24 +190,23 @@ namespace SearchBot.Bot.Dialogs.Service
 
             if (conversationContext.HasService(ServiceType.Housing))
             {
-                // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<HousingData>(organization.Id);
                 if (data != null)
                 {
-                    match.ServiceData.Add(data);
+                    match.OrganizationServiceTypes.Add(data.ServiceType);
 
                     if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.HousingEmergency))
                     {
                         if (data.EmergencyPrivateBedsOpen > 0 || data.EmergencySharedBedsOpen > 0)
                         {
-                            match.ServiceFlags |= ServiceFlags.HousingEmergency;
+                            match.OrganizationServiceFlags |= ServiceFlags.HousingEmergency;
                         }
                     }
                     else if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.HousingLongTerm))
                     {
                         if (data.LongTermPrivateBedsOpen > 0 || data.LongTermSharedBedsOpen > 0)
                         {
-                            match.ServiceFlags |= ServiceFlags.HousingLongTerm;
+                            match.OrganizationServiceFlags |= ServiceFlags.HousingLongTerm;
                         }
                     }
                 }
@@ -199,32 +214,30 @@ namespace SearchBot.Bot.Dialogs.Service
 
             if (conversationContext.HasService(ServiceType.MentalHealth))
             {
-                // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id);
                 if (data != null)
                 {
-                    match.ServiceData.Add(data);
+                    match.OrganizationServiceTypes.Add(data.ServiceType);
 
                     if (data.InPatientOpen > 0 || data.OutPatientOpen > 0)
                     {
-                        match.ServiceFlags |= ServiceFlags.MentalHealth;
+                        match.OrganizationServiceFlags |= ServiceFlags.MentalHealth;
                     }
                 }
             }
 
             if (conversationContext.HasService(ServiceType.SubstanceUse))
             {
-                // Get the latest service data for the org. Returns null if they don't have the service.
                 var data = await this.api.GetLatestServiceData<SubstanceUseData>(organization.Id);
                 if (data != null)
                 {
-                    match.ServiceData.Add(data);
+                    match.OrganizationServiceTypes.Add(data.ServiceType);
 
                     if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.SubstanceUseDetox))
                     {
                         if (data.DetoxOpen > 0)
                         {
-                            match.ServiceFlags |= ServiceFlags.SubstanceUseDetox;
+                            match.OrganizationServiceFlags |= ServiceFlags.SubstanceUseDetox;
                         }
                     }
                     else
@@ -232,13 +245,23 @@ namespace SearchBot.Bot.Dialogs.Service
                         // If not looking for detox, check if any other types are open.
                         if (data.InPatientOpen > 0 || data.OutPatientOpen > 0 || data.GroupOpen > 0)
                         {
-                            match.ServiceFlags |= ServiceFlags.SubstanceUse;
+                            match.OrganizationServiceFlags |= ServiceFlags.SubstanceUse;
                         }
                     }
                 }
             }
 
             return match;
+        }
+
+        private List<List<MatchData>> GetMatchCombinations(List<MatchData> matchData)
+        {
+            // Check for combinations of 2 organizations.
+            return matchData
+                .Join(matchData, Match1 => Match1, Match2 => Match2, (Match1, Match2) => new { Match1, Match2 })
+                .Where(pair => (pair.Match1.OrganizationServiceFlags | pair.Match2.OrganizationServiceFlags) == ServiceFlags.All)
+                .Select(pair => new List<MatchData>() { pair.Match1, pair.Match2 })
+                .ToList();
         }
     }
 }

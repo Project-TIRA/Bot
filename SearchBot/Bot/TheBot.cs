@@ -35,6 +35,8 @@ namespace SearchBot.Bot
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var conversationContext = await this.state.GetConversationContext(turnContext, cancellationToken);
+
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
                 // Establish context for our dialog from the turn context.
