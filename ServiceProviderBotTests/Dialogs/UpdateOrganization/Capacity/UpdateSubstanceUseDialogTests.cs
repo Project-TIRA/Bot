@@ -11,47 +11,47 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
         [Fact]
         public async Task Update()
         {
-            var organization = await ServiceProviderBotTestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await ServiceProviderBotTestHelpers.CreateUser(this.api, organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
-            var service = await ServiceProviderBotTestHelpers.CreateService<SubstanceUseData>(this.api, organization.Id);
-            var data = await ServiceProviderBotTestHelpers.CreateSubstanceUseData(this.api, user.Id, service.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
+            var service = await TestHelpers.CreateService<SubstanceUseData>(this.api, organization.Id);
+            var data = await TestHelpers.CreateSubstanceUseData(this.api, user.Id, service.Id);
 
             await CreateTestFlow(UpdateSubstanceUseDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Detox))
-                .Test(ServiceProviderBotTestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.InPatient))
-                .Test(ServiceProviderBotTestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.OutPatient))
-                .Test(ServiceProviderBotTestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Group))
-                .Send(ServiceProviderBotTestHelpers.DefaultOpen.ToString())
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.InPatient))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.OutPatient))
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Group))
+                .Send(TestHelpers.DefaultOpen.ToString())
                 .StartTestAsync();
 
             // Validate the results.
             var resultData = await this.api.GetLatestServiceData<SubstanceUseData>(organization.Id, this.turnContext);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.DetoxOpen);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.InPatientOpen);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.OutPatientOpen);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.GroupOpen);
+            Assert.Equal(TestHelpers.DefaultOpen, resultData.DetoxOpen);
+            Assert.Equal(TestHelpers.DefaultOpen, resultData.InPatientOpen);
+            Assert.Equal(TestHelpers.DefaultOpen, resultData.OutPatientOpen);
+            Assert.Equal(TestHelpers.DefaultOpen, resultData.GroupOpen);
         }
 
         [Fact]
         public async Task Waitlist()
         {
-            var organization = await ServiceProviderBotTestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await ServiceProviderBotTestHelpers.CreateUser(this.api, organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
-            var service = await ServiceProviderBotTestHelpers.CreateService<SubstanceUseData>(this.api, organization.Id);
-            var data = await ServiceProviderBotTestHelpers.CreateSubstanceUseData(this.api, user.Id, service.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
+            var service = await TestHelpers.CreateService<SubstanceUseData>(this.api, organization.Id);
+            var data = await TestHelpers.CreateSubstanceUseData(this.api, user.Id, service.Id);
 
             await CreateTestFlow(UpdateSubstanceUseDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Detox))
                 .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.SubstanceUse.Detox)))
-                .Test(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.InPatient))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.InPatient))
                 .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.SubstanceUse.InPatient)))
-                .Test(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.OutPatient))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.OutPatient))
                 .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.SubstanceUse.OutPatient)))
-                .Test(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Group))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Group))
                 .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.SubstanceUse.Group)))
-                .Send(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen.ToString())
+                .Send(TestHelpers.DefaultWaitlistIsOpen.ToString())
                 .StartTestAsync();
 
             // Validate the results.
@@ -60,20 +60,20 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
             Assert.Equal(0, resultData.GroupOpen);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen, resultData.DetoxWaitlistIsOpen);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen, resultData.InPatientWaitlistIsOpen);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen, resultData.OutPatientWaitlistIsOpen);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen, resultData.GroupWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.DetoxWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.InPatientWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.OutPatientWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.GroupWaitlistIsOpen);
         }
 
         [Fact]
         public async Task NoWaitlist()
         {
-            var organization = await ServiceProviderBotTestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await ServiceProviderBotTestHelpers.CreateUser(this.api, organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
-            var service = await ServiceProviderBotTestHelpers.CreateService<SubstanceUseData>(this.api, organization.Id);
-            var data = await ServiceProviderBotTestHelpers.CreateSubstanceUseData(this.api, user.Id, service.Id, true, false, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
+            var service = await TestHelpers.CreateService<SubstanceUseData>(this.api, organization.Id);
+            var data = await TestHelpers.CreateSubstanceUseData(this.api, user.Id, service.Id, hasWaitlist: false);
 
             await CreateTestFlow(UpdateSubstanceUseDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.SubstanceUse.Detox))

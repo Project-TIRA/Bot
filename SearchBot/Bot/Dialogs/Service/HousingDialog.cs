@@ -2,13 +2,12 @@
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
-using SearchBot.Bot.Models;
 using SearchBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
+using Shared.Models;
 using Shared.Prompts;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SearchBot.Bot.Dialogs.Service
 {

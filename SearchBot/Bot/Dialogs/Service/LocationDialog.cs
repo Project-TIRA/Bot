@@ -29,7 +29,7 @@ namespace SearchBot.Bot.Dialogs.Service
                             Prompt.LocationTextPrompt,
                             new PromptOptions {
                                 Prompt = Phrases.Search.GetLocation,
-                                RetryPrompt = Phrases.Search.RetryGetLocation
+                                RetryPrompt = Phrases.Search.GetLocationRetry
                             },
                             cancellationToken);
                         }

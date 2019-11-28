@@ -1,14 +1,14 @@
 ﻿using EntityModel;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using SearchBot.Bot.Models;
 using SearchBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
+using Shared.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -43,9 +43,10 @@ namespace SearchBot.Bot.Dialogs.Service
                 },
                 async (dialogContext, cancellationToken) =>
                 {
-                    // Get recommendations based on the context.
-                    var recommendations = await GetRecommendations(dialogContext.Context, cancellationToken);
-                    await Messages.SendAsync(recommendations, dialogContext.Context, cancellationToken);
+                    // Get recommendation based on the context.
+                    var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
+                    var recommendation = await GetRecommendation(conversationContext);
+                    await Messages.SendAsync(recommendation, dialogContext.Context, cancellationToken);
 
                     // End this dialog to pop it off the stack.
                     return await dialogContext.EndDialogAsync(cancellationToken);
@@ -53,10 +54,9 @@ namespace SearchBot.Bot.Dialogs.Service
             });
         }
 
-        private async Task<string> GetRecommendations(ITurnContext turnContext, CancellationToken cancellationToken)
+        public async Task<Activity> GetRecommendation(ConversationContext conversationContext)
         {
-            var conversationContext = await this.state.GetConversationContext(turnContext, cancellationToken);
-            Debug.Assert(conversationContext.IsValid());
+            System.Diagnostics.Debug.Assert(conversationContext.IsValid());
 
             // Get the verified organizations.
             var verifiedOrganizations = await this.api.GetVerifiedOrganizations();
@@ -86,33 +86,23 @@ namespace SearchBot.Bot.Dialogs.Service
                     fullMatches.First() :
                     fullMatches.Aggregate((m1, m2) => m1.Distance >= m2.Distance ? m1 : m2);
 
-                return $"It looks like {match.Organization.Name} has availability for {conversationContext.ServicesString} services!" +
-                    Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
+                return Phrases.Search.MakeRecommendation(new List<MatchData>() { match });
             }
 
             // Check for multiple organizations that result in a full match.
-            var comboMatches = GetMatchCombinations(matchData);
+            var comboMatches = GetMatchCombinations(matchData, conversationContext);
             if (comboMatches.Count >= 1)
             {
                 // Either take the only match or the closest matches.
-                var combo = comboMatches.Count() == 1 ?
+                var matches = comboMatches.Count() == 1 ?
                     comboMatches.First() :
                     comboMatches.Aggregate((c1, c2) => c1.Sum(m => m.Distance) >= c2.Sum(m => m.Distance) ? c1 : c2);
 
-                var result = $"It looks like {combo.Count} organizations can help!";
-
-                foreach (var match in combo)
-                {
-                    result += Environment.NewLine + Environment.NewLine;
-                    result += $"{match.Organization.Name} has availability for {match.ServicesString} services." +
-                        Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
-                }
-
-                return result;
+                return Phrases.Search.MakeRecommendation(matches);
             }
 
             // If there are no combination matches, just return the closest organization for each service type.
-            return "TODO: No single or combo match";
+            return MessageFactory.Text("TODO: No single or combo match");
 
 
 
@@ -254,12 +244,12 @@ namespace SearchBot.Bot.Dialogs.Service
             return match;
         }
 
-        private List<List<MatchData>> GetMatchCombinations(List<MatchData> matchData)
+        private List<List<MatchData>> GetMatchCombinations(List<MatchData> matchData, ConversationContext conversationContext)
         {
             // Check for combinations of 2 organizations.
             return matchData
                 .Join(matchData, Match1 => Match1, Match2 => Match2, (Match1, Match2) => new { Match1, Match2 })
-                .Where(pair => (pair.Match1.OrganizationServiceFlags | pair.Match2.OrganizationServiceFlags) == ServiceFlags.All)
+                .Where(pair => (pair.Match1.OrganizationServiceFlags | pair.Match2.OrganizationServiceFlags).HasFlag(conversationContext.ServiceFlags))
                 .Select(pair => new List<MatchData>() { pair.Match1, pair.Match2 })
                 .ToList();
         }

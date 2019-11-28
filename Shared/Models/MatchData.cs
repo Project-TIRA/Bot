@@ -1,8 +1,7 @@
 ﻿using EntityModel;
-using Shared;
 using System.Collections.Generic;
 
-namespace SearchBot.Bot.Models
+namespace Shared.Models
 {
     public class MatchData
     {
@@ -18,7 +17,6 @@ namespace SearchBot.Bot.Models
 
         public bool IsFullMatch { get { return this.OrganizationServiceFlags.HasFlag(this.RequestedServiceFlags); } }
         public bool IsWithinDistance {  get { return this.Distance <= REASONABLE_DISTANCE; } }
-        public string ServicesString { get { return Helpers.GetServicesString(this.OrganizationServiceTypes); } }
 
         public MatchData()
         {

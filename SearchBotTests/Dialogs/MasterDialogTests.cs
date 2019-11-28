@@ -2,9 +2,9 @@
 using EntityModel;
 using Microsoft.Bot.Schema;
 using SearchBot.Bot.Dialogs;
-using SearchBot.Bot.Models;
 using SearchBot.Bot.State;
 using Shared;
+using Shared.Models;
 using Xunit;
 
 namespace SearchBotTests.Dialogs

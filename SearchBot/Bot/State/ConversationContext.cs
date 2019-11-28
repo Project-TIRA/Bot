@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using SearchBot.Bot.Models;
 using Shared;
 using Shared.Models;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -23,7 +22,6 @@ namespace SearchBot.Bot.State
         public LocationPosition LocationPosition { get; set; }
 
         public bool HasServices { get { return this.ServiceContexts.Count > 0; } }
-        public string ServicesString {  get { return Helpers.GetServicesString(GetServiceTypes()); } }
 
         public ConversationContext()
         {
@@ -148,6 +146,13 @@ namespace SearchBot.Bot.State
             return context != null && !context.IsValid;
         }
 
+        public List<ServiceType> GetServiceTypes()
+        {
+            var serviceTypes = new List<ServiceType>();
+            this.ServiceContexts.ForEach(c => serviceTypes.Add(c.ServiceType));
+            return serviceTypes;
+        }
+
         public bool IsValid()
         {
             bool isValid = true;
@@ -159,19 +164,6 @@ namespace SearchBot.Bot.State
             this.ServiceContexts.ForEach(c => isValid &= c.IsValid);
 
             return isValid;
-        }
-
-        private List<ServiceType> GetServiceTypes()
-        {
-            var serviceTypes = new List<ServiceType>();
-            this.ServiceContexts.ForEach(c => serviceTypes.Add(c.ServiceType));
-            return serviceTypes;
-        }
-        private ServiceFlags GetServiceFlags()
-        {
-            ServiceFlags flags = ServiceFlags.None;
-            this.ServiceContexts.ForEach(c => flags |= c.ServiceFlags);
-            return flags;
         }
 
         public void TEST_SetLocation(string location, LocationPosition position)

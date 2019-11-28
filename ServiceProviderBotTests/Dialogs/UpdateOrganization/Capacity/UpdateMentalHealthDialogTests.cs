@@ -11,57 +11,57 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization.Capacity
         [Fact]
         public async Task Update()
         {
-            var organization = await ServiceProviderBotTestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await ServiceProviderBotTestHelpers.CreateUser(this.api, organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
-            var service = await ServiceProviderBotTestHelpers.CreateService<MentalHealthData>(this.api, organization.Id);
-            var data = await ServiceProviderBotTestHelpers.CreateMentalHealthData(this.api, user.Id, service.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
+            var service = await TestHelpers.CreateService<MentalHealthData>(this.api, organization.Id);
+            var data = await TestHelpers.CreateMentalHealthData(this.api, user.Id, service.Id);
 
             await CreateTestFlow(UpdateMentalHealthDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
-                .Test(ServiceProviderBotTestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
-                .Send(ServiceProviderBotTestHelpers.DefaultOpen.ToString())
+                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
+                .Send(TestHelpers.DefaultOpen.ToString())
                 .StartTestAsync();
 
             // Validate the results.
             var resultData = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id, this.turnContext);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.InPatientOpen);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultOpen, resultData.OutPatientOpen);
+            Assert.Equal(TestHelpers.DefaultOpen, resultData.InPatientOpen);
+            Assert.Equal(TestHelpers.DefaultOpen, resultData.OutPatientOpen);
         }
 
         [Fact]
         public async Task Waitlist()
         {
-            var organization = await ServiceProviderBotTestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await ServiceProviderBotTestHelpers.CreateUser(this.api, organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
-            var service = await ServiceProviderBotTestHelpers.CreateService<MentalHealthData>(this.api, organization.Id);
-            var data = await ServiceProviderBotTestHelpers.CreateMentalHealthData(this.api, user.Id, service.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
+            var service = await TestHelpers.CreateService<MentalHealthData>(this.api, organization.Id);
+            var data = await TestHelpers.CreateMentalHealthData(this.api, user.Id, service.Id);
 
             await CreateTestFlow(UpdateMentalHealthDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
                 .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.MentalHealth.InPatient)))
-                .Test(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
+                .Test(TestHelpers.DefaultWaitlistIsOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
                 .Test("0", StartsWith(Phrases.Capacity.GetWaitlistIsOpen(Phrases.Services.MentalHealth.OutPatient)))
-                .Send(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen.ToString())
+                .Send(TestHelpers.DefaultWaitlistIsOpen.ToString())
                 .StartTestAsync();
 
             // Validate the results.
             var resultData = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id, this.turnContext);
             Assert.Equal(0, resultData.InPatientOpen);
             Assert.Equal(0, resultData.OutPatientOpen);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen, resultData.InPatientWaitlistIsOpen);
-            Assert.Equal(ServiceProviderBotTestHelpers.DefaultWaitlistIsOpen, resultData.OutPatientWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.InPatientWaitlistIsOpen);
+            Assert.Equal(TestHelpers.DefaultWaitlistIsOpen, resultData.OutPatientWaitlistIsOpen);
         }
 
         [Fact]
         public async Task NoWaitlist()
         {
-            var organization = await ServiceProviderBotTestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await ServiceProviderBotTestHelpers.CreateUser(this.api, organization.Id);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
-            var service = await ServiceProviderBotTestHelpers.CreateService<MentalHealthData>(this.api, organization.Id);
-            var data = await ServiceProviderBotTestHelpers.CreateMentalHealthData(this.api, user.Id, service.Id, true, false, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
+            var service = await TestHelpers.CreateService<MentalHealthData>(this.api, organization.Id);
+            var data = await TestHelpers.CreateMentalHealthData(this.api, user.Id, service.Id, hasWaitlist: false);
 
             await CreateTestFlow(UpdateMentalHealthDialog.Name, user)
                 .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
