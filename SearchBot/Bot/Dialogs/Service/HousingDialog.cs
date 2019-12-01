@@ -3,7 +3,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
 using SearchBot.Bot.State;
-using Shared;
 using Shared.ApiInterface;
 using Shared.Models;
 using Shared.Prompts;
@@ -30,7 +29,11 @@ namespace SearchBot.Bot.Dialogs.Service
                     if (conversationContext.IsServiceInvalid(ServiceType.Housing))
                     {
                         // Prompt for the type of housing.
-                        var choices = new List<Choice>() { new Choice { Value = Phrases.Services.Housing.Emergency }, new Choice { Value = Phrases.Services.Housing.LongTerm } };
+                        var choices = new List<Choice>()
+                        {
+                            new Choice { Value = Shared.Phrases.Services.Housing.Emergency },
+                            new Choice { Value = Shared.Phrases.Services.Housing.LongTerm }
+                        };
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
@@ -53,8 +56,8 @@ namespace SearchBot.Bot.Dialogs.Service
                         // Update the type of housing.
                         switch (((FoundChoice)dialogContext.Result).Value)
                         {
-                            case Phrases.Services.Housing.Emergency: conversationContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingEmergency); break;
-                            case Phrases.Services.Housing.LongTerm: conversationContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingLongTerm); break;
+                            case Shared.Phrases.Services.Housing.Emergency: conversationContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingEmergency); break;
+                            case Shared.Phrases.Services.Housing.LongTerm: conversationContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingLongTerm); break;
                         }
                     }
 

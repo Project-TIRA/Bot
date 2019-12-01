@@ -68,8 +68,8 @@ namespace Shared
             switch (serviceType)
             {
                 case ServiceType.CaseManagement: return CaseManagementData.TABLE_NAME;
-                case ServiceType.Housing: return HousingData.TABLE_NAME;
                 case ServiceType.Employment: return EmploymentData.TABLE_NAME;
+                case ServiceType.Housing: return HousingData.TABLE_NAME;
                 case ServiceType.MentalHealth: return MentalHealthData.TABLE_NAME;
                 case ServiceType.SubstanceUse: return SubstanceUseData.TABLE_NAME;
                 default: return string.Empty;
@@ -84,8 +84,8 @@ namespace Shared
             switch (serviceType)
             {
                 case ServiceType.CaseManagement: return CaseManagementData.PRIMARY_KEY;
-                case ServiceType.Housing: return HousingData.PRIMARY_KEY;
                 case ServiceType.Employment: return EmploymentData.PRIMARY_KEY;
+                case ServiceType.Housing: return HousingData.PRIMARY_KEY;
                 case ServiceType.MentalHealth: return MentalHealthData.PRIMARY_KEY;
                 case ServiceType.SubstanceUse: return SubstanceUseData.PRIMARY_KEY;
                 default: return string.Empty;
@@ -102,8 +102,8 @@ namespace Shared
             switch (serviceType)
             {
                 case ServiceType.CaseManagement: result = Phrases.Services.CaseManagement.ServiceName; break;
-                case ServiceType.Housing: result = Phrases.Services.Housing.ServiceName; break;
                 case ServiceType.Employment: result = Phrases.Services.Employment.ServiceName; break;
+                case ServiceType.Housing: result = Phrases.Services.Housing.ServiceName; break;
                 case ServiceType.MentalHealth: result = Phrases.Services.MentalHealth.ServiceName; break;
                 case ServiceType.SubstanceUse: result = Phrases.Services.SubstanceUse.ServiceName; break;
                 default: return string.Empty;
@@ -125,7 +125,10 @@ namespace Shared
             {
                 return GetServiceName(serviceTypes[0], toLower: true);
             }
-            else if (serviceTypes.Count == 2)
+
+            serviceTypes = serviceTypes.OrderBy(s => GetServiceName(s)).ToList();
+
+            if (serviceTypes.Count == 2)
             {
                 return $"{GetServiceName(serviceTypes[0], toLower: true)} and {GetServiceName(serviceTypes[1], toLower: true)}";
             }
@@ -143,6 +146,9 @@ namespace Shared
             }
         }
 
+        /// <summary>
+        /// Looks up a position from a location.
+        /// </summary>
         public static async Task<LocationPosition> LocationToPosition(IConfiguration configuration, string location)
         {
             var url = string.Format(configuration.MapsSearchUrlFormat(), configuration.MapsSubscriptionKey(), location);

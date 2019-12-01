@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Schema;
+using SearchBot;
 using SearchBot.Bot.Dialogs;
 using SearchBot.Bot.State;
 using Shared;
@@ -15,7 +16,7 @@ namespace SearchBotTests.Dialogs
         public async Task UnknownIntent()
         {
             await CreateTestFlow(MasterDialog.Name)
-                .Test("test", Phrases.Search.GetServiceType)
+                .Test("test", SearchBot.Phrases.Search.GetServiceType)
                 .StartTestAsync();
         }
 
@@ -27,7 +28,7 @@ namespace SearchBotTests.Dialogs
             initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
 
             await CreateTestFlow(MasterDialog.Name)
-                .Send($"where can I find {Phrases.Services.Housing.ServiceName} in {SearchBotTestHelpers.DefaultLocation}")
+                .Send($"where can I find {Shared.Phrases.Services.Housing.ServiceName} in {SearchBotTestHelpers.DefaultLocation}")
                 .StartTestAsync();
 
             // Validate the results.
@@ -44,7 +45,7 @@ namespace SearchBotTests.Dialogs
             initialContext.CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.Employment);
 
             await CreateTestFlow(MasterDialog.Name)
-                .Send($"where can I find {Phrases.Services.Housing.ServiceName} and {Phrases.Services.Employment.ServiceName} in {SearchBotTestHelpers.DefaultLocation}")
+                .Send($"where can I find {Shared.Phrases.Services.Housing.ServiceName} and {Shared.Phrases.Services.Employment.ServiceName} in {SearchBotTestHelpers.DefaultLocation}")
                 .StartTestAsync();
 
             // Validate the results.

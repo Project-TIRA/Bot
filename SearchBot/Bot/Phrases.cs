@@ -1,0 +1,51 @@
+﻿﻿using EntityModel;
+using Microsoft.Bot.Builder;
+using Microsoft.Bot.Schema;
+using SearchBot.Bot.State;
+using Shared;
+using Shared.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace SearchBot
+{
+    public static class Phrases
+    {
+        public static class Search
+        {
+            public static Activity GetLocation = MessageFactory.Text("In what city are you looking for services?");
+            public static Activity GetLocationRetry = MessageFactory.Text($"Oops, I couldn't find that location. Try entering as City, State");
+            public static Activity GetServiceType = MessageFactory.Text($"What type of service are you looking for? I can help with {Helpers.GetServicesString(Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>().ToList())} services");
+            public static Activity GetHousingType = MessageFactory.Text("What type of housing are you looking for?");
+
+            public static Activity MakeRecommendation(List<MatchData> matches)
+            {
+                string result = string.Empty;
+
+                if (matches.Count > 1)
+                {
+                    result = $"It looks like {matches.Count} organizations can help!";
+                }
+
+                foreach (var match in matches)
+                {
+                    if (matches.Count > 1)
+                    {
+                        result += Environment.NewLine + Environment.NewLine;
+                    }
+
+                    result += $"{match.Organization.Name} has availability for {Helpers.GetServicesString(match.OrganizationServiceTypes)} services." +
+                        Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
+                }
+
+                return MessageFactory.Text(result);
+            }
+
+            public static Activity NoMatch(ConversationContext conversationContext)
+            {
+                return MessageFactory.Text($"Unfortunately it looks like no organizations near {conversationContext.Location} have availability for {Helpers.GetServicesString(conversationContext.GetServiceTypes())} services");
+            }
+        }
+    }
+}

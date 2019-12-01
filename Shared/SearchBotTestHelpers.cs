@@ -1,4 +1,5 @@
-﻿using Shared.Models;
+﻿using EntityModel;
+using Shared.Models;
 
 namespace Shared
 {

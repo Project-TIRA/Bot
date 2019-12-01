@@ -5,6 +5,7 @@ using SearchBot.Bot.Models;
 using Shared;
 using Shared.Models;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;

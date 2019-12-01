@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Schema;
 using SearchBot.Bot.Dialogs.Service;
@@ -19,7 +20,7 @@ namespace SearchBotTests.Dialogs
             initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
 
             await CreateTestFlow(ServiceDialog.Name, initialContext)
-                .Test("test", StartsWith(Phrases.Search.GetHousingType))
+                .Test("test", StartsWith(SearchBot.Phrases.Search.GetHousingType))
                 .StartTestAsync();
         }
 
@@ -30,7 +31,7 @@ namespace SearchBotTests.Dialogs
             initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
 
             await CreateTestFlow(ServiceDialog.Name, initialContext)
-                .Test("test", Phrases.Search.GetLocation)
+                .Test("test", SearchBot.Phrases.Search.GetLocation)
                 .StartTestAsync();
         }
 
@@ -43,7 +44,7 @@ namespace SearchBotTests.Dialogs
             initialContext.CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.Employment);
 
             await CreateTestFlow(ServiceDialog.Name, initialContext)
-                .Test("test", StartsWith(Phrases.Search.GetHousingType))
+                .Test("test", StartsWith(SearchBot.Phrases.Search.GetHousingType))
                 .StartTestAsync();
         }
 
@@ -55,53 +56,8 @@ namespace SearchBotTests.Dialogs
             initialContext.CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.Employment);
 
             await CreateTestFlow(ServiceDialog.Name, initialContext)
-                .Test("test", Phrases.Search.GetLocation)
+                .Test("test", SearchBot.Phrases.Search.GetLocation)
                 .StartTestAsync();
         }
-
-        [Fact]
-        public async Task SingleServiceFullMatch()
-        {
-            var initialContext = new ConversationContext();
-            initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
-            initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingEmergency);
-
-            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
-            var service = await TestHelpers.CreateService<HousingData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateHousingData(this.api, string.Empty, service.Id);
-
-            var dialog = new ServiceDialog(this.state, this.dialogs, this.api, this.configuration);
-            var recommendation = await dialog.GetRecommendation(initialContext);
-
-            await CreateTestFlow(ServiceDialog.Name, initialContext)
-                .Test("test", recommendation)
-                .StartTestAsync();
-        }
-
-        /*
-        [Fact]
-        public async Task SingleServiceNoMatch()
-        {
-
-        }
-
-        [Fact]
-        public async Task MultipleServicesFullMatch()
-        {
-
-        }
-
-        [Fact]
-        public async Task MultipleServicesComboMatch()
-        {
-
-        }
-
-        [Fact]
-        public async Task MultipleServicesNoMatch()
-        {
-
-        }
-        */
     }
 }

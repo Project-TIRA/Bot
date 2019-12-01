@@ -10,7 +10,6 @@ using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SearchBot.Bot.Dialogs.Service
@@ -54,7 +53,7 @@ namespace SearchBot.Bot.Dialogs.Service
             });
         }
 
-        public async Task<Activity> GetRecommendation(ConversationContext conversationContext)
+        private async Task<Activity> GetRecommendation(ConversationContext conversationContext)
         {
             System.Diagnostics.Debug.Assert(conversationContext.IsValid());
 
@@ -102,12 +101,12 @@ namespace SearchBot.Bot.Dialogs.Service
             }
 
             // If there are no combination matches, just return the closest organization for each service type.
-            return MessageFactory.Text("TODO: No single or combo match");
+            //return MessageFactory.Text("TODO: No single or combo match");
 
 
 
             // TODO: Allow to search in another location.
-            //return $"Unfortunately it looks like no organizations near {conversationContext.Location} have availability for {conversationContext.ServicesString} services";
+            return Phrases.Search.NoMatch(conversationContext);
         }
 
         private double CalcDistance(double lat1, double lon1, double lat2, double lon2)
@@ -248,7 +247,8 @@ namespace SearchBot.Bot.Dialogs.Service
         {
             // Check for combinations of 2 organizations.
             return matchData
-                .Join(matchData, Match1 => Match1, Match2 => Match2, (Match1, Match2) => new { Match1, Match2 })
+                .SelectMany(m => matchData, (Match1, Match2) => new { Match1, Match2 })
+                .Distinct()
                 .Where(pair => (pair.Match1.OrganizationServiceFlags | pair.Match2.OrganizationServiceFlags).HasFlag(conversationContext.ServiceFlags))
                 .Select(pair => new List<MatchData>() { pair.Match1, pair.Match2 })
                 .ToList();

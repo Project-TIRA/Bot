@@ -41,8 +41,13 @@ namespace Shared
 
         public static async Task<Service> CreateService<T>(IApiInterface api, string organizationId) where T : ServiceDataBase
         {
-            var type = Helpers.GetServiceType<T>();
-            if (type == ServiceType.Invalid)
+            var serviceType = Helpers.GetServiceType<T>();
+            return await CreateService(api, organizationId, serviceType);
+        }
+
+        public static async Task<Service> CreateService(IApiInterface api, string organizationId, ServiceType serviceType)
+        {
+            if (serviceType == ServiceType.Invalid)
             {
                 return null;
             }
@@ -51,12 +56,25 @@ namespace Shared
             {
                 Id = Guid.NewGuid().ToString(),
                 OrganizationId = organizationId,
-                Name = $"Test Service ({type.ToString()})",
-                Type = type
+                Name = $"Test Service ({serviceType.ToString()})",
+                Type = serviceType
             };
 
             await api.Create(service);
             return service;
+        }
+
+        public static async Task<ServiceDataBase> CreateServiceData(IApiInterface api, Service service)
+        {
+            switch (service.Type)
+            {
+                case ServiceType.CaseManagement: return await CreateCaseManagementData(api, string.Empty, service.Id);
+                case ServiceType.Employment: return await CreatEmploymentData(api, string.Empty, service.Id);
+                case ServiceType.Housing: return await CreateHousingData(api, string.Empty, service.Id);
+                case ServiceType.MentalHealth: return await CreateMentalHealthData(api, string.Empty, service.Id);
+                case ServiceType.SubstanceUse: return await CreateSubstanceUseData(api, string.Empty, service.Id);
+                default: return null;
+            }
         }
 
         public static async Task<CaseManagementData> CreateCaseManagementData(
@@ -69,41 +87,8 @@ namespace Shared
                 ServiceId = serviceId,
                 IsComplete = true,
                 HasWaitlist = hasWaitlist,
-                Total = total
-            };
-
-            await api.Create(data);
-            return data;
-        }
-
-        public static async Task<HousingData> CreateHousingData(
-            IApiInterface api, string createdById, string serviceId, bool hasWaitlist = true,
-            int emergencyPrivateBedsTotal = DefaultTotal, int emergencyPrivateBedsOpen = DefaultOpen,
-            int emergencySharedBedsTotal = DefaultTotal, int emergencySharedBedsOpen = DefaultOpen,
-            int longtermPrivateBedsTotal = DefaultTotal, int longtermPrivateBedsOpen = DefaultOpen,
-            int longtermSharedBedsTotal = DefaultTotal, int longtermSharedBedsOpen = DefaultOpen)
-        {
-            var data = new HousingData()
-            {
-                CreatedById = createdById,
-                ServiceId = serviceId,
-                IsComplete = true,
-
-                EmergencyPrivateBedsHasWaitlist = hasWaitlist,
-                EmergencyPrivateBedsTotal = emergencyPrivateBedsTotal,
-                EmergencyPrivateBedsOpen = emergencyPrivateBedsOpen,
-
-                EmergencySharedBedsHasWaitlist = hasWaitlist,
-                EmergencySharedBedsTotal = emergencySharedBedsTotal,
-                EmergencySharedBedsOpen = emergencySharedBedsOpen,
-
-                LongTermPrivateBedsHasWaitlist = hasWaitlist,
-                LongTermPrivateBedsTotal = longtermPrivateBedsTotal,
-                LongTermPrivateBedsOpen = longtermPrivateBedsOpen,
-
-                LongTermSharedBedsHasWaitlist = hasWaitlist,
-                LongTermSharedBedsTotal = longtermSharedBedsTotal,
-                LongTermSharedBedsOpen = longtermSharedBedsOpen
+                Total = total,
+                Open = open
             };
 
             await api.Create(data);
@@ -138,6 +123,40 @@ namespace Shared
                 EmploymentPlacementHasWaitlist = hasWaitlist,
                 EmploymentPlacementTotal = employmentPlacementTotal,
                 EmploymentPlacementOpen = employmentPlacementOpen
+            };
+
+            await api.Create(data);
+            return data;
+        }
+
+        public static async Task<HousingData> CreateHousingData(
+            IApiInterface api, string createdById, string serviceId, bool hasWaitlist = true,
+            int emergencyPrivateBedsTotal = DefaultTotal, int emergencyPrivateBedsOpen = DefaultOpen,
+            int emergencySharedBedsTotal = DefaultTotal, int emergencySharedBedsOpen = DefaultOpen,
+            int longtermPrivateBedsTotal = DefaultTotal, int longtermPrivateBedsOpen = DefaultOpen,
+            int longtermSharedBedsTotal = DefaultTotal, int longtermSharedBedsOpen = DefaultOpen)
+        {
+            var data = new HousingData()
+            {
+                CreatedById = createdById,
+                ServiceId = serviceId,
+                IsComplete = true,
+
+                EmergencyPrivateBedsHasWaitlist = hasWaitlist,
+                EmergencyPrivateBedsTotal = emergencyPrivateBedsTotal,
+                EmergencyPrivateBedsOpen = emergencyPrivateBedsOpen,
+
+                EmergencySharedBedsHasWaitlist = hasWaitlist,
+                EmergencySharedBedsTotal = emergencySharedBedsTotal,
+                EmergencySharedBedsOpen = emergencySharedBedsOpen,
+
+                LongTermPrivateBedsHasWaitlist = hasWaitlist,
+                LongTermPrivateBedsTotal = longtermPrivateBedsTotal,
+                LongTermPrivateBedsOpen = longtermPrivateBedsOpen,
+
+                LongTermSharedBedsHasWaitlist = hasWaitlist,
+                LongTermSharedBedsTotal = longtermSharedBedsTotal,
+                LongTermSharedBedsOpen = longtermSharedBedsOpen
             };
 
             await api.Create(data);

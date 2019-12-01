@@ -3,7 +3,6 @@ using EntityModel;
 using Microsoft.Bot.Schema;
 using SearchBot.Bot.Dialogs.Service;
 using SearchBot.Bot.State;
-using Shared;
 using Shared.Models;
 using Xunit;
 
@@ -15,8 +14,8 @@ namespace SearchBotTests.Dialogs
         public async Task NoType()
         {
             await CreateTestFlow(ServiceTypeDialog.Name)
-                .Test("test", StartsWith(Phrases.Search.GetServiceType))
-                .Send(Phrases.Services.Housing.ServiceName)
+                .Test("test", StartsWith(SearchBot.Phrases.Search.GetServiceType))
+                .Send(Shared.Phrases.Services.Housing.ServiceName)
                 .StartTestAsync();
 
             var expectedContext = new ConversationContext();

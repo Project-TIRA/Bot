@@ -3,7 +3,6 @@ using EntityModel;
 using Microsoft.Bot.Schema;
 using SearchBot.Bot.Dialogs.Service;
 using SearchBot.Bot.State;
-using Shared;
 using Shared.Models;
 using Xunit;
 
@@ -18,8 +17,8 @@ namespace SearchBotTests.Dialogs
             expectedContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
 
             await CreateTestFlow(HousingDialog.Name, expectedContext)
-                .Test("test", StartsWith(Phrases.Search.GetHousingType))
-                .Send(Phrases.Services.Housing.Emergency)
+                .Test("test", StartsWith(SearchBot.Phrases.Search.GetHousingType))
+                .Send(Shared.Phrases.Services.Housing.Emergency)
                 .StartTestAsync();
 
             expectedContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingEmergency);
