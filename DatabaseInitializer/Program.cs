@@ -94,40 +94,22 @@ namespace DatabaseInitializer
 
         static async Task Init(IApiInterface api)
         {
+            var types = Helpers.GetSubtypes<ServiceData>();
+
             for (int i = 0; i < 5; ++i)
             {
                 var organization = await TestHelpers.CreateOrganization(api, isVerified: true);
                 var user = await TestHelpers.CreateUser(api, organization.Id);
 
                 // Randomize the services the organizations have.
-                if (new Random().Next(2) == 1)
+                foreach (var type in types)
                 {
-                    var caseManagementService = await TestHelpers.CreateService<CaseManagementData>(api, organization.Id);
-                    var caseManagementData = await TestHelpers.CreateCaseManagementData(api, user.Id, caseManagementService.Id);
-                }
-
-                if (new Random().Next(2) == 1)
-                {
-                    var housingService = await TestHelpers.CreateService<HousingData>(api, organization.Id);
-                    var housingData = await TestHelpers.CreateHousingData(api, user.Id, housingService.Id);
-                }
-
-                if (new Random().Next(2) == 1)
-                {
-                    var employmentService = await TestHelpers.CreateService<EmploymentData>(api, organization.Id);
-                    var employmentData = await TestHelpers.CreatEmploymentData(api, user.Id, employmentService.Id);
-                }
-
-                if (new Random().Next(2) == 1)
-                {
-                    var mentalHealthService = await TestHelpers.CreateService<MentalHealthData>(api, organization.Id);
-                    var mentalHealthData = await TestHelpers.CreateMentalHealthData(api, user.Id, mentalHealthService.Id);
-                }
-
-                if (new Random().Next(2) == 1)
-                {
-                    var substanceUseService = await TestHelpers.CreateService<SubstanceUseData>(api, organization.Id);
-                    var substanceUseData = await TestHelpers.CreateSubstanceUseData(api, user.Id, substanceUseService.Id);
+                    if (new Random().Next(2) == 1)
+                    {
+                        // Create the service and data.
+                        var service = await TestHelpers.CreateService(api, organization.Id, type.ServiceType());
+                        var data = await TestHelpers.CreateServiceData(api, user.Id, service.Id, type);
+                    }
                 }
             }
         }

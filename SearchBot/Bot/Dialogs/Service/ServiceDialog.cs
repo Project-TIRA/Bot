@@ -143,7 +143,7 @@ namespace SearchBot.Bot.Dialogs.Service
                 var data = await this.api.GetLatestServiceData<CaseManagementData>(organization.Id);
                 if (data != null)
                 {
-                    match.OrganizationServiceTypes.Add(data.ServiceType);
+                    match.OrganizationServiceTypes.Add(data.ServiceType());
 
                     if (data.Open > 0)
                     {
@@ -157,7 +157,7 @@ namespace SearchBot.Bot.Dialogs.Service
                 var data = await this.api.GetLatestServiceData<EmploymentData>(organization.Id);
                 if (data != null)
                 {
-                    match.OrganizationServiceTypes.Add(data.ServiceType);
+                    match.OrganizationServiceTypes.Add(data.ServiceType());
 
                     if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.EmploymentInternship))
                     {
@@ -182,7 +182,7 @@ namespace SearchBot.Bot.Dialogs.Service
                 var data = await this.api.GetLatestServiceData<HousingData>(organization.Id);
                 if (data != null)
                 {
-                    match.OrganizationServiceTypes.Add(data.ServiceType);
+                    match.OrganizationServiceTypes.Add(data.ServiceType());
 
                     if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.HousingEmergency))
                     {
@@ -206,7 +206,7 @@ namespace SearchBot.Bot.Dialogs.Service
                 var data = await this.api.GetLatestServiceData<MentalHealthData>(organization.Id);
                 if (data != null)
                 {
-                    match.OrganizationServiceTypes.Add(data.ServiceType);
+                    match.OrganizationServiceTypes.Add(data.ServiceType());
 
                     if (data.InPatientOpen > 0 || data.OutPatientOpen > 0)
                     {
@@ -220,7 +220,7 @@ namespace SearchBot.Bot.Dialogs.Service
                 var data = await this.api.GetLatestServiceData<SubstanceUseData>(organization.Id);
                 if (data != null)
                 {
-                    match.OrganizationServiceTypes.Add(data.ServiceType);
+                    match.OrganizationServiceTypes.Add(data.ServiceType());
 
                     if (conversationContext.ServiceFlags.HasFlag(ServiceFlags.SubstanceUseDetox))
                     {

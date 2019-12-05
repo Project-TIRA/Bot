@@ -108,6 +108,7 @@ namespace SearchProviderBotTests.Dialogs
             Assert.True(!user.ContactEnabled);
         }
 
+        /*
         [Fact]
         public async Task Reset()
         {
@@ -123,5 +124,6 @@ namespace SearchProviderBotTests.Dialogs
                 .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
                 .StartTestAsync();
         }
+        */
     }
 }

@@ -4,10 +4,12 @@ using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Shared.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Shared
@@ -29,117 +31,108 @@ namespace Shared
         }
 
         /// <summary>
-        /// Gets the service type for a service model.
+        /// Creates a derived type of a type.
         /// </summary>
-        public static ServiceType GetServiceType<T>() where T : ServiceDataBase
+        public static T CreateSubType<T>(T subtype)
         {
-            var type = typeof(T);
-
-            if (type == typeof(CaseManagementData))
-            {
-                return ServiceType.CaseManagement;
-            }
-            if (type == typeof(HousingData))
-            {
-                return ServiceType.Housing;
-            }
-            else if (type == typeof(EmploymentData))
-            {
-                return ServiceType.Employment;
-            }
-            else if (type == typeof(MentalHealthData))
-            {
-                return ServiceType.MentalHealth;
-            }
-            else if (type == typeof(SubstanceUseData))
-            {
-                return ServiceType.SubstanceUse;
-            }
-
-            Debug.Assert(false, "Service type not recognized");
-            return ServiceType.Invalid;
+            return (T)Activator.CreateInstance(subtype.GetType());
         }
 
         /// <summary>
-        /// Gets the table name for a service.
+        /// Gets the derived types of a type.
         /// </summary>
-        public static string GetServiceTableName(ServiceType serviceType)
+        public static List<T> GetSubtypes<T>()
         {
-            switch (serviceType)
+            List<T> results = new List<T>();
+
+            var subtypes = Assembly.GetAssembly(typeof(T)).GetTypes()
+                .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(T)));
+
+            foreach (Type subtype in subtypes)
             {
-                case ServiceType.CaseManagement: return CaseManagementData.TABLE_NAME;
-                case ServiceType.Employment: return EmploymentData.TABLE_NAME;
-                case ServiceType.Housing: return HousingData.TABLE_NAME;
-                case ServiceType.MentalHealth: return MentalHealthData.TABLE_NAME;
-                case ServiceType.SubstanceUse: return SubstanceUseData.TABLE_NAME;
-                default: return string.Empty;
+                results.Add((T)Activator.CreateInstance(subtype));
             }
+
+            return results;
         }
 
         /// <summary>
-        /// Gets the primary key for a service.
+        /// Gets the derived types of a type that meet a condition.
         /// </summary>
-        public static string GetServicePrimaryKey(ServiceType serviceType)
+        public static List<T> GetSubtypes<T>(Func<T, bool> where = null, Func<T, object> orderBy = null)
         {
-            switch (serviceType)
+            var results = GetSubtypes<T>();
+
+            if (where != null)
             {
-                case ServiceType.CaseManagement: return CaseManagementData.PRIMARY_KEY;
-                case ServiceType.Employment: return EmploymentData.PRIMARY_KEY;
-                case ServiceType.Housing: return HousingData.PRIMARY_KEY;
-                case ServiceType.MentalHealth: return MentalHealthData.PRIMARY_KEY;
-                case ServiceType.SubstanceUse: return SubstanceUseData.PRIMARY_KEY;
-                default: return string.Empty;
+                results = results.Where(where).ToList();
             }
+
+            if (orderBy != null)
+            {
+                results = results.OrderBy(orderBy).ToList();
+            }
+
+            return results;
         }
 
         /// <summary>
-        /// Gets the name for a service.
+        /// Gets the services for each of the given service types.
         /// </summary>
-        public static string GetServiceName(ServiceType serviceType, bool toLower = false)
+        public static List<ServiceData> GetServicesByType(IEnumerable<ServiceType> serviceTypes)
         {
-            var result = string.Empty;
+            return GetSubtypes<ServiceData>(where: s => serviceTypes.Contains(s.ServiceType()), orderBy: s => s.ServiceTypeName())
+                .ToList();
+        }
 
-            switch (serviceType)
-            {
-                case ServiceType.CaseManagement: result = Phrases.Services.CaseManagement.ServiceName; break;
-                case ServiceType.Employment: result = Phrases.Services.Employment.ServiceName; break;
-                case ServiceType.Housing: result = Phrases.Services.Housing.ServiceName; break;
-                case ServiceType.MentalHealth: result = Phrases.Services.MentalHealth.ServiceName; break;
-                case ServiceType.SubstanceUse: result = Phrases.Services.SubstanceUse.ServiceName; break;
-                default: return string.Empty;
-            }
+        /// <summary>
+        /// Gets the type names for each of the given service types.
+        /// </summary>
+        public static List<string> GetServiceTypeNames(IEnumerable<ServiceType> serviceTypes, bool toLower = false)
+        {
+            return GetServicesByType(serviceTypes)
+                .Select(s => toLower ? s.ServiceTypeName().ToLower() : s.ServiceTypeName())
+                .ToList();
+        }
 
-            return toLower ? result.ToLower() : result;
+        /// <summary>
+        /// Gets the first service whose type name matches the given type name.
+        /// </summary>
+        public static ServiceData GetServiceTypeByName(string typeName)
+        {
+            return GetSubtypes<ServiceData>(where: s => s.ServiceTypeName() == typeName, orderBy: s => s.ServiceTypeName())
+                .FirstOrDefault();
         }
 
         /// <summary>
         /// Gets the string from a list of services types.
         /// </summary>
-        public static string GetServicesString(List<ServiceType> serviceTypes)
+        public static string GetServicesString(IEnumerable<ServiceType> serviceTypes)
         {
-            if (serviceTypes.Count == 0)
+            if (serviceTypes.Count() == 0)
             {
                 return string.Empty;
             }
-            else if (serviceTypes.Count == 1)
+
+            var typeNames = GetServiceTypeNames(serviceTypes, toLower: true);
+
+            if (serviceTypes.Count() == 1)
             {
-                return GetServiceName(serviceTypes[0], toLower: true);
+                return typeNames[0];
             }
 
-            serviceTypes = serviceTypes.OrderBy(s => GetServiceName(s)).ToList();
-
-            if (serviceTypes.Count == 2)
+            if (serviceTypes.Count() == 2)
             {
-                return $"{GetServiceName(serviceTypes[0], toLower: true)} and {GetServiceName(serviceTypes[1], toLower: true)}";
+                return $"{typeNames[0]} and {typeNames[1]}";
             }
             else
             {
                 string result = string.Empty;
 
-                for (int i = 0; i < serviceTypes.Count; ++i)
+                for (int i = 0; i < typeNames.Count; ++i)
                 {
-                    var separator = (i == serviceTypes.Count - 1) ? ", and " : (!string.IsNullOrEmpty(result) ? ", " : string.Empty);
-                    result += separator + GetServiceName(serviceTypes[i], toLower: true);
+                    var separator = (i == typeNames.Count - 1) ? ", and " : (!string.IsNullOrEmpty(result) ? ", " : string.Empty);
+                    result += separator + typeNames[i];
                 }
 
                 return result;

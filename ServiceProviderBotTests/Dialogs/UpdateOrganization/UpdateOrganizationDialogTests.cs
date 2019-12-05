@@ -19,19 +19,21 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization
                 .StartTestAsync();
         }
 
+        /*
         [Fact]
         public async Task SingleService()
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
-            var service = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service.Id);
+                var service = await TestHelpers.CreateService(this.api, organization.Id);
+                var data = await TestHelpers.CreateServiceData(this.api, user.Id, service.Id);
 
-            await CreateTestFlow(UpdateOrganizationDialog.Name, user)
-                .Test("test", Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.ServiceName))
-                .StartTestAsync();
+                await CreateTestFlow(UpdateOrganizationDialog.Name, user)
+                    .Test("test", Phrases.Capacity.GetOpenings(CaseManagementData.SERVICE_NAME))
+                    .StartTestAsync();
         }
+        */
 
         [Fact]
         public async Task MultipleServicesUpdateAll()
@@ -39,23 +41,32 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
-            var service1 = await TestHelpers.CreateService<CaseManagementData>(this.api, organization.Id);
-            var data1 = await TestHelpers.CreateCaseManagementData(this.api, user.Id, service1.Id);
-
-            var service2 = await TestHelpers.CreateService<EmploymentData>(this.api, organization.Id);
-            var data2 = await TestHelpers.CreatEmploymentData(this.api, user.Id, service2.Id);
-
-            await CreateTestFlow(UpdateOrganizationDialog.Name, user)
+            // Prepare the test flow.
+            var testFlow = CreateTestFlow(UpdateOrganizationDialog.Name, user)
                 .Test("test", StartsWith(Phrases.Update.Options))
-                .Test(Phrases.Services.All, Phrases.Capacity.GetOpenings(Phrases.Services.CaseManagement.ServiceName))
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.JobReadinessTraining))
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.PaidInternships))
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.VocationalTraining))
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.EmploymentPlacement))
-                .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Update.Closing)
-                .StartTestAsync();
+                .Send(Phrases.Services.All);
+
+            foreach (var type in Helpers.GetSubtypes<ServiceData>())
+            {
+                // Create the service and data.
+                var service = await TestHelpers.CreateService(this.api, organization.Id, type.ServiceType());
+                var data = await TestHelpers.CreateServiceData(this.api, user.Id, service.Id, type);
+
+                // Add each step for the service type to the test flow.
+                foreach (var step in type.UpdateSteps())
+                {
+                    testFlow.AssertReply(Phrases.Capacity.GetOpenings(step.Name));
+                    testFlow.Send(TestHelpers.DefaultOpen.ToString());
+                }
+            }
+
+            testFlow.AssertReply(Phrases.Update.Closing);
+
+            // Run the test.
+            await testFlow.StartTestAsync();
         }
 
+        /*
         [Fact]
         public async Task MultipleServicesUpdateOne()
         {
@@ -70,12 +81,13 @@ namespace SearchProviderBotTests.Dialogs.UpdateOrganization
 
             await CreateTestFlow(UpdateOrganizationDialog.Name, user)
                 .Test("test", StartsWith(Phrases.Update.Options))
-                .Test(Phrases.Services.Employment.ServiceName, Phrases.Capacity.GetOpenings(Phrases.Services.Employment.JobReadinessTraining))
+                .Test(EmploymentData.SERVICE_NAME, Phrases.Capacity.GetOpenings(Phrases.Services.Employment.JobReadinessTraining))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.PaidInternships))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.VocationalTraining))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.Employment.EmploymentPlacement))
                 .Test(TestHelpers.DefaultOpen.ToString(), Phrases.Update.Closing)
                 .StartTestAsync();
         }
+        */
     }
 }

@@ -3,16 +3,9 @@ using Newtonsoft.Json.Serialization;
 
 namespace EntityModel
 {
-    public class Service : ModelBase
+    public class Service : Model
     {
         public static string TABLE_NAME = "tira_services";
-
-        [JsonIgnore]
-        public override string TableName {  get { return TABLE_NAME; } }
-
-        [JsonIgnore]
-        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
-
 
         [JsonIgnore]
         [JsonProperty(PropertyName = "_tira_organizationservicesid_value")]
@@ -23,6 +16,9 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "tira_servicetype")]
         public ServiceType Type { get; set; }
+
+        public override IContractResolver ContractResolver() { return Resolver.Instance; }
+        public override string TableName() { return TABLE_NAME; }
 
         public class Resolver : ContractResolver<CaseManagementData>
         {

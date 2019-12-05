@@ -1,22 +1,14 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
 
 namespace EntityModel
 {
-    public class SubstanceUseData : ServiceDataBase
+    public class SubstanceUseData : ServiceData
     {
-        public static string TABLE_NAME = "tira_substanceusedatas";
-        public static string PRIMARY_KEY = "_tira_substanceuseserviceid_value";
-
-        [JsonIgnore]
-        public override ServiceType ServiceType { get { return ServiceType.SubstanceUse; } }
-
-        [JsonIgnore]
-        public override string TableName { get { return TABLE_NAME; } }
-
-        [JsonIgnore]
-        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
-
+        public const string TABLE_NAME = "tira_substanceusedatas";
+        public const string PRIMARY_KEY = "_tira_substanceuseserviceid_value";
+        public const string SERVICE_NAME = "Substance Use";
 
         [JsonProperty(PropertyName = "TODO")]
         public int DetoxTotal { get; set; }
@@ -65,6 +57,51 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "TODO")]
         public bool GroupWaitlistIsOpen { get; set; }
+
+        public override IContractResolver ContractResolver() { return Resolver.Instance; }
+        public override string TableName() { return TABLE_NAME; }
+        public override string PrimaryKey() { return PRIMARY_KEY; }
+        public override ServiceType ServiceType() { return EntityModel.ServiceType.SubstanceUse; }
+        public override string ServiceTypeName() { return SERVICE_NAME; }
+
+        public override List<UpdateSteps> UpdateSteps()
+        {
+            return new List<UpdateSteps>()
+            {
+                new UpdateSteps()
+                {
+                    Name = "Substance Use Detox",
+                    TotalPropertyName = nameof(this.DetoxTotal),
+                    OpenPropertyName = nameof(this.DetoxOpen),
+                    HasWaitlistPropertyName = nameof(this.DetoxHasWaitlist),
+                    WaitlistIsOpenPropertyName = nameof(this.DetoxWaitlistIsOpen)
+                },
+                new UpdateSteps()
+                {
+                    Name = "Substance In-Patient",
+                    TotalPropertyName = nameof(this.InPatientTotal),
+                    OpenPropertyName = nameof(this.InPatientOpen),
+                    HasWaitlistPropertyName = nameof(this.InPatientHasWaitlist),
+                    WaitlistIsOpenPropertyName = nameof(this.InPatientWaitlistIsOpen)
+                },
+                new UpdateSteps()
+                {
+                    Name = "Substance Use Out-Patient",
+                    TotalPropertyName = nameof(this.OutPatientTotal),
+                    OpenPropertyName = nameof(this.OutPatientOpen),
+                    HasWaitlistPropertyName = nameof(this.OutPatientHasWaitlist),
+                    WaitlistIsOpenPropertyName = nameof(this.OutPatientWaitlistIsOpen)
+                },
+                new UpdateSteps()
+                {
+                    Name = "Substance Use Group Services",
+                    TotalPropertyName = nameof(this.GroupTotal),
+                    OpenPropertyName = nameof(this.GroupOpen),
+                    HasWaitlistPropertyName = nameof(this.GroupHasWaitlist),
+                    WaitlistIsOpenPropertyName = nameof(this.GroupWaitlistIsOpen)
+                }
+            };
+        }
 
         public override void CopyStaticValues<T>(T data)
         {

@@ -15,7 +15,7 @@ namespace SearchBotTests.Dialogs
         {
             await CreateTestFlow(ServiceTypeDialog.Name)
                 .Test("test", StartsWith(SearchBot.Phrases.Search.GetServiceType))
-                .Send(Shared.Phrases.Services.Housing.ServiceName)
+                .Send(HousingData.SERVICE_NAME)
                 .StartTestAsync();
 
             var expectedContext = new ConversationContext();

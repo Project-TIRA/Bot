@@ -54,6 +54,7 @@ namespace ServiceProviderBot.Bot
                 if (string.Equals(turnContext.Activity.Text, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
                 {
                     await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                    await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
                 }
 
                 // Attempt to continue any existing conversation.

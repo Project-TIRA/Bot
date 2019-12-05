@@ -4,16 +4,9 @@ using System;
 
 namespace EntityModel
 {
-    public class Feedback : ModelBase
+    public class Feedback : Model
     {
         public static string TABLE_NAME = "TODO";
-
-        [JsonIgnore]
-        public override string TableName { get { return TABLE_NAME; } }
-
-        [JsonIgnore]
-        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
-
 
         [JsonIgnore]
         [JsonProperty(PropertyName = "TODO")]
@@ -24,6 +17,9 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "TODO")]
         public string Text { get; set; }
+
+        public override IContractResolver ContractResolver() { return Resolver.Instance; }
+        public override string TableName() { return TABLE_NAME; }
 
         public Feedback() : base()
         {

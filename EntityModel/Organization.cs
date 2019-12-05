@@ -3,16 +3,9 @@ using Newtonsoft.Json.Serialization;
 
 namespace EntityModel
 {
-    public class Organization : ModelBase
+    public class Organization : Model
     {
         public static string TABLE_NAME = "accounts";
-
-        [JsonIgnore]
-        public override string TableName { get { return TABLE_NAME; } }
-   
-        [JsonIgnore]
-        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
-
 
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
@@ -31,6 +24,9 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "to_do")]
         public string Longitude { get; set; }
+
+        public override IContractResolver ContractResolver() { return Resolver.Instance; }
+        public override string TableName() { return TABLE_NAME; }
 
         public class Resolver : ContractResolver<CaseManagementData>
         {

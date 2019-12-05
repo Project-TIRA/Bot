@@ -4,16 +4,9 @@ using System;
 
 namespace EntityModel
 {
-    public class User : ModelBase
+    public class User : Model
     {
         public static string TABLE_NAME = "contacts";
-
-        [JsonIgnore]
-        public override string TableName { get { return TABLE_NAME; } }
-
-        [JsonIgnore]
-        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
-
 
         [JsonIgnore]
         [JsonProperty(PropertyName = "_parentcustomerid_value")]
@@ -30,6 +23,9 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "TODO")]
         public bool ContactEnabled { get; set; }
+
+        public override IContractResolver ContractResolver() { return Resolver.Instance; }
+        public override string TableName() { return TABLE_NAME; }
 
         public class Resolver : ContractResolver<CaseManagementData>
         {

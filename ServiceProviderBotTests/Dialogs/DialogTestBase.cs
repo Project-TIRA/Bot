@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityModel;
@@ -45,7 +46,7 @@ namespace SearchProviderBotTests.Dialogs
             Prompt.Register(this.dialogs, this.configuration);
         }
 
-        protected TestFlow CreateTestFlow(string dialogName, User user = null, string channelOverride = null)
+        protected TestFlow CreateTestFlow(string dialogName, User user = null, List<ServiceType> typesToUpdate = null, string channelOverride = null)
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
@@ -86,7 +87,7 @@ namespace SearchProviderBotTests.Dialogs
                     if (result.Status == DialogTurnStatus.Empty)
                     {
                         // Tests must init the user once there is a turn context.
-                        await InitUser(user);
+                        await InitUser(user, typesToUpdate);
 
                         // Difference for tests here is beginning the given dialog instead of master so that individual dialog flows can be tested.
                         await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
@@ -106,7 +107,7 @@ namespace SearchProviderBotTests.Dialogs
             };
         }
 
-        private async Task InitUser(User user)
+        private async Task InitUser(User user, List<ServiceType> typesToUpdate)
         {
             if (user != null)
             {
@@ -121,11 +122,10 @@ namespace SearchProviderBotTests.Dialogs
 
                 await this.api.Update(user);
 
-                // Save the user ID and organization ID to the user context so that
-                // they can be accessed by other dialogs without API lookups.
                 var userContext = await this.state.GetUserContext(this.turnContext, this.cancellationToken);
                 userContext.UserId = user.Id;
                 userContext.OrganizationId = user.OrganizationId;
+                userContext.TypesToUpdate = typesToUpdate ?? new List<ServiceType>();
             }
         }
     }

@@ -28,7 +28,7 @@ namespace SearchBotTests.Dialogs
             initialContext.CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
 
             await CreateTestFlow(MasterDialog.Name)
-                .Send($"where can I find {Shared.Phrases.Services.Housing.ServiceName} in {SearchBotTestHelpers.DefaultLocation}")
+                .Send($"where can I find {HousingData.SERVICE_NAME} in {SearchBotTestHelpers.DefaultLocation}")
                 .StartTestAsync();
 
             // Validate the results.
@@ -45,7 +45,7 @@ namespace SearchBotTests.Dialogs
             initialContext.CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.Employment);
 
             await CreateTestFlow(MasterDialog.Name)
-                .Send($"where can I find {Shared.Phrases.Services.Housing.ServiceName} and {Shared.Phrases.Services.Employment.ServiceName} in {SearchBotTestHelpers.DefaultLocation}")
+                .Send($"where can I find {HousingData.SERVICE_NAME} and {EmploymentData.SERVICE_NAME} in {SearchBotTestHelpers.DefaultLocation}")
                 .StartTestAsync();
 
             // Validate the results.

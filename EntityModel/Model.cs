@@ -5,19 +5,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EntityModel
 {
-    public abstract class ModelBase
+    public abstract class Model
     {
         [Key]
         [JsonIgnore]
         public string Id { get; set; }
 
-        [JsonIgnore]
-        public abstract string TableName { get; }
+        public abstract IContractResolver ContractResolver();
+        public abstract string TableName();
 
-        [JsonIgnore]
-        public abstract IContractResolver ContractResolver { get; }
-
-        public ModelBase()
+        public Model()
         {
             this.Id = Guid.NewGuid().ToString();
         }

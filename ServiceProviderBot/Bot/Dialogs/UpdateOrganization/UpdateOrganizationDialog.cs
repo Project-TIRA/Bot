@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Builder.Dialogs;
+﻿using EntityModel;
+using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.UpdateOrganization.Capacity;
@@ -7,6 +8,8 @@ using Shared;
 using Shared.ApiInterface;
 using Shared.Prompts;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
 {
@@ -35,13 +38,14 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                         // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(cancellationToken);
                     }
-
-                    if (services.Count > 1)
+                    else if (services.Count > 1)
                     {
+                        var typeNames = Helpers.GetServiceTypeNames(services.Select(s => s.Type));
+
                         // Give an option to update a specific service or all services.
                         var choices = new List<Choice>();
                         choices.Add(new Choice { Value = Phrases.Services.All });
-                        services.ForEach(s => choices.Add(new Choice { Value = Helpers.GetServiceName(s.Type) }));
+                        typeNames.ForEach(s => choices.Add(new Choice { Value = s }));
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
@@ -57,17 +61,28 @@ namespace ServiceProviderBot.Bot.Dialogs.UpdateOrganization
                 },
                 async (dialogContext, cancellationToken) =>
                 {
+                    var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                    bool singleService = false;
+
                     if (dialogContext.Result != null && dialogContext.Result is FoundChoice)
                     {
-                        // Push the specific dialog onto the stack if one was selected.
-                        switch (((FoundChoice)dialogContext.Result).Value)
+                        // Update the specific service type.
+                        var result = ((FoundChoice)dialogContext.Result).Value;
+                        if (result != Phrases.Services.All)
                         {
-                            case Phrases.Services.CaseManagement.ServiceName: return await BeginDialogAsync(dialogContext, UpdateCaseManagementDialog.Name, null, cancellationToken);
-                            case Phrases.Services.Housing.ServiceName: return await BeginDialogAsync(dialogContext, UpdateHousingDialog.Name, null, cancellationToken);
-                            case Phrases.Services.Employment.ServiceName: return await BeginDialogAsync(dialogContext, UpdateEmploymentDialog.Name, null, cancellationToken);
-                            case Phrases.Services.MentalHealth.ServiceName: return await BeginDialogAsync(dialogContext, UpdateMentalHealthDialog.Name, null, cancellationToken);
-                            case Phrases.Services.SubstanceUse.ServiceName: return await BeginDialogAsync(dialogContext, UpdateSubstanceUseDialog.Name, null, cancellationToken);
+                            singleService = true;
+                            userContext.TypesToUpdate.Add(Helpers.GetServiceTypeByName(result).ServiceType());
                         }
+                    }
+
+                    if (!singleService)
+                    {
+                        // Update all types of services available.
+                        var services = await this.api.GetServices(userContext.OrganizationId);
+
+                        // Get the types so that they are alphabetical by type name.
+                        var types = Helpers.GetServicesByType(services.Select(s => s.Type));
+                        userContext.TypesToUpdate.AddRange(types.Select(t => t.ServiceType()));
                     }
 
                     // Push the update capacity dialog onto the stack.

@@ -118,12 +118,11 @@ namespace Shared
 
             public static class CaseManagement
             {
-                public const string ServiceName = "Case Management";
+                
             }
 
             public static class Housing
             {
-                public const string ServiceName = "Housing";
                 public const string Emergency = "Emergency";
                 public const string LongTerm = "Long-term";
                 public const string EmergencySharedBeds = "Emergency Shared-Space Beds";
@@ -134,7 +133,6 @@ namespace Shared
 
             public static class Employment
             {
-                public const string ServiceName = "Employment";
                 public const string JobReadinessTraining = "Job Readiness Training";
                 public const string PaidInternships = "Paid Internships";
                 public const string VocationalTraining = "Vocational Training";
@@ -143,14 +141,12 @@ namespace Shared
 
             public static class MentalHealth
             {
-                public const string ServiceName = "Mental Health";
                 public const string InPatient = "Mental Health In-Patient";
                 public const string OutPatient = "Mental Health Out-Patient";
             }
 
             public static class SubstanceUse
             {
-                public const string ServiceName = "Substance Use";
                 public const string Detox = "Substance Use Detox";
                 public const string InPatient = "Substance Use In-Patient";
                 public const string OutPatient = "Substance Use Out-Patient";
