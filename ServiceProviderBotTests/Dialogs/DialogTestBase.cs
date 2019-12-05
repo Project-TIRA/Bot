@@ -17,7 +17,7 @@ using Shared.Middleware;
 using Shared.Prompts;
 using Xunit;
 
-namespace SearchProviderBotTests.Dialogs
+namespace ServiceProviderBotTests.Dialogs
 {
     public abstract class DialogTestBase
     {
@@ -46,7 +46,7 @@ namespace SearchProviderBotTests.Dialogs
             Prompt.Register(this.dialogs, this.configuration);
         }
 
-        protected TestFlow CreateTestFlow(string dialogName, User user = null, List<ServiceType> typesToUpdate = null, string channelOverride = null)
+        protected TestFlow CreateTestFlow(string dialogName, User user = null, string channelOverride = null)
         {
             return new TestFlow(this.adapter, async (turnContext, cancellationToken) =>
             {
@@ -78,6 +78,7 @@ namespace SearchProviderBotTests.Dialogs
                     {
                         dialogName = MasterDialog.Name;
                         await dialogContext.CancelAllDialogsAsync(cancellationToken);
+                        await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
                     }
 
                     // Attempt to continue any existing conversation.
@@ -86,8 +87,11 @@ namespace SearchProviderBotTests.Dialogs
                     // Start a new conversation if there isn't one already.
                     if (result.Status == DialogTurnStatus.Empty)
                     {
+                        // Clear the state for any new test flow. This allows tests to run multiple test flows.
+                        await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
+
                         // Tests must init the user once there is a turn context.
-                        await InitUser(user, typesToUpdate);
+                        await InitUser(user);
 
                         // Difference for tests here is beginning the given dialog instead of master so that individual dialog flows can be tested.
                         await masterDialog.BeginDialogAsync(dialogContext, dialogName, null, cancellationToken);
@@ -107,7 +111,7 @@ namespace SearchProviderBotTests.Dialogs
             };
         }
 
-        private async Task InitUser(User user, List<ServiceType> typesToUpdate)
+        private async Task InitUser(User user)
         {
             if (user != null)
             {
@@ -122,10 +126,11 @@ namespace SearchProviderBotTests.Dialogs
 
                 await this.api.Update(user);
 
+                // Save the user ID and organization ID to the user context so that
+                // they can be accessed by other dialogs without API lookups.
                 var userContext = await this.state.GetUserContext(this.turnContext, this.cancellationToken);
                 userContext.UserId = user.Id;
                 userContext.OrganizationId = user.OrganizationId;
-                userContext.TypesToUpdate = typesToUpdate ?? new List<ServiceType>();
             }
         }
     }

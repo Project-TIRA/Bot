@@ -1,7 +1,7 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
+using ServiceProviderBot.Bot.Dialogs.Capacity;
 using ServiceProviderBot.Bot.Dialogs.Feedback;
-using ServiceProviderBot.Bot.Dialogs.UpdateOrganization;
 using ServiceProviderBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
@@ -79,8 +79,8 @@ namespace ServiceProviderBot.Bot.Dialogs
 
                     if (string.Equals(result, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
                     {
-                        // Push the update organization dialog onto the stack.
-                        return await BeginDialogAsync(dialogContext, UpdateOrganizationDialog.Name, null, cancellationToken);
+                        // Push the update dialog onto the stack.
+                        return await BeginDialogAsync(dialogContext, UpdateCapacityDialog.Name, null, cancellationToken);
                     }
                     else if (string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase) ||
                              string.Equals(result, Phrases.Keywords.Disable, StringComparison.OrdinalIgnoreCase))

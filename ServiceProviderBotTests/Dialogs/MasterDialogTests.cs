@@ -6,7 +6,7 @@ using ServiceProviderBot.Bot.Dialogs;
 using Shared;
 using Xunit;
 
-namespace SearchProviderBotTests.Dialogs
+namespace ServiceProviderBotTests.Dialogs
 {
     public class MasterDialogTests : DialogTestBase
     {
