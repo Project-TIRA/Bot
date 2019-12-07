@@ -78,7 +78,7 @@ namespace EntityModel
                 },
                 new UpdateSteps()
                 {
-                    Name = "Substance In-Patient",
+                    Name = "Substance Use In-Patient",
                     TotalPropertyName = nameof(this.InPatientTotal),
                     OpenPropertyName = nameof(this.InPatientOpen),
                     HasWaitlistPropertyName = nameof(this.InPatientHasWaitlist),

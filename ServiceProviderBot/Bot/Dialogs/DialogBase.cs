@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using EntityModel;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.State;
-using Shared;
 using Shared.ApiInterface;
-using Shared.Prompts;
 
 namespace ServiceProviderBot.Bot.Dialogs
 {
@@ -27,7 +24,7 @@ namespace ServiceProviderBot.Bot.Dialogs
             this.configuration = configuration;
         }
 
-        public abstract WaterfallDialog GetWaterfallDialog();
+        public abstract Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellationToken);
 
         /// <summary>
         /// JIT creates the dialog if necessary and begins the dialog.
@@ -41,7 +38,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                 var dialog = CreateFromDialogId(dialogId);
                 if (dialog != null)
                 {
-                    dialogs.Add(dialog.GetWaterfallDialog());
+                    var waterfallDialog = await dialog.GetWaterfallDialog(dialogContext.Context, cancellationToken);
+                    this.dialogs.Add(waterfallDialog);
                 }
             }
 
@@ -63,7 +61,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                     var dialog = CreateFromDialogId(entry.Id);
                     if (dialog != null)
                     {
-                        this.dialogs.Add(dialog.GetWaterfallDialog());
+                        var waterfallDialog = await dialog.GetWaterfallDialog(dialogContext.Context, cancellationToken);
+                        this.dialogs.Add(waterfallDialog);
                     }
                 }
             }

@@ -22,6 +22,7 @@ namespace Shared
         /// </summary>
         public static string GetUserToken(ITurnContext turnContext)
         {
+            return "JB";
             switch (turnContext.Activity.ChannelId)
             {
                 case Channels.Emulator: return turnContext.Activity.From.Id;

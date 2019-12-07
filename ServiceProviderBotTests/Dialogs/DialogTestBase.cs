@@ -78,7 +78,6 @@ namespace ServiceProviderBotTests.Dialogs
                     {
                         dialogName = MasterDialog.Name;
                         await dialogContext.CancelAllDialogsAsync(cancellationToken);
-                        await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
                     }
 
                     // Attempt to continue any existing conversation.
@@ -87,7 +86,7 @@ namespace ServiceProviderBotTests.Dialogs
                     // Start a new conversation if there isn't one already.
                     if (result.Status == DialogTurnStatus.Empty)
                     {
-                        // Clear the state for any new test flow. This allows tests to run multiple test flows.
+                        // Clear the user context when a new conversation begins.
                         await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
 
                         // Tests must init the user once there is a turn context.

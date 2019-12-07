@@ -10,13 +10,14 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
 {
     public class UpdateCapacityDialogTests : DialogTestBase
     {
-        [Fact]
-        public async Task UpdateSingle()
+        [Theory]
+        [MemberData(nameof(TestServiceTypes))]
+        public async Task UpdateSingle(ServiceData type)
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
-            await RunTest(user, organization, new List<ServiceData>() { new EmploymentData() });
-            
+            await RunTest(user, organization, new List<ServiceData>() { type });
+
         }
 
         [Fact]
@@ -27,16 +28,13 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
             await RunTest(user, organization, Helpers.GetSubtypes<ServiceData>());
         }
 
-        [Fact]
-        public async Task WaitlistClosedSingle()
+        [Theory]
+        [MemberData(nameof(TestServiceTypes))]
+        public async Task WaitlistClosedSingle(ServiceData type)
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
-
-            foreach (var type in Helpers.GetSubtypes<ServiceData>())
-            {
-                await RunTest(user, organization, new List<ServiceData>() { type }, testWaitlist: true);
-            }
+            await RunTest(user, organization, new List<ServiceData>() { type }, testWaitlist: true);
         }
 
         [Fact]
@@ -47,16 +45,13 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
             await RunTest(user, organization, Helpers.GetSubtypes<ServiceData>(), testWaitlist: true);
         }
 
-        [Fact]
-        public async Task WaitlistOpenSingle()
+        [Theory]
+        [MemberData(nameof(TestServiceTypes))]
+        public async Task WaitlistOpenSingle(ServiceData type)
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
-
-            foreach (var type in Helpers.GetSubtypes<ServiceData>())
-            {
-                await RunTest(user, organization, new List<ServiceData>() { type }, testWaitlist: true, testWaitlistOpen: true);
-            }
+            await RunTest(user, organization, new List<ServiceData>() { type }, testWaitlist: true, testWaitlistOpen: true);
         }
 
         [Fact]
@@ -83,35 +78,31 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
 
             if (types.Count > 1)
             {
-                testFlow.AssertReply(StartsWith(Phrases.Update.Options));
-                testFlow.Send(Phrases.Services.All);
+                testFlow = testFlow.AssertReply(StartsWith(Phrases.Update.Options));
+                testFlow = testFlow.Send(Phrases.Services.All);
             }
 
-            // Add each step for the service types to the test flow.
+            // Add each step from the service types to the test flow.
             foreach (var type in types)
             {
                 foreach (var step in type.UpdateSteps())
                 {
-                    testFlow.AssertReply(Phrases.Capacity.GetOpenings(step.Name));
+                    testFlow = testFlow.AssertReply(Phrases.Capacity.GetOpenings(step.Name));
 
                     if (testWaitlist)
                     {
-                        testFlow.Send("0");
-
-                        if (testWaitlistOpen)
-                        {
-                            testFlow.AssertReply(StartsWith(Phrases.Capacity.GetWaitlistIsOpen(step.Name)));
-                            testFlow.Send(TestHelpers.DefaultWaitlistIsOpen.ToString());
-                        }
+                        testFlow = testFlow.Send("0");
+                        testFlow = testFlow.AssertReply(StartsWith(Phrases.Capacity.GetWaitlistIsOpen(step.Name)));
+                        testFlow = testFlow.Send(testWaitlistOpen.ToString());
                     }
                     else
                     {
-                        testFlow.Send(TestHelpers.DefaultOpen.ToString());
+                        testFlow = testFlow.Send(TestHelpers.DefaultOpen.ToString());
                     }
                 }
             }
 
-            testFlow.AssertReply(Phrases.Update.Closing);
+            testFlow = testFlow.AssertReply(Phrases.Update.Closing);
 
             // Run the test.
             await testFlow.StartTestAsync();
@@ -137,5 +128,8 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
                 }
             }
         }
+
+        public static IEnumerable<object[]> TestServiceTypes =>
+            Helpers.GetSubtypes<ServiceData>().Select(t => new object[] { t });
     }
 }

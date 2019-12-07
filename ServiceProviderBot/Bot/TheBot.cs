@@ -54,7 +54,6 @@ namespace ServiceProviderBot.Bot
                 if (string.Equals(turnContext.Activity.Text, Phrases.Keywords.Update, StringComparison.OrdinalIgnoreCase))
                 {
                     await dialogContext.CancelAllDialogsAsync(cancellationToken);
-                    await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
                 }
 
                 // Attempt to continue any existing conversation.
@@ -63,6 +62,9 @@ namespace ServiceProviderBot.Bot
                 // Start a new conversation if there isn't one already.
                 if (result.Status == DialogTurnStatus.Empty)
                 {
+                    // Clear the user context when a new conversation begins.
+                    await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
+
                     await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);
                 }
             }

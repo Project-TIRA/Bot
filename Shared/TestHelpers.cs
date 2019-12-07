@@ -63,6 +63,7 @@ namespace Shared
             var data = Helpers.CreateSubType(type);
             data.CreatedById = createdById;
             data.ServiceId = serviceId;
+            data.IsComplete = true;
 
             foreach (var step in data.UpdateSteps())
             {
