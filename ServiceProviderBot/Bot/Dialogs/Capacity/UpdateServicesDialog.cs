@@ -40,23 +40,23 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
             return new WaterfallDialog(Name, waterfallSteps);
         }
 
-        private List<WaterfallStep> GenerateUpdateSteps(ServiceData type)
+        private List<WaterfallStep> GenerateUpdateSteps(ServiceData dataType)
         {
             var waterfallSteps = new List<WaterfallStep>();
 
-            foreach (var step in type.UpdateSteps())
+            foreach (var subService in dataType.SubServices())
             {
                 waterfallSteps.Add(async (dialogContext, cancellationToken) =>
                 {
                     var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                    if (userContext.TypesToUpdate.Contains(type.ServiceType()))
+                    if (userContext.TypesToUpdate.Contains(dataType.ServiceType()))
                     {
                         // Get the service.
-                        var service = await this.api.GetService(userContext.OrganizationId, type.ServiceType());
+                        var service = await this.api.GetService(userContext.OrganizationId, dataType.ServiceType());
 
                         // Get the latest snapshot created by the user.
-                        var data = await this.api.GetLatestServiceData(userContext.OrganizationId, type, createdByUserTurnContext: dialogContext.Context);
-                        var totalPropertyValue = (int)data.GetProperty(step.TotalPropertyName);
+                        var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
+                        var totalPropertyValue = (int)data.GetProperty(subService.TotalPropertyName);
 
                         // Check if the organization has this service.
                         if (totalPropertyValue > 0)
@@ -66,7 +66,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                                 Max = totalPropertyValue
                             };
 
-                            var prompt = Phrases.Capacity.GetOpenings(step.Name);
+                            var prompt = Phrases.Capacity.GetOpenings(subService.Name);
 
                             // Prompt for the open count.
                             return await dialogContext.PromptAsync(
@@ -95,18 +95,18 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
                         // Get the latest snapshot created by the user and update it.
-                        var data = await this.api.GetLatestServiceData(userContext.OrganizationId, type, createdByUserTurnContext: dialogContext.Context);
-                        data.SetProperty(step.OpenPropertyName, open);
+                        var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
+                        data.SetProperty(subService.OpenPropertyName, open);
                         await this.api.Update(data);
 
                         // Check if a waitlist is available.
-                        var hasWaitlist = (bool)data.GetProperty(step.HasWaitlistPropertyName);
+                        var hasWaitlist = (bool)data.GetProperty(subService.HasWaitlistPropertyName);
                         if (hasWaitlist && open == 0)
                         {
                             // Prompt for if the waitlist is open.
                             return await dialogContext.PromptAsync(
                                 Prompt.ConfirmPrompt,
-                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistIsOpen(step.Name) },
+                                new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistIsOpen(subService.Name) },
                                 cancellationToken);
                         }
                     }
@@ -123,8 +123,8 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
                         // Get the latest snapshot created by the user and update it.
-                        var data = await this.api.GetLatestServiceData(userContext.OrganizationId, type, createdByUserTurnContext: dialogContext.Context);
-                        data.SetProperty(step.WaitlistIsOpenPropertyName, (bool)dialogContext.Result);
+                        var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
+                        data.SetProperty(subService.WaitlistIsOpenPropertyName, (bool)dialogContext.Result);
                         await this.api.Update(data);
                     }
 
@@ -136,18 +136,18 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
             return waterfallSteps;
         }
 
-        private WaterfallStep GenerateCreateDataStep(ServiceData type)
+        private WaterfallStep GenerateCreateDataStep(ServiceData dataType)
         {
             return async (dialogContext, cancellationToken) =>
             {
                 var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                if (userContext.TypesToUpdate.Contains(type.ServiceType()))
+                if (userContext.TypesToUpdate.Contains(dataType.ServiceType()))
                 {
                     // Get the latest snapshot.
-                    var previousData = await this.api.GetLatestServiceData(userContext.OrganizationId, type);
+                    var previousData = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType);
 
                     // Create a new snapshot and copy the static values from the previous one.
-                    var data = Helpers.CreateSubType(type);
+                    var data = Helpers.CreateSubType(dataType);
                     data.CopyStaticValues(previousData);
                     data.CreatedById = userContext.UserId;
                     await this.api.Create(data);
@@ -158,15 +158,15 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
             };
         }
 
-        private WaterfallStep GenerateCompleteDataStep(ServiceData type)
+        private WaterfallStep GenerateCompleteDataStep(ServiceData dataType)
         {
             return async (dialogContext, cancellationToken) =>
             {
                 var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                if (userContext.TypesToUpdate.Contains(type.ServiceType()))
+                if (userContext.TypesToUpdate.Contains(dataType.ServiceType()))
                 {
                     // Mark the snapshot created by the user as complete.
-                    var data = await this.api.GetLatestServiceData(userContext.OrganizationId, type, createdByUserTurnContext: dialogContext.Context);
+                    var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
                     data.IsComplete = true;
                     await this.api.Update(data);
                 }

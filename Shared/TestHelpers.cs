@@ -58,18 +58,18 @@ namespace Shared
             return service;
         }
 
-        public static async Task<ServiceData> CreateServiceData(IApiInterface api, string createdById, string serviceId, ServiceData type, bool hasWaitlist = false)
+        public static async Task<ServiceData> CreateServiceData(IApiInterface api, string createdById, string serviceId, ServiceData dataType, bool hasWaitlist = false)
         {
-            var data = Helpers.CreateSubType(type);
+            var data = Helpers.CreateSubType(dataType);
             data.CreatedById = createdById;
             data.ServiceId = serviceId;
             data.IsComplete = true;
 
-            foreach (var step in data.UpdateSteps())
+            foreach (var subService in data.SubServices())
             {
-                data.SetProperty(step.TotalPropertyName, DefaultTotal);
-                data.SetProperty(step.OpenPropertyName, DefaultOpen);
-                data.SetProperty(step.HasWaitlistPropertyName, hasWaitlist);
+                data.SetProperty(subService.TotalPropertyName, DefaultTotal);
+                data.SetProperty(subService.OpenPropertyName, DefaultOpen);
+                data.SetProperty(subService.HasWaitlistPropertyName, hasWaitlist);
             }
 
             await api.Create(data);

@@ -155,14 +155,14 @@ namespace Shared.ApiInterface
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
-        public async Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData type, ITurnContext createdByUserTurnContext = null)
+        public async Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null)
         {
-            var service = await GetService(organizationId, type.ServiceType());
+            var service = await GetService(organizationId, dataType.ServiceType());
             if (service != null)
             {
                 IQueryable<ServiceData> query;
 
-                switch (type.ServiceType())
+                switch (dataType.ServiceType())
                 {
                     // TODO: can this be abstracted to where the type has the table name?
                     case ServiceType.CaseManagement: query = this.dbContext.CaseManagementData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;

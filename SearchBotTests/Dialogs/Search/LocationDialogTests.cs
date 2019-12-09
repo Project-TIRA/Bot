@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using SearchBot.Bot.Dialogs.Service;
+using SearchBot.Bot.Dialogs.Search;
 using SearchBot.Bot.State;
 using Shared;
 using Xunit;
 
-namespace SearchBotTests.Dialogs
+namespace SearchBotTests.Dialogs.Search
 {
     public class LocationDialogTests : DialogTestBase
     {

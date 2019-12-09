@@ -11,12 +11,12 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
     public class UpdateCapacityDialogTests : DialogTestBase
     {
         [Theory]
-        [MemberData(nameof(TestServiceTypes))]
-        public async Task UpdateSingle(ServiceData type)
+        [MemberData(nameof(TestTypes))]
+        public async Task UpdateSingle(ServiceData dataType)
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
-            await RunTest(user, organization, new List<ServiceData>() { type });
+            await RunTest(user, organization, new List<ServiceData>() { dataType });
 
         }
 
@@ -25,16 +25,16 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
-            await RunTest(user, organization, Helpers.GetSubtypes<ServiceData>());
+            await RunTest(user, organization, Helpers.GetServiceDataTypes());
         }
 
         [Theory]
-        [MemberData(nameof(TestServiceTypes))]
-        public async Task WaitlistClosedSingle(ServiceData type)
+        [MemberData(nameof(TestTypes))]
+        public async Task WaitlistClosedSingle(ServiceData dataType)
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
-            await RunTest(user, organization, new List<ServiceData>() { type }, testWaitlist: true);
+            await RunTest(user, organization, new List<ServiceData>() { dataType }, testWaitlist: true);
         }
 
         [Fact]
@@ -42,16 +42,16 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
-            await RunTest(user, organization, Helpers.GetSubtypes<ServiceData>(), testWaitlist: true);
+            await RunTest(user, organization, Helpers.GetServiceDataTypes(), testWaitlist: true);
         }
 
         [Theory]
-        [MemberData(nameof(TestServiceTypes))]
-        public async Task WaitlistOpenSingle(ServiceData type)
+        [MemberData(nameof(TestTypes))]
+        public async Task WaitlistOpenSingle(ServiceData dataType)
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
-            await RunTest(user, organization, new List<ServiceData>() { type }, testWaitlist: true, testWaitlistOpen: true);
+            await RunTest(user, organization, new List<ServiceData>() { dataType }, testWaitlist: true, testWaitlistOpen: true);
         }
 
         [Fact]
@@ -59,7 +59,7 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
-            await RunTest(user, organization, Helpers.GetSubtypes<ServiceData>(), testWaitlist: true, testWaitlistOpen: true);
+            await RunTest(user, organization, Helpers.GetServiceDataTypes(), testWaitlist: true, testWaitlistOpen: true);
         }
 
         private async Task RunTest(User user, Organization organization, List<ServiceData> types, bool testWaitlist = false, bool testWaitlistOpen = false)
@@ -82,17 +82,17 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
                 testFlow = testFlow.Send(Phrases.Services.All);
             }
 
-            // Add each step from the service types to the test flow.
+            // Add each sub-service from the service types to the test flow.
             foreach (var type in types)
             {
-                foreach (var step in type.UpdateSteps())
+                foreach (var subService in type.SubServices())
                 {
-                    testFlow = testFlow.AssertReply(Phrases.Capacity.GetOpenings(step.Name));
+                    testFlow = testFlow.AssertReply(Phrases.Capacity.GetOpenings(subService.Name));
 
                     if (testWaitlist)
                     {
                         testFlow = testFlow.Send("0");
-                        testFlow = testFlow.AssertReply(StartsWith(Phrases.Capacity.GetWaitlistIsOpen(step.Name)));
+                        testFlow = testFlow.AssertReply(StartsWith(Phrases.Capacity.GetWaitlistIsOpen(subService.Name)));
                         testFlow = testFlow.Send(testWaitlistOpen.ToString());
                     }
                     else
@@ -114,22 +114,19 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
                 Assert.NotNull(resultData);
                 Assert.True(resultData.IsComplete);
 
-                foreach (var step in type.UpdateSteps())
+                foreach (var subService in type.SubServices())
                 {
-                    var open = (int)resultData.GetProperty(step.OpenPropertyName);
+                    var open = (int)resultData.GetProperty(subService.OpenPropertyName);
                     Assert.Equal(testWaitlist ? 0 : TestHelpers.DefaultOpen, open);
 
-                    var hasWaitlist = (bool)resultData.GetProperty(step.HasWaitlistPropertyName);
+                    var hasWaitlist = (bool)resultData.GetProperty(subService.HasWaitlistPropertyName);
                     Assert.Equal(testWaitlist, hasWaitlist);
 
-                    var waitlistIsOpen = (bool)resultData.GetProperty(step.WaitlistIsOpenPropertyName);
+                    var waitlistIsOpen = (bool)resultData.GetProperty(subService.WaitlistIsOpenPropertyName);
                     Assert.Equal(testWaitlistOpen, waitlistIsOpen);
 
                 }
             }
         }
-
-        public static IEnumerable<object[]> TestServiceTypes =>
-            Helpers.GetSubtypes<ServiceData>().Select(t => new object[] { t });
     }
 }

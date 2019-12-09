@@ -46,7 +46,7 @@ namespace Shared.ApiInterface
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUserTurnContext">Optionally pass a turn context to get the latest data created by the user</param>
-        Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData type, ITurnContext createdByUserTurnContext = null);
+        Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null);
 
         /// <summary>
         /// Gets all verified organizations.

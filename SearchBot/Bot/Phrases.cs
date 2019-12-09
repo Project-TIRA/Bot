@@ -16,8 +16,12 @@ namespace SearchBot
         {
             public static Activity GetLocation = MessageFactory.Text("In what city are you looking for services?");
             public static Activity GetLocationRetry = MessageFactory.Text($"Oops, I couldn't find that location. Try entering as City, State");
-            public static Activity GetServiceType = MessageFactory.Text($"What type of service are you looking for? I can help with {Helpers.GetServicesString(Enum.GetValues(typeof(ServiceType)).Cast<ServiceType>().ToList())} services");
-            public static Activity GetHousingType = MessageFactory.Text("What type of housing are you looking for?");
+            public static Activity GetServiceType = MessageFactory.Text($"What type of service are you looking for? I can help with {Helpers.GetServicesString(Helpers.GetServiceDataTypes())} services");
+
+            public static Activity GetSpecificType(ServiceData dataType)
+            {
+                return MessageFactory.Text($"What type of {dataType.ServiceTypeName()} are you looking for?");
+            }
 
             public static Activity MakeRecommendation(List<MatchData> matches)
             {
@@ -35,7 +39,7 @@ namespace SearchBot
                         result += Environment.NewLine + Environment.NewLine;
                     }
 
-                    result += $"{match.Organization.Name} has availability for {Helpers.GetServicesString(match.OrganizationServiceTypes)} services." +
+                    result += $"{match.Organization.Name} has availability for {Helpers.GetServicesString(match.OrganizationDataTypes)} services." +
                         Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
                 }
 

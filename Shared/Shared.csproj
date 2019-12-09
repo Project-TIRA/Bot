@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Bot.Builder" Version="4.5.2" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.5.2" />
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.5.2" />
     <PackageReference Include="Microsoft.Bot.Schema" Version="4.5.2" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.1" />

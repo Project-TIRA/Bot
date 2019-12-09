@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EntityModel.Luis;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 
@@ -64,37 +65,49 @@ namespace EntityModel
         public override ServiceType ServiceType() { return EntityModel.ServiceType.Employment; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
 
-        public override List<UpdateSteps> UpdateSteps()
+        public override List<SubService> SubServices()
         {
-            return new List<UpdateSteps>()
+            return new List<SubService>()
             {
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Job Readiness Training",
+                    ServiceFlag = ServiceFlags.Employment,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
+
                     TotalPropertyName = nameof(this.JobReadinessTrainingTotal),
                     OpenPropertyName = nameof(this.JobReadinessTrainingOpen),
                     HasWaitlistPropertyName = nameof(this.JobReadinessTrainingHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.JobReadinessTrainingWaitlistIsOpen)
                 },
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Paid Internships",
+                    ServiceFlag = ServiceFlags.EmploymentInternship,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment), nameof(LuisModel.Entities.EmploymentInternship) },
+
                     TotalPropertyName = nameof(this.PaidInternshipTotal),
                     OpenPropertyName = nameof(this.PaidInternshipOpen),
                     HasWaitlistPropertyName = nameof(this.PaidInternshipHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.PaidInternshipWaitlistIsOpen)
                 },
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Vocational Training",
+                    ServiceFlag = ServiceFlags.Employment,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
+
                     TotalPropertyName = nameof(this.VocationalTrainingTotal),
                     OpenPropertyName = nameof(this.VocationalTrainingOpen),
                     HasWaitlistPropertyName = nameof(this.VocationalTrainingHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.VocationalTrainingWaitlistIsOpen)
                 },
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Employment Placement",
+                    ServiceFlag = ServiceFlags.Employment,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
+
                     TotalPropertyName = nameof(this.EmploymentPlacementTotal),
                     OpenPropertyName = nameof(this.EmploymentPlacementOpen),
                     HasWaitlistPropertyName = nameof(this.EmploymentPlacementHasWaitlist),

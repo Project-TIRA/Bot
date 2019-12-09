@@ -8,7 +8,6 @@ namespace Shared.Models
         private const int REASONABLE_DISTANCE = 25;
 
         public Organization Organization { get; set; }
-        public List<ServiceType> OrganizationServiceTypes { get; set; }
         public ServiceFlags OrganizationServiceFlags { get; set; }
 
         public ServiceFlags RequestedServiceFlags { get; set; }
@@ -17,10 +16,26 @@ namespace Shared.Models
 
         public bool IsFullMatch { get { return this.OrganizationServiceFlags.HasFlag(this.RequestedServiceFlags); } }
         public bool IsWithinDistance {  get { return this.Distance <= REASONABLE_DISTANCE; } }
-
-        public MatchData()
+        public List<ServiceData> OrganizationDataTypes
         {
-            this.OrganizationServiceTypes = new List<ServiceType>();
+            get
+            {
+                var types = new List<ServiceData>();
+
+                foreach (var type in Helpers.GetServiceDataTypes())
+                {
+                    foreach (var subService in type.SubServices())
+                    {
+                        if (this.OrganizationServiceFlags.HasFlag(subService.ServiceFlag))
+                        {
+                            types.Add(type);
+                            break;
+                        }
+                    }
+                }
+
+                return types;
+            }
         }
     }
 }

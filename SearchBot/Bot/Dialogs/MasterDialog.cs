@@ -1,11 +1,14 @@
-﻿using Luis;
+﻿using EntityModel.Luis;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
-using SearchBot.Bot.Dialogs.Service;
-using SearchBot.Bot.Luis;
+using SearchBot.Bot.Dialogs.Search;
 using SearchBot.Bot.State;
+using SearchBot.Luis;
 using Shared;
 using Shared.ApiInterface;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SearchBot.Bot.Dialogs
 {
@@ -16,36 +19,39 @@ namespace SearchBot.Bot.Dialogs
         public MasterDialog(StateAccessors state, DialogSet dialogs, IApiInterface api, IConfiguration configuration)
             : base(state, dialogs, api, configuration) { }
 
-        public override WaterfallDialog GetWaterfallDialog()
+        public override Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellation)
         {
-            return new WaterfallDialog(Name, new WaterfallStep[]
+            return Task.Run(() =>
             {
-                async (dialogContext, cancellationToken) =>
+                return new WaterfallDialog(Name, new WaterfallStep[]
                 {
-                    // Get the LUIS result and save any context.
-                    var luisResult = await new LuisHelper(this.configuration).RecognizeAsync<LuisModel>(dialogContext.Context, cancellationToken);
-                    var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
-                    await conversationContext.AddLuisResult(this.configuration, luisResult);
-
-                    // Handle the intent.
-                    var topIntent = luisResult.TopIntent();
-                    if (topIntent.intent == LuisModel.Intent.GetService)
+                    async (dialogContext, cancellationToken) =>
                     {
-                        // Push the service dialog onto the stack.
-                        return await BeginDialogAsync(dialogContext, ServiceDialog.Name, null, cancellationToken);
+                        // Get the LUIS result and save any context.
+                        var luisResult = await new LuisHelper(this.configuration).RecognizeAsync<LuisModel>(dialogContext.Context, cancellationToken);
+                        var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
+                        await conversationContext.AddLuisResult(this.configuration, luisResult);
+
+                        // Handle the intent.
+                        var topIntent = luisResult.TopIntent();
+                        if (topIntent.intent == LuisModel.Intent.GetService)
+                        {
+                            // Push the service dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, SearchDialog.Name, null, cancellationToken);
+                        }
+
+                        await Messages.SendAsync(Phrases.Search.GetServiceType, dialogContext.Context, cancellationToken);
+                        return await dialogContext.NextAsync(cancellationToken);
+                    },
+                    async (dialogContext, cancellationToken) =>
+                    {
+                        // Clear the conversation context.
+                        await this.state.ClearConversationContext(dialogContext.Context, cancellationToken);
+
+                        // End this dialog to pop it off the stack.
+                        return await dialogContext.EndDialogAsync(cancellationToken);
                     }
-
-                    await Messages.SendAsync(Phrases.Search.GetServiceType, dialogContext.Context, cancellationToken);
-                    return await dialogContext.NextAsync(cancellationToken);
-                },
-                async (dialogContext, cancellationToken) =>
-                {
-                    // Clear the conversation context.
-                    await this.state.ClearConversationContext(dialogContext.Context, cancellationToken);
-
-                    // End this dialog to pop it off the stack.
-                    return await dialogContext.EndDialogAsync(cancellationToken);
-                }
+                });
             });
         }
     }

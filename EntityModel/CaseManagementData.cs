@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EntityModel.Luis;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 
@@ -27,13 +28,16 @@ namespace EntityModel
         public override string PrimaryKey() { return PRIMARY_KEY; }
         public override ServiceType ServiceType() { return EntityModel.ServiceType.CaseManagement; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
-        public override List<UpdateSteps> UpdateSteps()
+        public override List<SubService> SubServices()
         {
-            return new List<UpdateSteps>()
+            return new List<SubService>()
             {
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = SERVICE_NAME,
+                    ServiceFlag = ServiceFlags.CaseManagement,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.CaseManangement) },
+
                     TotalPropertyName = nameof(this.Total),
                     OpenPropertyName = nameof(this.Open),
                     HasWaitlistPropertyName = nameof(this.HasWaitlist),

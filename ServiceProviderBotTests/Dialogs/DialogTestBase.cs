@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityModel;
@@ -29,6 +30,8 @@ namespace ServiceProviderBotTests.Dialogs
 
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;
+
+        public static IEnumerable<object[]> TestTypes => Helpers.GetServiceDataTypes().Select(t => new object[] { t });
 
         protected DialogTestBase()
         {

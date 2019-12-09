@@ -1,11 +1,10 @@
 ﻿using EntityModel;
-using Luis;
+using EntityModel.Luis;
 using Microsoft.Extensions.Configuration;
 using SearchBot.Bot.Models;
 using Shared;
 using Shared.Models;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,24 +13,24 @@ namespace SearchBot.Bot.State
 {
     public class ConversationContext
     {
-        public List<ServiceContext> ServiceContexts { get; set; }
-        public ServiceFlags ServiceFlags { get; set; }
+        public List<ServiceContext> RequestedServices { get; set; }
+        public ServiceFlags RequestedServiceFlags { get; set; }
 
         // These setters must be public for initializing conversation
         // state, but SetLocation() should be used to set location and position.
         public string Location { get; set; }
         public LocationPosition LocationPosition { get; set; }
 
-        public bool HasServices { get { return this.ServiceContexts.Count > 0; } }
+        public bool HasRequestedServices { get { return this.RequestedServices.Count > 0; } }
 
         public ConversationContext()
         {
-            this.ServiceContexts = new List<ServiceContext>();
+            this.RequestedServices = new List<ServiceContext>();
         }
 
         public override int GetHashCode()
         {
-            return this.ServiceFlags.GetHashCode() ^
+            return this.RequestedServiceFlags.GetHashCode() ^
                 this.Location.GetHashCode() ^
                 this.LocationPosition.GetHashCode();
         }
@@ -45,7 +44,7 @@ namespace SearchBot.Bot.State
                 return false;
 
             ConversationContext ctx = (ConversationContext)obj;
-            return ctx.ServiceFlags == this.ServiceFlags && ctx.Location == this.Location;
+            return ctx.RequestedServiceFlags == this.RequestedServiceFlags && ctx.Location == this.Location;
         }
 
         public static bool operator ==(ConversationContext c1, ConversationContext c2)
@@ -74,84 +73,49 @@ namespace SearchBot.Bot.State
                 await SetLocation(configuration, luisModel.Entities.geographyV2[0].Location);
             }
 
-            if (luisModel.Entities?.CaseManangement != null && luisModel.Entities.CaseManangement.Length > 0)
+            // Go through each LUIS entities and check if any service type handles it.
+            foreach (var entity in luisModel.Entities.GetType().GetFields())
             {
-                CreateOrUpdateServiceContext(ServiceType.CaseManagement, ServiceFlags.CaseManagement);
-            }
+                var value = entity.GetValue(luisModel.Entities) as string[];
+                if (value == null || value.Length == 0)
+                {
+                    continue;
+                }
 
-            if (luisModel.Entities?.Employment != null && luisModel.Entities.Employment.Length > 0)
-            {
-                CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.Employment);
-            }
-
-            if (luisModel.Entities?.EmploymentInternship != null && luisModel.Entities.EmploymentInternship.Length > 0)
-            {
-                CreateOrUpdateServiceContext(ServiceType.Employment, ServiceFlags.EmploymentInternship);
-            }
-
-            if (luisModel.Entities?.Housing != null && luisModel.Entities.Housing.Length > 0)
-            {
-                // If no specific type of housing was requested then it needs to be clarified.
-                CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.None);
-            }
-
-            if (luisModel.Entities?.HousingEmergency != null && luisModel.Entities.HousingEmergency.Length > 0)
-            {
-                CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingEmergency);
-            }
-
-            if (luisModel.Entities?.HousingLongTerm != null && luisModel.Entities.HousingLongTerm.Length > 0)
-            {
-                CreateOrUpdateServiceContext(ServiceType.Housing, ServiceFlags.HousingLongTerm);
-            }
-
-            if (luisModel.Entities?.MentalHealth != null && luisModel.Entities.MentalHealth.Length > 0)
-            {
-                CreateOrUpdateServiceContext(ServiceType.MentalHealth, ServiceFlags.MentalHealth);
-            }
-
-            if (luisModel.Entities?.SubstanceUse != null && luisModel.Entities.SubstanceUse.Length > 0)
-            {
-                CreateOrUpdateServiceContext(ServiceType.SubstanceUse, ServiceFlags.SubstanceUse);
-            }
-
-            if (luisModel.Entities?.SubstanceUseDetox != null && luisModel.Entities.SubstanceUseDetox.Length > 0)
-            {
-                CreateOrUpdateServiceContext(ServiceType.SubstanceUse, ServiceFlags.SubstanceUseDetox);
+                var (type, flags) = LuisEntityToServiceTypeAndFlags(entity.Name);
+                CreateOrUpdateServiceContext(type, flags);
             }
         }
 
-        public void CreateOrUpdateServiceContext(ServiceType serviceType, ServiceFlags serviceFlags)
+        public void CreateOrUpdateServiceContext(ServiceData dataType, ServiceFlags serviceFlags)
         {
-            var context = this.ServiceContexts.FirstOrDefault(c => c.ServiceType == serviceType);
+            var context = this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType());
             if (context != null)
             {
                 context.ServiceFlags |= serviceFlags;
             }
             else
             {
-                this.ServiceContexts.Add(new ServiceContext(serviceType, serviceFlags));
+                this.RequestedServices.Add(new ServiceContext(dataType.ServiceType(), serviceFlags));
             }
 
-            this.ServiceFlags |= serviceFlags;
+            this.RequestedServiceFlags |= serviceFlags;
         }
 
-        public bool HasService(ServiceType serviceType)
+        public bool HasService(ServiceData dataType)
         {
-            return this.ServiceContexts.FirstOrDefault(c => c.ServiceType == serviceType) != null;
+            return this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType()) != null;
         }
 
-        public bool IsServiceInvalid(ServiceType serviceType)
+        public bool IsServiceInvalid(ServiceData dataType)
         {
-            var context = this.ServiceContexts.FirstOrDefault(c => c.ServiceType == serviceType);
-            return context != null && !context.IsValid;
+            var context = this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType());
+            return context != null && !context.IsValid();
         }
 
-        public List<ServiceType> GetServiceTypes()
+        public List<ServiceData> GetServiceTypes()
         {
-            var serviceTypes = new List<ServiceType>();
-            this.ServiceContexts.ForEach(c => serviceTypes.Add(c.ServiceType));
-            return serviceTypes;
+            return this.RequestedServices.Select(s => s.DataType()).ToList();
         }
 
         public bool IsValid()
@@ -162,7 +126,7 @@ namespace SearchBot.Bot.State
             isValid &= !string.IsNullOrEmpty(this.Location);
 
             // All service contexts must be valid.
-            this.ServiceContexts.ForEach(c => isValid &= c.IsValid);
+            this.RequestedServices.ForEach(c => isValid &= c.IsValid());
 
             return isValid;
         }
@@ -171,6 +135,22 @@ namespace SearchBot.Bot.State
         {
             this.Location = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(location);
             this.LocationPosition = position;
+        }
+
+        private (ServiceData dataType, ServiceFlags ServiceFlags) LuisEntityToServiceTypeAndFlags(string entityName)
+        {
+            foreach (var type in Helpers.GetServiceDataTypes())
+            {
+                foreach (var subService in type.SubServices())
+                {
+                    if (subService.LuisEntityNames.Contains(entityName))
+                    {
+                        return (type, subService.ServiceFlag);
+                    }
+                }
+            }
+
+            return (null, ServiceFlags.None);
         }
     }
 }

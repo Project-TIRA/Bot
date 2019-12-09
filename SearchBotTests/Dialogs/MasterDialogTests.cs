@@ -20,6 +20,7 @@ namespace SearchBotTests.Dialogs
                 .StartTestAsync();
         }
 
+        /*
         [Fact]
         public async Task GetServices()
         {
@@ -52,5 +53,6 @@ namespace SearchBotTests.Dialogs
             var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);
             Assert.Equal(initialContext, actualContext);
         }
+        */
     }
 }

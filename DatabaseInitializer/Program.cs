@@ -94,7 +94,7 @@ namespace DatabaseInitializer
 
         static async Task Init(IApiInterface api)
         {
-            var types = Helpers.GetSubtypes<ServiceData>();
+            var types = Helpers.GetServiceDataTypes();
 
             for (int i = 0; i < 5; ++i)
             {

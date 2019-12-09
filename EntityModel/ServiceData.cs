@@ -25,7 +25,8 @@ namespace EntityModel
         public abstract string PrimaryKey();
         public abstract ServiceType ServiceType();
         public abstract string ServiceTypeName();
-        public abstract List<UpdateSteps> UpdateSteps();
+
+        public abstract List<SubService> SubServices();
 
         public ServiceData() : base()
         {
@@ -43,18 +44,37 @@ namespace EntityModel
             GetType().GetProperty(property).SetValue(this, value);
         }
 
+        public virtual List<SubServiceCategory> SubServiceCategories()
+        {
+            return new List<SubServiceCategory>();
+        }
+
         public virtual void CopyStaticValues<T>(T data) where T : ServiceData
         {
             this.ServiceId = data.ServiceId;
         }
     }
 
-    public struct UpdateSteps
+    public class SubService
     {
         public string Name { get; set; }
+        public ServiceFlags ServiceFlag { get; set; }
+        public List<string> LuisEntityNames { get; set; }
+
         public string TotalPropertyName { get; set; }
         public string OpenPropertyName { get; set; }
         public string HasWaitlistPropertyName { get; set; }
         public string WaitlistIsOpenPropertyName { get; set; }
+
+        public SubService()
+        {
+            this.LuisEntityNames = new List<string>();
+        }
+    }
+
+    public class SubServiceCategory
+    {
+        public string Name { get; set; }
+        public ServiceFlags ServiceFlag { get; set; }
     }
 }

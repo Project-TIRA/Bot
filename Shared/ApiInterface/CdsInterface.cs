@@ -172,12 +172,12 @@ namespace Shared.ApiInterface
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
-        public async Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData type, ITurnContext createdByUserTurnContext = null)
+        public async Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null)
         {
-            var service = await GetService(organizationId, type.ServiceType());
+            var service = await GetService(organizationId, dataType.ServiceType());
             if (service != null)
             {
-                if (type.ServiceType() != ServiceType.Invalid)
+                if (dataType.ServiceType() != ServiceType.Invalid)
                 {
                     string userFilter = string.Empty;
 
@@ -187,10 +187,10 @@ namespace Shared.ApiInterface
                         userFilter = $" and tira_createdby eq {user.Id}";
                     }
 
-                    JObject response = await GetJsonData(type.TableName(), $"$filter={type.PrimaryKey()} eq {service.Id}{userFilter} &$orderby=createdon desc &$top=1");
+                    JObject response = await GetJsonData(dataType.TableName(), $"$filter={dataType.PrimaryKey()} eq {service.Id}{userFilter} &$orderby=createdon desc &$top=1");
                     if (response != null && response["value"].HasValues)
                     {
-                        return JsonConvert.DeserializeObject<ServiceData>(response["value"][0].ToString(), GetJsonSettings(type.ContractResolver()));
+                        return JsonConvert.DeserializeObject<ServiceData>(response["value"][0].ToString(), GetJsonSettings(dataType.ContractResolver()));
                     }
                 }
             }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EntityModel.Luis;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 
@@ -40,21 +41,27 @@ namespace EntityModel
         public override ServiceType ServiceType() { return EntityModel.ServiceType.MentalHealth; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
 
-        public override List<UpdateSteps> UpdateSteps()
+        public override List<SubService> SubServices()
         {
-            return new List<UpdateSteps>()
+            return new List<SubService>()
             {
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Mental Health In-Patient",
+                    ServiceFlag = ServiceFlags.MentalHealth,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.MentalHealth) },
+
                     TotalPropertyName = nameof(this.InPatientTotal),
                     OpenPropertyName = nameof(this.InPatientOpen),
                     HasWaitlistPropertyName = nameof(this.InPatientHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.InPatientWaitlistIsOpen)
                 },
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Mental Health Out-Patient",
+                    ServiceFlag = ServiceFlags.MentalHealth,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.MentalHealth) },
+
                     TotalPropertyName = nameof(this.OutPatientTotal),
                     OpenPropertyName = nameof(this.OutPatientOpen),
                     HasWaitlistPropertyName = nameof(this.OutPatientHasWaitlist),

@@ -77,6 +77,22 @@ namespace Shared
         }
 
         /// <summary>
+        /// Gets the derived types of <see cref="ServiceData"/>.
+        /// </summary>
+        public static List<ServiceData> GetServiceDataTypes()
+        {
+            return GetSubtypes<ServiceData>();
+        }
+
+        /// <summary>
+        /// Gets the service for the given service type.
+        /// </summary>
+        public static ServiceData GetServiceByType(ServiceType serviceType)
+        {
+            return GetSubtypes<ServiceData>().FirstOrDefault(s => serviceType == s.ServiceType());
+        }
+
+        /// <summary>
         /// Gets the services for each of the given service types.
         /// </summary>
         public static List<ServiceData> GetServicesByType(IEnumerable<ServiceType> serviceTypes)
@@ -107,32 +123,30 @@ namespace Shared
         /// <summary>
         /// Gets the string from a list of services types.
         /// </summary>
-        public static string GetServicesString(IEnumerable<ServiceType> serviceTypes)
+        public static string GetServicesString(List<ServiceData> types)
         {
-            if (serviceTypes.Count() == 0)
+            if (types.Count() == 0)
             {
                 return string.Empty;
             }
 
-            var typeNames = GetServiceTypeNames(serviceTypes, toLower: true);
-
-            if (serviceTypes.Count() == 1)
+            if (types.Count() == 1)
             {
-                return typeNames[0];
+                return types[0].ServiceTypeName().ToLower();
             }
 
-            if (serviceTypes.Count() == 2)
+            if (types.Count() == 2)
             {
-                return $"{typeNames[0]} and {typeNames[1]}";
+                return $"{types[0].ServiceTypeName().ToLower()} and {types[1].ServiceTypeName().ToLower()}";
             }
             else
             {
                 string result = string.Empty;
 
-                for (int i = 0; i < typeNames.Count; ++i)
+                for (int i = 0; i < types.Count; ++i)
                 {
-                    var separator = (i == typeNames.Count - 1) ? ", and " : (!string.IsNullOrEmpty(result) ? ", " : string.Empty);
-                    result += separator + typeNames[i];
+                    var separator = (i == types.Count - 1) ? ", and " : (!string.IsNullOrEmpty(result) ? ", " : string.Empty);
+                    result += separator + types[i].ServiceTypeName().ToLower();
                 }
 
                 return result;

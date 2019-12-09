@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EntityModel.Luis;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 
@@ -64,41 +65,70 @@ namespace EntityModel
         public override ServiceType ServiceType() { return EntityModel.ServiceType.Housing; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
 
-        public override List<UpdateSteps> UpdateSteps()
+        public override List<SubService> SubServices()
         {
-            return new List<UpdateSteps>()
+            return new List<SubService>()
             {
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Emergency Shared-Space Beds",
+                    ServiceFlag = ServiceFlags.HousingEmergency,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Housing), nameof(LuisModel.Entities.HousingEmergency) },
+
                     TotalPropertyName = nameof(this.EmergencySharedBedsTotal),
                     OpenPropertyName = nameof(this.EmergencySharedBedsOpen),
                     HasWaitlistPropertyName = nameof(this.EmergencySharedBedsHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.EmergencySharedBedsWaitlistIsOpen)
                 },
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Emergency Private Beds",
+                    ServiceFlag = ServiceFlags.HousingEmergency,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Housing), nameof(LuisModel.Entities.HousingEmergency) },
+
                     TotalPropertyName = nameof(this.EmergencyPrivateBedsTotal),
                     OpenPropertyName = nameof(this.EmergencyPrivateBedsOpen),
                     HasWaitlistPropertyName = nameof(this.EmergencyPrivateBedsHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.EmergencyPrivateBedsWaitlistIsOpen)
                 },
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Long-Term Shared-Space Beds",
+                    ServiceFlag = ServiceFlags.HousingLongTerm,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Housing), nameof(LuisModel.Entities.HousingLongTerm) },
+
                     TotalPropertyName = nameof(this.LongTermSharedBedsTotal),
                     OpenPropertyName = nameof(this.LongTermSharedBedsOpen),
                     HasWaitlistPropertyName = nameof(this.LongTermSharedBedsHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.LongTermSharedBedsWaitlistIsOpen)
                 },
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Long-Term Private Beds",
+                    ServiceFlag = ServiceFlags.HousingLongTerm,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Housing), nameof(LuisModel.Entities.HousingLongTerm) },
+
                     TotalPropertyName = nameof(this.LongTermPrivateBedsTotal),
                     OpenPropertyName = nameof(this.LongTermPrivateBedsOpen),
                     HasWaitlistPropertyName = nameof(this.LongTermPrivateBedsHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.LongTermPrivateBedsWaitlistIsOpen)
+                }
+            };
+        }
+
+        public override List<SubServiceCategory> SubServiceCategories()
+        {
+            return new List<SubServiceCategory>()
+            {
+                new SubServiceCategory()
+                {
+                    Name = "Emergency",
+                    ServiceFlag = ServiceFlags.HousingEmergency
+                },
+                new SubServiceCategory()
+                {
+                    Name = "Long-Term",
+                    ServiceFlag = ServiceFlags.HousingLongTerm
                 }
             };
         }

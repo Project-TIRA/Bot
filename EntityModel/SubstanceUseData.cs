@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EntityModel.Luis;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 
@@ -64,37 +65,49 @@ namespace EntityModel
         public override ServiceType ServiceType() { return EntityModel.ServiceType.SubstanceUse; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
 
-        public override List<UpdateSteps> UpdateSteps()
+        public override List<SubService> SubServices()
         {
-            return new List<UpdateSteps>()
+            return new List<SubService>()
             {
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Substance Use Detox",
+                    ServiceFlag = ServiceFlags.SubstanceUseDetox,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse), nameof(LuisModel.Entities.SubstanceUseDetox) },
+
                     TotalPropertyName = nameof(this.DetoxTotal),
                     OpenPropertyName = nameof(this.DetoxOpen),
                     HasWaitlistPropertyName = nameof(this.DetoxHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.DetoxWaitlistIsOpen)
                 },
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Substance Use In-Patient",
+                    ServiceFlag = ServiceFlags.SubstanceUse,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
+
                     TotalPropertyName = nameof(this.InPatientTotal),
                     OpenPropertyName = nameof(this.InPatientOpen),
                     HasWaitlistPropertyName = nameof(this.InPatientHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.InPatientWaitlistIsOpen)
                 },
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Substance Use Out-Patient",
+                    ServiceFlag = ServiceFlags.SubstanceUse,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
+
                     TotalPropertyName = nameof(this.OutPatientTotal),
                     OpenPropertyName = nameof(this.OutPatientOpen),
                     HasWaitlistPropertyName = nameof(this.OutPatientHasWaitlist),
                     WaitlistIsOpenPropertyName = nameof(this.OutPatientWaitlistIsOpen)
                 },
-                new UpdateSteps()
+                new SubService()
                 {
                     Name = "Substance Use Group Services",
+                    ServiceFlag = ServiceFlags.SubstanceUse,
+                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
+
                     TotalPropertyName = nameof(this.GroupTotal),
                     OpenPropertyName = nameof(this.GroupOpen),
                     HasWaitlistPropertyName = nameof(this.GroupHasWaitlist),
