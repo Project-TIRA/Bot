@@ -33,8 +33,8 @@ namespace SearchBotTests.Dialogs
         public static IEnumerable<object[]> TestTypes => Helpers.GetServiceDataTypes().Select(t => new object[] { t });
         public static IEnumerable<object[]> TestTypePairs => Helpers.GetServiceDataTypes().SelectMany((t, i) => Helpers.GetServiceDataTypes().Skip(i+1), (t1, t2) => new object[] { t1, t2 });
 
-        public static IEnumerable<object[]> TestFlags => Enum.GetValues(typeof(ServiceFlags)).ToList().Select(f => new object[] { f });
-        public static IEnumerable<object[]> TestFlagPairs => Enum.GetValues(typeof(ServiceFlags)).SelectMany((f, i) => Enum.GetValues(typeof(ServiceFlags)).Skip(i + 1), (f1, f2) => new object[] { f1, f2 });
+        public static IEnumerable<object[]> TestFlags => Enum.GetValues(typeof(ServiceFlags)).OfType<ServiceFlags>().Select(f => new object[] { f });
+        public static IEnumerable<object[]> TestFlagPairs => Enum.GetValues(typeof(ServiceFlags)).OfType<ServiceFlags>().SelectMany((f, i) => Enum.GetValues(typeof(ServiceFlags)).OfType<ServiceFlags>().Skip(i + 1), (f1, f2) => new object[] { f1, f2 });
 
         protected DialogTestBase()
         {
