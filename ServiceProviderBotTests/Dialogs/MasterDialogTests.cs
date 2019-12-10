@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -108,22 +109,24 @@ namespace ServiceProviderBotTests.Dialogs
             Assert.True(!user.ContactEnabled);
         }
 
-        /*
-        [Fact]
-        public async Task Reset()
+        [Theory]
+        [MemberData(nameof(TestTypes))]
+        public async Task Reset(ServiceData dataType)
         {
-            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+            if (dataType.SubServices().Count > 1)
+            {
+                var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+                var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
-            var service = await TestHelpers.CreateService<MentalHealthData>(this.api, organization.Id);
-            var data = await TestHelpers.CreateMentalHealthData(this.api, user.Id, service.Id);
+                var service = await TestHelpers.CreateService(this.api, organization.Id, dataType.ServiceType());
+                var data = await TestHelpers.CreateServiceData(this.api, user.Id, service.Id, dataType);
 
-            await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
-                .Test(TestHelpers.DefaultTotal.ToString(), Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.OutPatient))
-                .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(Phrases.Services.MentalHealth.InPatient))
-                .StartTestAsync();
+                await CreateTestFlow(MasterDialog.Name, user)
+                    .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(dataType.SubServices()[0].Name))
+                    .Test(TestHelpers.DefaultTotal.ToString(), Phrases.Capacity.GetOpenings(dataType.SubServices()[1].Name))
+                    .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(dataType.SubServices()[0].Name))
+                    .StartTestAsync();
+            }
         }
-        */
     }
 }

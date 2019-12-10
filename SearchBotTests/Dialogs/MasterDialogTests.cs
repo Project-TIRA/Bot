@@ -20,8 +20,8 @@ namespace SearchBotTests.Dialogs
                 .StartTestAsync();
         }
 
-        /*
-        [Fact]
+        [Theory]
+        [MemberData(nameof(TestTypes))]
         public async Task GetServices()
         {
             var initialContext = new ConversationContext();
@@ -53,6 +53,5 @@ namespace SearchBotTests.Dialogs
             var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);
             Assert.Equal(initialContext, actualContext);
         }
-        */
     }
 }

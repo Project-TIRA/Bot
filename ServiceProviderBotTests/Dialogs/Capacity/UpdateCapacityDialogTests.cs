@@ -62,10 +62,27 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
             await RunTest(user, organization, Helpers.GetServiceDataTypes(), testWaitlist: true, testWaitlistOpen: true);
         }
 
+        [Theory]
+        [MemberData(nameof(TestTypes))]
+        public async Task InvalidOpen(ServiceData dataType)
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            var service = await TestHelpers.CreateService(this.api, organization.Id, dataType.ServiceType());
+            var data = await TestHelpers.CreateServiceData(this.api, user.Id, service.Id, dataType);
+
+            var prompt = Phrases.Capacity.GetOpenings(dataType.SubServices()[0].Name);
+
+            await CreateTestFlow(UpdateCapacityDialog.Name, user)
+                .Test(Phrases.Keywords.Update, prompt)
+                .Test((TestHelpers.DefaultTotal + 1).ToString(), Phrases.Capacity.RetryInvalidCount(TestHelpers.DefaultTotal, prompt))
+                .StartTestAsync();
+        }
+
         private async Task RunTest(User user, Organization organization, List<ServiceData> types, bool testWaitlist = false, bool testWaitlistOpen = false)
         {
             // Create the services and data.
-            // Must be done before starting the test flow.
             foreach (var type in types)
             {
                 var service = await TestHelpers.CreateService(this.api, organization.Id, type.ServiceType());

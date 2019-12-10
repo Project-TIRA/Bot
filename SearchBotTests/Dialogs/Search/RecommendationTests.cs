@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EntityModel;
-using Microsoft.Bot.Schema;
 using SearchBot.Bot.Dialogs.Search;
 using SearchBot.Bot.State;
 using Shared;
