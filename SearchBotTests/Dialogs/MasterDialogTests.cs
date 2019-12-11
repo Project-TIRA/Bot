@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EntityModel;
+using EntityModel.Luis;
 using Microsoft.Bot.Schema;
 using SearchBot;
 using SearchBot.Bot.Dialogs;
@@ -22,12 +23,56 @@ namespace SearchBotTests.Dialogs
 
             foreach (var dataType in Helpers.GetServiceDataTypes())
             {
-                foreach (var luisEntity in dataType.LuisEntityNames())
+                foreach (var luisMapping in dataType.LuisMappings())
                 {
-                    // Make sure each LUIS entity only has a single data type to handle it.
-                    Assert.DoesNotContain(luisEntity, entities);
-                    entities.Add(luisEntity, dataType);
+                    // Make sure each LUIS entity only has a single mapping.
+                    Assert.DoesNotContain(luisMapping.EntityName, entities);
+                    entities.Add(luisMapping.EntityName, dataType);
                 }
+            }
+        }
+
+        [Fact]
+        public void UniqueServiceFlags()
+        {
+            ServiceFlags flags = ServiceFlags.None;
+
+            foreach (var dataType in Helpers.GetServiceDataTypes())
+            {
+                foreach (var serviceCategory in dataType.ServiceCategories())
+                {
+                    // Make sure each service flag only has a single service category to handle it.
+                    Assert.True((flags & serviceCategory.ServiceFlags) == 0);
+                    flags |= serviceCategory.ServiceFlags;
+                }
+            }
+        }
+
+        [Fact]
+        public void AllLuisEntities()
+        {
+            // Make sure each LUIS entity is handled.
+            var entities = typeof(LuisModel).GetFields().Where(f => f.FieldType == typeof(string[]));
+
+            foreach (var entity in entities)
+            {
+                var (type, mapping) = ConversationContext.GetLuisMapping(entity.Name);
+                Assert.NotNull(type);
+                Assert.NotNull(mapping);
+            }
+        }
+
+        [Fact]
+        public void AllServiceFlags()
+        {
+            // Make sure each service flag is handled.
+            foreach (var flag in Helpers.GetServiceFlags())
+            {
+                var match = Helpers.GetServiceDataTypes()
+                    .Any(t => t.ServiceCategories()
+                        .Any(c => c.Services
+                            .Any(s => s.ServiceFlags.HasFlag(flag))));
+                Assert.True(match);
             }
         }
 

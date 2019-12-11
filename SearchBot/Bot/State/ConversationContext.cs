@@ -15,7 +15,6 @@ namespace SearchBot.Bot.State
     public class ConversationContext
     {
         public List<ServiceContext> RequestedServices { get; set; }
-        public ServiceFlags RequestedServiceFlags { get; set; }
 
         // These setters must be public for initializing conversation
         // state, but SetLocation() should be used to set location and position.
@@ -31,9 +30,12 @@ namespace SearchBot.Bot.State
 
         public override int GetHashCode()
         {
-            return this.RequestedServiceFlags.GetHashCode() ^
-                this.Location.GetHashCode() ^
-                this.LocationPosition.GetHashCode();
+            int hashCode = this.Location.GetHashCode() ^
+                this.LocationPosition.GetHashCode() ^
+                this.RequestedServiceFlags().GetHashCode();
+
+            this.RequestedServices.ForEach(s => hashCode ^= s.GetHashCode());
+            return hashCode;
         }
 
         public override bool Equals(object obj)
@@ -45,7 +47,8 @@ namespace SearchBot.Bot.State
                 return false;
 
             ConversationContext ctx = (ConversationContext)obj;
-            return ctx.RequestedServiceFlags == this.RequestedServiceFlags && ctx.Location == this.Location;
+            return ctx.Location == this.Location &&
+                ctx.RequestedServiceFlags() == this.RequestedServiceFlags();
         }
 
         public static bool operator ==(ConversationContext c1, ConversationContext c2)
@@ -56,6 +59,26 @@ namespace SearchBot.Bot.State
         public static bool operator !=(ConversationContext c1, ConversationContext c2)
         {
             return !Equals(c1, c2);
+        }
+
+        public static (ServiceData DataType, LuisMapping Mapping) GetLuisMapping(string entityName)
+        {
+            foreach (var type in Helpers.GetServiceDataTypes())
+            {
+                var mapping = type.LuisMappings().FirstOrDefault(m => m.EntityName == entityName);
+                if (mapping != null)
+                {
+                    return (type, mapping);
+                }
+            }
+
+            Debug.Assert(false);
+            return (null, null);
+        }
+
+        public ServiceFlags RequestedServiceFlags()
+        {
+            return this.RequestedServices.Select(s => s.RequestedServiceFlags).Aggregate(ServiceFlags.None, (f1, f2) => f1 |= f2);
         }
 
         public async Task SetLocation(IConfiguration configuration, string location)
@@ -74,7 +97,7 @@ namespace SearchBot.Bot.State
                 await SetLocation(configuration, luisModel.Entities.geographyV2[0].Location);
             }
 
-            // Go through each LUIS entities and check if any service type handles it.
+            // Go through each LUIS entity and check if any service type handles it.
             foreach (var entity in luisModel.Entities.GetType().GetFields())
             {
                 var value = entity.GetValue(luisModel.Entities) as string[];
@@ -83,51 +106,55 @@ namespace SearchBot.Bot.State
                     continue;
                 }
 
-                var (type, flags) = LuisEntityToDataTypeAndFlags(entity.Name);
-                CreateOrUpdateServiceContext(type, flags);
+                var (type, mapping) = GetLuisMapping(entity.Name);
+                CreateServiceContext(type, mapping);
             }
         }
 
-        public void CreateOrUpdateServiceContext(ServiceData dataType, ServiceFlags serviceFlags)
+        public void CreateServiceContext(ServiceData dataType, LuisMapping luisMapping)
+        {
+            CreateOrUpdateServiceContext(dataType, luisMapping.RequestedFlags);
+        }
+
+        public void CreateOrUpdateServiceContext(ServiceData dataType, ServiceFlags requestedFlags)
         {
             var context = this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType());
+
             if (context != null)
             {
-                context.ServiceFlags |= serviceFlags;
+                context.RequestedServiceFlags |= requestedFlags;
             }
             else
             {
-                this.RequestedServices.Add(new ServiceContext(dataType.ServiceType(), serviceFlags));
+                this.RequestedServices.Add(new ServiceContext(dataType.ServiceType(), requestedFlags));
             }
-
-            this.RequestedServiceFlags |= serviceFlags;
         }
 
-        public bool HasService(ServiceData dataType)
-        {
-            return this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType()) != null;
-        }
-
-        public bool IsServiceValid(ServiceData dataType)
-        {
-            var context = this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType());
-            return context != null && context.IsValid();
-        }
-
-        public List<ServiceData> GetServiceTypes()
+        public List<ServiceData> GetRequestedDataTypes()
         {
             return this.RequestedServices.Select(s => s.DataType()).ToList();
         }
 
-        public bool IsValid()
+        public bool HasRequestedDataType(ServiceData dataType)
+        {
+            return this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType()) != null;
+        }
+
+        public bool IsDataTypeComplete(ServiceData dataType)
+        {
+            var context = this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType());
+            return context != null && context.IsComplete();
+        }
+
+        public bool IsComplete()
         {
             bool isValid = true;
 
             // Must have location.
             isValid &= !string.IsNullOrEmpty(this.Location);
 
-            // All service contexts must be valid.
-            this.RequestedServices.ForEach(c => isValid &= c.IsValid());
+            // All service contexts must be complete.
+            this.RequestedServices.ForEach(c => isValid &= c.IsComplete());
 
             return isValid;
         }
@@ -136,36 +163,6 @@ namespace SearchBot.Bot.State
         {
             this.Location = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(location);
             this.LocationPosition = position;
-        }
-
-        private (ServiceData dataType, ServiceFlags ServiceFlags) LuisEntityToDataTypeAndFlags(string entityName)
-        {
-            // Go through each type and see if it has a sub-service that can handle this entity.
-            foreach (var type in Helpers.GetServiceDataTypes())
-            {
-                if (type.LuisEntityNames().Contains(entityName))
-                {
-                    // If the data type can handle the entity, check if one of it's sub-services does as well.
-                    // If so, we're good to go. If not, it means that there needs to be clarification on the
-                    // category (i.e. housing -> emergency or long-term).
-
-                    foreach (var serviceCategory in type.ServiceCategories())
-                    {
-                        foreach (var subService in serviceCategory.Services)
-                        {
-                            if (subService.LuisEntityNames.Contains(entityName))
-                            {
-                                return (type, subService.ServiceFlags);
-                            }
-                        }
-                    }
-
-                    return (type, ServiceFlags.None);
-                }
-            }
-
-            Debug.Assert(false);
-            return (null, ServiceFlags.None);
         }
     }
 }

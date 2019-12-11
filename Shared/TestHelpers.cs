@@ -1,6 +1,8 @@
 ﻿using EntityModel;
 using Shared.ApiInterface;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shared
@@ -77,6 +79,51 @@ namespace Shared
 
             await api.Create(data);
             return data;
+        }
+
+        public static async Task CreateServicesAndData(IApiInterface api, string organizationId, string createdById, bool hasWaitlist = false, ServiceFlags serviceFlags = ServiceFlags.None)
+        {
+            if (serviceFlags == ServiceFlags.None)
+            {
+                return;
+            }
+
+            var datas = new Dictionary<ServiceType, ServiceData>();
+
+            // Go through each flag individually.
+            foreach (var flag in Helpers.SplitServiceFlags(serviceFlags))
+            {
+                // Get the data type that handles the flag.
+                var dataType = Helpers.ServiceFlagToDataType(flag);
+
+                if (!datas.TryGetValue(dataType.ServiceType(), out ServiceData data))
+                {
+                    // Create a service and data of the type.
+                    var service = await CreateService(api, organizationId, dataType.ServiceType());
+                    data = Helpers.CreateSubType(dataType);
+                    data.CreatedById = createdById;
+                    data.ServiceId = service.Id;
+                    data.IsComplete = true;
+
+                    datas[data.ServiceType()] = data;
+                }
+
+                // Add the fields for any sub-service that handles the flag.
+                foreach (var serviceCategory in dataType.ServiceCategories())
+                {
+                    foreach (var subService in serviceCategory.Services)
+                    {
+                        if (subService.ServiceFlags.HasFlag(flag))
+                        {
+                            data.SetProperty(subService.TotalPropertyName, DefaultTotal);
+                            data.SetProperty(subService.OpenPropertyName, DefaultOpen);
+                            data.SetProperty(subService.HasWaitlistPropertyName, hasWaitlist);
+                        }
+                    }
+                }
+            }
+
+            datas.Values.ToList().ForEach(async d => await api.Create(d));
         }
     }
 }

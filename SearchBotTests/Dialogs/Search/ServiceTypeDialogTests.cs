@@ -10,7 +10,7 @@ namespace SearchBotTests.Dialogs.Search
     {
         [Theory]
         [MemberData(nameof(TestTypes))]
-        public async Task NoType(ServiceData dataType)
+        public async Task ClarifyType(ServiceData dataType)
         {
             foreach (var serviceCategory in dataType.ServiceCategories())
             {
@@ -21,12 +21,9 @@ namespace SearchBotTests.Dialogs.Search
                         .Send(subService.Name)
                         .StartTestAsync();
 
-                    var expectedContext = new ConversationContext();
-                    expectedContext.CreateOrUpdateServiceContext(dataType, subService.ServiceFlags);
-
                     // Validate the results.
                     var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);
-                    Assert.Equal(expectedContext, actualContext);
+                    Assert.True(subService.ServiceFlags.HasFlag(actualContext.RequestedServiceFlags()));
                 }
             }
         }       

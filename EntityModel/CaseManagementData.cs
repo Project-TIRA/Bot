@@ -28,7 +28,19 @@ namespace EntityModel
         public override string PrimaryKey() { return PRIMARY_KEY; }
         public override ServiceType ServiceType() { return EntityModel.ServiceType.CaseManagement; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
-        public override List<string> LuisEntityNames() { return new List<string>() { nameof(LuisModel.Entities.CaseManangement) }; }
+
+        public override List<LuisMapping> LuisMappings()
+        {
+            return new List<LuisMapping>()
+            {
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.CaseManangement),
+                    RequestedFlags = ServiceFlags.CaseManagement
+                }
+            };
+        }
+
         public override List<SubServiceCategory> ServiceCategories()
         {
             return new List<SubServiceCategory>()
@@ -42,7 +54,6 @@ namespace EntityModel
                         {
                             Name = SERVICE_NAME,
                             ServiceFlags = ServiceFlags.CaseManagement,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.CaseManangement) },
 
                             TotalPropertyName = nameof(this.Total),
                             OpenPropertyName = nameof(this.Open),

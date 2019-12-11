@@ -64,7 +64,23 @@ namespace EntityModel
         public override string PrimaryKey() { return PRIMARY_KEY; }
         public override ServiceType ServiceType() { return EntityModel.ServiceType.Employment; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
-        public override List<string> LuisEntityNames() { return new List<string>() { nameof(LuisModel.Entities.Employment), nameof(LuisModel.Entities.EmploymentInternship) }; }
+
+        public override List<LuisMapping> LuisMappings()
+        {
+            return new List<LuisMapping>()
+            {
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.Employment),
+                    RequestedFlags = ServiceFlags.Employment
+                },
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.EmploymentInternship),
+                    RequestedFlags = ServiceFlags.EmploymentInternship
+                }
+            };
+        }
 
         public override List<SubServiceCategory> ServiceCategories()
         {
@@ -79,7 +95,6 @@ namespace EntityModel
                         {
                             Name = "Job Readiness Training",
                             ServiceFlags = ServiceFlags.Employment,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
 
                             TotalPropertyName = nameof(this.JobReadinessTrainingTotal),
                             OpenPropertyName = nameof(this.JobReadinessTrainingOpen),
@@ -90,7 +105,6 @@ namespace EntityModel
                         {
                             Name = "Paid Internships",
                             ServiceFlags = ServiceFlags.Employment | ServiceFlags.EmploymentInternship,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment), nameof(LuisModel.Entities.EmploymentInternship) },
                             TotalPropertyName = nameof(this.PaidInternshipTotal),
                             OpenPropertyName = nameof(this.PaidInternshipOpen),
                             HasWaitlistPropertyName = nameof(this.PaidInternshipHasWaitlist),
@@ -100,7 +114,6 @@ namespace EntityModel
                         {
                             Name = "Vocational Training",
                             ServiceFlags = ServiceFlags.Employment,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
 
                             TotalPropertyName = nameof(this.VocationalTrainingTotal),
                             OpenPropertyName = nameof(this.VocationalTrainingOpen),
@@ -111,7 +124,6 @@ namespace EntityModel
                         {
                             Name = "Employment Placement",
                             ServiceFlags = ServiceFlags.Employment,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
 
                             TotalPropertyName = nameof(this.EmploymentPlacementTotal),
                             OpenPropertyName = nameof(this.EmploymentPlacementOpen),

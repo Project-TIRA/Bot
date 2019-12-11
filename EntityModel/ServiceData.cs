@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EntityModel.Luis;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace EntityModel
         public abstract string PrimaryKey();
         public abstract ServiceType ServiceType();
         public abstract string ServiceTypeName();
-        public abstract List<string> LuisEntityNames();
+        public abstract List<LuisMapping> LuisMappings();
 
         public abstract List<SubServiceCategory> ServiceCategories();
 
@@ -56,17 +57,11 @@ namespace EntityModel
     {
         public string Name { get; set; }
         public List<SubService> Services { get; set; }
+        public ServiceFlags ServiceFlags { get { return this.Services.Select(s => s.ServiceFlags).Aggregate(ServiceFlags.None, (f1, f2) => f1 |= f2); } }
 
         public SubServiceCategory()
         {
             this.Services = new List<SubService>();
-        }
-
-        public ServiceFlags ServiceFlags()
-        {
-            ServiceFlags flags = EntityModel.ServiceFlags.None;
-            this.Services.ForEach(s => flags |= s.ServiceFlags);
-            return flags;
         }
     }
 
@@ -74,16 +69,10 @@ namespace EntityModel
     {
         public string Name { get; set; }
         public ServiceFlags ServiceFlags { get; set; }
-        public List<string> LuisEntityNames { get; set; }
 
         public string TotalPropertyName { get; set; }
         public string OpenPropertyName { get; set; }
         public string HasWaitlistPropertyName { get; set; }
         public string WaitlistIsOpenPropertyName { get; set; }
-
-        public SubService()
-        {
-            this.LuisEntityNames = new List<string>();
-        }
     }
 }

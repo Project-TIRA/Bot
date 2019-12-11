@@ -40,7 +40,18 @@ namespace EntityModel
         public override string PrimaryKey() { return PRIMARY_KEY; }
         public override ServiceType ServiceType() { return EntityModel.ServiceType.MentalHealth; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
-        public override List<string> LuisEntityNames() { return new List<string>() { nameof(LuisModel.Entities.MentalHealth) }; }
+
+        public override List<LuisMapping> LuisMappings()
+        {
+            return new List<LuisMapping>()
+            {
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.MentalHealth),
+                    RequestedFlags = ServiceFlags.MentalHealth
+                }
+            };
+        }
 
         public override List<SubServiceCategory> ServiceCategories()
         {
@@ -55,7 +66,6 @@ namespace EntityModel
                         {
                             Name = "Mental Health In-Patient",
                             ServiceFlags = ServiceFlags.MentalHealth,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.MentalHealth) },
 
                             TotalPropertyName = nameof(this.InPatientTotal),
                             OpenPropertyName = nameof(this.InPatientOpen),
@@ -66,7 +76,6 @@ namespace EntityModel
                         {
                             Name = "Mental Health Out-Patient",
                             ServiceFlags = ServiceFlags.MentalHealth,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.MentalHealth) },
 
                             TotalPropertyName = nameof(this.OutPatientTotal),
                             OpenPropertyName = nameof(this.OutPatientOpen),

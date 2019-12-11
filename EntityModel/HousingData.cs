@@ -64,7 +64,28 @@ namespace EntityModel
         public override string PrimaryKey() { return PRIMARY_KEY; }
         public override ServiceType ServiceType() { return EntityModel.ServiceType.Housing; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
-        public override List<string> LuisEntityNames() { return new List<string>() { nameof(LuisModel.Entities.Housing), nameof(LuisModel.Entities.HousingEmergency), nameof(LuisModel.Entities.HousingLongTerm) }; }
+
+        public override List<LuisMapping> LuisMappings()
+        {
+            return new List<LuisMapping>()
+            {
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.Housing),
+                    RequestedFlags = ServiceFlags.None
+                },
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.HousingEmergency),
+                    RequestedFlags = ServiceFlags.HousingEmergency
+                },
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.HousingLongTerm),
+                    RequestedFlags = ServiceFlags.HousingLongTerm
+                }
+            };
+        }
 
         public override List<SubServiceCategory> ServiceCategories()
         {
@@ -79,7 +100,6 @@ namespace EntityModel
                         {
                             Name = "Emergency Shared-Space Beds",
                             ServiceFlags = ServiceFlags.HousingEmergency,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.HousingEmergency) },
 
                             TotalPropertyName = nameof(this.EmergencySharedBedsTotal),
                             OpenPropertyName = nameof(this.EmergencySharedBedsOpen),
@@ -90,7 +110,6 @@ namespace EntityModel
                         {
                             Name = "Emergency Private Beds",
                             ServiceFlags = ServiceFlags.HousingEmergency,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.HousingEmergency) },
 
                             TotalPropertyName = nameof(this.EmergencyPrivateBedsTotal),
                             OpenPropertyName = nameof(this.EmergencyPrivateBedsOpen),
@@ -108,7 +127,6 @@ namespace EntityModel
                         {
                             Name = "Long-Term Shared-Space Beds",
                             ServiceFlags = ServiceFlags.HousingLongTerm,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.HousingLongTerm) },
 
                             TotalPropertyName = nameof(this.LongTermSharedBedsTotal),
                             OpenPropertyName = nameof(this.LongTermSharedBedsOpen),
@@ -119,7 +137,6 @@ namespace EntityModel
                         {
                             Name = "Long-Term Private Beds",
                             ServiceFlags = ServiceFlags.HousingLongTerm,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.HousingLongTerm) },
 
                             TotalPropertyName = nameof(this.LongTermPrivateBedsTotal),
                             OpenPropertyName = nameof(this.LongTermPrivateBedsOpen),

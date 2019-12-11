@@ -32,6 +32,8 @@ namespace SearchBot.Bot.Dialogs.Search
                 waterfallSteps.AddRange(GenerateCheckSteps(dataType));
             }
 
+            waterfallSteps.Add(GenerateClosingStep());
+
             return new WaterfallDialog(Name, waterfallSteps);
         }
 
@@ -44,7 +46,7 @@ namespace SearchBot.Bot.Dialogs.Search
                     var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
 
                     // Check if the service needs clarification.
-                    if (!conversationContext.IsServiceValid(dataType))
+                    if (!conversationContext.IsDataTypeComplete(dataType))
                     {
                         // Prompt for the specific type.
                         var choices = new List<Choice>();
@@ -71,12 +73,20 @@ namespace SearchBot.Bot.Dialogs.Search
                         // Update the conversation context with the specific type.
                         var result = ((FoundChoice)dialogContext.Result).Value;
                         var match = dataType.ServiceCategories().FirstOrDefault(c => c.Name == result);
-                        conversationContext.CreateOrUpdateServiceContext(dataType, match.ServiceFlags());
+                        conversationContext.CreateOrUpdateServiceContext(dataType, match.ServiceFlags);
                     }
 
-                    // End this dialog to pop it off the stack.
-                    return await dialogContext.EndDialogAsync(cancellationToken);
+                    return await dialogContext.NextAsync();
                 }
+            };
+        }
+
+        private WaterfallStep GenerateClosingStep()
+        {
+            return async (dialogContext, cancellationToken) =>
+            {
+                // End this dialog to pop it off the stack.
+                return await dialogContext.EndDialogAsync(cancellationToken);
             };
         }
     }

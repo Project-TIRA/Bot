@@ -59,7 +59,7 @@ namespace SearchBot.Bot.Dialogs.Search
 
         private async Task<Activity> GetRecommendation(ConversationContext conversationContext)
         {
-            System.Diagnostics.Debug.Assert(conversationContext.IsValid());
+            System.Diagnostics.Debug.Assert(conversationContext.IsComplete());
 
             // Get the verified organizations.
             var verifiedOrganizations = await this.api.GetVerifiedOrganizations();
@@ -128,7 +128,7 @@ namespace SearchBot.Bot.Dialogs.Search
             var match = new MatchData();
             match.Organization = organization;
             match.Distance = distance;
-            match.RequestedServiceFlags = conversationContext.RequestedServiceFlags;
+            match.RequestedServiceFlags = conversationContext.RequestedServiceFlags();
 
             // Filter out organizations that aren't within distance.
             if (!match.IsWithinDistance)
@@ -137,13 +137,15 @@ namespace SearchBot.Bot.Dialogs.Search
             }
 
 
+
             // TODO: Make sure the most recent update was within reasonable time.
+
 
 
             // Go through each service requested to check what is available.
             foreach (var type in Helpers.GetServiceDataTypes())
             {
-                if (conversationContext.HasService(type))
+                if (conversationContext.HasRequestedDataType(type))
                 {
                     var data = await this.api.GetLatestServiceData(organization.Id, type);
                     if (data == null)
@@ -159,7 +161,6 @@ namespace SearchBot.Bot.Dialogs.Search
                             if (open > 0)
                             {
                                 match.OrganizationServiceFlags |= subService.ServiceFlags;
-                                break;
                             }
                         }
                     }
@@ -175,7 +176,7 @@ namespace SearchBot.Bot.Dialogs.Search
             return matchData
                 .SelectMany(m => matchData, (Match1, Match2) => new { Match1, Match2 })
                 .Distinct()
-                .Where(pair => (pair.Match1.OrganizationServiceFlags | pair.Match2.OrganizationServiceFlags).HasFlag(conversationContext.RequestedServiceFlags))
+                .Where(pair => (pair.Match1.OrganizationServiceFlags | pair.Match2.OrganizationServiceFlags).HasFlag(conversationContext.RequestedServiceFlags()))
                 .Select(pair => new List<MatchData>() { pair.Match1, pair.Match2 })
                 .ToList();
         }

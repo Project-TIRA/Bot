@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Shared.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -151,6 +152,33 @@ namespace Shared
 
                 return result;
             }
+        }
+
+        public static IEnumerable<ServiceFlags> GetServiceFlags()
+        {
+            return Enum.GetValues(typeof(ServiceFlags)).OfType<ServiceFlags>().Where(f => f != ServiceFlags.None);
+        }
+
+        /// <summary>
+        /// Splits service flags into their individual flags.
+        /// </summary>
+        public static IEnumerable<ServiceFlags> SplitServiceFlags(ServiceFlags flags)
+        {
+            foreach (ServiceFlags value in GetServiceFlags())
+            {
+                if (flags.HasFlag(value))
+                {
+                    yield return value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the data type that handles a service flag.
+        /// </summary>
+        public static ServiceData ServiceFlagToDataType(ServiceFlags serviceFlag)
+        {
+            return GetServiceDataTypes().FirstOrDefault(t => t.ServiceCategories().Any(c => c.ServiceFlags.HasFlag(serviceFlag)));
         }
 
         /// <summary>

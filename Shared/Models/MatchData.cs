@@ -1,5 +1,6 @@
 ﻿using EntityModel;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shared.Models
 {
@@ -16,29 +17,22 @@ namespace Shared.Models
 
         public bool IsFullMatch { get { return this.OrganizationServiceFlags.HasFlag(this.RequestedServiceFlags); } }
         public bool IsWithinDistance {  get { return this.Distance <= REASONABLE_DISTANCE; } }
-        public List<ServiceData> OrganizationDataTypes
+
+        public List<ServiceData> OrganizationDataTypes()
         {
-            get
+            var types = new List<ServiceData>();
+
+            foreach (var flag in Helpers.SplitServiceFlags(this.OrganizationServiceFlags))
             {
-                var types = new List<ServiceData>();
+                var type = Helpers.ServiceFlagToDataType(flag);
 
-                foreach (var type in Helpers.GetServiceDataTypes())
+                if (!types.Any(t => t.ServiceType() == type.ServiceType()))
                 {
-                    foreach (var serviceCategory in type.ServiceCategories())
-                    {
-                        foreach (var subService in serviceCategory.Services)
-                        {
-                            if (this.OrganizationServiceFlags.HasFlag(subService.ServiceFlags))
-                            {
-                                types.Add(type);
-                                break;
-                            }
-                        }
-                    }
+                    types.Add(Helpers.ServiceFlagToDataType(flag));
                 }
-
-                return types;
             }
+
+            return types;
         }
     }
 }

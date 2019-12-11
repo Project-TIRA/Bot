@@ -64,7 +64,23 @@ namespace EntityModel
         public override string PrimaryKey() { return PRIMARY_KEY; }
         public override ServiceType ServiceType() { return EntityModel.ServiceType.SubstanceUse; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
-        public override List<string> LuisEntityNames() { return new List<string>() { nameof(LuisModel.Entities.SubstanceUse), nameof(LuisModel.Entities.SubstanceUseDetox) }; }
+
+        public override List<LuisMapping> LuisMappings()
+        {
+            return new List<LuisMapping>()
+            {
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.SubstanceUse),
+                    RequestedFlags = ServiceFlags.SubstanceUse
+                },
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.SubstanceUseDetox),
+                    RequestedFlags = ServiceFlags.SubstanceUseDetox
+                }
+            };
+        }
 
         public override List<SubServiceCategory> ServiceCategories()
         {
@@ -79,7 +95,6 @@ namespace EntityModel
                         {
                             Name = "Substance Use Detox",
                             ServiceFlags = ServiceFlags.SubstanceUse | ServiceFlags.SubstanceUseDetox,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse), nameof(LuisModel.Entities.SubstanceUseDetox) },
 
                             TotalPropertyName = nameof(this.DetoxTotal),
                             OpenPropertyName = nameof(this.DetoxOpen),
@@ -90,7 +105,6 @@ namespace EntityModel
                         {
                             Name = "Substance Use In-Patient",
                             ServiceFlags = ServiceFlags.SubstanceUse,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
 
                             TotalPropertyName = nameof(this.InPatientTotal),
                             OpenPropertyName = nameof(this.InPatientOpen),
@@ -101,7 +115,6 @@ namespace EntityModel
                         {
                             Name = "Substance Use Out-Patient",
                             ServiceFlags = ServiceFlags.SubstanceUse,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
 
                             TotalPropertyName = nameof(this.OutPatientTotal),
                             OpenPropertyName = nameof(this.OutPatientOpen),
@@ -112,7 +125,6 @@ namespace EntityModel
                         {
                             Name = "Substance Use Group Services",
                             ServiceFlags = ServiceFlags.SubstanceUse,
-                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
 
                             TotalPropertyName = nameof(this.GroupTotal),
                             OpenPropertyName = nameof(this.GroupOpen),
