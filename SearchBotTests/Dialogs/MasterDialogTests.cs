@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using EntityModel;
 using Microsoft.Bot.Schema;
 using SearchBot;
@@ -12,6 +15,22 @@ namespace SearchBotTests.Dialogs
 {
     public class MasterDialogTests : DialogTestBase
     {
+        [Fact]
+        public void UniqueLuisEntities()
+        {
+            IDictionary<string, ServiceData> entities = new Dictionary<string, ServiceData>();
+
+            foreach (var dataType in Helpers.GetServiceDataTypes())
+            {
+                foreach (var luisEntity in dataType.LuisEntityNames())
+                {
+                    // Make sure each LUIS entity only has a single data type to handle it.
+                    Assert.DoesNotContain(luisEntity, entities);
+                    entities.Add(luisEntity, dataType);
+                }
+            }
+        }
+
         [Fact]
         public async Task UnknownIntent()
         {
