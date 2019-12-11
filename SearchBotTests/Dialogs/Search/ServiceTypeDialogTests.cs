@@ -12,17 +12,23 @@ namespace SearchBotTests.Dialogs.Search
         [MemberData(nameof(TestTypes))]
         public async Task NoType(ServiceData dataType)
         {
-            await CreateTestFlow(ServiceTypeDialog.Name)
-                .Test("test", StartsWith(SearchBot.Phrases.Search.GetServiceType))
-                .Send(dataType.ServiceTypeName())
-                .StartTestAsync();
+            foreach (var serviceCategory in dataType.ServiceCategories())
+            {
+                foreach (var subService in serviceCategory.Services)
+                {
+                    await CreateTestFlow(ServiceTypeDialog.Name)
+                        .Test("test", StartsWith(SearchBot.Phrases.Search.GetServiceType))
+                        .Send(subService.Name)
+                        .StartTestAsync();
 
-            var expectedContext = new ConversationContext();
-            expectedContext.CreateOrUpdateServiceContext(dataType, ServiceFlags.None);
+                    var expectedContext = new ConversationContext();
+                    expectedContext.CreateOrUpdateServiceContext(dataType, subService.ServiceFlags);
 
-            // Validate the results.
-            var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);
-            Assert.Equal(expectedContext, actualContext);
+                    // Validate the results.
+                    var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);
+                    Assert.Equal(expectedContext, actualContext);
+                }
+            }
         }       
     }
 }

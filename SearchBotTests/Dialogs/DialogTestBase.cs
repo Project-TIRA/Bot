@@ -73,6 +73,9 @@ namespace SearchBotTests.Dialogs
                     // Start a new conversation if there isn't one already.
                     if (result.Status == DialogTurnStatus.Empty)
                     {
+                        // Clear the conversation context when a new conversation begins.
+                        await this.state.ClearConversationContext(dialogContext.Context, cancellationToken);
+
                         // Tests must init the conversation context once there is a turn context.
                         await InitConversationContext(conversationContext);
 

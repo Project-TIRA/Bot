@@ -113,7 +113,7 @@ namespace ServiceProviderBotTests.Dialogs
         [MemberData(nameof(TestTypes))]
         public async Task Reset(ServiceData dataType)
         {
-            if (dataType.SubServices().Count > 1)
+            if (dataType.ServiceCategories()[0].Services.Count > 1)
             {
                 var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
                 var user = await TestHelpers.CreateUser(this.api, organization.Id);
@@ -121,10 +121,12 @@ namespace ServiceProviderBotTests.Dialogs
                 var service = await TestHelpers.CreateService(this.api, organization.Id, dataType.ServiceType());
                 var data = await TestHelpers.CreateServiceData(this.api, user.Id, service.Id, dataType);
 
+                var services = dataType.ServiceCategories()[0].Services;
+
                 await CreateTestFlow(MasterDialog.Name, user)
-                    .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(dataType.SubServices()[0].Name))
-                    .Test(TestHelpers.DefaultTotal.ToString(), Phrases.Capacity.GetOpenings(dataType.SubServices()[1].Name))
-                    .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(dataType.SubServices()[0].Name))
+                    .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(services[0].Name))
+                    .Test(TestHelpers.DefaultTotal.ToString(), Phrases.Capacity.GetOpenings(services[1].Name))
+                    .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(services[0].Name))
                     .StartTestAsync();
             }
         }

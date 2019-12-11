@@ -5,6 +5,7 @@ using SearchBot.Bot.Models;
 using Shared;
 using Shared.Models;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -82,7 +83,7 @@ namespace SearchBot.Bot.State
                     continue;
                 }
 
-                var (type, flags) = LuisEntityToServiceTypeAndFlags(entity.Name);
+                var (type, flags) = LuisEntityToDataTypeAndFlags(entity.Name);
                 CreateOrUpdateServiceContext(type, flags);
             }
         }
@@ -107,10 +108,10 @@ namespace SearchBot.Bot.State
             return this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType()) != null;
         }
 
-        public bool IsServiceInvalid(ServiceData dataType)
+        public bool IsServiceValid(ServiceData dataType)
         {
             var context = this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType());
-            return context != null && !context.IsValid();
+            return context != null && context.IsValid();
         }
 
         public List<ServiceData> GetServiceTypes()
@@ -137,19 +138,33 @@ namespace SearchBot.Bot.State
             this.LocationPosition = position;
         }
 
-        private (ServiceData dataType, ServiceFlags ServiceFlags) LuisEntityToServiceTypeAndFlags(string entityName)
+        private (ServiceData dataType, ServiceFlags ServiceFlags) LuisEntityToDataTypeAndFlags(string entityName)
         {
+            // Go through each type and see if it has a sub-service that can handle this entity.
             foreach (var type in Helpers.GetServiceDataTypes())
             {
-                foreach (var subService in type.SubServices())
+                if (type.LuisEntityNames().Contains(entityName))
                 {
-                    if (subService.LuisEntityNames.Contains(entityName))
+                    // If the data type can handle the entity, check if one of it's sub-services does as well.
+                    // If so, we're good to go. If not, it means that there needs to be clarification on the
+                    // category (i.e. housing -> emergency or long-term).
+
+                    foreach (var serviceCategory in type.ServiceCategories())
                     {
-                        return (type, subService.ServiceFlag);
+                        foreach (var subService in serviceCategory.Services)
+                        {
+                            if (subService.LuisEntityNames.Contains(entityName))
+                            {
+                                return (type, subService.ServiceFlags);
+                            }
+                        }
                     }
+
+                    return (type, ServiceFlags.None);
                 }
             }
 
+            Debug.Assert(false);
             return (null, ServiceFlags.None);
         }
     }

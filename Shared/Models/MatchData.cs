@@ -24,12 +24,15 @@ namespace Shared.Models
 
                 foreach (var type in Helpers.GetServiceDataTypes())
                 {
-                    foreach (var subService in type.SubServices())
+                    foreach (var serviceCategory in type.ServiceCategories())
                     {
-                        if (this.OrganizationServiceFlags.HasFlag(subService.ServiceFlag))
+                        foreach (var subService in serviceCategory.Services)
                         {
-                            types.Add(type);
-                            break;
+                            if (this.OrganizationServiceFlags.HasFlag(subService.ServiceFlags))
+                            {
+                                types.Add(type);
+                                break;
+                            }
                         }
                     }
                 }

@@ -64,54 +64,61 @@ namespace EntityModel
         public override string PrimaryKey() { return PRIMARY_KEY; }
         public override ServiceType ServiceType() { return EntityModel.ServiceType.Employment; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
+        public override List<string> LuisEntityNames() { return new List<string>() { nameof(LuisModel.Entities.Employment), nameof(LuisModel.Entities.EmploymentInternship) }; }
 
-        public override List<SubService> SubServices()
+        public override List<SubServiceCategory> ServiceCategories()
         {
-            return new List<SubService>()
+            return new List<SubServiceCategory>()
             {
-                new SubService()
+                new SubServiceCategory()
                 {
-                    Name = "Job Readiness Training",
-                    ServiceFlag = ServiceFlags.Employment,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
+                    Name = SERVICE_NAME,
+                    Services = new List<SubService>()
+                    {
+                        new SubService()
+                        {
+                            Name = "Job Readiness Training",
+                            ServiceFlags = ServiceFlags.Employment,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
 
-                    TotalPropertyName = nameof(this.JobReadinessTrainingTotal),
-                    OpenPropertyName = nameof(this.JobReadinessTrainingOpen),
-                    HasWaitlistPropertyName = nameof(this.JobReadinessTrainingHasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.JobReadinessTrainingWaitlistIsOpen)
-                },
-                new SubService()
-                {
-                    Name = "Paid Internships",
-                    ServiceFlag = ServiceFlags.EmploymentInternship,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment), nameof(LuisModel.Entities.EmploymentInternship) },
+                            TotalPropertyName = nameof(this.JobReadinessTrainingTotal),
+                            OpenPropertyName = nameof(this.JobReadinessTrainingOpen),
+                            HasWaitlistPropertyName = nameof(this.JobReadinessTrainingHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.JobReadinessTrainingWaitlistIsOpen)
+                        },
+                        new SubService()
+                        {
+                            Name = "Paid Internships",
+                            ServiceFlags = ServiceFlags.Employment | ServiceFlags.EmploymentInternship,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment), nameof(LuisModel.Entities.EmploymentInternship) },
+                            TotalPropertyName = nameof(this.PaidInternshipTotal),
+                            OpenPropertyName = nameof(this.PaidInternshipOpen),
+                            HasWaitlistPropertyName = nameof(this.PaidInternshipHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.PaidInternshipWaitlistIsOpen)
+                        },
+                        new SubService()
+                        {
+                            Name = "Vocational Training",
+                            ServiceFlags = ServiceFlags.Employment,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
 
-                    TotalPropertyName = nameof(this.PaidInternshipTotal),
-                    OpenPropertyName = nameof(this.PaidInternshipOpen),
-                    HasWaitlistPropertyName = nameof(this.PaidInternshipHasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.PaidInternshipWaitlistIsOpen)
-                },
-                new SubService()
-                {
-                    Name = "Vocational Training",
-                    ServiceFlag = ServiceFlags.Employment,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
+                            TotalPropertyName = nameof(this.VocationalTrainingTotal),
+                            OpenPropertyName = nameof(this.VocationalTrainingOpen),
+                            HasWaitlistPropertyName = nameof(this.VocationalTrainingHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.VocationalTrainingWaitlistIsOpen)
+                        },
+                        new SubService()
+                        {
+                            Name = "Employment Placement",
+                            ServiceFlags = ServiceFlags.Employment,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
 
-                    TotalPropertyName = nameof(this.VocationalTrainingTotal),
-                    OpenPropertyName = nameof(this.VocationalTrainingOpen),
-                    HasWaitlistPropertyName = nameof(this.VocationalTrainingHasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.VocationalTrainingWaitlistIsOpen)
-                },
-                new SubService()
-                {
-                    Name = "Employment Placement",
-                    ServiceFlag = ServiceFlags.Employment,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.Employment) },
-
-                    TotalPropertyName = nameof(this.EmploymentPlacementTotal),
-                    OpenPropertyName = nameof(this.EmploymentPlacementOpen),
-                    HasWaitlistPropertyName = nameof(this.EmploymentPlacementHasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.EmploymentPlacementWaitlistIsOpen)
+                            TotalPropertyName = nameof(this.EmploymentPlacementTotal),
+                            OpenPropertyName = nameof(this.EmploymentPlacementOpen),
+                            HasWaitlistPropertyName = nameof(this.EmploymentPlacementHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.EmploymentPlacementWaitlistIsOpen)
+                        }
+                    }
                 }
             };
         }

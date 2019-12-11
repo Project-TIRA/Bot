@@ -65,11 +65,14 @@ namespace Shared
             data.ServiceId = serviceId;
             data.IsComplete = true;
 
-            foreach (var subService in data.SubServices())
+            foreach (var serviceCategory in data.ServiceCategories())
             {
-                data.SetProperty(subService.TotalPropertyName, DefaultTotal);
-                data.SetProperty(subService.OpenPropertyName, DefaultOpen);
-                data.SetProperty(subService.HasWaitlistPropertyName, hasWaitlist);
+                foreach (var subService in serviceCategory.Services)
+                {
+                    data.SetProperty(subService.TotalPropertyName, DefaultTotal);
+                    data.SetProperty(subService.OpenPropertyName, DefaultOpen);
+                    data.SetProperty(subService.HasWaitlistPropertyName, hasWaitlist);
+                }
             }
 
             await api.Create(data);

@@ -72,7 +72,7 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
             var service = await TestHelpers.CreateService(this.api, organization.Id, dataType.ServiceType());
             var data = await TestHelpers.CreateServiceData(this.api, user.Id, service.Id, dataType);
 
-            var prompt = Phrases.Capacity.GetOpenings(dataType.SubServices()[0].Name);
+            var prompt = Phrases.Capacity.GetOpenings(dataType.ServiceCategories()[0].Services[0].Name);
 
             await CreateTestFlow(UpdateCapacityDialog.Name, user)
                 .Test(Phrases.Keywords.Update, prompt)
@@ -102,19 +102,22 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
             // Add each sub-service from the service types to the test flow.
             foreach (var type in types)
             {
-                foreach (var subService in type.SubServices())
+                foreach (var serviceCategory in type.ServiceCategories())
                 {
-                    testFlow = testFlow.AssertReply(Phrases.Capacity.GetOpenings(subService.Name));
+                    foreach (var subService in serviceCategory.Services)
+                    {
+                        testFlow = testFlow.AssertReply(Phrases.Capacity.GetOpenings(subService.Name));
 
-                    if (testWaitlist)
-                    {
-                        testFlow = testFlow.Send("0");
-                        testFlow = testFlow.AssertReply(StartsWith(Phrases.Capacity.GetWaitlistIsOpen(subService.Name)));
-                        testFlow = testFlow.Send(testWaitlistOpen.ToString());
-                    }
-                    else
-                    {
-                        testFlow = testFlow.Send(TestHelpers.DefaultOpen.ToString());
+                        if (testWaitlist)
+                        {
+                            testFlow = testFlow.Send("0");
+                            testFlow = testFlow.AssertReply(StartsWith(Phrases.Capacity.GetWaitlistIsOpen(subService.Name)));
+                            testFlow = testFlow.Send(testWaitlistOpen.ToString());
+                        }
+                        else
+                        {
+                            testFlow = testFlow.Send(TestHelpers.DefaultOpen.ToString());
+                        }
                     }
                 }
             }
@@ -131,16 +134,19 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
                 Assert.NotNull(resultData);
                 Assert.True(resultData.IsComplete);
 
-                foreach (var subService in type.SubServices())
+                foreach (var serviceCategory in type.ServiceCategories())
                 {
-                    var open = (int)resultData.GetProperty(subService.OpenPropertyName);
-                    Assert.Equal(testWaitlist ? 0 : TestHelpers.DefaultOpen, open);
+                    foreach (var subService in serviceCategory.Services)
+                    {
+                        var open = (int)resultData.GetProperty(subService.OpenPropertyName);
+                        Assert.Equal(testWaitlist ? 0 : TestHelpers.DefaultOpen, open);
 
-                    var hasWaitlist = (bool)resultData.GetProperty(subService.HasWaitlistPropertyName);
-                    Assert.Equal(testWaitlist, hasWaitlist);
+                        var hasWaitlist = (bool)resultData.GetProperty(subService.HasWaitlistPropertyName);
+                        Assert.Equal(testWaitlist, hasWaitlist);
 
-                    var waitlistIsOpen = (bool)resultData.GetProperty(subService.WaitlistIsOpenPropertyName);
-                    Assert.Equal(testWaitlistOpen, waitlistIsOpen);
+                        var waitlistIsOpen = (bool)resultData.GetProperty(subService.WaitlistIsOpenPropertyName);
+                        Assert.Equal(testWaitlistOpen, waitlistIsOpen);
+                    }
 
                 }
             }

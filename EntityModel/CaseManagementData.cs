@@ -28,20 +28,28 @@ namespace EntityModel
         public override string PrimaryKey() { return PRIMARY_KEY; }
         public override ServiceType ServiceType() { return EntityModel.ServiceType.CaseManagement; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
-        public override List<SubService> SubServices()
+        public override List<string> LuisEntityNames() { return new List<string>() { nameof(LuisModel.Entities.CaseManangement) }; }
+        public override List<SubServiceCategory> ServiceCategories()
         {
-            return new List<SubService>()
+            return new List<SubServiceCategory>()
             {
-                new SubService()
+                new SubServiceCategory()
                 {
                     Name = SERVICE_NAME,
-                    ServiceFlag = ServiceFlags.CaseManagement,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.CaseManangement) },
+                    Services = new List<SubService>()
+                    {
+                        new SubService()
+                        {
+                            Name = SERVICE_NAME,
+                            ServiceFlags = ServiceFlags.CaseManagement,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.CaseManangement) },
 
-                    TotalPropertyName = nameof(this.Total),
-                    OpenPropertyName = nameof(this.Open),
-                    HasWaitlistPropertyName = nameof(this.HasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.WaitlistIsOpen)
+                            TotalPropertyName = nameof(this.Total),
+                            OpenPropertyName = nameof(this.Open),
+                            HasWaitlistPropertyName = nameof(this.HasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.WaitlistIsOpen)
+                        }
+                    }
                 }
             };
         }

@@ -11,25 +11,26 @@ namespace SearchBotTests.Dialogs.Search
     {
         [Theory]
         [MemberData(nameof(TestTypes))]
-        public async Task SubServiceCategory(ServiceData dataType)
+        public async Task ClarifyServiceCategory(ServiceData dataType)
         {
-            if (dataType.SubServiceCategories().Count > 0)
+            foreach (var serviceCategory in dataType.ServiceCategories())
             {
-                var category = dataType.SubServiceCategories().First();
+                foreach (var subService in serviceCategory.Services)
+                {
+                    var expectedContext = new ConversationContext();
+                    expectedContext.CreateOrUpdateServiceContext(dataType, ServiceFlags.None);
 
-                var expectedContext = new ConversationContext();
-                expectedContext.CreateOrUpdateServiceContext(dataType, ServiceFlags.None);
+                    await CreateTestFlow(ServicesDialog.Name, expectedContext)
+                        .Test("test", StartsWith(SearchBot.Phrases.Search.GetSpecificType(dataType)))
+                        .Send(serviceCategory.Name)
+                        .StartTestAsync();
 
-                await CreateTestFlow(ServicesDialog.Name, expectedContext)
-                    .Test("test", StartsWith(SearchBot.Phrases.Search.GetSpecificType(dataType)))
-                    .Send(category.Name)
-                    .StartTestAsync();
+                    expectedContext.CreateOrUpdateServiceContext(dataType, serviceCategory.ServiceFlags());
 
-                expectedContext.CreateOrUpdateServiceContext(dataType, category.ServiceFlag);
-
-                // Validate the results.
-                var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);
-                Assert.Equal(expectedContext, actualContext);
+                    // Validate the results.
+                    var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);
+                    Assert.Equal(expectedContext, actualContext);
+                }
             }
         }       
     }

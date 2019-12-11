@@ -19,9 +19,8 @@ namespace SearchBot.Bot.Models
         {
             var type = DataType();
 
-            // Valid if there are no sub-categories or if one of the sub-categories is fulfilled.
-            return type != null &&
-                (type.SubServiceCategories().Count == 0 || type.SubServiceCategories().Any(c => this.ServiceFlags.HasFlag(c.ServiceFlag)));
+            // Valid if any sub-service fulfills a requested service flag.
+            return type != null && type.ServiceCategories().Any(c => c.Services.Any(s => this.ServiceFlags.HasFlag(s.ServiceFlags)));
         }
 
         public ServiceData DataType()

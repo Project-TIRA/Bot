@@ -146,13 +146,20 @@ namespace SearchBot.Bot.Dialogs.Search
                 if (conversationContext.HasService(type))
                 {
                     var data = await this.api.GetLatestServiceData(organization.Id, type);
+                    if (data == null)
                     {
-                        foreach (var subService in type.SubServices())
+                        continue;
+                    }
+
+                    foreach (var serviceCategory in data.ServiceCategories())
+                    {
+                        foreach (var subService in serviceCategory.Services)
                         {
                             var open = (int)data.GetProperty(subService.OpenPropertyName);
                             if (open > 0)
                             {
-                                match.OrganizationServiceFlags |= subService.ServiceFlag;
+                                match.OrganizationServiceFlags |= subService.ServiceFlags;
+                                break;
                             }
                         }
                     }

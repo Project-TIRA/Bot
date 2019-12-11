@@ -43,12 +43,12 @@ namespace SearchBot.Bot.Dialogs.Search
                 {
                     var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
 
-                    // Check if the service was mentioned but needs clarification.
-                    if (conversationContext.IsServiceInvalid(dataType))
+                    // Check if the service needs clarification.
+                    if (!conversationContext.IsServiceValid(dataType))
                     {
                         // Prompt for the specific type.
                         var choices = new List<Choice>();
-                        dataType.SubServiceCategories().ForEach(c => choices.Add(new Choice { Value = c.Name }));
+                        dataType.ServiceCategories().ForEach(c => choices.Add(new Choice { Value = c.Name }));
 
                         return await dialogContext.PromptAsync(
                             Prompt.ChoicePrompt,
@@ -70,8 +70,8 @@ namespace SearchBot.Bot.Dialogs.Search
 
                         // Update the conversation context with the specific type.
                         var result = ((FoundChoice)dialogContext.Result).Value;
-                        var match = dataType.SubServiceCategories().FirstOrDefault(c => c.Name == result);
-                        conversationContext.CreateOrUpdateServiceContext(dataType, match.ServiceFlag);
+                        var match = dataType.ServiceCategories().FirstOrDefault(c => c.Name == result);
+                        conversationContext.CreateOrUpdateServiceContext(dataType, match.ServiceFlags());
                     }
 
                     // End this dialog to pop it off the stack.

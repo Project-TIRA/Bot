@@ -99,7 +99,7 @@ namespace SearchBotTests.Dialogs.Search
 
 
                     // TODO! Not right
-                    conversationContext.CreateOrUpdateServiceContext(dataType, dataType.SubServiceCategories().Count != 0 ? dataType.SubServices().First().ServiceFlag : ServiceFlags.None);
+                    conversationContext.CreateOrUpdateServiceContext(dataType, dataType.ServiceCategories().Count != 0 ? dataType.ServiceCategories().First().ServiceFlags() : ServiceFlags.None);
                 }
             }
 

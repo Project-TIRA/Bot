@@ -40,32 +40,40 @@ namespace EntityModel
         public override string PrimaryKey() { return PRIMARY_KEY; }
         public override ServiceType ServiceType() { return EntityModel.ServiceType.MentalHealth; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
+        public override List<string> LuisEntityNames() { return new List<string>() { nameof(LuisModel.Entities.MentalHealth) }; }
 
-        public override List<SubService> SubServices()
+        public override List<SubServiceCategory> ServiceCategories()
         {
-            return new List<SubService>()
+            return new List<SubServiceCategory>()
             {
-                new SubService()
+                new SubServiceCategory()
                 {
-                    Name = "Mental Health In-Patient",
-                    ServiceFlag = ServiceFlags.MentalHealth,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.MentalHealth) },
+                    Name = SERVICE_NAME,
+                    Services = new List<SubService>()
+                    {
+                        new SubService()
+                        {
+                            Name = "Mental Health In-Patient",
+                            ServiceFlags = ServiceFlags.MentalHealth,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.MentalHealth) },
 
-                    TotalPropertyName = nameof(this.InPatientTotal),
-                    OpenPropertyName = nameof(this.InPatientOpen),
-                    HasWaitlistPropertyName = nameof(this.InPatientHasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.InPatientWaitlistIsOpen)
-                },
-                new SubService()
-                {
-                    Name = "Mental Health Out-Patient",
-                    ServiceFlag = ServiceFlags.MentalHealth,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.MentalHealth) },
+                            TotalPropertyName = nameof(this.InPatientTotal),
+                            OpenPropertyName = nameof(this.InPatientOpen),
+                            HasWaitlistPropertyName = nameof(this.InPatientHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.InPatientWaitlistIsOpen)
+                        },
+                        new SubService()
+                        {
+                            Name = "Mental Health Out-Patient",
+                            ServiceFlags = ServiceFlags.MentalHealth,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.MentalHealth) },
 
-                    TotalPropertyName = nameof(this.OutPatientTotal),
-                    OpenPropertyName = nameof(this.OutPatientOpen),
-                    HasWaitlistPropertyName = nameof(this.OutPatientHasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.OutPatientWaitlistIsOpen)
+                            TotalPropertyName = nameof(this.OutPatientTotal),
+                            OpenPropertyName = nameof(this.OutPatientOpen),
+                            HasWaitlistPropertyName = nameof(this.OutPatientHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.OutPatientWaitlistIsOpen)
+                        }
+                    }
                 }
             };
         }

@@ -63,6 +63,7 @@ namespace ServiceProviderBot.Bot
                 if (result.Status == DialogTurnStatus.Empty)
                 {
                     // Clear the user context when a new conversation begins.
+                    // TODO: we could keep the userId and orgId and clear the rest, that way we don't need to look it up again.
                     await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
 
                     await masterDialog.BeginDialogAsync(dialogContext, MasterDialog.Name, null, cancellationToken);

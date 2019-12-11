@@ -64,54 +64,62 @@ namespace EntityModel
         public override string PrimaryKey() { return PRIMARY_KEY; }
         public override ServiceType ServiceType() { return EntityModel.ServiceType.SubstanceUse; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
+        public override List<string> LuisEntityNames() { return new List<string>() { nameof(LuisModel.Entities.SubstanceUse), nameof(LuisModel.Entities.SubstanceUseDetox) }; }
 
-        public override List<SubService> SubServices()
+        public override List<SubServiceCategory> ServiceCategories()
         {
-            return new List<SubService>()
+            return new List<SubServiceCategory>()
             {
-                new SubService()
+                new SubServiceCategory()
                 {
-                    Name = "Substance Use Detox",
-                    ServiceFlag = ServiceFlags.SubstanceUseDetox,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse), nameof(LuisModel.Entities.SubstanceUseDetox) },
+                    Name = SERVICE_NAME,
+                    Services = new List<SubService>()
+                    {
+                        new SubService()
+                        {
+                            Name = "Substance Use Detox",
+                            ServiceFlags = ServiceFlags.SubstanceUse | ServiceFlags.SubstanceUseDetox,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse), nameof(LuisModel.Entities.SubstanceUseDetox) },
 
-                    TotalPropertyName = nameof(this.DetoxTotal),
-                    OpenPropertyName = nameof(this.DetoxOpen),
-                    HasWaitlistPropertyName = nameof(this.DetoxHasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.DetoxWaitlistIsOpen)
-                },
-                new SubService()
-                {
-                    Name = "Substance Use In-Patient",
-                    ServiceFlag = ServiceFlags.SubstanceUse,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
+                            TotalPropertyName = nameof(this.DetoxTotal),
+                            OpenPropertyName = nameof(this.DetoxOpen),
+                            HasWaitlistPropertyName = nameof(this.DetoxHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.DetoxWaitlistIsOpen)
+                        },
+                        new SubService()
+                        {
+                            Name = "Substance Use In-Patient",
+                            ServiceFlags = ServiceFlags.SubstanceUse,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
 
-                    TotalPropertyName = nameof(this.InPatientTotal),
-                    OpenPropertyName = nameof(this.InPatientOpen),
-                    HasWaitlistPropertyName = nameof(this.InPatientHasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.InPatientWaitlistIsOpen)
-                },
-                new SubService()
-                {
-                    Name = "Substance Use Out-Patient",
-                    ServiceFlag = ServiceFlags.SubstanceUse,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
+                            TotalPropertyName = nameof(this.InPatientTotal),
+                            OpenPropertyName = nameof(this.InPatientOpen),
+                            HasWaitlistPropertyName = nameof(this.InPatientHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.InPatientWaitlistIsOpen)
+                        },
+                        new SubService()
+                        {
+                            Name = "Substance Use Out-Patient",
+                            ServiceFlags = ServiceFlags.SubstanceUse,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
 
-                    TotalPropertyName = nameof(this.OutPatientTotal),
-                    OpenPropertyName = nameof(this.OutPatientOpen),
-                    HasWaitlistPropertyName = nameof(this.OutPatientHasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.OutPatientWaitlistIsOpen)
-                },
-                new SubService()
-                {
-                    Name = "Substance Use Group Services",
-                    ServiceFlag = ServiceFlags.SubstanceUse,
-                    LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
+                            TotalPropertyName = nameof(this.OutPatientTotal),
+                            OpenPropertyName = nameof(this.OutPatientOpen),
+                            HasWaitlistPropertyName = nameof(this.OutPatientHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.OutPatientWaitlistIsOpen)
+                        },
+                        new SubService()
+                        {
+                            Name = "Substance Use Group Services",
+                            ServiceFlags = ServiceFlags.SubstanceUse,
+                            LuisEntityNames = new List<string>() { nameof(LuisModel.Entities.SubstanceUse) },
 
-                    TotalPropertyName = nameof(this.GroupTotal),
-                    OpenPropertyName = nameof(this.GroupOpen),
-                    HasWaitlistPropertyName = nameof(this.GroupHasWaitlist),
-                    WaitlistIsOpenPropertyName = nameof(this.GroupWaitlistIsOpen)
+                            TotalPropertyName = nameof(this.GroupTotal),
+                            OpenPropertyName = nameof(this.GroupOpen),
+                            HasWaitlistPropertyName = nameof(this.GroupHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.GroupWaitlistIsOpen)
+                        }
+                    }
                 }
             };
         }
