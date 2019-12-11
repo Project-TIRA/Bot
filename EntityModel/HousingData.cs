@@ -72,17 +72,17 @@ namespace EntityModel
                 new LuisMapping()
                 {
                     EntityName = nameof(LuisModel.Entities.Housing),
-                    RequestedFlags = ServiceFlags.None
+                    ServiceFlags = ServiceFlags.None
                 },
                 new LuisMapping()
                 {
                     EntityName = nameof(LuisModel.Entities.HousingEmergency),
-                    RequestedFlags = ServiceFlags.HousingEmergency
+                    ServiceFlags = ServiceFlags.HousingEmergency
                 },
                 new LuisMapping()
                 {
                     EntityName = nameof(LuisModel.Entities.HousingLongTerm),
-                    RequestedFlags = ServiceFlags.HousingLongTerm
+                    ServiceFlags = ServiceFlags.HousingLongTerm
                 }
             };
         }

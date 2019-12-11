@@ -36,7 +36,7 @@ namespace EntityModel
                 new LuisMapping()
                 {
                     EntityName = nameof(LuisModel.Entities.CaseManangement),
-                    RequestedFlags = ServiceFlags.CaseManagement
+                    ServiceFlags = ServiceFlags.CaseManagement
                 }
             };
         }

@@ -16,7 +16,7 @@ namespace SearchBotTests.Dialogs.Search
         {
             var initialContext = new ConversationContext();
             initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
-            initialContext.CreateOrUpdateServiceContext(dataType, dataType.ServiceCategories().Count == 1 ? dataType.LuisMappings().First().RequestedFlags : ServiceFlags.None);
+            initialContext.CreateOrUpdateServiceContext(dataType, dataType.ServiceCategories().Count == 1 ? dataType.LuisMappings().First().ServiceFlags : ServiceFlags.None);
 
             var testFlow = CreateTestFlow(ServicesDialog.Name, initialContext)
                 .Send("test");
@@ -40,8 +40,8 @@ namespace SearchBotTests.Dialogs.Search
             {
                 var initialContext = new ConversationContext();
                 initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
-                initialContext.CreateOrUpdateServiceContext(dataType1, dataType1.ServiceCategories().Count == 1 ? dataType1.LuisMappings().First().RequestedFlags : ServiceFlags.None);
-                initialContext.CreateOrUpdateServiceContext(dataType2, dataType2.ServiceCategories().Count == 1 ? dataType2.LuisMappings().First().RequestedFlags : ServiceFlags.None);
+                initialContext.CreateOrUpdateServiceContext(dataType1, dataType1.ServiceCategories().Count == 1 ? dataType1.LuisMappings().First().ServiceFlags : ServiceFlags.None);
+                initialContext.CreateOrUpdateServiceContext(dataType2, dataType2.ServiceCategories().Count == 1 ? dataType2.LuisMappings().First().ServiceFlags : ServiceFlags.None);
 
                 var testFlow = CreateTestFlow(ServicesDialog.Name, initialContext)
                     .Send("test");

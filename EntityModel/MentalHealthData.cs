@@ -48,7 +48,7 @@ namespace EntityModel
                 new LuisMapping()
                 {
                     EntityName = nameof(LuisModel.Entities.MentalHealth),
-                    RequestedFlags = ServiceFlags.MentalHealth
+                    ServiceFlags = ServiceFlags.MentalHealth
                 }
             };
         }

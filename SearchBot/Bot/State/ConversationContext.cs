@@ -113,7 +113,7 @@ namespace SearchBot.Bot.State
 
         public void CreateServiceContext(ServiceData dataType, LuisMapping luisMapping)
         {
-            CreateOrUpdateServiceContext(dataType, luisMapping.RequestedFlags);
+            CreateOrUpdateServiceContext(dataType, luisMapping.ServiceFlags);
         }
 
         public void CreateOrUpdateServiceContext(ServiceData dataType, ServiceFlags requestedFlags)

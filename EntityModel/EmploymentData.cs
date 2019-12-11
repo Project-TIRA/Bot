@@ -72,12 +72,12 @@ namespace EntityModel
                 new LuisMapping()
                 {
                     EntityName = nameof(LuisModel.Entities.Employment),
-                    RequestedFlags = ServiceFlags.Employment
+                    ServiceFlags = ServiceFlags.Employment
                 },
                 new LuisMapping()
                 {
                     EntityName = nameof(LuisModel.Entities.EmploymentInternship),
-                    RequestedFlags = ServiceFlags.EmploymentInternship
+                    ServiceFlags = ServiceFlags.EmploymentInternship
                 }
             };
         }

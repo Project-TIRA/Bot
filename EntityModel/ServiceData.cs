@@ -24,11 +24,30 @@ namespace EntityModel
         [JsonProperty(PropertyName = "TODO")]
         public bool IsComplete { get; set; }
 
+        /// <summary>
+        /// The primary key for referencing the type in the data store.
+        /// </summary>
         public abstract string PrimaryKey();
+
+        /// <summary>
+        /// The service type.
+        /// </summary>
         public abstract ServiceType ServiceType();
+
+        /// <summary>
+        /// The friendly name of the service type.
+        /// </summary>
         public abstract string ServiceTypeName();
+
+        /// <summary>
+        /// The LUIS entity mappings that are handled by the type.
+        /// </summary>
         public abstract List<LuisMapping> LuisMappings();
 
+        /// <summary>
+        /// The sub-services of the type, grouped by category.
+        /// The categories are used to clarify searches for services.
+        /// </summary>
         public abstract List<SubServiceCategory> ServiceCategories();
 
         public ServiceData() : base()

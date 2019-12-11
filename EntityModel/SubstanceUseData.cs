@@ -72,12 +72,12 @@ namespace EntityModel
                 new LuisMapping()
                 {
                     EntityName = nameof(LuisModel.Entities.SubstanceUse),
-                    RequestedFlags = ServiceFlags.SubstanceUse
+                    ServiceFlags = ServiceFlags.SubstanceUse
                 },
                 new LuisMapping()
                 {
                     EntityName = nameof(LuisModel.Entities.SubstanceUseDetox),
-                    RequestedFlags = ServiceFlags.SubstanceUseDetox
+                    ServiceFlags = ServiceFlags.SubstanceUseDetox
                 }
             };
         }
