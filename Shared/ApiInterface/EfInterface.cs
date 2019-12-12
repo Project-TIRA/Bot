@@ -24,7 +24,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Creates a new record of a model.
         /// </summary>
-        public async Task<string> Create<T>(T model) where T : ModelBase
+        public async Task<string> Create(Model model)
         {
             if (model is User)
             {
@@ -75,7 +75,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Saves changes to a model.
         /// </summary>
-        public async Task<bool> Update<T>(T model) where T : ModelBase
+        public async Task<bool> Update(Model model)
         {
             await this.dbContext.SaveChangesAsync();
             return true;
@@ -125,14 +125,13 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(string organizationId) where T : ServiceDataBase
+        public async Task<Service> GetService(string organizationId, ServiceType serviceType)
         {
             if (!string.IsNullOrEmpty(organizationId))
             {
-                var type = Helpers.GetServiceType<T>();
-                if (type != ServiceType.Invalid)
+                if (serviceType != ServiceType.Invalid)
                 {
-                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.OrganizationId == organizationId && s.Type == type);
+                    return await this.dbContext.Services.FirstOrDefaultAsync(s => s.OrganizationId == organizationId && s.Type == serviceType);
                 }
             }
 
@@ -156,16 +155,16 @@ namespace Shared.ApiInterface
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
-        public async Task<T> GetLatestServiceData<T>(string organizationId, ITurnContext createdByUserTurnContext = null) where T : ServiceDataBase, new()
+        public async Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null)
         {
-            var service = await GetService<T>(organizationId);
+            var service = await GetService(organizationId, dataType.ServiceType());
             if (service != null)
             {
-                IQueryable<ServiceDataBase> query;
+                IQueryable<ServiceData> query;
 
-                var type = Helpers.GetServiceType<T>();
-                switch (type)
+                switch (dataType.ServiceType())
                 {
+                    // TODO: can this be abstracted to where the type has the table name?
                     case ServiceType.CaseManagement: query = this.dbContext.CaseManagementData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
                     case ServiceType.Housing: query = this.dbContext.HousingData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
                     case ServiceType.Employment: query = this.dbContext.EmploymentData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
@@ -180,7 +179,7 @@ namespace Shared.ApiInterface
                     query = query.Where(s => s.CreatedById == user.Id);
                 }
 
-                return await query.FirstOrDefaultAsync() as T;
+                return await query.FirstOrDefaultAsync();
             }
 
             return null;

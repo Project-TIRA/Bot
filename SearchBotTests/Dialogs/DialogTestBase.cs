@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityModel;
@@ -9,6 +11,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using SearchBot.Bot.Dialogs;
 using SearchBot.Bot.State;
+using Shared;
 using Shared.ApiInterface;
 using Shared.Middleware;
 using Shared.Prompts;
@@ -26,6 +29,12 @@ namespace SearchBotTests.Dialogs
 
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;
+
+        public static IEnumerable<object[]> TestTypes => Helpers.GetServiceDataTypes().Select(t => new object[] { t });
+        public static IEnumerable<object[]> TestTypePairs => Helpers.GetServiceDataTypes().SelectMany(t => Helpers.GetServiceDataTypes(), (t1, t2) => new object[] { t1, t2 });
+
+        public static IEnumerable<object[]> TestFlags => Helpers.GetServiceFlags().Select(f => new object[] { f });
+        public static IEnumerable<object[]> TestFlagPairs => Helpers.GetServiceFlags().SelectMany(f => Helpers.GetServiceFlags(), (f1, f2) => new object[] { f1, f2 });
 
         protected DialogTestBase()
         {
@@ -64,6 +73,9 @@ namespace SearchBotTests.Dialogs
                     // Start a new conversation if there isn't one already.
                     if (result.Status == DialogTurnStatus.Empty)
                     {
+                        // Clear the conversation context when a new conversation begins.
+                        await this.state.ClearConversationContext(dialogContext.Context, cancellationToken);
+
                         // Tests must init the conversation context once there is a turn context.
                         await InitConversationContext(conversationContext);
 

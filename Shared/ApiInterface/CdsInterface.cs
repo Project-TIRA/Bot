@@ -50,27 +50,27 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Creates a new record of a model.
         /// </summary>
-        public async Task<string> Create<T>(T model) where T : ModelBase
+        public async Task<string> Create(Model model)
         {
             if (!string.IsNullOrEmpty(model.Id))
             {
                 return string.Empty;
             }
 
-            return await PostJsonData(model.TableName, JsonConvert.SerializeObject(model));
+            return await PostJsonData(model.TableName(), JsonConvert.SerializeObject(model));
         }
 
         /// <summary>
         /// Saves changes to a model.
         /// </summary>
-        public async Task<bool> Update<T>(T model) where T : ModelBase
+        public async Task<bool> Update(Model model)
         {
             if (string.IsNullOrEmpty(model.Id))
             {
                 return false;
             }
 
-            return await PatchJsonData(model.TableName, model.Id, JsonConvert.SerializeObject(model));
+            return await PatchJsonData(model.TableName(), model.Id, JsonConvert.SerializeObject(model));
         }
 
         /// <summary>
@@ -134,14 +134,13 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type from the turn context.
         /// </summary>
-        public async Task<Service> GetService<T>(string organizationId) where T : ServiceDataBase
+        public async Task<Service> GetService(string organizationId, ServiceType serviceType)
         {
             if (!string.IsNullOrEmpty(organizationId))
             {
-                var type = Helpers.GetServiceType<T>();
-                if (type != ServiceType.Invalid)
+                if (serviceType != ServiceType.Invalid)
                 {
-                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organizationId} and tira_servicetype eq {type}");
+                    JObject response = await GetJsonData(Service.TABLE_NAME, $"$filter=_tira_organizationservicesid_value eq {organizationId} and tira_servicetype eq {serviceType}");
                     if (response != null && response["value"].HasValues)
                     {
                         return JsonConvert.DeserializeObject<Service>(response["value"][0].ToString(), GetJsonSettings(Service.Resolver.Instance));
@@ -173,17 +172,13 @@ namespace Shared.ApiInterface
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
-        public async Task<T> GetLatestServiceData<T>(string organizationId, ITurnContext createdByUserTurnContext = null) where T : ServiceDataBase, new()
+        public async Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null)
         {
-            var service = await GetService<T>(organizationId);
+            var service = await GetService(organizationId, dataType.ServiceType());
             if (service != null)
             {
-                var type = Helpers.GetServiceType<T>();
-                if (type != ServiceType.Invalid)
+                if (dataType.ServiceType() != ServiceType.Invalid)
                 {
-                    var tableName = Helpers.GetServiceTableName(type);
-                    var primaryKey = Helpers.GetServicePrimaryKey(type);
-
                     string userFilter = string.Empty;
 
                     if (createdByUserTurnContext != null)
@@ -192,10 +187,10 @@ namespace Shared.ApiInterface
                         userFilter = $" and tira_createdby eq {user.Id}";
                     }
 
-                    JObject response = await GetJsonData(tableName, $"$filter={primaryKey} eq {service.Id}{userFilter} &$orderby=createdon desc &$top=1");
+                    JObject response = await GetJsonData(dataType.TableName(), $"$filter={dataType.PrimaryKey()} eq {service.Id}{userFilter} &$orderby=createdon desc &$top=1");
                     if (response != null && response["value"].HasValues)
                     {
-                        return JsonConvert.DeserializeObject<T>(response["value"][0].ToString(), GetJsonSettings(new T().ContractResolver));
+                        return JsonConvert.DeserializeObject<ServiceData>(response["value"][0].ToString(), GetJsonSettings(dataType.ContractResolver()));
                     }
                 }
             }

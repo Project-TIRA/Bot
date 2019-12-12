@@ -1,24 +1,24 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Bot.Schema;
-using SearchBot.Bot.Dialogs.Service;
+using SearchBot.Bot.Dialogs.Search;
 using SearchBot.Bot.State;
 using Shared;
 using Xunit;
 
-namespace SearchBotTests.Dialogs
+namespace SearchBotTests.Dialogs.Search
 {
-    public class ServiceTypeDialogTests : DialogTestBase
+    public class LocationDialogTests : DialogTestBase
     {
         [Fact]
-        public async Task NoType()
+        public async Task NoLocation()
         {
-            await CreateTestFlow(ServiceTypeDialog.Name)
-                .Test("test", StartsWith(Phrases.Search.GetServiceType))
-                .Send(Phrases.Services.Housing.ServiceName)
+            await CreateTestFlow(LocationDialog.Name)
+                .Test("test", SearchBot.Phrases.Search.GetLocation)
+                .Send(SearchBotTestHelpers.DefaultLocation)
                 .StartTestAsync();
 
             var expectedContext = new ConversationContext();
-            expectedContext.Housing = true;
+            expectedContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
 
             // Validate the results.
             var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);

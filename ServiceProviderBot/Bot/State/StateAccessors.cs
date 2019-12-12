@@ -65,6 +65,11 @@ namespace ServiceProviderBot.Bot.State
             { return new UserContext(); }, cancellationToken).ConfigureAwait(false);
         }
 
+        public async Task ClearUserContext(ITurnContext turnContext, CancellationToken cancellationToken)
+        {
+            await this.UserContextAccessor.DeleteAsync(turnContext, cancellationToken);
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="StateAccessors"/> class.
         /// Contains the state management and associated accessor objects.

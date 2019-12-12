@@ -5,7 +5,7 @@ using Shared;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SearchBot.Bot.Luis
+namespace SearchBot.Luis
 {
     public class LuisHelper : IRecognizer
     {

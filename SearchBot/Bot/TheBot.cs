@@ -35,15 +35,17 @@ namespace SearchBot.Bot
 
         public async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
         {
+            var conversationContext = await this.state.GetConversationContext(turnContext, cancellationToken);
+
             if (turnContext.Activity.Type == ActivityTypes.Message)
             {
                 // Establish context for our dialog from the turn context.
                 DialogContext dialogContext = await this.dialogs.CreateContextAsync(turnContext, cancellationToken);
 
                 // Make sure this channel is supported.
-                if (!Phrases.ValidChannels.Contains(turnContext.Activity.ChannelId))
+                if (!Shared.Phrases.ValidChannels.Contains(turnContext.Activity.ChannelId))
                 {
-                    await Messages.SendAsync(Phrases.Greeting.InvalidChannel(turnContext), turnContext, cancellationToken);
+                    await Messages.SendAsync(Shared.Phrases.Greeting.InvalidChannel(turnContext), turnContext, cancellationToken);
                     return;
                 }
 

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityModel;
@@ -16,7 +18,7 @@ using Shared.Middleware;
 using Shared.Prompts;
 using Xunit;
 
-namespace SearchProviderBotTests.Dialogs
+namespace ServiceProviderBotTests.Dialogs
 {
     public abstract class DialogTestBase
     {
@@ -28,6 +30,8 @@ namespace SearchProviderBotTests.Dialogs
 
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;
+
+        public static IEnumerable<object[]> TestTypes => Helpers.GetServiceDataTypes().Select(t => new object[] { t });
 
         protected DialogTestBase()
         {
@@ -85,6 +89,9 @@ namespace SearchProviderBotTests.Dialogs
                     // Start a new conversation if there isn't one already.
                     if (result.Status == DialogTurnStatus.Empty)
                     {
+                        // Clear the user context when a new conversation begins.
+                        await this.state.ClearUserContext(dialogContext.Context, cancellationToken);
+
                         // Tests must init the user once there is a turn context.
                         await InitUser(user);
 

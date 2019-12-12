@@ -1,19 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using EntityModel.Luis;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
 
 namespace EntityModel
 {
-    public class SubstanceUseData : ServiceDataBase
+    public class SubstanceUseData : ServiceData
     {
-        public static string TABLE_NAME = "tira_substanceusedatas";
-        public static string PRIMARY_KEY = "_tira_substanceuseserviceid_value";
-
-        [JsonIgnore]
-        public override string TableName { get { return TABLE_NAME; } }
-
-        [JsonIgnore]
-        public override IContractResolver ContractResolver { get { return Resolver.Instance; } }
-
+        public const string TABLE_NAME = "tira_substanceusedatas";
+        public const string PRIMARY_KEY = "_tira_substanceuseserviceid_value";
+        public const string SERVICE_NAME = "Substance Use";
 
         [JsonProperty(PropertyName = "TODO")]
         public int DetoxTotal { get; set; }
@@ -62,6 +58,83 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "TODO")]
         public bool GroupWaitlistIsOpen { get; set; }
+
+        public override IContractResolver ContractResolver() { return Resolver.Instance; }
+        public override string TableName() { return TABLE_NAME; }
+        public override string PrimaryKey() { return PRIMARY_KEY; }
+        public override ServiceType ServiceType() { return EntityModel.ServiceType.SubstanceUse; }
+        public override string ServiceTypeName() { return SERVICE_NAME; }
+
+        public override List<LuisMapping> LuisMappings()
+        {
+            return new List<LuisMapping>()
+            {
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.SubstanceUse),
+                    ServiceFlags = ServiceFlags.SubstanceUse
+                },
+                new LuisMapping()
+                {
+                    EntityName = nameof(LuisModel.Entities.SubstanceUseDetox),
+                    ServiceFlags = ServiceFlags.SubstanceUseDetox
+                }
+            };
+        }
+
+        public override List<SubServiceCategory> ServiceCategories()
+        {
+            return new List<SubServiceCategory>()
+            {
+                new SubServiceCategory()
+                {
+                    Name = SERVICE_NAME,
+                    Services = new List<SubService>()
+                    {
+                        new SubService()
+                        {
+                            Name = "Substance Use Detox",
+                            ServiceFlags = ServiceFlags.SubstanceUse | ServiceFlags.SubstanceUseDetox,
+
+                            TotalPropertyName = nameof(this.DetoxTotal),
+                            OpenPropertyName = nameof(this.DetoxOpen),
+                            HasWaitlistPropertyName = nameof(this.DetoxHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.DetoxWaitlistIsOpen)
+                        },
+                        new SubService()
+                        {
+                            Name = "Substance Use In-Patient",
+                            ServiceFlags = ServiceFlags.SubstanceUse,
+
+                            TotalPropertyName = nameof(this.InPatientTotal),
+                            OpenPropertyName = nameof(this.InPatientOpen),
+                            HasWaitlistPropertyName = nameof(this.InPatientHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.InPatientWaitlistIsOpen)
+                        },
+                        new SubService()
+                        {
+                            Name = "Substance Use Out-Patient",
+                            ServiceFlags = ServiceFlags.SubstanceUse,
+
+                            TotalPropertyName = nameof(this.OutPatientTotal),
+                            OpenPropertyName = nameof(this.OutPatientOpen),
+                            HasWaitlistPropertyName = nameof(this.OutPatientHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.OutPatientWaitlistIsOpen)
+                        },
+                        new SubService()
+                        {
+                            Name = "Substance Use Group Services",
+                            ServiceFlags = ServiceFlags.SubstanceUse,
+
+                            TotalPropertyName = nameof(this.GroupTotal),
+                            OpenPropertyName = nameof(this.GroupOpen),
+                            HasWaitlistPropertyName = nameof(this.GroupHasWaitlist),
+                            WaitlistIsOpenPropertyName = nameof(this.GroupWaitlistIsOpen)
+                        }
+                    }
+                }
+            };
+        }
 
         public override void CopyStaticValues<T>(T data)
         {

@@ -1,4 +1,5 @@
 ﻿using EntityModel;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using SearchBot.Bot.State;
@@ -24,10 +25,7 @@ namespace SearchBot.Bot.Dialogs
             this.configuration = configuration;
         }
 
-        public virtual WaterfallDialog GetWaterfallDialog()
-        {
-            return null;
-        }
+        public abstract Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellationToken);
 
         /// <summary>
         /// JIT creates the dialog if necessary and begins the dialog.
@@ -41,7 +39,8 @@ namespace SearchBot.Bot.Dialogs
                 var dialog = CreateFromDialogId(dialogId);
                 if (dialog != null)
                 {
-                    dialogs.Add(dialog.GetWaterfallDialog());
+                    var waterfallDialog = await dialog.GetWaterfallDialog(dialogContext.Context, cancellationToken);
+                    this.dialogs.Add(waterfallDialog);
                 }
             }
 
@@ -63,7 +62,8 @@ namespace SearchBot.Bot.Dialogs
                     var dialog = CreateFromDialogId(entry.Id);
                     if (dialog != null)
                     {
-                        dialogs.Add(dialog.GetWaterfallDialog());
+                        var waterfallDialog = await dialog.GetWaterfallDialog(dialogContext.Context, cancellationToken);
+                        this.dialogs.Add(waterfallDialog);
                     }
                 }
             }

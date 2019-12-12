@@ -2,8 +2,10 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
+using Shared.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shared
 {
@@ -110,26 +112,17 @@ namespace Shared
             public static Activity Thanks = MessageFactory.Text("Thanks for the feedback!");
         }
 
-        public static class Search
-        {
-            public static Activity GetLocation = MessageFactory.Text("In what city are you looking for services?");
-            public static Activity RetryGetLocation = MessageFactory.Text($"Oops, I couldn't find that location. {GetLocation.Text}");
-            public static Activity GetServiceType = MessageFactory.Text("What type of service are you looking for?");
-            public static Activity GetHousingType = MessageFactory.Text("What type of housing are you looking for?");
-        }
-
         public static class Services
         {
             public static string All = "All";
 
             public static class CaseManagement
             {
-                public const string ServiceName = "Case Management";
+                
             }
 
             public static class Housing
             {
-                public const string ServiceName = "Housing";
                 public const string Emergency = "Emergency";
                 public const string LongTerm = "Long-term";
                 public const string EmergencySharedBeds = "Emergency Shared-Space Beds";
@@ -140,7 +133,6 @@ namespace Shared
 
             public static class Employment
             {
-                public const string ServiceName = "Employment";
                 public const string JobReadinessTraining = "Job Readiness Training";
                 public const string PaidInternships = "Paid Internships";
                 public const string VocationalTraining = "Vocational Training";
@@ -149,14 +141,12 @@ namespace Shared
 
             public static class MentalHealth
             {
-                public const string ServiceName = "Mental Health";
                 public const string InPatient = "Mental Health In-Patient";
                 public const string OutPatient = "Mental Health Out-Patient";
             }
 
             public static class SubstanceUse
             {
-                public const string ServiceName = "Substance Use";
                 public const string Detox = "Substance Use Detox";
                 public const string InPatient = "Substance Use In-Patient";
                 public const string OutPatient = "Substance Use Out-Patient";
@@ -169,11 +159,6 @@ namespace Shared
             public static Activity Options = MessageFactory.Text("Which service(s) would you like to update?");
             public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");
-        }
-
-        public static class Intents
-        {
-            public static Activity Unknown = MessageFactory.Text("Hi, what services can I help you find?");
         }
     }
 }

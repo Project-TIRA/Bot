@@ -94,40 +94,22 @@ namespace DatabaseInitializer
 
         static async Task Init(IApiInterface api)
         {
+            var types = Helpers.GetServiceDataTypes();
+
             for (int i = 0; i < 5; ++i)
             {
-                var organization = await ServiceProviderBotTestHelpers.CreateOrganization(api, isVerified: true);
-                var user = await ServiceProviderBotTestHelpers.CreateUser(api, organization.Id);
+                var organization = await TestHelpers.CreateOrganization(api, isVerified: true);
+                var user = await TestHelpers.CreateUser(api, organization.Id);
 
                 // Randomize the services the organizations have.
-                if (new Random().Next(2) == 1)
+                foreach (var type in types)
                 {
-                    var caseManagementService = await ServiceProviderBotTestHelpers.CreateService<CaseManagementData>(api, organization.Id);
-                    var caseManagementData = await ServiceProviderBotTestHelpers.CreateCaseManagementData(api, user.Id, caseManagementService.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal);
-                }
-
-                if (new Random().Next(2) == 1)
-                {
-                    var housingService = await ServiceProviderBotTestHelpers.CreateService<HousingData>(api, organization.Id);
-                    var housingData = await ServiceProviderBotTestHelpers.CreateHousingData(api, user.Id, housingService.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
-                }
-
-                if (new Random().Next(2) == 1)
-                {
-                    var employmentService = await ServiceProviderBotTestHelpers.CreateService<EmploymentData>(api, organization.Id);
-                    var employmentData = await ServiceProviderBotTestHelpers.CreatEmploymentData(api, user.Id, employmentService.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
-                }
-
-                if (new Random().Next(2) == 1)
-                {
-                    var mentalHealthService = await ServiceProviderBotTestHelpers.CreateService<MentalHealthData>(api, organization.Id);
-                    var mentalHealthData = await ServiceProviderBotTestHelpers.CreateMentalHealthData(api, user.Id, mentalHealthService.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
-                }
-
-                if (new Random().Next(2) == 1)
-                {
-                    var substanceUseService = await ServiceProviderBotTestHelpers.CreateService<SubstanceUseData>(api, organization.Id);
-                    var substanceUseData = await ServiceProviderBotTestHelpers.CreateSubstanceUseData(api, user.Id, substanceUseService.Id, true, true, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal, ServiceProviderBotTestHelpers.DefaultTotal);
+                    if (new Random().Next(2) == 1)
+                    {
+                        // Create the service and data.
+                        var service = await TestHelpers.CreateService(api, organization.Id, type.ServiceType());
+                        var data = await TestHelpers.CreateServiceData(api, user.Id, service.Id, type);
+                    }
                 }
             }
         }

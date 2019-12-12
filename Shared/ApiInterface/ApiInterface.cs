@@ -10,12 +10,12 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Creates a new record of a model.
         /// </summary>
-        Task<string> Create<T>(T model) where T : ModelBase;
+        Task<string> Create(Model model);
 
         /// <summary>
         /// Saves changes to a model.
         /// </summary>
-        Task<bool> Update<T>(T model) where T : ModelBase;
+        Task<bool> Update(Model model);
 
         /// <summary>
         /// Gets a user from a turn context.
@@ -35,7 +35,7 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets an organization's service by type.
         /// </summary>
-        Task<Service> GetService<T>(string organizationId) where T : ServiceDataBase;
+        Task<Service> GetService(string organizationId, ServiceType serviceType);
 
         /// <summary>
         /// Gets all of an organization's services.
@@ -46,7 +46,7 @@ namespace Shared.ApiInterface
         /// Gets the latest shapshot for a service from the turn context.
         /// </summary>
         /// <param name="createdByUserTurnContext">Optionally pass a turn context to get the latest data created by the user</param>
-        Task<T> GetLatestServiceData<T>(string organizationId, ITurnContext createdByUserTurnContext = null) where T : ServiceDataBase, new();
+        Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null);
 
         /// <summary>
         /// Gets all verified organizations.
