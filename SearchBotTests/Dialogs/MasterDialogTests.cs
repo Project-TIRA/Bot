@@ -33,6 +33,19 @@ namespace SearchBotTests.Dialogs
         }
 
         [Fact]
+        public void UniqueServiceTypes()
+        {
+            List<ServiceType> serviceTypes = new List<ServiceType>();
+
+            foreach (var dataType in Helpers.GetServiceDataTypes())
+            {
+                // Make sure each service type only has a single data type to handle it.
+                Assert.DoesNotContain(dataType.ServiceType(), serviceTypes);
+                serviceTypes.Add(dataType.ServiceType());
+            }
+        }
+
+        [Fact]
         public void UniqueServiceFlags()
         {
             ServiceFlags flags = ServiceFlags.None;
@@ -51,14 +64,30 @@ namespace SearchBotTests.Dialogs
         [Fact]
         public void AllLuisEntities()
         {
-            // Make sure each LUIS entity is handled.
             var entities = typeof(LuisModel).GetFields().Where(f => f.FieldType == typeof(string[]));
 
+            // Make sure each LUIS entity is handled.
             foreach (var entity in entities)
             {
                 var (type, mapping) = ConversationContext.GetLuisMapping(entity.Name);
                 Assert.NotNull(type);
                 Assert.NotNull(mapping);
+            }
+        }
+
+        [Fact]
+        public void AllServiceTypes()
+        {
+            // Make sure each service type is handled.
+            foreach (ServiceType serviceType in Enum.GetValues(typeof(ServiceType)))
+            {
+                if (serviceType == ServiceType.Invalid)
+                {
+                    continue;
+                }
+
+                var dataType = Helpers.GetServiceByType(serviceType);
+                Assert.NotNull(dataType);
             }
         }
 
