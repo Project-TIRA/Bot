@@ -124,30 +124,62 @@ namespace Shared
         /// <summary>
         /// Gets the string from a list of services types.
         /// </summary>
+        public static string GetServicesString(ServiceFlags serviceFlags)
+        {
+            List<string> names = new List<string>();
+
+            foreach (var flag in SplitServiceFlags(serviceFlags))
+            {
+                var dataType = ServiceFlagToDataType(flag);
+                var name = dataType.ServiceTypeName();
+
+                var category = dataType.ServiceCategories().FirstOrDefault(c => c.ServiceFlags.HasFlag(flag));
+                if (category != null && category.Name != name)
+                {
+                    name = $"{category.Name} {name}";
+                }
+
+                names.Add(name);
+            }
+
+            return GetServicesString(names);
+        }
+
+        /// <summary>
+        /// Gets the string from a list of data types.
+        /// </summary>
         public static string GetServicesString(List<ServiceData> types)
         {
-            if (types.Count() == 0)
+            return GetServicesString(types.Select(t => t.ServiceTypeName()).ToList());
+        }
+
+        /// <summary>
+        /// Gets the string from a list of service names.
+        /// </summary>
+        public static string GetServicesString(List<string> names)
+        {
+            if (names.Count() == 0)
             {
                 return string.Empty;
             }
 
-            if (types.Count() == 1)
+            if (names.Count() == 1)
             {
-                return types[0].ServiceTypeName().ToLower();
+                return names[0].ToLower();
             }
 
-            if (types.Count() == 2)
+            if (names.Count() == 2)
             {
-                return $"{types[0].ServiceTypeName().ToLower()} and {types[1].ServiceTypeName().ToLower()}";
+                return $"{names[0].ToLower()} and {names[1].ToLower()}";
             }
             else
             {
                 string result = string.Empty;
 
-                for (int i = 0; i < types.Count; ++i)
+                for (int i = 0; i < names.Count; ++i)
                 {
-                    var separator = (i == types.Count - 1) ? ", and " : (!string.IsNullOrEmpty(result) ? ", " : string.Empty);
-                    result += separator + types[i].ServiceTypeName().ToLower();
+                    var separator = (i == names.Count - 1) ? ", and " : (!string.IsNullOrEmpty(result) ? ", " : string.Empty);
+                    result += separator + names[i].ToLower();
                 }
 
                 return result;

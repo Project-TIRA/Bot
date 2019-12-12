@@ -130,11 +130,6 @@ namespace SearchBot.Bot.State
             }
         }
 
-        public List<ServiceData> GetRequestedDataTypes()
-        {
-            return this.RequestedServices.Select(s => s.DataType()).ToList();
-        }
-
         public bool HasRequestedDataType(ServiceData dataType)
         {
             return this.RequestedServices.FirstOrDefault(c => c.ServiceType == dataType.ServiceType()) != null;

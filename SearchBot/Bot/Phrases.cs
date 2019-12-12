@@ -20,7 +20,7 @@ namespace SearchBot
 
             public static Activity GetSpecificType(ServiceData dataType)
             {
-                return MessageFactory.Text($"What type of {dataType.ServiceTypeName()} are you looking for?");
+                return MessageFactory.Text($"What type of {dataType.ServiceTypeName().ToLower()} are you looking for?");
             }
 
             public static Activity MakeRecommendation(List<MatchData> matches)
@@ -39,7 +39,7 @@ namespace SearchBot
                         result += Environment.NewLine + Environment.NewLine;
                     }
 
-                    result += $"{match.Organization.Name} has availability for {Helpers.GetServicesString(match.OrganizationDataTypes())} services." +
+                    result += $"{match.Organization.Name} has availability for {Helpers.GetServicesString(match.RequestedServiceFlags)} services." +
                         Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
                 }
 
@@ -48,7 +48,7 @@ namespace SearchBot
 
             public static Activity NoMatch(ConversationContext conversationContext)
             {
-                return MessageFactory.Text($"Unfortunately it looks like no organizations near {conversationContext.Location} have availability for {Helpers.GetServicesString(conversationContext.GetRequestedDataTypes())} services");
+                return MessageFactory.Text($"Unfortunately it looks like no organizations near {conversationContext.Location} have availability for {Helpers.GetServicesString(conversationContext.RequestedServiceFlags())} services");
             }
         }
     }
