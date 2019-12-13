@@ -16,7 +16,7 @@ namespace SearchBot.Bot.Models
 
         public ServiceData DataType()
         {
-            return Helpers.GetServiceByType(this.ServiceType);
+            return Helpers.GetServiceDataTypeByServiceType(this.ServiceType);
         }
 
         public bool IsComplete()

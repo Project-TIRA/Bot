@@ -104,9 +104,9 @@ namespace SearchBot.Bot.Dialogs.Search
                 return Phrases.Search.MakeRecommendation(matches);
             }
 
-            // If there are no combination matches, just return the closest organization for each service type.
-            //return MessageFactory.Text("TODO: No single or combo match");
 
+            // TODO: If there are no combination matches, mention which services
+            // couldn't be met and then return the closest organization for each service type.
 
 
             // TODO: Allow to search in another location.

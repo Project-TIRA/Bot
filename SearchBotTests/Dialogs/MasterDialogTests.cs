@@ -86,7 +86,7 @@ namespace SearchBotTests.Dialogs
                     continue;
                 }
 
-                var dataType = Helpers.GetServiceByType(serviceType);
+                var dataType = Helpers.GetServiceDataTypeByServiceType(serviceType);
                 Assert.NotNull(dataType);
             }
         }

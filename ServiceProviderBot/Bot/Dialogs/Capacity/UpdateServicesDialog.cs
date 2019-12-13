@@ -23,7 +23,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
         public override async Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var userContext = await this.state.GetUserContext(turnContext, cancellationToken);
-            var types = Helpers.GetServicesByType(userContext.TypesToUpdate);
+            var types = Helpers.GetServiceDataTypeByServiceType(userContext.TypesToUpdate);
 
             var waterfallSteps = new List<WaterfallStep>();
 

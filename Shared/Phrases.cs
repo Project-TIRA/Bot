@@ -58,7 +58,7 @@ namespace Shared
                 return MessageFactory.Text($"It looks like you aren't registered for channel \"{turnContext.Activity.ChannelId}\". Visit {WebsiteUrl} for more information");
             }
 
-            public static Activity RemindToUpdate(User user, Day day)
+            public static Activity RemindToUpdate(User user, Day day, string latestUpdateString)
             {
                 var name = !string.IsNullOrEmpty(user.Name) ? $", {user.Name}" : string.Empty;
                 var greeting = string.Empty;
@@ -69,7 +69,12 @@ namespace Shared
                     default: greeting = $"Happy {day.ToString()}{name}!"; break;
                 }
 
-                return MessageFactory.Text(greeting + " " + Keywords.HowToUpdateOrOptions);
+                if (!string.IsNullOrEmpty(latestUpdateString))
+                {
+                    greeting += "Here is the most recent data for your organization:" + Environment.NewLine + latestUpdateString;
+                }
+
+                return MessageFactory.Text(greeting + Environment.NewLine + Keywords.HowToUpdateOrOptions);
             }
 
             public static Activity GetKeywords(User user, bool welcomeUser = false)

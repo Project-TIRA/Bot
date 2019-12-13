@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Shared.Models;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -86,9 +85,9 @@ namespace Shared
         }
 
         /// <summary>
-        /// Gets the service for the given service type.
+        /// Gets the service data for the given service type.
         /// </summary>
-        public static ServiceData GetServiceByType(ServiceType serviceType)
+        public static ServiceData GetServiceDataTypeByServiceType(ServiceType serviceType)
         {
             return GetSubtypes<ServiceData>().FirstOrDefault(s => serviceType == s.ServiceType());
         }
@@ -96,10 +95,19 @@ namespace Shared
         /// <summary>
         /// Gets the services for each of the given service types.
         /// </summary>
-        public static List<ServiceData> GetServicesByType(IEnumerable<ServiceType> serviceTypes)
+        public static List<ServiceData> GetServiceDataTypeByServiceType(IEnumerable<ServiceType> serviceTypes)
         {
             return GetSubtypes<ServiceData>(where: s => serviceTypes.Contains(s.ServiceType()), orderBy: s => s.ServiceTypeName())
                 .ToList();
+        }        
+
+        /// <summary>
+        /// Gets the first service whose type name matches the given type name.
+        /// </summary>
+        public static ServiceData GetServiceDataTypeByName(string typeName)
+        {
+            return GetSubtypes<ServiceData>(where: s => s.ServiceTypeName() == typeName, orderBy: s => s.ServiceTypeName())
+                .FirstOrDefault();
         }
 
         /// <summary>
@@ -107,18 +115,9 @@ namespace Shared
         /// </summary>
         public static List<string> GetServiceTypeNames(IEnumerable<ServiceType> serviceTypes, bool toLower = false)
         {
-            return GetServicesByType(serviceTypes)
+            return GetServiceDataTypeByServiceType(serviceTypes)
                 .Select(s => toLower ? s.ServiceTypeName().ToLower() : s.ServiceTypeName())
                 .ToList();
-        }
-
-        /// <summary>
-        /// Gets the first service whose type name matches the given type name.
-        /// </summary>
-        public static ServiceData GetServiceTypeByName(string typeName)
-        {
-            return GetSubtypes<ServiceData>(where: s => s.ServiceTypeName() == typeName, orderBy: s => s.ServiceTypeName())
-                .FirstOrDefault();
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace EntityModel
 {
@@ -69,6 +70,21 @@ namespace EntityModel
         public virtual void CopyStaticValues<T>(T data) where T : ServiceData
         {
             this.ServiceId = data.ServiceId;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (var serviceCategory in this.ServiceCategories())
+            {
+                foreach (var subService in serviceCategory.Services)
+                {
+                    sb.AppendLine($"{subService.Name}: {GetProperty(subService.OpenPropertyName)} open");
+                }
+            }
+
+            return sb.ToString();
         }
     }
 

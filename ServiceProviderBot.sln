@@ -1,14 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29306.81
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityModel", "EntityModel\EntityModel.csproj", "{EAB706C6-67C9-4C42-BFBA-E5A746558617}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBot", "ServiceProviderBot\ServiceProviderBot.csproj", "{B361B495-77F1-4756-ACA2-B86BCA4536DE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBotTrigger", "BotTrigger\ServiceProviderBotTrigger.csproj", "{BC79A314-66C2-4132-860E-3E0F3293134E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBotTriggerHarness", "BotTriggerHarness\ServiceProviderBotTriggerHarness.csproj", "{693A06D1-289E-4573-8621-862F41B5EFAF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}"
 EndProject
@@ -21,6 +17,18 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBotTests", "ServiceProviderBotTests\ServiceProviderBotTests.csproj", "{77F83336-5C25-467E-ADE8-06EF19D72CC5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchBotTests", "SearchBotTests\SearchBotTests.csproj", "{5049C592-A1F0-40B7-8F60-7EB88F83C16A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderOrganizationQueueTrigger", "ServiceProviderOrganizationQueueTrigger\ServiceProviderOrganizationQueueTrigger.csproj", "{A5E94B25-D2D1-487C-94F3-27479732CBD6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderUserQueueTrigger", "ServiceProviderUserQueueTrigger\ServiceProviderUserQueueTrigger.csproj", "{46C53C1D-A4D9-4641-873A-4F40F60A2F04}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceProviderOrganizationQueueTriggerHarness", "ServiceProviderOrganizationQueueTriggerHarness\ServiceProviderOrganizationQueueTriggerHarness.csproj", "{685DE256-D772-4454-90EE-CF13D4AAE094}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceProviderUserQueueTriggerHarness", "ServiceProviderUserQueueTriggerHarness\ServiceProviderUserQueueTriggerHarness.csproj", "{FDBD8433-FBB0-4387-AB29-290DBE9F3424}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderTimerTrigger", "ServiceProviderTimerTrigger\ServiceProviderTimerTrigger.csproj", "{1BE8D57C-B2A5-4479-A4E8-AC3DD0ABD996}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderTimerTriggerHarness", "ServiceProviderTimerTriggerHarness\ServiceProviderTimerTriggerHarness.csproj", "{D8822416-F761-40C8-BEF6-1EA3EF7D3F1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,14 +44,6 @@ Global
 		{B361B495-77F1-4756-ACA2-B86BCA4536DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B361B495-77F1-4756-ACA2-B86BCA4536DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B361B495-77F1-4756-ACA2-B86BCA4536DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BC79A314-66C2-4132-860E-3E0F3293134E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC79A314-66C2-4132-860E-3E0F3293134E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC79A314-66C2-4132-860E-3E0F3293134E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC79A314-66C2-4132-860E-3E0F3293134E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{693A06D1-289E-4573-8621-862F41B5EFAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{693A06D1-289E-4573-8621-862F41B5EFAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{693A06D1-289E-4573-8621-862F41B5EFAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{693A06D1-289E-4573-8621-862F41B5EFAF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -64,6 +64,30 @@ Global
 		{5049C592-A1F0-40B7-8F60-7EB88F83C16A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5049C592-A1F0-40B7-8F60-7EB88F83C16A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5049C592-A1F0-40B7-8F60-7EB88F83C16A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5E94B25-D2D1-487C-94F3-27479732CBD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5E94B25-D2D1-487C-94F3-27479732CBD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5E94B25-D2D1-487C-94F3-27479732CBD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5E94B25-D2D1-487C-94F3-27479732CBD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46C53C1D-A4D9-4641-873A-4F40F60A2F04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46C53C1D-A4D9-4641-873A-4F40F60A2F04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46C53C1D-A4D9-4641-873A-4F40F60A2F04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46C53C1D-A4D9-4641-873A-4F40F60A2F04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{685DE256-D772-4454-90EE-CF13D4AAE094}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{685DE256-D772-4454-90EE-CF13D4AAE094}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{685DE256-D772-4454-90EE-CF13D4AAE094}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{685DE256-D772-4454-90EE-CF13D4AAE094}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDBD8433-FBB0-4387-AB29-290DBE9F3424}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDBD8433-FBB0-4387-AB29-290DBE9F3424}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDBD8433-FBB0-4387-AB29-290DBE9F3424}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDBD8433-FBB0-4387-AB29-290DBE9F3424}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BE8D57C-B2A5-4479-A4E8-AC3DD0ABD996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BE8D57C-B2A5-4479-A4E8-AC3DD0ABD996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BE8D57C-B2A5-4479-A4E8-AC3DD0ABD996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BE8D57C-B2A5-4479-A4E8-AC3DD0ABD996}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8822416-F761-40C8-BEF6-1EA3EF7D3F1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8822416-F761-40C8-BEF6-1EA3EF7D3F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8822416-F761-40C8-BEF6-1EA3EF7D3F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8822416-F761-40C8-BEF6-1EA3EF7D3F1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

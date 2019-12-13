@@ -1,0 +1,8 @@
+{
+  "Environment": "Development",
+  "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+  "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+  "ConnectionStrings": {
+    "DbModel": "data source=(LocalDb)\\MSSQLLocalDB;initial catalog=ProjectTira;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework"
+  }
+}

@@ -75,7 +75,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                             {
                                 // Selected a specific service type to update.
                                 singleService = true;
-                                userContext.TypesToUpdate.Add(Helpers.GetServiceTypeByName(result).ServiceType());
+                                userContext.TypesToUpdate.Add(Helpers.GetServiceDataTypeByName(result).ServiceType());
                             }
                         }
 
@@ -88,7 +88,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                             Debug.Assert(dialogContext.Result != null || services.Count == 1);
 
                             // Get the types so that they are alphabetical by type name.
-                            var types = Helpers.GetServicesByType(services.Select(s => s.Type));
+                            var types = Helpers.GetServiceDataTypeByServiceType(services.Select(s => s.Type));
                             userContext.TypesToUpdate.AddRange(types.Select(t => t.ServiceType()));
                         }
 

@@ -18,12 +18,17 @@ namespace Shared.ApiInterface
         Task<bool> Update(Model model);
 
         /// <summary>
+        /// Gets a user by ID.
+        /// </summary>
+        Task<User> GetUser(string userId);
+
+        /// <summary>
         /// Gets a user from a turn context.
         /// </summary>
         Task<User> GetUser(ITurnContext turnContext);
 
         /// <summary>
-        /// Gets an organization.
+        /// Gets an organization by ID.
         /// </summary>
         Task<Organization> GetOrganization(string organizationId);
 
@@ -43,7 +48,7 @@ namespace Shared.ApiInterface
         Task<List<Service>> GetServices(string organizationId);
 
         /// <summary>
-        /// Gets the latest shapshot for a service from the turn context.
+        /// Gets the latest shapshot for a service.
         /// </summary>
         /// <param name="createdByUserTurnContext">Optionally pass a turn context to get the latest data created by the user</param>
         Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null);
