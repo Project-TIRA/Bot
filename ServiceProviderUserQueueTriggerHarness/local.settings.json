@@ -2,6 +2,11 @@
   "Environment": "Development",
   "AzureWebJobsStorage": "UseDevelopmentStorage=true",
   "AzureWebJobsDashboard": "UseDevelopmentStorage=true",
+  "ServiceUrl": "https://sms.botframework.com",
+  "ChannelId": "ChannelId",
+  "BotPhoneNumber": "+12062600538",
+  "MicrosoftAppId": "4cd0f1ea-6f83-419a-a4fa-24878d30dd09",
+  "MicrosoftAppPassword": "K3I_8X5.7HZp]jAs[_d=80-Y_11=wZ@b",
   "ConnectionStrings": {
     "DbModel": "data source=(LocalDb)\\MSSQLLocalDB;initial catalog=ProjectTira;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework"
   }

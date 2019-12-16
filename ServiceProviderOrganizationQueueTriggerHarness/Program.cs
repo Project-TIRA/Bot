@@ -28,11 +28,11 @@ namespace ServiceProviderOrganizationQueueHarness
 
             // Get the next message from the queue.
             var queueHelper = new ServiceProviderOrganizationQueueHelper(configuration.AzureWebJobsStorage());
-            var message = await queueHelper.GetMessage();
+            var (message, data) = await queueHelper.GetMessage();
 
             try
             {
-                await Trigger.DoWork(configuration, message);
+                await Trigger.DoWork(configuration, data);
                 await queueHelper.DeleteMessage(message);
             }
             catch (Exception e)

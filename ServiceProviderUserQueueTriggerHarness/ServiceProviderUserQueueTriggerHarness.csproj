@@ -10,4 +10,10 @@
     <ProjectReference Include="..\ServiceProviderUserQueueTrigger\ServiceProviderUserQueueTrigger.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

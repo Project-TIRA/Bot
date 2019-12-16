@@ -80,7 +80,7 @@ namespace EntityModel
             {
                 foreach (var subService in serviceCategory.Services)
                 {
-                    sb.AppendLine($"{subService.Name}: {GetProperty(subService.OpenPropertyName)} open");
+                    sb.AppendLine($"{subService.Name}: {GetProperty(subService.OpenPropertyName)}");
                 }
             }
 

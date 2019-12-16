@@ -69,12 +69,20 @@ namespace Shared
                     default: greeting = $"Happy {day.ToString()}{name}!"; break;
                 }
 
-                if (!string.IsNullOrEmpty(latestUpdateString))
+                if (string.IsNullOrEmpty(latestUpdateString))
                 {
-                    greeting += "Here is the most recent data for your organization:" + Environment.NewLine + latestUpdateString;
+                    greeting += " " + Keywords.HowToUpdateOrOptions;
+                }
+                else
+                {
+                    greeting += " Here is the most recent data for your organization:" +
+                       Environment.NewLine + Environment.NewLine +
+                       latestUpdateString +
+                       Environment.NewLine + Environment.NewLine +
+                       Keywords.HowToUpdateOrOptions;
                 }
 
-                return MessageFactory.Text(greeting + Environment.NewLine + Keywords.HowToUpdateOrOptions);
+                return MessageFactory.Text(greeting);
             }
 
             public static Activity GetKeywords(User user, bool welcomeUser = false)

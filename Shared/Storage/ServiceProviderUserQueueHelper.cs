@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Azure.Storage.Queue;
+using Newtonsoft.Json;
 using System.Threading.Tasks;
 
 namespace Shared.Storage
@@ -18,15 +19,16 @@ namespace Shared.Storage
             await AddMessage(this.connectionString, QueueName, JsonConvert.SerializeObject(data));
         }
 
-        public async Task<ServiceProviderUserQueueData> GetMessage()
+        public async Task<(CloudQueueMessage Message, ServiceProviderUserQueueData data)> GetMessage()
         {
             var message = await GetMessage(this.connectionString, QueueName);
-            return JsonConvert.DeserializeObject<ServiceProviderUserQueueData>(message);
+            var data = JsonConvert.DeserializeObject<ServiceProviderUserQueueData>(message.AsString);
+            return (message, data);
         }
 
-        public async Task DeleteMessage(ServiceProviderUserQueueData message)
+        public async Task DeleteMessage(CloudQueueMessage message)
         {
-            await DeleteMessage(this.connectionString, QueueName, JsonConvert.SerializeObject(message));
+            await DeleteMessage(this.connectionString, QueueName, message);
         }
     }
 

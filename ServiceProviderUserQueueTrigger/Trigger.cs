@@ -63,15 +63,8 @@ namespace ServiceProviderUserQueueTrigger
 
                 await adapter.ContinueConversationAsync(creds.MicrosoftAppId, convo, async (context, token) =>
                 {
-                    try
-                    {
-                        var day = GetCurrentDay();
-                        await context.SendActivityAsync(Phrases.Greeting.RemindToUpdate(user, day, queueData.LatestUpdateString));
-                    }
-                    catch (Exception e)
-                    {
-                        LogException(log, e);
-                    }
+                    var day = GetCurrentDay();
+                    await context.SendActivityAsync(Phrases.Greeting.RemindToUpdate(user, day, queueData.LatestUpdateString));
                 }, new CancellationToken());
             }
         }

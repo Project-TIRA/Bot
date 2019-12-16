@@ -21,15 +21,16 @@ namespace Shared.Storage
             await AddMessage(this.connectionString, QueueName, JsonConvert.SerializeObject(message));
         }
 
-        public async Task<ServiceProviderOrganizationQueueData> GetMessage()
+        public async Task<(CloudQueueMessage Message, ServiceProviderOrganizationQueueData data)> GetMessage()
         {
             var message = await GetMessage(this.connectionString, QueueName);
-            return JsonConvert.DeserializeObject<ServiceProviderOrganizationQueueData>(message);
+            var data = JsonConvert.DeserializeObject<ServiceProviderOrganizationQueueData>(message.AsString);
+            return (message, data);
         }
 
-        public async Task DeleteMessage(ServiceProviderOrganizationQueueData message)
+        public async Task DeleteMessage(CloudQueueMessage message)
         {
-            await DeleteMessage(this.connectionString, QueueName, JsonConvert.SerializeObject(message));
+            await DeleteMessage(this.connectionString, QueueName, message);
         }
     }
 
