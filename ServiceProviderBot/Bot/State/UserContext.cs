@@ -7,6 +7,7 @@ namespace ServiceProviderBot.Bot.State
     {
         public string UserId { get; set; }
         public string OrganizationId { get; set; }
+        public int TimezoneOffset { get; set; }
         public List<ServiceType> TypesToUpdate { get; set; }
 
         public UserContext()

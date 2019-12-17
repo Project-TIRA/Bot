@@ -24,16 +24,20 @@ namespace Shared
         public static class Keywords
         {
             public const string Update = "update";
+            public const string Options = "options";
             public const string Feedback = "feedback";
+            public const string Days = "days";
+            public const string Time = "time";
             public const string Enable = "enable";
             public const string Disable = "disable";
-            public const string Options = "options";
 
-            public static List<string> List = new List<string>() { Update, Feedback, Enable, Disable };
+            public static List<string> List = new List<string>() { Update, Options, Feedback, Days, Time, Enable, Disable };
 
             public static string HowToUpdate = $"Send \"{Update}\" to update your availability";
             public static string HowToUpdateOrOptions = $"Send \"{Update}\" to update your availability or \"{Options}\" for more options";
             public static string HowToFeedback = $"Send \"{Feedback}\" to provide feedback";
+            public static string HowToChangeDays = $"Send \"{Days}\" to change the days that the {ProjectName} bot will contact you for your availability";
+            public static string HowToChangeTime = $"Send \"{Time}\" to change the time that the {ProjectName} bot will contact you for your availability";
             public static string HowToEnable = $"Send \"{Enable}\" to allow the {ProjectName} bot to contact you for your availability";
             public static string HowToDisable = $"Send \"{Disable}\" to stop the {ProjectName} bot from contacting you for your availability";
         }
@@ -85,19 +89,23 @@ namespace Shared
                 return MessageFactory.Text(greeting);
             }
 
-            public static Activity GetKeywords(User user, bool welcomeUser = false)
+            public static Activity GetKeywordsShort(User user, bool welcomeUser = false)
             {
                 string greeting = welcomeUser ? (Welcome(user) + Environment.NewLine) : string.Empty;
-                greeting += "- " + Keywords.HowToUpdate + Environment.NewLine +
-                            "- " + Keywords.HowToFeedback + Environment.NewLine +
-                            "- " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable);
-
+                greeting += Keywords.HowToUpdateOrOptions;
                 return MessageFactory.Text(greeting);
             }
 
-            public static Activity ContactEnabledUpdated(bool contactEnabled)
+            public static Activity GetKeywordsWithOptions(User user)
             {
-                return MessageFactory.Text($"Your contact preference has been updated. " + (contactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable));
+                var greeting =
+                    "- " + Keywords.HowToUpdate + Environment.NewLine +
+                    "- " + Keywords.HowToFeedback + Environment.NewLine +
+                    "- " + Keywords.HowToChangeDays + Environment.NewLine +
+                    "- " + Keywords.HowToChangeTime + Environment.NewLine +
+                    "- " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable);
+
+                return MessageFactory.Text(greeting);
             }
         }
 
@@ -125,50 +133,34 @@ namespace Shared
             public static Activity Thanks = MessageFactory.Text("Thanks for the feedback!");
         }
 
-        public static class Services
+        public static class Preferences
         {
-            public static string All = "All";
+            private const string GetCurrentTimeFormat = "\"h:mm am/pm\"";
+            private const string GetUpdateTimeFormat = "\"h am/pm\"";
 
-            public static class CaseManagement
+            public static Activity Updated = MessageFactory.Text("Your contact preference has been updated!");
+
+            public static Activity GetCurrentTime = MessageFactory.Text("What time is it for you currently? This is to determine your timezone");
+            public static Activity GetCurrentTimeRetry = MessageFactory.Text($"Oops, the format is {GetCurrentTimeFormat}. For example, 8:30am or 12:15pm");
+
+            public static Activity GetUpdateTime = MessageFactory.Text("What hour of the day would you like to be contacted?");
+            public static Activity GetUpdateTimeRetry = MessageFactory.Text($"Oops, the format is {GetUpdateTimeFormat}. For example, 8am or 12pm");
+
+            public static Activity GetUpdateOnDay(Day day)
             {
-                
+                return MessageFactory.Text($"Would you like to be contacted on {day.ToString()}?");
             }
 
-            public static class Housing
+            public static Activity ContactEnabledUpdated(bool contactEnabled)
             {
-                public const string Emergency = "Emergency";
-                public const string LongTerm = "Long-term";
-                public const string EmergencySharedBeds = "Emergency Shared-Space Beds";
-                public const string EmergencyPrivateBeds = "Emergency Private Beds";
-                public const string LongTermSharedBeds = "Long-term shared-space Beds";
-                public const string LongTermPrivateBeds = "Long-term Private Beds";
+                return MessageFactory.Text($"{Updated.Text} " + (contactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable));
             }
 
-            public static class Employment
-            {
-                public const string JobReadinessTraining = "Job Readiness Training";
-                public const string PaidInternships = "Paid Internships";
-                public const string VocationalTraining = "Vocational Training";
-                public const string EmploymentPlacement = "Employment Placement";
-            }
-
-            public static class MentalHealth
-            {
-                public const string InPatient = "Mental Health In-Patient";
-                public const string OutPatient = "Mental Health Out-Patient";
-            }
-
-            public static class SubstanceUse
-            {
-                public const string Detox = "Substance Use Detox";
-                public const string InPatient = "Substance Use In-Patient";
-                public const string OutPatient = "Substance Use Out-Patient";
-                public const string Group = "Substance Use Group Services";
-            }
         }
 
         public static class Update
         {
+            public const string All = "All";
             public static Activity Options = MessageFactory.Text("Which service(s) would you like to update?");
             public static Activity NothingToUpdate = MessageFactory.Text("It looks like there isn't anything to update!");
             public static Activity Closing = MessageFactory.Text("Thanks for the update!");

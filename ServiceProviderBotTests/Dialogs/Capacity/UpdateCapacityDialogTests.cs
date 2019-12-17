@@ -96,7 +96,7 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
             if (types.Count > 1)
             {
                 testFlow = testFlow.AssertReply(StartsWith(Phrases.Update.Options));
-                testFlow = testFlow.Send(Phrases.Services.All);
+                testFlow = testFlow.Send(Phrases.Update.All);
             }
 
             // Add each sub-service from the service types to the test flow.

@@ -85,7 +85,7 @@ namespace ServiceProviderBotTests.Dialogs
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Enable, Phrases.Greeting.ContactEnabledUpdated(true))
+                .Test(Phrases.Keywords.Enable, Phrases.Preferences.ContactEnabledUpdated(true))
                 .StartTestAsync();
 
             user = await this.api.GetUser(this.turnContext);
@@ -102,11 +102,23 @@ namespace ServiceProviderBotTests.Dialogs
             await this.api.Update(user);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Disable, Phrases.Greeting.ContactEnabledUpdated(false))
+                .Test(Phrases.Keywords.Disable, Phrases.Preferences.ContactEnabledUpdated(false))
                 .StartTestAsync();
 
             user = await this.api.GetUser(this.turnContext);
             Assert.True(!user.ContactEnabled);
+        }
+
+        [Fact]
+        public async Task Feedback()
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Test(Phrases.Keywords.Feedback, Phrases.Feedback.GetFeedback)
+                .Test(Phrases.Keywords.Feedback, Phrases.Feedback.Thanks)
+                .StartTestAsync();
         }
 
         [Theory]

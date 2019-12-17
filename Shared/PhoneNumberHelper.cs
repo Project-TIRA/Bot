@@ -1,6 +1,6 @@
 ﻿namespace Shared
 {
-    public static class PhoneNumber
+    public static class PhoneNumberHelper
     {
         /// <summary>
         /// Converts a phone number to +1XXXYYYZZZZ format.

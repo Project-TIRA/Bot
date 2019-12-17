@@ -57,7 +57,7 @@ namespace ServiceProviderUserQueueTrigger
                 var credentialProvider = new SimpleCredentialProvider(creds.MicrosoftAppId, creds.MicrosoftAppPassword);
                 var adapter = new BotFrameworkAdapter(credentialProvider);
                 var botAccount = new ChannelAccount() { Id = configuration.BotPhoneNumber() };
-                var userAccount = new ChannelAccount() { Id = PhoneNumber.Standardize(user.PhoneNumber) };
+                var userAccount = new ChannelAccount() { Id = PhoneNumberHelper.Standardize(user.PhoneNumber) };
                 var convoAccount = new ConversationAccount(id: userAccount.Id);
                 var convo = new ConversationReference(null, userAccount, botAccount, convoAccount, configuration.ChannelId(), configuration.ServiceUrl());
 

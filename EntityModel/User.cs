@@ -22,6 +22,9 @@ namespace EntityModel
         public Day ReminderFrequency { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
+        public string ReminderTime { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
         public bool ContactEnabled { get; set; }
 
         public override IContractResolver ContractResolver() { return Resolver.Instance; }

@@ -47,7 +47,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
 
                             // Give an option to update a specific service or all services.
                             var choices = new List<Choice>();
-                            choices.Add(new Choice { Value = Phrases.Services.All });
+                            choices.Add(new Choice { Value = Phrases.Update.All });
                             typeNames.ForEach(s => choices.Add(new Choice { Value = s }));
 
                             return await dialogContext.PromptAsync(
@@ -71,7 +71,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                         if (dialogContext.Result != null && dialogContext.Result is FoundChoice)
                         {
                             var result = ((FoundChoice)dialogContext.Result).Value;
-                            if (result != Phrases.Services.All)
+                            if (result != Phrases.Update.All)
                             {
                                 // Selected a specific service type to update.
                                 singleService = true;
