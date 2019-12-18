@@ -26,7 +26,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Preferences
                 {
                     async (dialogContext, cancellationToken) =>
                     {
-                        // Check their current time to determine their timezone.
+                        // Get their local time to determine their timezone.
                         return await dialogContext.PromptAsync(
                             Prompt.HourMinutePrompt,
                             new PromptOptions {
@@ -38,11 +38,11 @@ namespace ServiceProviderBot.Bot.Dialogs.Preferences
                     async (dialogContext, cancellationToken) =>
                     {
                         // Get the result. This was already validated by the prompt.
-                        DateTimeHelper.ParseHourAndMinute((string)dialogContext.Result, out DateTime dt);
+                        DateTimeHelpers.ParseHourAndMinute((string)dialogContext.Result, out DateTime localNow);
 
                         // Determine the difference between the user's time and UTC and save the result in the user context.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.TimezoneOffset = (dt - DateTime.UtcNow).Hours;
+                        userContext.TimezoneOffset = (localNow - DateTime.UtcNow).Hours;
 
                         return await dialogContext.NextAsync(cancellationToken);
                     },
@@ -60,20 +60,20 @@ namespace ServiceProviderBot.Bot.Dialogs.Preferences
                     async (dialogContext, cancellationToken) =>
                     {
                         // Get the result. This was already validated by the prompt.
-                        DateTimeHelper.ParseHour((string)dialogContext.Result, out DateTime dt);
+                        DateTimeHelpers.ParseHour((string)dialogContext.Result, out DateTime reminderTimeLocal);
 
-                        // Adjust the contact time by the timezone offset so that it is stored in UTC.
+                        // Adjust the reminder time by the timezone offset so that it is stored in UTC.
                         // Negated in order to undo the offset.
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        dt = dt.AddHours(-userContext.TimezoneOffset);
+                        var reminderTimeUtc = reminderTimeLocal.AddHours(-userContext.TimezoneOffset);
 
                         // Update the user's preference.
                         var user = await api.GetUser(dialogContext.Context);
-                        user.ReminderTime = dt.ToShortTimeString();
+                        user.ReminderTime = reminderTimeUtc.ToShortTimeString();
                         await this.api.Update(user);
 
                         // Send a confirmation message.
-                        await Messages.SendAsync(Phrases.Preferences.Updated, dialogContext.Context, cancellationToken);
+                        await Messages.SendAsync(Phrases.Preferences.UpdateTimeUpdated(reminderTimeLocal.ToShortTimeString()), dialogContext.Context, cancellationToken);
 
                         // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(cancellationToken);

@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using EntityModel.Helpers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System;
 
 namespace EntityModel
 {
@@ -19,7 +19,7 @@ namespace EntityModel
         public string PhoneNumber { get; set; }
 
         [JsonProperty(PropertyName = "tira_updatefrequency")]
-        public Day ReminderFrequency { get; set; }
+        public DayFlags ReminderFrequency { get; set; }
 
         [JsonProperty(PropertyName = "TODO")]
         public string ReminderTime { get; set; }
@@ -39,18 +39,5 @@ namespace EntityModel
                 AddMap(x => x.Id, "contactId");
             }
         }
-    }
-
-    [Flags]
-    public enum Day
-    {
-        None = 0,
-        Sunday = (1 << 0),
-        Monday = (1 << 1),
-        Tuesday = (1 << 2),
-        Wednesday = (1 << 3),
-        Thursday = (1 << 4),
-        Friday = (1 << 5),
-        Saturday = (1 << 6)
     }
 }

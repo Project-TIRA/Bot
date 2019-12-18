@@ -1,4 +1,5 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,7 +23,7 @@ namespace Shared.Models
         {
             var types = new List<ServiceData>();
 
-            foreach (var flag in Helpers.SplitServiceFlags(this.OrganizationServiceFlags))
+            foreach (var flag in ServiceFlagsHelpers.SplitFlags(OrganizationServiceFlags))
             {
                 var type = Helpers.ServiceFlagToDataType(flag);
 

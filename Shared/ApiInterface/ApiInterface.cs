@@ -1,4 +1,5 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Bot.Builder;
 using System.Collections.Generic;
 using System.Threading.Tasks;

@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Shared.Storage
 {
-    public class ServiceProviderOrganizationQueueHelper : QueueHelper
+    public class ServiceProviderOrganizationQueueHelpers : QueueHelpers
     {
         public const string QueueName = "service-provider-organizations";
 
         private string connectionString;
 
-        public ServiceProviderOrganizationQueueHelper(string connectionString)
+        public ServiceProviderOrganizationQueueHelpers(string connectionString)
         {
             this.connectionString = connectionString;
         }

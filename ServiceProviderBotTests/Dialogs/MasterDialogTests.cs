@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;

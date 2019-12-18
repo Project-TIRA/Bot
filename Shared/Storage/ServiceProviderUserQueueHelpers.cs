@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 namespace Shared.Storage
 {
-    public class ServiceProviderUserQueueHelper : QueueHelper
+    public class ServiceProviderUserQueueHelpers : QueueHelpers
     {
         public const string QueueName = "service-provider-users";
 
         private string connectionString;
 
-        public ServiceProviderUserQueueHelper(string connectionString)
+        public ServiceProviderUserQueueHelpers(string connectionString)
         {
             this.connectionString = connectionString;
         }

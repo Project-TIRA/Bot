@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
@@ -16,8 +17,8 @@ namespace ServiceProviderUserQueueTrigger
 {
     public static class Trigger
     {
-        [FunctionName(ServiceProviderUserQueueHelper.QueueName)]
-        public static async Task Run([QueueTrigger(ServiceProviderUserQueueHelper.QueueName, Connection = "AzureWebJobsStorage")]
+        [FunctionName(ServiceProviderUserQueueHelpers.QueueName)]
+        public static async Task Run([QueueTrigger(ServiceProviderUserQueueHelpers.QueueName, Connection = "AzureWebJobsStorage")]
             ServiceProviderUserQueueData queueData, ILogger log, Microsoft.Azure.WebJobs.ExecutionContext context)
         {
             try
@@ -32,7 +33,7 @@ namespace ServiceProviderUserQueueTrigger
             }
             catch (Exception e)
             {
-                LogException(log, e);
+                Helpers.LogException(log, e);
                 throw e;
             }
         }
@@ -50,54 +51,22 @@ namespace ServiceProviderUserQueueTrigger
                     return;
                 }
 
-                LogInfo(log, $"Sending to {user.Name} at {user.PhoneNumber}");
+                Helpers.LogInfo(log, $"Sending to {user.Name} at {user.PhoneNumber}");
 
                 MicrosoftAppCredentials.TrustServiceUrl(configuration.ServiceUrl());
                 var creds = new MicrosoftAppCredentials(configuration.MicrosoftAppId(), configuration.MicrosoftAppPassword());
                 var credentialProvider = new SimpleCredentialProvider(creds.MicrosoftAppId, creds.MicrosoftAppPassword);
                 var adapter = new BotFrameworkAdapter(credentialProvider);
                 var botAccount = new ChannelAccount() { Id = configuration.BotPhoneNumber() };
-                var userAccount = new ChannelAccount() { Id = PhoneNumberHelper.Standardize(user.PhoneNumber) };
+                var userAccount = new ChannelAccount() { Id = PhoneNumberHelpers.Standardize(user.PhoneNumber) };
                 var convoAccount = new ConversationAccount(id: userAccount.Id);
                 var convo = new ConversationReference(null, userAccount, botAccount, convoAccount, configuration.ChannelId(), configuration.ServiceUrl());
 
                 await adapter.ContinueConversationAsync(creds.MicrosoftAppId, convo, async (context, token) =>
                 {
-                    var day = GetCurrentDay();
+                    var day = DayFlagsHelpers.CurrentDay();
                     await context.SendActivityAsync(Phrases.Greeting.RemindToUpdate(user, day, queueData.LatestUpdateString));
                 }, new CancellationToken());
-            }
-        }
-
-        private static Day GetCurrentDay()
-        {
-            DateTime today = DateTime.UtcNow;
-            switch (today.DayOfWeek)
-            {
-                case DayOfWeek.Sunday: return Day.Sunday;
-                case DayOfWeek.Monday: return Day.Monday;
-                case DayOfWeek.Tuesday: return Day.Tuesday;
-                case DayOfWeek.Wednesday: return Day.Wednesday;
-                case DayOfWeek.Thursday: return Day.Thursday;
-                case DayOfWeek.Friday: return Day.Friday;
-                case DayOfWeek.Saturday: return Day.Saturday;
-                default: return Day.None;
-            }
-        }
-
-        private static void LogInfo(ILogger log, string text)
-        {
-            if (log != null)
-            {
-                log.LogInformation(text);
-            }
-        }
-
-        private static void LogException(ILogger log, Exception exception)
-        {
-            if (log != null)
-            {
-                log.LogError(exception, exception.Message);
             }
         }
     }

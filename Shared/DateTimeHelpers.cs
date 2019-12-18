@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 
 namespace Shared
 {
-    public static class DateTimeHelper
+    public static class DateTimeHelpers
     {
         static string[] hourFormats = { "htt", "h tt" };
         static string[] hourMinuteFormats = { "htt", "h tt", "h:mmtt", "h:mm tt" };

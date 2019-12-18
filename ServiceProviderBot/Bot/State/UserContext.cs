@@ -1,4 +1,4 @@
-﻿using EntityModel;
+﻿using EntityModel.Helpers;
 using System.Collections.Generic;
 
 namespace ServiceProviderBot.Bot.State

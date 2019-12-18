@@ -10,7 +10,7 @@ namespace Shared.Prompts
         {
             return async (promptContext, cancellationToken) =>
             {
-                var success = DateTimeHelper.ParseHourAndMinute(promptContext.Context.Activity.Text, out DateTime dt);
+                var success = DateTimeHelpers.ParseHourAndMinute(promptContext.Context.Activity.Text, out DateTime dt);
                 return await Task.FromResult(success);
             };
         }

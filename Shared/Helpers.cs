@@ -1,7 +1,9 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Shared.Models;
 using System;
@@ -25,7 +27,7 @@ namespace Shared
             switch (turnContext.Activity.ChannelId)
             {
                 case Channels.Emulator: return turnContext.Activity.From.Id;
-                case Channels.Sms: return PhoneNumber.Standardize(turnContext.Activity.From.Id);
+                case Channels.Sms: return PhoneNumberHelpers.Standardize(turnContext.Activity.From.Id);
                 default: Debug.Fail("Missing channel type"); return string.Empty;
             }
         }
@@ -127,7 +129,7 @@ namespace Shared
         {
             List<string> names = new List<string>();
 
-            foreach (var flag in SplitServiceFlags(serviceFlags))
+            foreach (var flag in ServiceFlagsHelpers.SplitFlags(serviceFlags))
             {
                 var dataType = ServiceFlagToDataType(flag);
                 var name = dataType.ServiceTypeName();
@@ -185,25 +187,6 @@ namespace Shared
             }
         }
 
-        public static IEnumerable<ServiceFlags> GetServiceFlags()
-        {
-            return Enum.GetValues(typeof(ServiceFlags)).OfType<ServiceFlags>().Where(f => f != ServiceFlags.None);
-        }
-
-        /// <summary>
-        /// Splits service flags into their individual flags.
-        /// </summary>
-        public static IEnumerable<ServiceFlags> SplitServiceFlags(ServiceFlags flags)
-        {
-            foreach (ServiceFlags value in GetServiceFlags())
-            {
-                if (flags.HasFlag(value))
-                {
-                    yield return value;
-                }
-            }
-        }
-
         /// <summary>
         /// Gets the data type that handles a service flag.
         /// </summary>
@@ -233,6 +216,22 @@ namespace Shared
 
             // Return the first city in the results.
             return data.Results.FirstOrDefault(r => r.EntityType == EntityType.Municipality)?.Position;
+        }
+
+        public static void LogInfo(ILogger log, string text)
+        {
+            if (log != null)
+            {
+                log.LogInformation(text);
+            }
+        }
+
+        public static void LogException(ILogger log, Exception exception)
+        {
+            if (log != null)
+            {
+                log.LogError(exception, exception.Message);
+            }
         }
     }
 }

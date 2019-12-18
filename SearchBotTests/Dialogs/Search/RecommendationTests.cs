@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EntityModel;
+using EntityModel.Helpers;
 using SearchBot.Bot.Dialogs.Search;
 using SearchBot.Bot.State;
 using Shared;
@@ -14,7 +15,7 @@ namespace SearchBotTests.Dialogs.Search
     public class RecommendationTests : DialogTestBase
     {
         [Theory]
-        [MemberData(nameof(TestFlags))]
+        [MemberData(nameof(TestServiceFlags))]
         public async Task SingleServiceFullMatch(ServiceFlags serviceFlag)
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
@@ -23,7 +24,7 @@ namespace SearchBotTests.Dialogs.Search
         }
 
         [Theory]
-        [MemberData(nameof(TestFlagPairs))]
+        [MemberData(nameof(TestServiceFlagPairs))]
         public async Task SingleServiceNoMatch(ServiceFlags serviceFlag1, ServiceFlags serviceFlag2)
         {
             // Skip if the flags can be handled by a single type.
@@ -36,7 +37,7 @@ namespace SearchBotTests.Dialogs.Search
         }
 
         [Theory]
-        [MemberData(nameof(TestFlagPairs))]
+        [MemberData(nameof(TestServiceFlagPairs))]
         public async Task MultipleServicesFullMatch(ServiceFlags serviceFlag1, ServiceFlags serviceFlag2)
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
@@ -45,7 +46,7 @@ namespace SearchBotTests.Dialogs.Search
         }
 
         [Theory]
-        [MemberData(nameof(TestFlagPairs))]
+        [MemberData(nameof(TestServiceFlagPairs))]
         public async Task MultipleServicesComboMatch(ServiceFlags serviceFlag1, ServiceFlags serviceFlag2)
         {
             // Skip if the flags can be handled by a single type.
@@ -61,7 +62,7 @@ namespace SearchBotTests.Dialogs.Search
         }
 
         [Theory]
-        [MemberData(nameof(TestFlagPairs))]
+        [MemberData(nameof(TestServiceFlagPairs))]
         public async Task MultipleServicesNoMatch(ServiceFlags serviceFlag1, ServiceFlags serviceFlag2)
         {
             // Skip if the flags can be handled by a single type.
@@ -76,7 +77,7 @@ namespace SearchBotTests.Dialogs.Search
                 var organization2Flags = ServiceFlags.None;
 
                 // Give the organizations a flag that does not match the requested ones.
-                foreach (var flag in Helpers.GetServiceFlags())
+                foreach (var flag in ServiceFlagsHelpers.AllFlags())
                 {
                     if (!requestedFlags.HasFlag(flag))
                     {
@@ -111,7 +112,7 @@ namespace SearchBotTests.Dialogs.Search
             // Only do for the first match entry since they each have the same RequestedServiceFlags.
             if (matches.Count > 0)
             {
-                foreach (var flag in Helpers.SplitServiceFlags(matches[0].RequestedServiceFlags))
+                foreach (var flag in ServiceFlagsHelpers.SplitFlags(matches[0].RequestedServiceFlags))
                 {
                     var dataType = Helpers.ServiceFlagToDataType(flag);
                     conversationContext.CreateOrUpdateServiceContext(dataType, flag);

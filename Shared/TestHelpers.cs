@@ -1,4 +1,5 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using Shared.ApiInterface;
 using System;
 using System.Collections.Generic;
@@ -91,7 +92,7 @@ namespace Shared
             var datas = new Dictionary<ServiceType, ServiceData>();
 
             // Go through each flag individually.
-            foreach (var flag in Helpers.SplitServiceFlags(serviceFlags))
+            foreach (var flag in ServiceFlagsHelpers.SplitFlags(serviceFlags))
             {
                 // Get the data type that handles the flag.
                 var dataType = Helpers.ServiceFlagToDataType(flag);

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using EntityModel;
+using EntityModel.Helpers;
 using SearchBot.Bot.Dialogs.Search;
 using SearchBot.Bot.State;
 using Shared;
@@ -11,7 +12,7 @@ namespace SearchBotTests.Dialogs.Search
     public class ServicesDialogTests : DialogTestBase
     {
         [Theory]
-        [MemberData(nameof(TestTypes))]
+        [MemberData(nameof(TestDataTypes))]
         public async Task SingleServiceClarifyCategory(ServiceData dataType)
         {
             var initialContext = new ConversationContext();
@@ -32,7 +33,7 @@ namespace SearchBotTests.Dialogs.Search
         }
 
         [Theory]
-        [MemberData(nameof(TestTypePairs))]
+        [MemberData(nameof(TestDataTypePairs))]
         public async Task MultipleServicesClarifyCategory(ServiceData dataType1, ServiceData dataType2)
         {
             // Skip if the data types are the same.

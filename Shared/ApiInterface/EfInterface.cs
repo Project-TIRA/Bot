@@ -1,4 +1,5 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.EntityFrameworkCore;

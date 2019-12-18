@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Shared.Storage
 {
-    public class QueueHelper
+    public class QueueHelpers
     {
         public async Task AddMessage(string connectionString, string queueName, string message)
         {

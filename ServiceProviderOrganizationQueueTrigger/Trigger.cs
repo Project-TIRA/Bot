@@ -12,10 +12,8 @@ namespace ServiceProviderOrganizationQueueTrigger
 {
     public static class Trigger
     {
-        public static string DbModelConnectionStringSettingName = "DbModel";
-
-        [FunctionName(ServiceProviderOrganizationQueueHelper.QueueName)]
-        public static async Task Run([QueueTrigger(ServiceProviderOrganizationQueueHelper.QueueName, Connection = "AzureWebJobsStorage")]
+        [FunctionName(ServiceProviderOrganizationQueueHelpers.QueueName)]
+        public static async Task Run([QueueTrigger(ServiceProviderOrganizationQueueHelpers.QueueName, Connection = "AzureWebJobsStorage")]
             ServiceProviderOrganizationQueueData queueData, ILogger log, ExecutionContext context)
         {
             try
@@ -32,17 +30,14 @@ namespace ServiceProviderOrganizationQueueTrigger
             }
             catch (Exception e)
             {
-                LogException(log, e);
+                Helpers.LogException(log, e);
                 throw e;
             }
         }
 
         public static async Task DoWork(IConfiguration configuration, ServiceProviderOrganizationQueueData queueData, ILogger log = null)
         {
-            var connectionString = configuration.GetConnectionString(DbModelConnectionStringSettingName);
-            var queueHelper = new ServiceProviderUserQueueHelper(configuration.AzureWebJobsStorage());
-
-            using (var db = DbModelFactory.Create(connectionString))
+            using (var db = DbModelFactory.Create(configuration.DbModelConnectionString()))
             {
                 var api = new EfInterface(db);
 
@@ -58,6 +53,8 @@ namespace ServiceProviderOrganizationQueueTrigger
                     }
                 }
 
+                var queueHelper = new ServiceProviderUserQueueHelpers(configuration.AzureWebJobsStorage());
+
                 foreach (var userId in queueData.UserIds)
                 {
                     var data = new ServiceProviderUserQueueData()
@@ -69,22 +66,6 @@ namespace ServiceProviderOrganizationQueueTrigger
                     // Add to the queue to process.
                     await queueHelper.Enqueue(data);
                 }
-            }
-        }
-
-        private static void LogInfo(ILogger log, string text)
-        {
-            if (log != null)
-            {
-                log.LogInformation(text);
-            }
-        }
-
-        private static void LogException(ILogger log, Exception exception)
-        {
-            if (log != null)
-            {
-                log.LogError(exception, exception.Message);
             }
         }
     }

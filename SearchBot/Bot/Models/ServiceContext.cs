@@ -1,4 +1,5 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using Shared;
 
 namespace SearchBot.Bot.Models

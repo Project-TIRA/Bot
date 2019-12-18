@@ -1,4 +1,5 @@
-﻿using EntityModel.Luis;
+﻿using EntityModel.Helpers;
+using EntityModel.Luis;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;

@@ -1,4 +1,5 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using EntityModel.Luis;
 using Microsoft.Extensions.Configuration;
 using SearchBot.Bot.Models;

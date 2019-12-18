@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EntityModel;
+using EntityModel.Helpers;
 using EntityModel.Luis;
 using Microsoft.Bot.Schema;
 using SearchBot;
@@ -95,7 +96,7 @@ namespace SearchBotTests.Dialogs
         public void AllServiceFlags()
         {
             // Make sure each service flag is handled.
-            foreach (var flag in Helpers.GetServiceFlags())
+            foreach (var flag in ServiceFlagsHelpers.AllFlags())
             {
                 var match = Helpers.GetServiceDataTypes()
                     .Any(t => t.ServiceCategories()

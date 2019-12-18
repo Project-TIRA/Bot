@@ -14,6 +14,7 @@ namespace Shared.Prompts
         public static string TextPrompt = "TextPrompt";
         public static string HourPrompt = "HourPrompt";
         public static string HourMinutePrompt = "HourMinutePrompt";
+        public static string DaysPrompt = "DaysPrompt";
 
         /// <summary>
         /// Adds each prompt to the master dialog set
@@ -30,6 +31,7 @@ namespace Shared.Prompts
             dialogs.Add(new TextPrompt(LocationTextPrompt, LocationPromptValidator.Create(configuration)));
             dialogs.Add(new TextPrompt(HourPrompt, HourPromptValidator.Create()));
             dialogs.Add(new TextPrompt(HourMinutePrompt, HourMinutePromptValidator.Create()));
+            dialogs.Add(new TextPrompt(DaysPrompt, DaysPromptValidator.Create()));
         }
     }
 }

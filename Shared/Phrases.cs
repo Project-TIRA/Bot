@@ -1,4 +1,5 @@
 ﻿﻿using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
@@ -62,14 +63,14 @@ namespace Shared
                 return MessageFactory.Text($"It looks like you aren't registered for channel \"{turnContext.Activity.ChannelId}\". Visit {WebsiteUrl} for more information");
             }
 
-            public static Activity RemindToUpdate(User user, Day day, string latestUpdateString)
+            public static Activity RemindToUpdate(User user, DayFlags day, string latestUpdateString)
             {
                 var name = !string.IsNullOrEmpty(user.Name) ? $", {user.Name}" : string.Empty;
                 var greeting = string.Empty;
 
                 switch (day)
                 {
-                    case Day.Monday: greeting = $"Hope you had a great weekend{name}!"; break;
+                    case DayFlags.Monday: greeting = $"Hope you had a great weekend{name}!"; break;
                     default: greeting = $"Happy {day.ToString()}{name}!"; break;
                 }
 
@@ -137,23 +138,32 @@ namespace Shared
         {
             private const string GetCurrentTimeFormat = "\"h:mm am/pm\"";
             private const string GetUpdateTimeFormat = "\"h am/pm\"";
+            private const string GetUpdateDaysFormat = "\"M,T,W,Th,F,Sa,Su\"";
 
-            public static Activity Updated = MessageFactory.Text("Your contact preference has been updated!");
+            private const string Updated = "Your contact preference has been updated";
 
             public static Activity GetCurrentTime = MessageFactory.Text("What time is it for you currently? This is to determine your timezone");
-            public static Activity GetCurrentTimeRetry = MessageFactory.Text($"Oops, the format is {GetCurrentTimeFormat}. For example, 8:30am or 12:15pm");
+            public static Activity GetCurrentTimeRetry = MessageFactory.Text($"Oops, the format is {GetCurrentTimeFormat}. For example, \"8:30 am\" or \"12:15 pm\"");
 
-            public static Activity GetUpdateTime = MessageFactory.Text("What hour of the day would you like to be contacted?");
-            public static Activity GetUpdateTimeRetry = MessageFactory.Text($"Oops, the format is {GetUpdateTimeFormat}. For example, 8am or 12pm");
+            public static Activity GetUpdateTime = MessageFactory.Text("Which hour of the day would you like to be contacted?");
+            public static Activity GetUpdateTimeRetry = MessageFactory.Text($"Oops, the format is {GetUpdateTimeFormat}. For example, \"8 am\" or \"12 pm\"");
 
-            public static Activity GetUpdateOnDay(Day day)
+            public static Activity GetUpdateDays = MessageFactory.Text($"Which days of the week would you like to be contacted? {GetUpdateDaysFormat}");
+            public static Activity GetUpdateDaysRetry = MessageFactory.Text($"Oops, the format is {GetUpdateDaysFormat}. For example, \"T,Th\" or \"M,W,F\"");
+
+            public static Activity UpdateTimeUpdated(string time)
             {
-                return MessageFactory.Text($"Would you like to be contacted on {day.ToString()}?");
+                return MessageFactory.Text($"{Updated} to {time}!");
+            }
+
+            public static Activity UpdateDaysUpdated(DayFlags days)
+            {
+                return MessageFactory.Text($"{Updated} to {DayFlagsHelpers.ToString(days)}!");
             }
 
             public static Activity ContactEnabledUpdated(bool contactEnabled)
             {
-                return MessageFactory.Text($"{Updated.Text} " + (contactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable));
+                return MessageFactory.Text($"{Updated}! " + (contactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable));
             }
 
         }

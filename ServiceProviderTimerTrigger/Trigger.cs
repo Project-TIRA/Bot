@@ -1,4 +1,5 @@
 using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -13,11 +14,8 @@ namespace ServiceProviderTimerTrigger
 {
     public static class Trigger
     {
-        public static string DbModelConnectionStringSettingName = "DbModel";
-
-        // TimerTrigger is in UTC - 1600 is 9am PST.
         [FunctionName("ServiceProviderBotTrigger")]
-        public static async Task Run([TimerTrigger("0 0 16 * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
+        public static async Task Run([TimerTrigger("0 0 * * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             try
             {
@@ -33,26 +31,25 @@ namespace ServiceProviderTimerTrigger
             }
             catch(Exception e)
             {
-                LogException(log, e);
+                Helpers.LogException(log, e);
                 throw e;
             }
         }
 
         public static async Task DoWork(IConfiguration configuration, ILogger log = null)
         {
-            var connectionString = configuration.GetConnectionString(DbModelConnectionStringSettingName);
-            var queueHelper = new ServiceProviderOrganizationQueueHelper(configuration.AzureWebJobsStorage());
-
-            using (var db = DbModelFactory.Create(connectionString))
+            using (var db = DbModelFactory.Create(configuration.DbModelConnectionString()))
             {
                 var api = new EfInterface(db);
 
                 // Get the current day.
-                var day = GetCurrentDay();
+                var day = DayFlagsHelpers.CurrentDay();
 
                 // Get all verified organizations.
                 var organizations = await api.GetVerifiedOrganizations();
-                LogInfo(log, $"Found {organizations.Count()} verified organizations");
+                Helpers.LogInfo(log, $"Found {organizations.Count()} verified organizations");
+
+                var queueHelper = new ServiceProviderOrganizationQueueHelpers(configuration.AzureWebJobsStorage());
 
                 foreach (var organization in organizations)
                 {
@@ -70,7 +67,16 @@ namespace ServiceProviderTimerTrigger
                             continue;
                         }
 
-                        // TODO: Check if the user should be reminded at this time.
+                        // Check if the user should be reminded at this time.
+                        // Special case: use 6pm UTC (10am PST) if their reminder time isn't set.
+                        DateTime userReminderTime = string.IsNullOrEmpty(user.ReminderTime) ?
+                            DateTime.Parse("6:00pm") : DateTime.Parse(user.ReminderTime);
+
+                        // Using a 5 minute window in case the function triggers slightly early or late.
+                        if (Math.Abs((DateTime.UtcNow - userReminderTime).TotalMinutes) > 5)
+                        {
+                            continue;
+                        }
 
                         data.UserIds.Add(user.Id);
                     }
@@ -81,38 +87,6 @@ namespace ServiceProviderTimerTrigger
                         await queueHelper.AddMessage(data);
                     }
                 }
-            }
-        }
-
-        private static Day GetCurrentDay()
-        {
-            DateTime today = DateTime.UtcNow;
-            switch (today.DayOfWeek)
-            {
-                case DayOfWeek.Sunday: return Day.Sunday;
-                case DayOfWeek.Monday: return Day.Monday;
-                case DayOfWeek.Tuesday: return Day.Tuesday;
-                case DayOfWeek.Wednesday: return Day.Wednesday;
-                case DayOfWeek.Thursday: return Day.Thursday;
-                case DayOfWeek.Friday: return Day.Friday;
-                case DayOfWeek.Saturday: return Day.Saturday;
-                default: return Day.None;
-            }
-        }
-
-        private static void LogInfo(ILogger log, string text)
-        {
-            if (log != null)
-            {
-                log.LogInformation(text);
-            }
-        }
-
-        private static void LogException(ILogger log, Exception exception)
-        {
-            if (log != null)
-            {
-                log.LogError(exception, exception.Message);
             }
         }
     }

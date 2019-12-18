@@ -1,3 +1,5 @@
+using EntityModel.Helpers;
+
 namespace EntityModel.Luis
 {
     public class LuisMapping

@@ -27,7 +27,7 @@ namespace ServiceProviderOrganizationQueueHarness
                 .Build();
 
             // Get the next message from the queue.
-            var queueHelper = new ServiceProviderUserQueueHelper(configuration.AzureWebJobsStorage());
+            var queueHelper = new ServiceProviderUserQueueHelpers(configuration.AzureWebJobsStorage());
             var (message, data) = await queueHelper.GetMessage();
 
             try
