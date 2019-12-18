@@ -34,13 +34,17 @@ namespace ServiceProviderBotTests.Dialogs.Preferences
             {
                 // ReminderDays, ReminderDaysIsValid
                 new object[] { "test", false },
-                new object[] { "Monday", false },
-                new object[] { "everyday", false },
+                new object[] { "mon,tues", false },
 
                 new object[] { "Sa,Su", true },
                 new object[] { "M,W,F", true },
-                new object[] { "M,T,W,Th,F", true },
+                new object[] { "m,t,w,th,f", true },
                 new object[] { "M,T,W,Th,F,Sa,Su", true },
+                new object[] { "Saturday", true },
+                new object[] { "Monday,Wednesday", true },
+                new object[] { "Weekdays", true },
+                new object[] { "weekends", true },
+                new object[] { "Everyday", true },
             };
         }
     }

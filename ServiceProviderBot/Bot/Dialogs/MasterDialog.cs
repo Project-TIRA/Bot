@@ -95,6 +95,24 @@ namespace ServiceProviderBot.Bot.Dialogs
                             await Messages.SendAsync(Phrases.Greeting.GetKeywordsWithOptions(user), dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(cancellationToken);
                         }
+                        else if (string.Equals(result, Phrases.Keywords.Same, StringComparison.OrdinalIgnoreCase))
+                        {
+                            var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+
+                            // Duplicate the latest service data.
+                            foreach (var dataType in Helpers.GetServiceDataTypes())
+                            {
+                                var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType);
+                                if (data != null)
+                                {
+                                    data.Id = Guid.NewGuid().ToString();
+                                    await this.api.Create(data);
+                                }
+                            }
+
+                            await Messages.SendAsync(Phrases.Update.Closing, dialogContext.Context, cancellationToken);
+                            return await dialogContext.EndDialogAsync(cancellationToken);
+                        }
                         else if (string.Equals(result, Phrases.Keywords.Latest, StringComparison.OrdinalIgnoreCase))
                         {
                             // Send the latest availability message.

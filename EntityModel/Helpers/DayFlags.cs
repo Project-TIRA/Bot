@@ -61,14 +61,25 @@ namespace EntityModel.Helpers
 
             foreach (var token in tokens)
             {
-                var key = StringMappings.FirstOrDefault(m => string.Equals(m.Value, token.Trim(), StringComparison.OrdinalIgnoreCase)).Key;
-                if (key == DayFlags.None)
+                // Check for an exact match to the enum value.
+                var match = Enum.GetValues(typeof(DayFlags)).OfType<DayFlags>().FirstOrDefault(
+                    f => string.Equals(f.ToString(), token.Trim(), StringComparison.OrdinalIgnoreCase));
+
+                if (match == DayFlags.None)
                 {
-                    dayFlags = DayFlags.None;
-                    return false;
+                    // Check for a match to the string mappings.
+                    match = StringMappings.FirstOrDefault(
+                        m => string.Equals(m.Value, token.Trim(), StringComparison.OrdinalIgnoreCase)).Key;
+
+                    if (match == DayFlags.None)
+                    {
+                        // No match - invalid token.
+                        dayFlags = DayFlags.None;
+                        return false;
+                    }
                 }
 
-                dayFlags |= key;
+                dayFlags |= match;
             }
 
             return true;

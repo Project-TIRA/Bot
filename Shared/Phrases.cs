@@ -26,6 +26,7 @@ namespace Shared
         {
             public const string Update = "update";
             public const string Options = "options";
+            public const string Same = "same";
             public const string Latest = "latest";
             public const string Feedback = "feedback";
             public const string Days = "days";
@@ -33,16 +34,20 @@ namespace Shared
             public const string Enable = "enable";
             public const string Disable = "disable";
 
-            public static List<string> List = new List<string>() { Update, Options, Latest, Feedback, Days, Time, Enable, Disable };
+            public static List<string> List = new List<string>() { Update, Options, Same, Latest, Feedback, Days, Time, Enable, Disable };
 
-            public static string HowToUpdate = $"Send \"{Update}\" to update your availability";
-            public static string HowToUpdateOrOptions = $"Send \"{Update}\" to update your availability or \"{Options}\" for more options";
-            public static string HowToCheckLatest = $"Send \"{Latest}\" to check the latest availability for your organization";
-            public static string HowToFeedback = $"Send \"{Feedback}\" to provide feedback";
-            public static string HowToChangeDays = $"Send \"{Days}\" to change the days that the {ProjectName} bot will contact you for your availability";
-            public static string HowToChangeTime = $"Send \"{Time}\" to change the time that the {ProjectName} bot will contact you for your availability";
-            public static string HowToEnable = $"Send \"{Enable}\" to allow the {ProjectName} bot to contact you for your availability";
-            public static string HowToDisable = $"Send \"{Disable}\" to stop the {ProjectName} bot from contacting you for your availability";
+            public static string HowToUpdate = $"\"{Update}\" to update your availability";
+            public static string HowToOptions = $"\"{Options}\" for more options";
+            public static string HowToDuplicateSame = $"\"{Same}\" to confirm your latest availability is still up-to-date";
+            public static string HowToCheckLatest = $"\"{Latest}\" to check your latest availability";
+            public static string HowToFeedback = $"\"{Feedback}\" to provide feedback";
+            public static string HowToChangeDays = $"\"{Days}\" to change the days that the {ProjectName} bot will contact you";
+            public static string HowToChangeTime = $"\"{Time}\" to change the time that the {ProjectName} bot will contact you";
+            public static string HowToEnable = $"\"{Enable}\" to allow the {ProjectName} bot to contact you";
+            public static string HowToDisable = $"\"{Disable}\" to stop the {ProjectName} bot from contacting you";
+
+            public static string HowToUpdateOrOptions = $"Send {HowToUpdate} or {HowToOptions}";
+            public static string HowToUpdateDuplicateOrOptions = $"Send {HowToUpdate}, {HowToDuplicateSame}, or {HowToOptions}";
         }
 
         public static class Greeting
@@ -78,7 +83,7 @@ namespace Shared
 
                 if (string.IsNullOrEmpty(latestUpdateString))
                 {
-                    greeting += " " + Keywords.HowToUpdateOrOptions;
+                    greeting += " " + Keywords.HowToUpdateDuplicateOrOptions;
                 }
                 else
                 {
@@ -86,7 +91,7 @@ namespace Shared
                        Environment.NewLine + Environment.NewLine +
                        latestUpdateString +
                        Environment.NewLine + Environment.NewLine +
-                       Keywords.HowToUpdateOrOptions;
+                       Keywords.HowToUpdateDuplicateOrOptions;
                 }
 
                 return MessageFactory.Text(greeting);
@@ -102,12 +107,13 @@ namespace Shared
             public static Activity GetKeywordsWithOptions(User user)
             {
                 var greeting =
-                    "- " + Keywords.HowToUpdate + Environment.NewLine +
-                    "- " + Keywords.HowToCheckLatest + Environment.NewLine +
-                    "- " + Keywords.HowToFeedback + Environment.NewLine +
-                    "- " + Keywords.HowToChangeDays + Environment.NewLine +
-                    "- " + Keywords.HowToChangeTime + Environment.NewLine +
-                    "- " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable);
+                    "- Send" + Keywords.HowToUpdate + Environment.NewLine +
+                    "- Send" + Keywords.HowToDuplicateSame + Environment.NewLine +
+                    "- Send" + Keywords.HowToCheckLatest + Environment.NewLine +
+                    "- Send" + Keywords.HowToFeedback + Environment.NewLine +
+                    "- Send" + Keywords.HowToChangeDays + Environment.NewLine +
+                    "- Send" + Keywords.HowToChangeTime + Environment.NewLine +
+                    "- Send" + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable);
 
                 return MessageFactory.Text(greeting);
             }

@@ -81,7 +81,7 @@ namespace ServiceProviderBotTests.Dialogs
 
         [Theory]
         [MemberData(nameof(TestTypes))]
-        public async Task CheckLatest(ServiceData dataType)
+        public async Task DuplicateLatest(ServiceData dataType)
         {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
@@ -89,11 +89,12 @@ namespace ServiceProviderBotTests.Dialogs
             var service = await TestHelpers.CreateService(this.api, organization.Id, dataType.ServiceType());
             var data = await TestHelpers.CreateServiceData(this.api, user.Id, service.Id, dataType);
 
-            var latestUpdateString = await Helpers.GetLatestUpdateString(this.api, organization.Id);
-
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Latest, latestUpdateString)
+                .Test(Phrases.Keywords.Same, Phrases.Update.Closing)
                 .StartTestAsync();
+
+            var resultData = await this.api.GetLatestServiceData(organization.Id, dataType, this.turnContext);
+            Assert.NotEqual(data.Id, resultData.Id);
         }
 
         [Fact]
