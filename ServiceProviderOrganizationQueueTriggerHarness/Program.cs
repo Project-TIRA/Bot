@@ -40,7 +40,6 @@ namespace ServiceProviderOrganizationQueueHarness
                 Console.WriteLine($"Exception caught: {e.Message}");
             }
 
-
             Console.WriteLine("Finished. Press 'Enter' to exit");
             Console.ReadLine();
         }

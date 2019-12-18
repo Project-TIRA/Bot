@@ -95,6 +95,15 @@ namespace ServiceProviderBot.Bot.Dialogs
                             await Messages.SendAsync(Phrases.Greeting.GetKeywordsWithOptions(user), dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(cancellationToken);
                         }
+                        else if (string.Equals(result, Phrases.Keywords.Latest, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Send the latest availability message.
+                            var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                            var latestUpdateString = await Helpers.GetLatestUpdateString(this.api, userContext.OrganizationId);
+
+                            await Messages.SendAsync(latestUpdateString, dialogContext.Context, cancellationToken);
+                            return await dialogContext.EndDialogAsync(cancellationToken);
+                        }
                         else if (string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase) ||
                                  string.Equals(result, Phrases.Keywords.Disable, StringComparison.OrdinalIgnoreCase))
                         {

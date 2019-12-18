@@ -79,6 +79,35 @@ namespace ServiceProviderBotTests.Dialogs
                 .StartTestAsync();
         }
 
+        [Theory]
+        [MemberData(nameof(TestTypes))]
+        public async Task CheckLatest(ServiceData dataType)
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            var service = await TestHelpers.CreateService(this.api, organization.Id, dataType.ServiceType());
+            var data = await TestHelpers.CreateServiceData(this.api, user.Id, service.Id, dataType);
+
+            var latestUpdateString = await Helpers.GetLatestUpdateString(this.api, organization.Id);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Test(Phrases.Keywords.Latest, latestUpdateString)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task Feedback()
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Test(Phrases.Keywords.Feedback, Phrases.Feedback.GetFeedback)
+                .Test(Phrases.Keywords.Feedback, Phrases.Feedback.Thanks)
+                .StartTestAsync();
+        }
+
         [Fact]
         public async Task Enable()
         {
@@ -108,18 +137,6 @@ namespace ServiceProviderBotTests.Dialogs
 
             user = await this.api.GetUser(this.turnContext);
             Assert.True(!user.ContactEnabled);
-        }
-
-        [Fact]
-        public async Task Feedback()
-        {
-            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
-            var user = await TestHelpers.CreateUser(this.api, organization.Id);
-
-            await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Feedback, Phrases.Feedback.GetFeedback)
-                .Test(Phrases.Keywords.Feedback, Phrases.Feedback.Thanks)
-                .StartTestAsync();
         }
 
         [Theory]

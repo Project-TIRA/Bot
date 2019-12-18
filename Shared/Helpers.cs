@@ -5,6 +5,7 @@ using Microsoft.Bot.Connector;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Shared.ApiInterface;
 using Shared.Models;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ namespace Shared
         /// </summary>
         public static string GetUserToken(ITurnContext turnContext)
         {
+            return "JB";
             switch (turnContext.Activity.ChannelId)
             {
                 case Channels.Emulator: return turnContext.Activity.From.Id;
@@ -193,6 +195,22 @@ namespace Shared
         public static ServiceData ServiceFlagToDataType(ServiceFlags serviceFlag)
         {
             return GetServiceDataTypes().FirstOrDefault(t => t.ServiceCategories().Any(c => c.ServiceFlags.HasFlag(serviceFlag)));
+        }
+
+        public static async Task<string> GetLatestUpdateString(IApiInterface api, string organizationId)
+        {
+            var result = string.Empty;
+
+            foreach (var dataType in GetServiceDataTypes())
+            {
+                var data = await api.GetLatestServiceData(organizationId, dataType);
+                if (data != null)
+                {
+                    result += data.ToString();
+                }
+            }
+
+            return result;
         }
 
         /// <summary>

@@ -40,20 +40,9 @@ namespace ServiceProviderOrganizationQueueTrigger
             using (var db = DbModelFactory.Create(configuration.DbModelConnectionString()))
             {
                 var api = new EfInterface(db);
-
-                // Get the latest update details for the organization.
-                var latestUpdateString = string.Empty;
-
-                foreach (var dataType in Helpers.GetServiceDataTypes())
-                {
-                    var data = await api.GetLatestServiceData(queueData.OrganizationId, dataType);
-                    if (data != null)
-                    {
-                        latestUpdateString += data.ToString();
-                    }
-                }
-
                 var queueHelper = new ServiceProviderUserQueueHelpers(configuration.AzureWebJobsStorage());
+
+                var latestUpdateString = await Helpers.GetLatestUpdateString(api, queueData.OrganizationId);
 
                 foreach (var userId in queueData.UserIds)
                 {

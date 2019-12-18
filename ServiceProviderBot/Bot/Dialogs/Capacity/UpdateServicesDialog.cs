@@ -58,14 +58,14 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
 
                             // Get the latest snapshot created by the user.
                             var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
-                            var totalPropertyValue = (int)data.GetProperty(subService.TotalPropertyName);
+                            var total = (int)data.GetProperty(subService.TotalPropertyName);
 
                             // Check if the organization has this service.
-                            if (totalPropertyValue > 0)
+                            if (total > 0)
                             {
                                 var validations = new LessThanOrEqualPromptValidations()
                                 {
-                                    Max = totalPropertyValue
+                                    Max = total
                                 };
 
                                 var prompt = Phrases.Capacity.GetOpenings(subService.Name);
@@ -76,7 +76,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                                         new PromptOptions
                                         {
                                             Prompt = prompt,
-                                            RetryPrompt = Phrases.Capacity.RetryInvalidCount(totalPropertyValue, prompt),
+                                            RetryPrompt = Phrases.Capacity.RetryInvalidCount(total, prompt),
                                             Validations = validations
                                         },
                                         cancellationToken);

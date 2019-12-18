@@ -76,11 +76,32 @@ namespace EntityModel
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-
+            
             foreach (var serviceCategory in this.ServiceCategories())
             {
                 foreach (var subService in serviceCategory.Services)
                 {
+                    var total = (int)GetProperty(subService.TotalPropertyName);
+                    if (total == 0)
+                    {
+                        continue;
+                    }
+
+                    var open = (int)GetProperty(subService.OpenPropertyName);
+                    if (open == 0)
+                    {
+                        // If there are no openings but there is a waitlist, give the waitlist status.
+                        var hasWaitlist = (bool)GetProperty(subService.HasWaitlistPropertyName);
+                        if (hasWaitlist)
+                        {
+                            var waitlistIsOpen = (bool)GetProperty(subService.WaitlistIsOpenPropertyName);
+                            sb.AppendLine($"{subService.Name}: waitlist {(waitlistIsOpen ? "open" : "closed")}");
+                            continue;
+                        }
+
+                    }
+
+                    // If there are openings, or there are no openings but no waitlist, give the number of openings.
                     sb.AppendLine($"{subService.Name}: {GetProperty(subService.OpenPropertyName)}");
                 }
             }

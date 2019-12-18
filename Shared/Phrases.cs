@@ -26,16 +26,18 @@ namespace Shared
         {
             public const string Update = "update";
             public const string Options = "options";
+            public const string Latest = "latest";
             public const string Feedback = "feedback";
             public const string Days = "days";
             public const string Time = "time";
             public const string Enable = "enable";
             public const string Disable = "disable";
 
-            public static List<string> List = new List<string>() { Update, Options, Feedback, Days, Time, Enable, Disable };
+            public static List<string> List = new List<string>() { Update, Options, Latest, Feedback, Days, Time, Enable, Disable };
 
             public static string HowToUpdate = $"Send \"{Update}\" to update your availability";
             public static string HowToUpdateOrOptions = $"Send \"{Update}\" to update your availability or \"{Options}\" for more options";
+            public static string HowToCheckLatest = $"Send \"{Latest}\" to check the latest availability for your organization";
             public static string HowToFeedback = $"Send \"{Feedback}\" to provide feedback";
             public static string HowToChangeDays = $"Send \"{Days}\" to change the days that the {ProjectName} bot will contact you for your availability";
             public static string HowToChangeTime = $"Send \"{Time}\" to change the time that the {ProjectName} bot will contact you for your availability";
@@ -80,7 +82,7 @@ namespace Shared
                 }
                 else
                 {
-                    greeting += " Here is the most recent data for your organization:" +
+                    greeting += " Here is the most recent availability for your organization:" +
                        Environment.NewLine + Environment.NewLine +
                        latestUpdateString +
                        Environment.NewLine + Environment.NewLine +
@@ -101,6 +103,7 @@ namespace Shared
             {
                 var greeting =
                     "- " + Keywords.HowToUpdate + Environment.NewLine +
+                    "- " + Keywords.HowToCheckLatest + Environment.NewLine +
                     "- " + Keywords.HowToFeedback + Environment.NewLine +
                     "- " + Keywords.HowToChangeDays + Environment.NewLine +
                     "- " + Keywords.HowToChangeTime + Environment.NewLine +
@@ -140,16 +143,20 @@ namespace Shared
             private const string GetUpdateTimeFormat = "\"h am/pm\"";
             private const string GetUpdateDaysFormat = "\"M,T,W,Th,F,Sa,Su\"";
 
+            private const string GetCurrentTimeExample = "You can say things like \"8:30 am\" or \"12:15 pm\"";
+            private const string GetUpdateTimeExample = "You can say things like \"8 am\" or \"12 pm\"";
+            private const string GetUpdateDaysExample = "You can say things like \"M,W,F\", \"weekdays\", \"weekends\", or \"everyday\"";
+
             private const string Updated = "Your contact preference has been updated";
 
-            public static Activity GetCurrentTime = MessageFactory.Text("What time is it for you currently? This is to determine your timezone");
-            public static Activity GetCurrentTimeRetry = MessageFactory.Text($"Oops, the format is {GetCurrentTimeFormat}. For example, \"8:30 am\" or \"12:15 pm\"");
+            public static Activity GetCurrentTime = MessageFactory.Text($"What time is it for you currently? This is to determine your timezone. {GetCurrentTimeExample}");
+            public static Activity GetCurrentTimeRetry = MessageFactory.Text($"Oops, the format is {GetCurrentTimeFormat}. {GetCurrentTimeExample}");
 
-            public static Activity GetUpdateTime = MessageFactory.Text("Which hour of the day would you like to be contacted?");
-            public static Activity GetUpdateTimeRetry = MessageFactory.Text($"Oops, the format is {GetUpdateTimeFormat}. For example, \"8 am\" or \"12 pm\"");
+            public static Activity GetUpdateTime = MessageFactory.Text($"Which hour of the day would you like to be contacted? {GetUpdateTimeExample}");
+            public static Activity GetUpdateTimeRetry = MessageFactory.Text($"Oops, the format is {GetUpdateTimeFormat}. {GetUpdateTimeExample}");
 
-            public static Activity GetUpdateDays = MessageFactory.Text($"Which days of the week would you like to be contacted? {GetUpdateDaysFormat}");
-            public static Activity GetUpdateDaysRetry = MessageFactory.Text($"Oops, the format is {GetUpdateDaysFormat}. For example, \"T,Th\" or \"M,W,F\"");
+            public static Activity GetUpdateDays = MessageFactory.Text($"Which days of the week would you like to be contacted? {GetUpdateDaysExample}");
+            public static Activity GetUpdateDaysRetry = MessageFactory.Text($"Oops, the format is {GetUpdateDaysFormat}. {GetUpdateDaysExample}");
 
             public static Activity UpdateTimeUpdated(string time)
             {
@@ -158,14 +165,13 @@ namespace Shared
 
             public static Activity UpdateDaysUpdated(DayFlags days)
             {
-                return MessageFactory.Text($"{Updated} to {DayFlagsHelpers.ToString(days)}!");
+                return MessageFactory.Text($"{Updated} to {days.ToString()}!");
             }
 
             public static Activity ContactEnabledUpdated(bool contactEnabled)
             {
                 return MessageFactory.Text($"{Updated}! " + (contactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable));
             }
-
         }
 
         public static class Update

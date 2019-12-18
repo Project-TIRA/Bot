@@ -18,8 +18,8 @@ namespace EntityModel.Helpers
         Saturday = (1 << 6),
 
         Weekdays = Monday | Tuesday | Wednesday | Thursday | Friday,
-        Weekend = Saturday | Sunday,
-        Everyday = Weekdays | Weekend
+        Weekends = Saturday | Sunday,
+        Everyday = Weekdays | Weekends
     }
 
     public static class DayFlagsHelpers
@@ -33,6 +33,9 @@ namespace EntityModel.Helpers
             { DayFlags.Friday, "F" },
             { DayFlags.Saturday, "Sa" },
             { DayFlags.Sunday, "Su" },
+            { DayFlags.Weekdays, "Weekdays" },
+            { DayFlags.Weekends, "Weekends" },
+            { DayFlags.Everyday, "Everyday" },
         };
 
         public static DayFlags CurrentDay()
@@ -48,26 +51,6 @@ namespace EntityModel.Helpers
                 case DayOfWeek.Friday: return DayFlags.Friday;
                 case DayOfWeek.Saturday: return DayFlags.Saturday;
                 default: return DayFlags.None;
-            }
-        }
-
-        public static string ToString(DayFlags dayFlags)
-        {
-            if (dayFlags == DayFlags.Everyday)
-            {
-                return "everyday";
-            }
-            else if (dayFlags == DayFlags.Weekdays)
-            {
-                return "weekdays";
-            }
-            else if (dayFlags == DayFlags.Weekend)
-            {
-                return "the weekend";
-            }
-            else
-            {
-                return dayFlags.ToString();
             }
         }
 
