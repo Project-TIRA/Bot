@@ -104,16 +104,15 @@ namespace Shared
                 return MessageFactory.Text(greeting);
             }
 
-            public static Activity GetKeywordsWithOptions(User user)
+            public static Activity GetKeywordOptions(User user)
             {
                 var greeting =
-                    "- Send" + Keywords.HowToUpdate + Environment.NewLine +
-                    "- Send" + Keywords.HowToDuplicateSame + Environment.NewLine +
-                    "- Send" + Keywords.HowToCheckLatest + Environment.NewLine +
-                    "- Send" + Keywords.HowToFeedback + Environment.NewLine +
-                    "- Send" + Keywords.HowToChangeDays + Environment.NewLine +
-                    "- Send" + Keywords.HowToChangeTime + Environment.NewLine +
-                    "- Send" + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable);
+                    "- Send " + Keywords.HowToDuplicateSame + Environment.NewLine +
+                    "- Send " + Keywords.HowToCheckLatest + Environment.NewLine +
+                    "- Send " + Keywords.HowToChangeDays + Environment.NewLine +
+                    "- Send " + Keywords.HowToChangeTime + Environment.NewLine +
+                    "- Send " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable) + Environment.NewLine +
+                    "- Send " + Keywords.HowToFeedback;
 
                 return MessageFactory.Text(greeting);
             }
@@ -126,14 +125,14 @@ namespace Shared
                 return MessageFactory.Text($"How many openings do you have for {serviceName}?");
             }
 
+            public static Activity GetOpeningsRetry(int total, Activity retryPrompt)
+            {
+                return MessageFactory.Text($"Oops, the openings cannot be more than the total available ({total}). {retryPrompt.Text}");
+            }
+
             public static Activity GetWaitlistIsOpen(string serviceName)
             {
                 return MessageFactory.Text($"Is your waitlist open for {serviceName}?");
-            }
-
-            public static Activity RetryInvalidCount(int total, Activity retryPrompt)
-            {
-                return MessageFactory.Text($"Oops, the openings cannot be more than the total available ({total}). {retryPrompt.Text}");
             }
         }
 

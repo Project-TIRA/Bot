@@ -76,7 +76,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                                         new PromptOptions
                                         {
                                             Prompt = prompt,
-                                            RetryPrompt = Phrases.Capacity.RetryInvalidCount(total, prompt),
+                                            RetryPrompt = Phrases.Capacity.GetOpeningsRetry(total, prompt),
                                             Validations = validations
                                         },
                                         cancellationToken);

@@ -76,7 +76,7 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
 
             await CreateTestFlow(UpdateCapacityDialog.Name, user)
                 .Test(Phrases.Keywords.Update, prompt)
-                .Test((TestHelpers.DefaultTotal + 1).ToString(), Phrases.Capacity.RetryInvalidCount(TestHelpers.DefaultTotal, prompt))
+                .Test((TestHelpers.DefaultTotal + 1).ToString(), Phrases.Capacity.GetOpeningsRetry(TestHelpers.DefaultTotal, prompt))
                 .StartTestAsync();
         }
 

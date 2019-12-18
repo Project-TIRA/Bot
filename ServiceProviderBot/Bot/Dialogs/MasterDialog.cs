@@ -92,7 +92,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         {
                             // Send the options message.
                             var user = await api.GetUser(dialogContext.Context);
-                            await Messages.SendAsync(Phrases.Greeting.GetKeywordsWithOptions(user), dialogContext.Context, cancellationToken);
+                            await Messages.SendAsync(Phrases.Greeting.GetKeywordOptions(user), dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(cancellationToken);
                         }
                         else if (string.Equals(result, Phrases.Keywords.Same, StringComparison.OrdinalIgnoreCase))
