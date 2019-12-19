@@ -75,7 +75,7 @@ namespace EntityModel
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
+            var result = string.Empty;
             
             foreach (var serviceCategory in this.ServiceCategories())
             {
@@ -87,6 +87,9 @@ namespace EntityModel
                         continue;
                     }
 
+                    // Add a newline if there is already some text.
+                    result += string.IsNullOrEmpty(result) ? string.Empty : "\n";
+
                     var open = (int)GetProperty(subService.OpenPropertyName);
                     if (open == 0)
                     {
@@ -95,18 +98,18 @@ namespace EntityModel
                         if (hasWaitlist)
                         {
                             var waitlistIsOpen = (bool)GetProperty(subService.WaitlistIsOpenPropertyName);
-                            sb.AppendLine($"{subService.Name}: waitlist {(waitlistIsOpen ? "open" : "closed")}");
+                            result += $"- {subService.Name}: waitlist {(waitlistIsOpen ? "open" : "closed")}";
                             continue;
                         }
 
                     }
 
                     // If there are openings, or there are no openings but no waitlist, give the number of openings.
-                    sb.AppendLine($"{subService.Name}: {GetProperty(subService.OpenPropertyName)}");
+                    result += $"- {subService.Name}: {GetProperty(subService.OpenPropertyName)}";
                 }
             }
 
-            return sb.ToString();
+            return result;
         }
     }
 

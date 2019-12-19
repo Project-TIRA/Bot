@@ -70,6 +70,26 @@ namespace Shared
                 return MessageFactory.Text($"It looks like you aren't registered for channel \"{turnContext.Activity.ChannelId}\". Visit {WebsiteUrl} for more information");
             }
 
+            public static Activity GetKeywordsShort(User user, bool welcomeUser = false)
+            {
+                string greeting = welcomeUser ? (Welcome(user) + Helpers.NewLine) : string.Empty;
+                greeting += Keywords.HowToUpdateOrOptions;
+                return MessageFactory.Text(greeting);
+            }
+
+            public static Activity GetKeywordOptions(User user)
+            {
+                var greeting =
+                    "- Send " + Keywords.HowToDuplicateSame + Helpers.NewLine +
+                    "- Send " + Keywords.HowToCheckLatest + Helpers.NewLine +
+                    "- Send " + Keywords.HowToChangeDays + Helpers.NewLine +
+                    "- Send " + Keywords.HowToChangeTime + Helpers.NewLine +
+                    "- Send " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable) + Helpers.NewLine +
+                    "- Send " + Keywords.HowToFeedback;
+
+                return MessageFactory.Text(greeting);
+            }
+
             public static Activity RemindToUpdate(User user, DayFlags day, string latestUpdateString)
             {
                 var name = !string.IsNullOrEmpty(user.Name) ? $", {user.Name}" : string.Empty;
@@ -87,32 +107,12 @@ namespace Shared
                 }
                 else
                 {
-                    greeting += " Here is the most recent availability for your organization:" +
-                       Environment.NewLine + Environment.NewLine +
+                    greeting += " Here is the most recent availability for your organization" +
+                       Helpers.NewLine + Helpers.NewLine +
                        latestUpdateString +
-                       Environment.NewLine + Environment.NewLine +
+                       Helpers.NewLine + Helpers.NewLine +
                        Keywords.HowToUpdateDuplicateOrOptions;
                 }
-
-                return MessageFactory.Text(greeting);
-            }
-
-            public static Activity GetKeywordsShort(User user, bool welcomeUser = false)
-            {
-                string greeting = welcomeUser ? (Welcome(user) + Environment.NewLine) : string.Empty;
-                greeting += Keywords.HowToUpdateOrOptions;
-                return MessageFactory.Text(greeting);
-            }
-
-            public static Activity GetKeywordOptions(User user)
-            {
-                var greeting =
-                    "- Send " + Keywords.HowToDuplicateSame + Environment.NewLine +
-                    "- Send " + Keywords.HowToCheckLatest + Environment.NewLine +
-                    "- Send " + Keywords.HowToChangeDays + Environment.NewLine +
-                    "- Send " + Keywords.HowToChangeTime + Environment.NewLine +
-                    "- Send " + (user.ContactEnabled ? Keywords.HowToDisable : Keywords.HowToEnable) + Environment.NewLine +
-                    "- Send " + Keywords.HowToFeedback;
 
                 return MessageFactory.Text(greeting);
             }

@@ -10,11 +10,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ServiceProviderTimerTrigger
+namespace ServiceProviderTriggers
 {
-    public static class Trigger
+    public static class TimerTrigger
     {
-        [FunctionName("ServiceProviderBotTrigger")]
+        [FunctionName(nameof(TimerTrigger))]
         public static async Task Run([TimerTrigger("0 0 * * * *")]TimerInfo myTimer, ILogger log, ExecutionContext context)
         {
             try
@@ -77,6 +77,8 @@ namespace ServiceProviderTimerTrigger
                         {
                             continue;
                         }
+
+                        Helpers.LogInfo(log, $"Adding {user.Name} from {organization.Name} to queue");
 
                         data.UserIds.Add(user.Id);
                     }

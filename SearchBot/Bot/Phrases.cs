@@ -6,7 +6,6 @@ using Shared;
 using Shared.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SearchBot
 {
@@ -36,11 +35,11 @@ namespace SearchBot
                 {
                     if (matches.Count > 1)
                     {
-                        result += Environment.NewLine + Environment.NewLine;
+                        result += Helpers.NewLine + Helpers.NewLine;
                     }
 
                     result += $"{match.Organization.Name} has availability for {Helpers.GetServicesString(match.RequestedServiceFlags)} services." +
-                        Environment.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
+                        Helpers.NewLine + $"You can reach them at {match.Organization.PhoneNumber} or {match.Organization.Address}";
                 }
 
                 return MessageFactory.Text(result);
@@ -48,7 +47,12 @@ namespace SearchBot
 
             public static Activity NoMatch(ConversationContext conversationContext)
             {
-                return MessageFactory.Text($"Unfortunately it looks like no organizations near {conversationContext.Location} have availability for {Helpers.GetServicesString(conversationContext.RequestedServiceFlags())} services");
+                return MessageFactory.Text($"Unfortunately it looks like no organizations within {conversationContext.SearchDistance} miles of {conversationContext.Location} have availability for {Helpers.GetServicesString(conversationContext.RequestedServiceFlags())} services");
+            }
+
+            public static Activity NoMatchSearchWider(ConversationContext conversationContext)
+            {
+                return MessageFactory.Text($"{NoMatch(conversationContext).Text}. Would you like to expand your search to {conversationContext.NextSearchDistance()} miles");
             }
         }
     }

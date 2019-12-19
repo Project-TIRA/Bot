@@ -20,19 +20,24 @@ namespace Shared
     public static class Helpers
     {
         /// <summary>
+        /// Twilio is currently the only supported interface and it does not support
+        /// "\r\n" from Environment.NewLine. We need to use "\n" instead.
+        /// </summary>
+        public static string NewLine { get { return "\n"; } }
+
+        /// <summary>
         /// Gets a user token from the turn context.
         /// This will vary based on the channel the message is rec.
         /// </summary>
         public static string GetUserToken(ITurnContext turnContext)
         {
-            return "JB";
             switch (turnContext.Activity.ChannelId)
             {
                 case Channels.Emulator: return turnContext.Activity.From.Id;
                 case Channels.Sms: return PhoneNumberHelpers.Standardize(turnContext.Activity.From.Id);
                 default: Debug.Fail("Missing channel type"); return string.Empty;
             }
-        }
+        }        
 
         /// <summary>
         /// Creates a derived type of a type.
@@ -206,6 +211,8 @@ namespace Shared
                 var data = await api.GetLatestServiceData(organizationId, dataType);
                 if (data != null)
                 {
+                    // Add a newline if there is already some text.
+                    result += string.IsNullOrEmpty(result) ? string.Empty : NewLine;
                     result += data.ToString();
                 }
             }

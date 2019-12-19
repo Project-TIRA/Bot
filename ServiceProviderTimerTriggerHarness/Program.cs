@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using ServiceProviderTimerTrigger;
+using ServiceProviderTriggers;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -26,7 +26,7 @@ namespace ServiceProviderTimerTriggerHarness
 
             try
             {
-                await Trigger.DoWork(configuration);
+                await TimerTrigger.DoWork(configuration);
             }
             catch (Exception e)
             {

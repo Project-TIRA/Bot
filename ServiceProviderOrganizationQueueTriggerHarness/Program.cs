@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using ServiceProviderOrganizationQueueTrigger;
+using ServiceProviderTriggers;
 using Shared;
 using Shared.Storage;
 using System;
@@ -32,7 +32,7 @@ namespace ServiceProviderOrganizationQueueHarness
 
             try
             {
-                await Trigger.DoWork(configuration, data);
+                await OrganizationQueueTrigger.DoWork(configuration, data);
                 await queueHelper.DeleteMessage(message);
             }
             catch (Exception e)

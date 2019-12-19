@@ -18,17 +18,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBotTests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchBotTests", "SearchBotTests\SearchBotTests.csproj", "{5049C592-A1F0-40B7-8F60-7EB88F83C16A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderOrganizationQueueTrigger", "ServiceProviderOrganizationQueueTrigger\ServiceProviderOrganizationQueueTrigger.csproj", "{A5E94B25-D2D1-487C-94F3-27479732CBD6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderTriggers", "ServiceProviderTriggers\ServiceProviderTriggers.csproj", "{56195853-0604-47B2-A89E-58E9B6AE6743}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderUserQueueTrigger", "ServiceProviderUserQueueTrigger\ServiceProviderUserQueueTrigger.csproj", "{46C53C1D-A4D9-4641-873A-4F40F60A2F04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderTimerTriggerHarness", "ServiceProviderTimerTriggerHarness\ServiceProviderTimerTriggerHarness.csproj", "{39F9DAF1-DF13-41A1-BE86-935129401A38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceProviderOrganizationQueueTriggerHarness", "ServiceProviderOrganizationQueueTriggerHarness\ServiceProviderOrganizationQueueTriggerHarness.csproj", "{685DE256-D772-4454-90EE-CF13D4AAE094}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderOrganizationQueueTriggerHarness", "ServiceProviderOrganizationQueueTriggerHarness\ServiceProviderOrganizationQueueTriggerHarness.csproj", "{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceProviderUserQueueTriggerHarness", "ServiceProviderUserQueueTriggerHarness\ServiceProviderUserQueueTriggerHarness.csproj", "{FDBD8433-FBB0-4387-AB29-290DBE9F3424}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderTimerTrigger", "ServiceProviderTimerTrigger\ServiceProviderTimerTrigger.csproj", "{1BE8D57C-B2A5-4479-A4E8-AC3DD0ABD996}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderTimerTriggerHarness", "ServiceProviderTimerTriggerHarness\ServiceProviderTimerTriggerHarness.csproj", "{D8822416-F761-40C8-BEF6-1EA3EF7D3F1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderUserQueueTriggerHarness", "ServiceProviderUserQueueTriggerHarness\ServiceProviderUserQueueTriggerHarness.csproj", "{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,36 +60,31 @@ Global
 		{5049C592-A1F0-40B7-8F60-7EB88F83C16A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5049C592-A1F0-40B7-8F60-7EB88F83C16A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5049C592-A1F0-40B7-8F60-7EB88F83C16A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A5E94B25-D2D1-487C-94F3-27479732CBD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A5E94B25-D2D1-487C-94F3-27479732CBD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A5E94B25-D2D1-487C-94F3-27479732CBD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A5E94B25-D2D1-487C-94F3-27479732CBD6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46C53C1D-A4D9-4641-873A-4F40F60A2F04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46C53C1D-A4D9-4641-873A-4F40F60A2F04}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46C53C1D-A4D9-4641-873A-4F40F60A2F04}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46C53C1D-A4D9-4641-873A-4F40F60A2F04}.Release|Any CPU.Build.0 = Release|Any CPU
-		{685DE256-D772-4454-90EE-CF13D4AAE094}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{685DE256-D772-4454-90EE-CF13D4AAE094}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{685DE256-D772-4454-90EE-CF13D4AAE094}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{685DE256-D772-4454-90EE-CF13D4AAE094}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FDBD8433-FBB0-4387-AB29-290DBE9F3424}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FDBD8433-FBB0-4387-AB29-290DBE9F3424}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FDBD8433-FBB0-4387-AB29-290DBE9F3424}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FDBD8433-FBB0-4387-AB29-290DBE9F3424}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1BE8D57C-B2A5-4479-A4E8-AC3DD0ABD996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1BE8D57C-B2A5-4479-A4E8-AC3DD0ABD996}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1BE8D57C-B2A5-4479-A4E8-AC3DD0ABD996}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1BE8D57C-B2A5-4479-A4E8-AC3DD0ABD996}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D8822416-F761-40C8-BEF6-1EA3EF7D3F1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8822416-F761-40C8-BEF6-1EA3EF7D3F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8822416-F761-40C8-BEF6-1EA3EF7D3F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8822416-F761-40C8-BEF6-1EA3EF7D3F1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56195853-0604-47B2-A89E-58E9B6AE6743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56195853-0604-47B2-A89E-58E9B6AE6743}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56195853-0604-47B2-A89E-58E9B6AE6743}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56195853-0604-47B2-A89E-58E9B6AE6743}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39F9DAF1-DF13-41A1-BE86-935129401A38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39F9DAF1-DF13-41A1-BE86-935129401A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39F9DAF1-DF13-41A1-BE86-935129401A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39F9DAF1-DF13-41A1-BE86-935129401A38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9B2F4199-6EF8-4FC0-93EC-F560B8C36493} = {6D893DF8-5CA6-419D-9B58-AD7398FE47A2}
+		{39F9DAF1-DF13-41A1-BE86-935129401A38} = {6D893DF8-5CA6-419D-9B58-AD7398FE47A2}
+		{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A} = {6D893DF8-5CA6-419D-9B58-AD7398FE47A2}
+		{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1} = {6D893DF8-5CA6-419D-9B58-AD7398FE47A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF5B0EAE-936E-42E6-8D2F-9E05497B10C2}

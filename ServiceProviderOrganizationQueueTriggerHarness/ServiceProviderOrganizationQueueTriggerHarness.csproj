@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EntityModel\EntityModel.csproj" />
-    <ProjectReference Include="..\ServiceProviderOrganizationQueueTrigger\ServiceProviderOrganizationQueueTrigger.csproj" />
+    <ProjectReference Include="..\ServiceProviderTriggers\ServiceProviderTriggers.csproj" />
   </ItemGroup>
 
 </Project>
