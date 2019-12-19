@@ -39,14 +39,14 @@ namespace SearchBot.Bot.Dialogs.Search
                         {
                             // Send the recommendation.
                             await Messages.SendAsync(recommendation, dialogContext.Context, cancellationToken);
-                            return await dialogContext.NextAsync(cancellationToken);
+                            return await dialogContext.NextAsync(null, cancellationToken);
                         }
 
                         if (!conversationContext.CanExpandSearchDistance())
                         {
                             // Notify that there were no matches.
                             await Messages.SendAsync(Phrases.Search.NoMatch(conversationContext), dialogContext.Context, cancellationToken);
-                            return await dialogContext.NextAsync(cancellationToken);
+                            return await dialogContext.NextAsync(null, cancellationToken);
                         }
 
                         // Ask if they would like to search a wider distance.
@@ -58,7 +58,7 @@ namespace SearchBot.Bot.Dialogs.Search
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        if ((bool)dialogContext.Result)
+                        if (dialogContext.Result != null && (bool)dialogContext.Result)
                         {
                             // Expand the search distance.
                             var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
