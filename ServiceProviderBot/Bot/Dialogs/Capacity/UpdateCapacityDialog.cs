@@ -47,7 +47,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
 
                             // Give an option to update a specific service or all services.
                             var choices = new List<Choice>();
-                            choices.Add(new Choice { Value = Phrases.Services.All });
+                            choices.Add(new Choice { Value = Phrases.Update.All });
                             typeNames.ForEach(s => choices.Add(new Choice { Value = s }));
 
                             return await dialogContext.PromptAsync(
@@ -71,11 +71,11 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                         if (dialogContext.Result != null && dialogContext.Result is FoundChoice)
                         {
                             var result = ((FoundChoice)dialogContext.Result).Value;
-                            if (result != Phrases.Services.All)
+                            if (result != Phrases.Update.All)
                             {
                                 // Selected a specific service type to update.
                                 singleService = true;
-                                userContext.TypesToUpdate.Add(Helpers.GetServiceTypeByName(result).ServiceType());
+                                userContext.TypesToUpdate.Add(Helpers.GetServiceDataTypeByName(result).ServiceType());
                             }
                         }
 
@@ -88,7 +88,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                             Debug.Assert(dialogContext.Result != null || services.Count == 1);
 
                             // Get the types so that they are alphabetical by type name.
-                            var types = Helpers.GetServicesByType(services.Select(s => s.Type));
+                            var types = Helpers.GetServiceDataTypeByServiceType(services.Select(s => s.Type));
                             userContext.TypesToUpdate.AddRange(types.Select(t => t.ServiceType()));
                         }
 

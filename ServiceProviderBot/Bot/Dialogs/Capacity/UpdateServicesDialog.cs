@@ -23,7 +23,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
         public override async Task<WaterfallDialog> GetWaterfallDialog(ITurnContext turnContext, CancellationToken cancellationToken)
         {
             var userContext = await this.state.GetUserContext(turnContext, cancellationToken);
-            var types = Helpers.GetServicesByType(userContext.TypesToUpdate);
+            var types = Helpers.GetServiceDataTypeByServiceType(userContext.TypesToUpdate);
 
             var waterfallSteps = new List<WaterfallStep>();
 
@@ -53,85 +53,85 @@ namespace ServiceProviderBot.Bot.Dialogs.Capacity
                         var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
                         if (userContext.TypesToUpdate.Contains(dataType.ServiceType()))
                         {
-                        // Get the service.
-                        var service = await this.api.GetService(userContext.OrganizationId, dataType.ServiceType());
+                            // Get the service.
+                            var service = await this.api.GetService(userContext.OrganizationId, dataType.ServiceType());
 
-                        // Get the latest snapshot created by the user.
-                        var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
-                            var totalPropertyValue = (int)data.GetProperty(subService.TotalPropertyName);
+                            // Get the latest snapshot created by the user.
+                            var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
+                            var total = (int)data.GetProperty(subService.TotalPropertyName);
 
-                        // Check if the organization has this service.
-                        if (totalPropertyValue > 0)
+                            // Check if the organization has this service.
+                            if (total > 0)
                             {
                                 var validations = new LessThanOrEqualPromptValidations()
                                 {
-                                    Max = totalPropertyValue
+                                    Max = total
                                 };
 
                                 var prompt = Phrases.Capacity.GetOpenings(subService.Name);
 
-                            // Prompt for the open count.
-                            return await dialogContext.PromptAsync(
-                                    Prompt.LessThanOrEqualPrompt,
-                                    new PromptOptions
-                                    {
-                                        Prompt = prompt,
-                                        RetryPrompt = Phrases.Capacity.RetryInvalidCount(totalPropertyValue, prompt),
-                                        Validations = validations
-                                    },
-                                    cancellationToken);
+                                // Prompt for the open count.
+                                return await dialogContext.PromptAsync(
+                                        Prompt.LessThanOrEqualPrompt,
+                                        new PromptOptions
+                                        {
+                                            Prompt = prompt,
+                                            RetryPrompt = Phrases.Capacity.GetOpeningsRetry(total, prompt),
+                                            Validations = validations
+                                        },
+                                        cancellationToken);
                             }
                         }
 
-                    // Skip this step.
-                    return await dialogContext.NextAsync(null, cancellationToken);
+                        // Skip this step.
+                        return await dialogContext.NextAsync(null, cancellationToken);
                     });
 
                     waterfallSteps.Add(async (dialogContext, cancellationToken) =>
                     {
-                    // Check if the previous step had a result.
-                    if (dialogContext.Result != null)
+                        // Check if the previous step had a result.
+                        if (dialogContext.Result != null)
                         {
                             var open = int.Parse((string)dialogContext.Result);
 
                             var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
-                        // Get the latest snapshot created by the user and update it.
-                        var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
+                            // Get the latest snapshot created by the user and update it.
+                            var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
                             data.SetProperty(subService.OpenPropertyName, open);
                             await this.api.Update(data);
 
-                        // Check if a waitlist is available.
-                        var hasWaitlist = (bool)data.GetProperty(subService.HasWaitlistPropertyName);
+                            // Check if a waitlist is available.
+                            var hasWaitlist = (bool)data.GetProperty(subService.HasWaitlistPropertyName);
                             if (hasWaitlist && open == 0)
                             {
-                            // Prompt for if the waitlist is open.
-                            return await dialogContext.PromptAsync(
+                                // Prompt for if the waitlist is open.
+                                return await dialogContext.PromptAsync(
                                     Prompt.ConfirmPrompt,
                                     new PromptOptions { Prompt = Phrases.Capacity.GetWaitlistIsOpen(subService.Name) },
                                     cancellationToken);
                             }
                         }
 
-                    // Skip this step.
-                    return await dialogContext.NextAsync(null, cancellationToken);
+                        // Skip this step.
+                        return await dialogContext.NextAsync(null, cancellationToken);
                     });
 
                     waterfallSteps.Add(async (dialogContext, cancellationToken) =>
                     {
-                    // Check if the previous step had a result.
-                    if (dialogContext.Result != null)
+                        // Check if the previous step had a result.
+                        if (dialogContext.Result != null)
                         {
                             var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
 
-                        // Get the latest snapshot created by the user and update it.
-                        var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
+                            // Get the latest snapshot created by the user and update it.
+                            var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType, createdByUserTurnContext: dialogContext.Context);
                             data.SetProperty(subService.WaitlistIsOpenPropertyName, (bool)dialogContext.Result);
                             await this.api.Update(data);
                         }
 
-                    // Skip this step.
-                    return await dialogContext.NextAsync(null, cancellationToken);
+                        // Skip this step.
+                        return await dialogContext.NextAsync(null, cancellationToken);
                     });
                 }
             }

@@ -1,4 +1,5 @@
-﻿using EntityModel.Luis;
+﻿using EntityModel.Helpers;
+using EntityModel.Luis;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace EntityModel
         public override IContractResolver ContractResolver() { return Resolver.Instance; }
         public override string TableName() { return TABLE_NAME; }
         public override string PrimaryKey() { return PRIMARY_KEY; }
-        public override ServiceType ServiceType() { return EntityModel.ServiceType.CaseManagement; }
+        public override ServiceType ServiceType() { return Helpers.ServiceType.CaseManagement; }
         public override string ServiceTypeName() { return SERVICE_NAME; }
 
         public override List<LuisMapping> LuisMappings()

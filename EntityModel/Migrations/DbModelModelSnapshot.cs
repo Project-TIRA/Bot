@@ -308,6 +308,8 @@ namespace EntityModel.Migrations
 
                     b.Property<int>("ReminderFrequency");
 
+                    b.Property<string>("ReminderTime");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PhoneNumber")

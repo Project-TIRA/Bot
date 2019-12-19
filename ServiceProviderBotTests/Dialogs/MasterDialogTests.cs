@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
@@ -78,6 +79,36 @@ namespace ServiceProviderBotTests.Dialogs
                 .StartTestAsync();
         }
 
+        [Theory]
+        [MemberData(nameof(TestTypes))]
+        public async Task DuplicateLatest(ServiceData dataType)
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            var service = await TestHelpers.CreateService(this.api, organization.Id, dataType.ServiceType());
+            var data = await TestHelpers.CreateServiceData(this.api, user.Id, service.Id, dataType);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Test(Phrases.Keywords.Same, Phrases.Update.Closing)
+                .StartTestAsync();
+
+            var resultData = await this.api.GetLatestServiceData(organization.Id, dataType, this.turnContext);
+            Assert.NotEqual(data.Id, resultData.Id);
+        }
+
+        [Fact]
+        public async Task Feedback()
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            var user = await TestHelpers.CreateUser(this.api, organization.Id);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Test(Phrases.Keywords.Feedback, Phrases.Feedback.GetFeedback)
+                .Test(Phrases.Keywords.Feedback, Phrases.Feedback.Thanks)
+                .StartTestAsync();
+        }
+
         [Fact]
         public async Task Enable()
         {
@@ -85,7 +116,7 @@ namespace ServiceProviderBotTests.Dialogs
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Enable, Phrases.Greeting.ContactEnabledUpdated(true))
+                .Test(Phrases.Keywords.Enable, Phrases.Preferences.ContactEnabledUpdated(true))
                 .StartTestAsync();
 
             user = await this.api.GetUser(this.turnContext);
@@ -102,7 +133,7 @@ namespace ServiceProviderBotTests.Dialogs
             await this.api.Update(user);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Disable, Phrases.Greeting.ContactEnabledUpdated(false))
+                .Test(Phrases.Keywords.Disable, Phrases.Preferences.ContactEnabledUpdated(false))
                 .StartTestAsync();
 
             user = await this.api.GetUser(this.turnContext);

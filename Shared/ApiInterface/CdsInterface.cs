@@ -15,6 +15,7 @@ using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using EntityModel.Helpers;
 
 namespace Shared.ApiInterface
 {
@@ -74,6 +75,20 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
+        /// Gets a user by ID.
+        /// </summary>
+        public async Task<User> GetUser(string userId)
+        {
+            JObject response = await GetJsonData(User.TABLE_NAME, $"$filter=contains(TODO!,'{userId}')");
+            if (response != null && response["value"].HasValues)
+            {
+                return JsonConvert.DeserializeObject<User>(response["value"].ToString(), GetJsonSettings(User.Resolver.Instance));
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Gets a user from the turn context.
         /// </summary>
         public async Task<User> GetUser(ITurnContext turnContext)
@@ -98,7 +113,7 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets an organization from the turn context.
+        /// Gets an organization by ID.
         /// </summary>
         public async Task<Organization> GetOrganization(string organizationId)
         {
@@ -115,7 +130,7 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the count of an organization's services from the turn context.
+        /// Gets the count of an organization's services.
         /// </summary>
         public async Task<int> GetServiceCount(string organizationId)
         {
@@ -132,7 +147,7 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets an organization's service by type from the turn context.
+        /// Gets an organization's service by type.
         /// </summary>
         public async Task<Service> GetService(string organizationId, ServiceType serviceType)
         {
@@ -152,7 +167,7 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets all of an organization's services from the turn context.
+        /// Gets all of an organization's services.
         /// </summary>
         public async Task<List<Service>> GetServices(string organizationId)
         {
@@ -169,7 +184,7 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the latest shapshot for a service from the turn context.
+        /// Gets the latest shapshot for a service.
         /// </summary>
         /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
         public async Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null)

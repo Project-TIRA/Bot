@@ -28,7 +28,7 @@ namespace SearchBot.Bot.Dialogs.Search
                     {
                         // Check if any service were mentioned.
                         var conversationContext = await this.state.GetConversationContext(dialogContext.Context, cancellationToken);
-                        if (!conversationContext.HasRequestedServices)
+                        if (!conversationContext.HasRequestedServices())
                         {
                             // Prompt for the service type.
                             return await dialogContext.PromptAsync(

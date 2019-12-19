@@ -3,6 +3,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using ServiceProviderBot.Bot.Dialogs.Capacity;
 using ServiceProviderBot.Bot.Dialogs.Feedback;
+using ServiceProviderBot.Bot.Dialogs.Preferences;
 using ServiceProviderBot.Bot.State;
 using Shared;
 using Shared.ApiInterface;
@@ -73,8 +74,8 @@ namespace ServiceProviderBot.Bot.Dialogs
                         return await dialogContext.PromptAsync(
                             Prompt.GreetingTextPrompt,
                             new PromptOptions {
-                                Prompt = Phrases.Greeting.GetKeywords(user, welcomeUser: true),
-                                RetryPrompt = Phrases.Greeting.GetKeywords(user)
+                                Prompt = Phrases.Greeting.GetKeywordsShort(user, welcomeUser: true),
+                                RetryPrompt = Phrases.Greeting.GetKeywordsShort(user)
                             },
                             cancellationToken);
                     },
@@ -86,6 +87,40 @@ namespace ServiceProviderBot.Bot.Dialogs
                         {
                             // Push the update dialog onto the stack.
                             return await BeginDialogAsync(dialogContext, UpdateCapacityDialog.Name, null, cancellationToken);
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Options, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Send the options message.
+                            var user = await api.GetUser(dialogContext.Context);
+                            await Messages.SendAsync(Phrases.Greeting.GetKeywordOptions(user), dialogContext.Context, cancellationToken);
+                            return await dialogContext.EndDialogAsync(cancellationToken);
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Same, StringComparison.OrdinalIgnoreCase))
+                        {
+                            var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+
+                            // Duplicate the latest service data.
+                            foreach (var dataType in Helpers.GetServiceDataTypes())
+                            {
+                                var data = await this.api.GetLatestServiceData(userContext.OrganizationId, dataType);
+                                if (data != null)
+                                {
+                                    data.Id = Guid.NewGuid().ToString();
+                                    await this.api.Create(data);
+                                }
+                            }
+
+                            await Messages.SendAsync(Phrases.Update.Closing, dialogContext.Context, cancellationToken);
+                            return await dialogContext.EndDialogAsync(cancellationToken);
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Latest, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Send the latest availability message.
+                            var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
+                            var latestUpdateString = await Helpers.GetLatestUpdateString(this.api, userContext.OrganizationId);
+
+                            await Messages.SendAsync(latestUpdateString, dialogContext.Context, cancellationToken);
+                            return await dialogContext.EndDialogAsync(cancellationToken);
                         }
                         else if (string.Equals(result, Phrases.Keywords.Enable, StringComparison.OrdinalIgnoreCase) ||
                                  string.Equals(result, Phrases.Keywords.Disable, StringComparison.OrdinalIgnoreCase))
@@ -100,8 +135,18 @@ namespace ServiceProviderBot.Bot.Dialogs
                                 await this.api.Update(user);
                             }
 
-                            await Messages.SendAsync(Phrases.Greeting.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
+                            await Messages.SendAsync(Phrases.Preferences.ContactEnabledUpdated(user.ContactEnabled), dialogContext.Context, cancellationToken);
                             return await dialogContext.EndDialogAsync(cancellationToken);
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Days, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Push the update days dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, DaysDialog.Name, null, cancellationToken);
+                        }
+                        else if (string.Equals(result, Phrases.Keywords.Time, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Push the update time dialog onto the stack.
+                            return await BeginDialogAsync(dialogContext, TimeDialog.Name, null, cancellationToken);
                         }
                         else if (string.Equals(result, Phrases.Keywords.Feedback, StringComparison.OrdinalIgnoreCase))
                         {

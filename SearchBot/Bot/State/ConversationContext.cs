@@ -1,4 +1,5 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using EntityModel.Luis;
 using Microsoft.Extensions.Configuration;
 using SearchBot.Bot.Models;
@@ -14,18 +15,23 @@ namespace SearchBot.Bot.State
 {
     public class ConversationContext
     {
+        public const int SEARCH_DISTANCE_SHORT = 25;
+        public const int SEARCH_DISTANCE_MID = 50;
+        public const int SEARCH_DISTANCE_LONG = 100;
+
         public List<ServiceContext> RequestedServices { get; set; }
+
+        public int SearchDistance { get; set; }
 
         // These setters must be public for initializing conversation
         // state, but SetLocation() should be used to set location and position.
         public string Location { get; set; }
         public LocationPosition LocationPosition { get; set; }
 
-        public bool HasRequestedServices { get { return this.RequestedServices.Count > 0; } }
-
         public ConversationContext()
         {
             this.RequestedServices = new List<ServiceContext>();
+            this.SearchDistance = SEARCH_DISTANCE_SHORT;
         }
 
         public override int GetHashCode()
@@ -59,6 +65,27 @@ namespace SearchBot.Bot.State
         public static bool operator !=(ConversationContext c1, ConversationContext c2)
         {
             return !Equals(c1, c2);
+        }
+
+        public bool HasRequestedServices()
+        {
+            return this.RequestedServices.Count > 0;
+        }
+
+        public int NextSearchDistance()
+        {
+            return this.SearchDistance == SEARCH_DISTANCE_SHORT ? SEARCH_DISTANCE_MID : SEARCH_DISTANCE_LONG;
+        }
+
+        public bool CanExpandSearchDistance()
+        {
+            return this.SearchDistance < SEARCH_DISTANCE_LONG;
+        }
+
+        public int ExpandSearchDistance()
+        {
+            Debug.Assert(CanExpandSearchDistance());
+            return this.SearchDistance = NextSearchDistance();
         }
 
         public static (ServiceData DataType, LuisMapping Mapping) GetLuisMapping(string entityName)

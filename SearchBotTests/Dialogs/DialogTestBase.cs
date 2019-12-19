@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using Microsoft.Bot.Builder.Dialogs;
@@ -30,11 +31,11 @@ namespace SearchBotTests.Dialogs
         protected ITurnContext turnContext;
         protected CancellationToken cancellationToken;
 
-        public static IEnumerable<object[]> TestTypes => Helpers.GetServiceDataTypes().Select(t => new object[] { t });
-        public static IEnumerable<object[]> TestTypePairs => Helpers.GetServiceDataTypes().SelectMany(t => Helpers.GetServiceDataTypes(), (t1, t2) => new object[] { t1, t2 });
+        public static IEnumerable<object[]> TestDataTypes => Helpers.GetServiceDataTypes().Select(t => new object[] { t });
+        public static IEnumerable<object[]> TestDataTypePairs => Helpers.GetServiceDataTypes().SelectMany(t => Helpers.GetServiceDataTypes(), (t1, t2) => new object[] { t1, t2 });
 
-        public static IEnumerable<object[]> TestFlags => Helpers.GetServiceFlags().Select(f => new object[] { f });
-        public static IEnumerable<object[]> TestFlagPairs => Helpers.GetServiceFlags().SelectMany(f => Helpers.GetServiceFlags(), (f1, f2) => new object[] { f1, f2 });
+        public static IEnumerable<object[]> TestServiceFlags => ServiceFlagsHelpers.AllFlags().Select(f => new object[] { f });
+        public static IEnumerable<object[]> TestServiceFlagPairs => ServiceFlagsHelpers.AllFlags().SelectMany(f => ServiceFlagsHelpers.AllFlags(), (f1, f2) => new object[] { f1, f2 });
 
         protected DialogTestBase()
         {

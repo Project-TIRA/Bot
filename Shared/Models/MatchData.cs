@@ -1,4 +1,5 @@
 ﻿using EntityModel;
+using EntityModel.Helpers;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,8 +7,6 @@ namespace Shared.Models
 {
     public class MatchData
     {
-        private const int REASONABLE_DISTANCE = 25;
-
         public Organization Organization { get; set; }
         public ServiceFlags OrganizationServiceFlags { get; set; }
 
@@ -16,13 +15,12 @@ namespace Shared.Models
         public double Distance { get; set; }
 
         public bool IsFullMatch { get { return this.OrganizationServiceFlags.HasFlag(this.RequestedServiceFlags); } }
-        public bool IsWithinDistance {  get { return this.Distance <= REASONABLE_DISTANCE; } }
 
         public List<ServiceData> OrganizationDataTypes()
         {
             var types = new List<ServiceData>();
 
-            foreach (var flag in Helpers.SplitServiceFlags(this.OrganizationServiceFlags))
+            foreach (var flag in ServiceFlagsHelpers.SplitFlags(OrganizationServiceFlags))
             {
                 var type = Helpers.ServiceFlagToDataType(flag);
 

@@ -26,6 +26,16 @@ namespace Shared
         private const string MicrosoftAppPasswordSettingName = "MicrosoftAppPassword";
 
         /// <summary>
+        /// The name of the app setting for the azure storage connection string.
+        /// </summary>
+        private const string AzureWebJobsStorageSettingName = "AzureWebJobsStorage";
+
+        /// <summary>
+        /// The name of the setting that contains the ApplicationInsights config.
+        /// </summary>
+        private const string ApplicationInsightsSettingName = "ApplicationInsights";
+
+        /// <summary>
         /// The name of the setting that contains the CosmosDB endpoint.
         /// </summary>
         private const string CosmosEndpointSettingName = "CosmosDb:Endpoint";
@@ -71,9 +81,19 @@ namespace Shared
         private const string MapsSearchUrlFormatSettingName = "Maps:SearchUrlFormat";
 
         /// <summary>
-        /// The name of the setting that contains the ApplicationInsights config.
+        /// The name of the setting that contains the service URL.
         /// </summary>
-        private const string ApplicationInsightsSettingName = "ApplicationInsights";
+        private const string ServiceUrlSettingName = "ServiceUrl";
+
+        /// <summary>
+        /// The name of the setting that contains the channel ID.
+        /// </summary>
+        private const string ChannelIdSettingName = "ChannelId";
+
+        /// <summary>
+        /// The name of the setting that contains the bot phone number.
+        /// </summary>
+        private const string BotPhoneNumberSettingName = "BotPhoneNumber";
 
         /// <summary>
         /// The name of the setting that contains the channel ID for tests.
@@ -83,6 +103,11 @@ namespace Shared
         public static string Environment(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(EnvironmentSettingName);
+        }
+
+        public static string DbModelConnectionString(this IConfiguration configuration)
+        {
+            return configuration.GetConnectionString(DbModelConnectionStringSettingName);
         }
 
         public static string MicrosoftAppId(this IConfiguration configuration)
@@ -95,9 +120,14 @@ namespace Shared
             return configuration.GetValue<string>(MicrosoftAppPasswordSettingName);
         }
 
-        public static string DbModelConnectionString(this IConfiguration configuration)
+        public static string AzureWebJobsStorage(this IConfiguration configuration)
         {
-            return configuration.GetConnectionString(DbModelConnectionStringSettingName);
+            return configuration.GetValue<string>(AzureWebJobsStorageSettingName);
+        }
+
+        public static string ApplicationInsightsConfiguration(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(LuisAppIdSettingName);
         }
 
         public static Uri CosmosEndpoint(this IConfiguration configuration)
@@ -144,14 +174,24 @@ namespace Shared
             return configuration.GetValue<string>(MapsSearchUrlFormatSettingName);
         }
 
-        public static string ApplicationInsightsConfiguration(this IConfiguration configuration)
-        {
-            return configuration.GetValue<string>(LuisAppIdSettingName);
-        }
-
         public static string TestChannel(this IConfiguration configuration)
         {
             return configuration.GetValue<string>(TestChannelSettingName);
+        }
+
+        public static string ServiceUrl(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(ServiceUrlSettingName);
+        }
+
+        public static string ChannelId(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(ChannelIdSettingName);
+        }
+
+        public static string BotPhoneNumber(this IConfiguration configuration)
+        {
+            return configuration.GetValue<string>(BotPhoneNumberSettingName);
         }
 
         public static bool IsProduction(this IConfiguration configuration)

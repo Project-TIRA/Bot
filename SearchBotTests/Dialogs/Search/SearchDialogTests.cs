@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.Bot.Schema;
 using SearchBot.Bot.Dialogs.Search;
 using SearchBot.Bot.State;
@@ -13,7 +14,7 @@ namespace SearchBotTests.Dialogs.Search
     public class SearchDialogTests : DialogTestBase
     {
         [Theory]
-        [MemberData(nameof(TestTypes))]
+        [MemberData(nameof(TestDataTypes))]
         public async Task SingleServiceNoLocation(ServiceData dataType)
         {
             var initialContext = new ConversationContext();
@@ -25,7 +26,7 @@ namespace SearchBotTests.Dialogs.Search
         }
 
         [Theory]
-        [MemberData(nameof(TestTypePairs))]
+        [MemberData(nameof(TestDataTypePairs))]
         public async Task MultipleServicesNoLocation(ServiceData dataType1, ServiceData dataType2)
         {
             var initialContext = new ConversationContext();

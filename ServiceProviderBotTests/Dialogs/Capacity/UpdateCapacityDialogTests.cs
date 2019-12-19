@@ -76,7 +76,7 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
 
             await CreateTestFlow(UpdateCapacityDialog.Name, user)
                 .Test(Phrases.Keywords.Update, prompt)
-                .Test((TestHelpers.DefaultTotal + 1).ToString(), Phrases.Capacity.RetryInvalidCount(TestHelpers.DefaultTotal, prompt))
+                .Test((TestHelpers.DefaultTotal + 1).ToString(), Phrases.Capacity.GetOpeningsRetry(TestHelpers.DefaultTotal, prompt))
                 .StartTestAsync();
         }
 
@@ -96,7 +96,7 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
             if (types.Count > 1)
             {
                 testFlow = testFlow.AssertReply(StartsWith(Phrases.Update.Options));
-                testFlow = testFlow.Send(Phrases.Services.All);
+                testFlow = testFlow.Send(Phrases.Update.All);
             }
 
             // Add each sub-service from the service types to the test flow.

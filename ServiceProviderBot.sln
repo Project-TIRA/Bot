@@ -1,14 +1,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29306.81
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.757
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityModel", "EntityModel\EntityModel.csproj", "{EAB706C6-67C9-4C42-BFBA-E5A746558617}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBot", "ServiceProviderBot\ServiceProviderBot.csproj", "{B361B495-77F1-4756-ACA2-B86BCA4536DE}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBotTrigger", "BotTrigger\ServiceProviderBotTrigger.csproj", "{BC79A314-66C2-4132-860E-3E0F3293134E}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBotTriggerHarness", "BotTriggerHarness\ServiceProviderBotTriggerHarness.csproj", "{693A06D1-289E-4573-8621-862F41B5EFAF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}"
 EndProject
@@ -21,6 +17,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderBotTests", "ServiceProviderBotTests\ServiceProviderBotTests.csproj", "{77F83336-5C25-467E-ADE8-06EF19D72CC5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SearchBotTests", "SearchBotTests\SearchBotTests.csproj", "{5049C592-A1F0-40B7-8F60-7EB88F83C16A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderTriggers", "ServiceProviderTriggers\ServiceProviderTriggers.csproj", "{56195853-0604-47B2-A89E-58E9B6AE6743}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderTimerTriggerHarness", "ServiceProviderTimerTriggerHarness\ServiceProviderTimerTriggerHarness.csproj", "{39F9DAF1-DF13-41A1-BE86-935129401A38}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderOrganizationQueueTriggerHarness", "ServiceProviderOrganizationQueueTriggerHarness\ServiceProviderOrganizationQueueTriggerHarness.csproj", "{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceProviderUserQueueTriggerHarness", "ServiceProviderUserQueueTriggerHarness\ServiceProviderUserQueueTriggerHarness.csproj", "{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,14 +40,6 @@ Global
 		{B361B495-77F1-4756-ACA2-B86BCA4536DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B361B495-77F1-4756-ACA2-B86BCA4536DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B361B495-77F1-4756-ACA2-B86BCA4536DE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BC79A314-66C2-4132-860E-3E0F3293134E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BC79A314-66C2-4132-860E-3E0F3293134E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BC79A314-66C2-4132-860E-3E0F3293134E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BC79A314-66C2-4132-860E-3E0F3293134E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{693A06D1-289E-4573-8621-862F41B5EFAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{693A06D1-289E-4573-8621-862F41B5EFAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{693A06D1-289E-4573-8621-862F41B5EFAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{693A06D1-289E-4573-8621-862F41B5EFAF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52A8D726-D4B4-4FB0-9F6F-7C4A54D878C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -64,12 +60,31 @@ Global
 		{5049C592-A1F0-40B7-8F60-7EB88F83C16A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5049C592-A1F0-40B7-8F60-7EB88F83C16A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5049C592-A1F0-40B7-8F60-7EB88F83C16A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56195853-0604-47B2-A89E-58E9B6AE6743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56195853-0604-47B2-A89E-58E9B6AE6743}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56195853-0604-47B2-A89E-58E9B6AE6743}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56195853-0604-47B2-A89E-58E9B6AE6743}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39F9DAF1-DF13-41A1-BE86-935129401A38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39F9DAF1-DF13-41A1-BE86-935129401A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39F9DAF1-DF13-41A1-BE86-935129401A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39F9DAF1-DF13-41A1-BE86-935129401A38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9B2F4199-6EF8-4FC0-93EC-F560B8C36493} = {6D893DF8-5CA6-419D-9B58-AD7398FE47A2}
+		{39F9DAF1-DF13-41A1-BE86-935129401A38} = {6D893DF8-5CA6-419D-9B58-AD7398FE47A2}
+		{EB7D8F00-6990-47B9-A6A6-C69A7F625C8A} = {6D893DF8-5CA6-419D-9B58-AD7398FE47A2}
+		{E0E9A668-E5D0-432C-B0E7-43DBFA4FE8E1} = {6D893DF8-5CA6-419D-9B58-AD7398FE47A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF5B0EAE-936E-42E6-8D2F-9E05497B10C2}

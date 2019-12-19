@@ -1,9 +1,11 @@
-﻿using EntityModel.Luis;
+﻿using EntityModel.Helpers;
+using EntityModel.Luis;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace EntityModel
 {
@@ -69,6 +71,45 @@ namespace EntityModel
         public virtual void CopyStaticValues<T>(T data) where T : ServiceData
         {
             this.ServiceId = data.ServiceId;
+        }
+
+        public override string ToString()
+        {
+            var result = string.Empty;
+            
+            foreach (var serviceCategory in this.ServiceCategories())
+            {
+                foreach (var subService in serviceCategory.Services)
+                {
+                    var total = (int)GetProperty(subService.TotalPropertyName);
+                    if (total == 0)
+                    {
+                        continue;
+                    }
+
+                    // Add a newline if there is already some text.
+                    result += string.IsNullOrEmpty(result) ? string.Empty : "\n";
+
+                    var open = (int)GetProperty(subService.OpenPropertyName);
+                    if (open == 0)
+                    {
+                        // If there are no openings but there is a waitlist, give the waitlist status.
+                        var hasWaitlist = (bool)GetProperty(subService.HasWaitlistPropertyName);
+                        if (hasWaitlist)
+                        {
+                            var waitlistIsOpen = (bool)GetProperty(subService.WaitlistIsOpenPropertyName);
+                            result += $"- {subService.Name}: waitlist {(waitlistIsOpen ? "open" : "closed")}";
+                            continue;
+                        }
+
+                    }
+
+                    // If there are openings, or there are no openings but no waitlist, give the number of openings.
+                    result += $"- {subService.Name}: {GetProperty(subService.OpenPropertyName)}";
+                }
+            }
+
+            return result;
         }
     }
 

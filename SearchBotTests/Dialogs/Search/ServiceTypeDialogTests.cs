@@ -9,7 +9,7 @@ namespace SearchBotTests.Dialogs.Search
     public class ServiceTypeDialogTests : DialogTestBase
     {
         [Theory]
-        [MemberData(nameof(TestTypes))]
+        [MemberData(nameof(TestDataTypes))]
         public async Task ClarifyType(ServiceData dataType)
         {
             foreach (var serviceCategory in dataType.ServiceCategories())
