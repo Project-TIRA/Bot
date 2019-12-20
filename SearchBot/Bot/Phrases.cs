@@ -52,7 +52,7 @@ namespace SearchBot
 
             public static Activity NoMatchSearchWider(ConversationContext conversationContext)
             {
-                return MessageFactory.Text($"{NoMatch(conversationContext).Text}. Would you like to expand your search to {conversationContext.NextSearchDistance()} miles");
+                return MessageFactory.Text($"{NoMatch(conversationContext).Text}. Would you like to expand your search to {conversationContext.NextSearchDistance()} miles?");
             }
         }
     }
