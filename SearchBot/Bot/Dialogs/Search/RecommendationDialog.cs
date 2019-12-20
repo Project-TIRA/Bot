@@ -44,6 +44,8 @@ namespace SearchBot.Bot.Dialogs.Search
 
                         if (!conversationContext.CanExpandSearchDistance())
                         {
+                            // TODO: Ask if want to search in another location
+
                             // Notify that there were no matches.
                             await Messages.SendAsync(Phrases.Search.NoMatch(conversationContext), dialogContext.Context, cancellationToken);
                             return await dialogContext.NextAsync(null, cancellationToken);
