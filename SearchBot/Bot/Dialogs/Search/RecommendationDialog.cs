@@ -128,8 +128,9 @@ namespace SearchBot.Bot.Dialogs.Search
         private async Task<MatchData> GetOrganizationMatchData(Organization organization, ConversationContext conversationContext)
         {
             // Get the organization's distance from the location.
-            var distance = CalculateDistance(conversationContext.LocationPosition.Lat, conversationContext.LocationPosition.Lon,
-                Convert.ToDouble(organization.Latitude), Convert.ToDouble(organization.Longitude));
+            Coordinates searchCoordinates = new Coordinates(conversationContext.LocationPosition.Lat, conversationContext.LocationPosition.Lon);
+            Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(organization.Latitude), Convert.ToDouble(organization.Longitude));
+            var distance = searchCoordinates.DistanceTo(organizationCoordinates, UnitOfLength.Miles);
 
             // Create the match data.
             var match = new MatchData();
@@ -138,7 +139,7 @@ namespace SearchBot.Bot.Dialogs.Search
             match.RequestedServiceFlags = conversationContext.RequestedServiceFlags();
 
             // Filter out organizations that aren't within distance.
-            if ((int)match.Distance > conversationContext.SearchDistance)
+            if (match.Distance > conversationContext.SearchDistance)
             {
                 return match;
             }
@@ -177,16 +178,6 @@ namespace SearchBot.Bot.Dialogs.Search
             return match;
         }
 
-        private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
-        {
-            double R = 6371;
-            double dLat = Math.PI / 180 * (lat2 - lat1);
-            double dLon = Math.PI / 180 * (lon2 - lon1);
-            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) + Math.Cos((Math.PI / 180) * lat1) * Math.Cos((Math.PI / 180) * lat2) * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            return R * c;
-        }
-
         private List<List<MatchData>> GetMatchCombinations(List<MatchData> matchData, ConversationContext conversationContext)
         {
             // Check for combinations of 2 organizations.
@@ -196,6 +187,6 @@ namespace SearchBot.Bot.Dialogs.Search
                 .Where(pair => (pair.Match1.OrganizationServiceFlags | pair.Match2.OrganizationServiceFlags).HasFlag(conversationContext.RequestedServiceFlags()))
                 .Select(pair => new List<MatchData>() { pair.Match1, pair.Match2 })
                 .ToList();
-        }
+        }       
     }
 }

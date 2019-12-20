@@ -1,6 +1,7 @@
 ﻿using EntityModel;
 using EntityModel.Helpers;
 using Shared.ApiInterface;
+using Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,25 @@ namespace Shared
         public const int DefaultOpen = 5;
         public const bool DefaultWaitlistIsOpen = true;
 
+        public static string DefaultLocation = "Seattle";
+        public static LocationPosition DefaultLocationPosition = new LocationPosition { Lat = 47.6038321, Lon = -122.3300624 };
+
+        // ~11mi straight line
+        public static string DefaultLocationDistanceShort = "Redmond, WA";
+        public static LocationPosition DefaultLocationPositionShort = new LocationPosition { Lat = 47.6694141, Lon = -122.1238767 };
+
+        // ~26mi straight line
+        public static string DefaultLocationDistanceMid = "Everett, WA";
+        public static LocationPosition DefaultLocationPositionMid = new LocationPosition { Lat = 47.9673056, Lon = -122.2013998 };
+
+        // ~96mi straight line
+        public static string DefaultLocationDistanceLong = "Wenatchee, WA";
+        public static LocationPosition DefaultLocationPositionLong = new LocationPosition { Lat = 47.4234599, Lon = -120.3103494 };
+
+        // ~145mi straight line
+        public static string DefaultLocationDistanceTooFar = "Portland, OR";
+        public static LocationPosition DefaultLocationPositionTooFar = new LocationPosition { Lat = 45.5202471, Lon = -122.6741949 };
+
         public static async Task<Organization> CreateOrganization(IApiInterface api, bool isVerified)
         {
             var organization = new Organization()
@@ -21,8 +41,10 @@ namespace Shared
                 Id = Guid.NewGuid().ToString(),
                 Name = "Test Organization",
                 IsVerified = isVerified,
-                Address = "Seattle"
-            };
+                Address = DefaultLocation,
+                Latitude = DefaultLocationPosition.Lat.ToString(),
+                Longitude = DefaultLocationPosition.Lon.ToString()
+        };
 
             await api.Create(organization);
             return organization;

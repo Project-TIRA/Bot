@@ -14,11 +14,11 @@ namespace SearchBotTests.Dialogs.Search
         {
             await CreateTestFlow(LocationDialog.Name)
                 .Test("test", SearchBot.Phrases.Search.GetLocation)
-                .Send(SearchBotTestHelpers.DefaultLocation)
+                .Send(TestHelpers.DefaultLocation)
                 .StartTestAsync();
 
             var expectedContext = new ConversationContext();
-            expectedContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
+            expectedContext.TEST_SetLocation(TestHelpers.DefaultLocation, TestHelpers.DefaultLocationPosition);
 
             // Validate the results.
             var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);

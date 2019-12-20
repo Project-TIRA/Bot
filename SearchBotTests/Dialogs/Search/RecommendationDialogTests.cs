@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using EntityModel.Helpers;
+﻿using EntityModel.Helpers;
 using SearchBot.Bot.Dialogs.Search;
 using SearchBot.Bot.State;
 using Shared;
 using Shared.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SearchBotTests.Dialogs.Search
@@ -89,15 +89,51 @@ namespace SearchBotTests.Dialogs.Search
             }
         }
 
-        private async Task RunTest(MatchData matches, bool expectedMatch = true)
+        [Theory]
+        [MemberData(nameof(TestServiceFlags))]
+        public async Task DistanceMid(ServiceFlags serviceFlag)
         {
-            await RunTest(new List<MatchData>() { matches }, expectedMatch);
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            organization.Latitude = TestHelpers.DefaultLocationPositionMid.Lat.ToString();
+            organization.Longitude = TestHelpers.DefaultLocationPositionMid.Lon.ToString();
+
+            var match = new MatchData() { Organization = organization, OrganizationServiceFlags = serviceFlag, RequestedServiceFlags = serviceFlag };
+            await RunTest(match, expectedMatch: true, expectedDistance: ConversationContext.SEARCH_DISTANCE_MID);
         }
 
-        private async Task RunTest(List<MatchData> matches, bool expectedMatch = true)
+        [Theory]
+        [MemberData(nameof(TestServiceFlags))]
+        public async Task DistanceLong(ServiceFlags serviceFlag)
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            organization.Latitude = TestHelpers.DefaultLocationPositionLong.Lat.ToString();
+            organization.Longitude = TestHelpers.DefaultLocationPositionLong.Lon.ToString();
+
+            var match = new MatchData() { Organization = organization, OrganizationServiceFlags = serviceFlag, RequestedServiceFlags = serviceFlag };
+            await RunTest(match, expectedMatch: true, expectedDistance: ConversationContext.SEARCH_DISTANCE_LONG);
+        }
+
+        [Theory]
+        [MemberData(nameof(TestServiceFlags))]
+        public async Task DistanceTooFar(ServiceFlags serviceFlag)
+        {
+            var organization = await TestHelpers.CreateOrganization(this.api, isVerified: true);
+            organization.Latitude = TestHelpers.DefaultLocationPositionTooFar.Lat.ToString();
+            organization.Longitude = TestHelpers.DefaultLocationPositionTooFar.Lon.ToString();
+
+            var match = new MatchData() { Organization = organization, OrganizationServiceFlags = serviceFlag, RequestedServiceFlags = serviceFlag };
+            await RunTest(match, expectedMatch: false, expectedDistance: ConversationContext.SEARCH_DISTANCE_LONG);
+        }
+
+        private async Task RunTest(MatchData matches, bool expectedMatch = true, int expectedDistance = ConversationContext.SEARCH_DISTANCE_SHORT)
+        {
+            await RunTest(new List<MatchData>() { matches }, expectedMatch, expectedDistance);
+        }
+
+        private async Task RunTest(List<MatchData> matches, bool expectedMatch = true, int expectedDistance = ConversationContext.SEARCH_DISTANCE_SHORT)
         {
             var conversationContext = new ConversationContext();
-            conversationContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
+            conversationContext.TEST_SetLocation(TestHelpers.DefaultLocation, TestHelpers.DefaultLocationPosition);
 
             foreach (var match in matches)
             {
@@ -116,26 +152,39 @@ namespace SearchBotTests.Dialogs.Search
                 }
             }
 
-            var potentialRepliesSearchWider = new string[]
-            {
-                SearchBot.Phrases.Search.MakeRecommendation(matches).Text,
-                SearchBot.Phrases.Search.NoMatchSearchWider(conversationContext).Text
-            };
-
-            var potentialRepliesNoMatch = new string[]
-            {
-                SearchBot.Phrases.Search.MakeRecommendation(matches).Text,
-                SearchBot.Phrases.Search.NoMatch(conversationContext).Text
-            };
-
             var testFlow = CreateTestFlow(RecommendationDialog.Name, conversationContext)
                 .Send("test");
 
+            // Start the test to initialize the turn context.
+            await testFlow.StartTestAsync();
 
+            var actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);
 
-            // TODO: Keep search while able to search wider or until find a match.
+            // Keep searching wider until no longer possible or the expected distance is reached.
+            while (actualContext.CanExpandSearchDistance() && expectedDistance > actualContext.SearchDistance)
+            {
+                testFlow = testFlow.AssertReply(StartsWith(SearchBot.Phrases.Search.NoMatchSearchWider(actualContext)));
+                testFlow = testFlow.Send("yes");
+                await testFlow.StartTestAsync();
 
+                actualContext = await this.state.GetConversationContext(this.turnContext, this.cancellationToken);
+            }
 
+            if (expectedMatch)
+            {
+                testFlow = testFlow.AssertReply(SearchBot.Phrases.Search.MakeRecommendation(matches));
+            }
+            else
+            {
+                if (actualContext.CanExpandSearchDistance())
+                {
+                    testFlow = testFlow.AssertReply(StartsWith(SearchBot.Phrases.Search.NoMatchSearchWider(actualContext)));
+                }
+                else
+                {
+                    testFlow = testFlow.AssertReply(SearchBot.Phrases.Search.NoMatch(actualContext));
+                }
+            }
 
             await testFlow.StartTestAsync();
         }

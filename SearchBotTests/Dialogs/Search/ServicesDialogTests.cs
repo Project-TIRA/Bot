@@ -16,7 +16,7 @@ namespace SearchBotTests.Dialogs.Search
         public async Task SingleServiceClarifyCategory(ServiceData dataType)
         {
             var initialContext = new ConversationContext();
-            initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
+            initialContext.TEST_SetLocation(TestHelpers.DefaultLocation, TestHelpers.DefaultLocationPosition);
             initialContext.CreateOrUpdateServiceContext(dataType, dataType.ServiceCategories().Count == 1 ? dataType.LuisMappings().First().ServiceFlags : ServiceFlags.None);
 
             var testFlow = CreateTestFlow(ServicesDialog.Name, initialContext)
@@ -40,7 +40,7 @@ namespace SearchBotTests.Dialogs.Search
             if (dataType1.ServiceType() != dataType2.ServiceType())
             {
                 var initialContext = new ConversationContext();
-                initialContext.TEST_SetLocation(SearchBotTestHelpers.DefaultLocation, SearchBotTestHelpers.DefaultLocationPosition);
+                initialContext.TEST_SetLocation(TestHelpers.DefaultLocation, TestHelpers.DefaultLocationPosition);
                 initialContext.CreateOrUpdateServiceContext(dataType1, dataType1.ServiceCategories().Count == 1 ? dataType1.LuisMappings().First().ServiceFlags : ServiceFlags.None);
                 initialContext.CreateOrUpdateServiceContext(dataType2, dataType2.ServiceCategories().Count == 1 ? dataType2.LuisMappings().First().ServiceFlags : ServiceFlags.None);
 
