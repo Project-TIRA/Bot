@@ -64,7 +64,9 @@ namespace ServiceProviderTriggers
 
                 await adapter.ContinueConversationAsync(creds.MicrosoftAppId, convo, async (context, token) =>
                 {
-                    var day = DayFlagsHelpers.CurrentDay();
+                    // TODO: Current day gives UTC, so it can be wrong for the user's local day.
+                    // Might need to keep user's timezone offset for this.
+                    var day = DayFlagsHelpers.CurrentDay(user);
                     await context.SendActivityAsync(Phrases.Greeting.RemindToUpdate(user, day, queueData.LatestUpdateString));
                 }, new CancellationToken());
             }

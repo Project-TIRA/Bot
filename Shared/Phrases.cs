@@ -108,9 +108,13 @@ namespace Shared
                 else
                 {
                     greeting += " Here is the most recent availability for your organization" +
-                       Helpers.NewLine + Helpers.NewLine +
+                       Helpers.NewLine +
+                       "- - - - -" +
+                       Helpers.NewLine +
                        latestUpdateString +
-                       Helpers.NewLine + Helpers.NewLine +
+                       Helpers.NewLine +
+                       "- - - - -" +
+                       Helpers.NewLine +
                        Keywords.HowToUpdateDuplicateOrOptions;
                 }
 
@@ -155,6 +159,9 @@ namespace Shared
             private const string Updated = "Your contact preference has been updated";
 
             public static Activity GetCurrentTime = MessageFactory.Text($"What time is it for you currently? This is to determine your timezone. {GetCurrentTimeExample}");
+
+
+            public static Activity InitialUpdate = MessageFactory.Text($"Let's set some contact preferences first!");
             public static Activity GetCurrentTimeRetry = MessageFactory.Text($"Oops, the format is {GetCurrentTimeFormat}. {GetCurrentTimeExample}");
 
             public static Activity GetUpdateTime = MessageFactory.Text($"Which hour of the day would you like to be contacted? {GetUpdateTimeExample}");

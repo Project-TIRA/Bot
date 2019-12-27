@@ -37,12 +37,13 @@ namespace ServiceProviderBot.Bot.Dialogs.Preferences
                     },
                     async (dialogContext, cancellationToken) =>
                     {
-                        // Get the result. This was already validated by the prompt.
-                        DateTimeHelpers.ParseHourAndMinute((string)dialogContext.Result, out DateTime localNow);
+                        // Get the result, which was already validated by the prompt, and convert to an offset.
+                        int timezoneOffset = DateTimeHelpers.ConvertToTimezoneOffset((string)dialogContext.Result, DateTime.UtcNow);
 
-                        // Determine the difference between the user's time and UTC and save the result in the user context.
-                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        userContext.TimezoneOffset = (localNow - DateTime.UtcNow).Hours;
+                        // Update the user's timezone offset.
+                        var user = await api.GetUser(dialogContext.Context);
+                        user.TimezoneOffset = timezoneOffset;
+                        await this.api.Update(user);
 
                         return await dialogContext.NextAsync(cancellationToken);
                     },
@@ -60,20 +61,15 @@ namespace ServiceProviderBot.Bot.Dialogs.Preferences
                     async (dialogContext, cancellationToken) =>
                     {
                         // Get the result. This was already validated by the prompt.
-                        DateTimeHelpers.ParseHour((string)dialogContext.Result, out DateTime reminderTimeLocal);
+                        DateTimeHelpers.ParseHour((string)dialogContext.Result, out DateTime reminderTime);
 
-                        // Adjust the reminder time by the timezone offset so that it is stored in UTC.
-                        // Negated in order to undo the offset.
-                        var userContext = await this.state.GetUserContext(dialogContext.Context, cancellationToken);
-                        var reminderTimeUtc = reminderTimeLocal.AddHours(-userContext.TimezoneOffset);
-
-                        // Update the user's preference.
+                        // Update the user's reminder time.
                         var user = await api.GetUser(dialogContext.Context);
-                        user.ReminderTime = reminderTimeUtc.ToShortTimeString();
+                        user.ReminderTime = reminderTime.ToShortTimeString();
                         await this.api.Update(user);
 
                         // Send a confirmation message.
-                        await Messages.SendAsync(Phrases.Preferences.UpdateTimeUpdated(reminderTimeLocal.ToShortTimeString()), dialogContext.Context, cancellationToken);
+                        await Messages.SendAsync(Phrases.Preferences.UpdateTimeUpdated(user.ReminderTime), dialogContext.Context, cancellationToken);
 
                         // End this dialog to pop it off the stack.
                         return await dialogContext.EndDialogAsync(cancellationToken);

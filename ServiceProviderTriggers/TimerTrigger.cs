@@ -42,9 +42,6 @@ namespace ServiceProviderTriggers
             {
                 var api = new EfInterface(db);
 
-                // Get the current day.
-                var day = DayFlagsHelpers.CurrentDay();
-
                 // Get all verified organizations.
                 var organizations = await api.GetVerifiedOrganizations();
                 Helpers.LogInfo(log, $"Found {organizations.Count()} verified organizations");
@@ -61,19 +58,30 @@ namespace ServiceProviderTriggers
 
                     foreach (var user in users)
                     {
+                        var localDay = DayFlagsHelpers.CurrentDay(user);
+
+                        Helpers.LogInfo(log, $"User: {user.Name}, organization: {organization.Name}, " +
+                            $"contact enabled: {user.ContactEnabled}, reminder days: {user.ReminderFrequency}, current local day: {localDay}");
+
                         // Check if the user should be reminded today.
-                        if (!user.ContactEnabled || !user.ReminderFrequency.HasFlag(day))
+                        if (!user.ContactEnabled || !user.ReminderFrequency.HasFlag(localDay))
                         {
                             continue;
                         }
 
                         // Check if the user should be reminded at this time.
-                        // Special case: use 6pm UTC (10am PST) if their reminder time isn't set.
+                        // Special case: use 5pm UTC (9am PST) if their reminder time isn't set.
                         DateTime userReminderTime = string.IsNullOrEmpty(user.ReminderTime) ?
-                            DateTime.Parse("6:00pm") : DateTime.Parse(user.ReminderTime);
+                            DateTime.Parse("5:00pm") : DateTime.Parse(user.ReminderTime);
+
+                        // Adjust the time by their timezone offset to compare.
+                        var localTime = DateTime.UtcNow.AddHours(user.TimezoneOffset);
+
+                        Helpers.LogInfo(log, $"Reminder time: {user.ReminderTime}, current local time: {DateTime.UtcNow.AddHours(user.TimezoneOffset).ToShortTimeString()}");
+                        Helpers.LogInfo(log, $"Time diff minutes: {Math.Abs((localTime - userReminderTime).TotalMinutes)}");
 
                         // Using a 5 minute window in case the function triggers slightly early or late.
-                        if (Math.Abs((DateTime.UtcNow - userReminderTime).TotalMinutes) > 5)
+                        if (Math.Abs((localTime - userReminderTime).TotalMinutes) > 5)
                         {
                             continue;
                         }

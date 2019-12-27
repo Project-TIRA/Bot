@@ -31,5 +31,30 @@ namespace Shared
         {
             return DateTime.TryParseExact(input, formats,  CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime);
         }
+
+        /// <summary>
+        /// Parses a datetime string to match one of the provided formats.
+        /// </summary>
+        public static int ConvertToTimezoneOffset(string inputString, DateTime offsetTo)
+        {
+            ParseHourAndMinute(inputString, out DateTime input);
+
+            var timezoneOffset = (input - offsetTo).Hours;
+
+            // Parsing the time can result in different days depending on the locale
+            // of the host machine, so if the result is out of the known range, adjust
+            // it to get the correct difference.
+            if (timezoneOffset > 12)
+            {
+                timezoneOffset -= 24;
+            }
+
+            if (timezoneOffset < -12)
+            {
+                timezoneOffset += 24;
+            }
+
+            return timezoneOffset;
+        }
     }
 }

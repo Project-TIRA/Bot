@@ -18,6 +18,9 @@ namespace EntityModel
         [JsonProperty(PropertyName = "mobilephone")]
         public string PhoneNumber { get; set; }
 
+        [JsonProperty(PropertyName = "TODO")]
+        public int TimezoneOffset { get; set; }
+
         [JsonProperty(PropertyName = "tira_updatefrequency")]
         public DayFlags ReminderFrequency { get; set; }
 
