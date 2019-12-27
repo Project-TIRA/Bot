@@ -67,46 +67,31 @@ namespace ServiceProviderBotTests.Dialogs.Preferences
 
         public static IEnumerable<object[]> TestTimezoneOffsets()
         {
-            var hours = new List<string>()
+            // UtcTime, LocalTime, ExpectedTimezoneOffset
+            var result = new List<object[]>();
+
+            // Go through each hour of the day.
+            for (int utcHour = 0; utcHour < 24; ++utcHour)
             {
-                "12am", "1am", "2am", "3am", "4am", "5am",
-                "6am", "7am", "8am", "9am", "10am", "11am",
-                "12pm", "1pm", "2pm", "3pm", "4pm", "5pm",
-                "6pm", "7pm", "8pm", "9pm", "10pm", "11pm"
-            };
+                // Use hours and half hours.
+                var utcHourDt = SetTime(DateTime.UtcNow, utcHour);
+                var utcHalfHourDt = SetTime(DateTime.UtcNow, utcHour, 30);
 
-            // Go through each hour and offset rotation through these
+                // The 11 hours before are -X offset and the 11 hours after are +X offset.
+                for (int localHour = -11; localHour <= 11; ++localHour)
+                {
+                    result.Add(new object[] { utcHourDt, utcHourDt.AddHours(localHour).ToShortTimeString(), localHour });
+                    result.Add(new object[] { utcHalfHourDt, utcHalfHourDt.AddHours(localHour).ToShortTimeString(), localHour });
+                }
 
-            var midnight = SetTime(DateTime.Now);
+                // Special case: 12 hours can be either -12 or +12.
+                // Adding an hour can spill into the next day, so adjust for that case.
+                var expectedOffset = utcHour >= 12 ? -12 : 12;
+                result.Add(new object[] { utcHourDt, utcHourDt.AddHours(12).ToShortTimeString(), expectedOffset });
+                result.Add(new object[] { utcHalfHourDt, utcHalfHourDt.AddHours(12).ToShortTimeString(), expectedOffset });
+            }
 
-            return new List<object[]>()
-            {
-                // UtcTime, LocalTime, ExpectedTimezoneOffset
-                new object[]{ midnight, "12am", 0 },
-                new object[]{ midnight, "1am", 1 },
-                new object[]{ midnight, "2am", 2 },
-                new object[]{ midnight, "3am", 3 },
-                new object[]{ midnight, "4am", 4 },
-                new object[]{ midnight, "5am", 5 },
-                new object[]{ midnight, "6am", 6 },
-                new object[]{ midnight, "7am", 7 },
-                new object[]{ midnight, "8am", 8 },
-                new object[]{ midnight, "9am", 9 },
-                new object[]{ midnight, "10am", 10 },
-                new object[]{ midnight, "11am", 11 },
-                new object[]{ midnight, "12pm", 12 },
-                new object[]{ midnight, "1pm", -11 },
-                new object[]{ midnight, "2pm", -10},
-                new object[]{ midnight, "3pm", -9 },
-                new object[]{ midnight, "4pm", -8 },
-                new object[]{ midnight, "5pm", -7 },
-                new object[]{ midnight, "6pm", -6 },
-                new object[]{ midnight, "7pm", -5 },
-                new object[]{ midnight, "8pm", -4 },
-                new object[]{ midnight, "9pm", -3 },
-                new object[]{ midnight, "10pm", -2 },
-                new object[]{ midnight, "11pm", -1 },
-            };
+            return result;
         }
 
         public static DateTime SetTime(DateTime dateTime, int hours = 0, int minutes = 0, int seconds = 0, int milliseconds = 0)

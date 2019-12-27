@@ -42,7 +42,7 @@ namespace Shared
             var timezoneOffset = (input - offsetTo).Hours;
 
             // Parsing the time can result in different days depending on the locale
-            // of the host machine, so if the result is out of the known range, adjust
+            // of the host machine, so if the result is out of the expected range, adjust
             // it to get the correct difference.
             if (timezoneOffset > 12)
             {
