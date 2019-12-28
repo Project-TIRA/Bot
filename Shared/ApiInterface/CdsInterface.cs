@@ -98,9 +98,9 @@ namespace Shared.ApiInterface
 
             switch (turnContext.Activity.ChannelId)
             {
-                case Channels.Emulator: field = "firstname"; break;
+                case Channels.Emulator:
                 case Channels.Sms: field = "mobilephone"; break;
-                default: Debug.Fail("Missing channel type"); return null;
+                default: return null;
             }
 
             JObject response = await GetJsonData(User.TABLE_NAME, $"$filter=contains({field},'{userToken}')");

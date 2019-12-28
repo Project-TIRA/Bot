@@ -51,7 +51,8 @@ namespace ServiceProviderBot
             //services.AddScoped(_ => new CdsInterface(this.configuration));
 
             // Add the DB interface.
-            services.AddScoped(_ => new EfInterface(DbModelFactory.Create(configuration.DbModelConnectionString())));
+            var api = new EfInterface(DbModelFactory.Create(configuration.DbModelConnectionString()));
+            services.AddScoped(_ => api);
 
             // Create and add the state accessors.
             var state = StateAccessors.Create(this.configuration);
@@ -88,6 +89,9 @@ namespace ServiceProviderBot
 
                 // Trim the incoming message.
                 options.Middleware.Add(new TrimIncomingMessageMiddleware());
+
+                // Update the user's last active time.
+                options.Middleware.Add(new UpdateUserLastActiveMiddleware(api));
             });
         }
 

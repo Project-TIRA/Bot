@@ -75,7 +75,9 @@ namespace ServiceProviderBotTests.Dialogs.Capacity
             var prompt = Phrases.Capacity.GetOpenings(dataType.ServiceCategories()[0].Services[0].Name);
 
             await CreateTestFlow(UpdateCapacityDialog.Name, user)
-                .Test(Phrases.Keywords.Update, prompt)
+                .Send(Phrases.Keywords.Update)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(prompt)
                 .Test((TestHelpers.DefaultTotal + 1).ToString(), Phrases.Capacity.GetOpeningsRetry(TestHelpers.DefaultTotal, prompt))
                 .StartTestAsync();
         }

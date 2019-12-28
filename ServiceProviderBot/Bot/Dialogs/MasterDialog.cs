@@ -38,6 +38,12 @@ namespace ServiceProviderBot.Bot.Dialogs
                             return await dialogContext.EndDialogAsync(cancellationToken);
                         }
 
+                        // Welcome the user if they haven't been active recently.
+                        if ((DateTime.UtcNow - user.LastActiveTime).TotalHours > 12)
+                        {
+                            await Messages.SendAsync(Phrases.Greeting.Welcome(user), dialogContext.Context, cancellationToken);
+                        }
+
                         // Check if we already have an organization for the user.
                         var organization = await api.GetOrganization(user.OrganizationId);
                         if (organization == null)
@@ -74,8 +80,7 @@ namespace ServiceProviderBot.Bot.Dialogs
                         return await dialogContext.PromptAsync(
                             Prompt.GreetingTextPrompt,
                             new PromptOptions {
-                                Prompt = Phrases.Greeting.GetKeywordsShort(user, welcomeUser: true),
-                                RetryPrompt = Phrases.Greeting.GetKeywordsShort(user)
+                                Prompt = Phrases.Greeting.GetKeywordsShort(user)
                             },
                             cancellationToken);
                     },

@@ -99,9 +99,9 @@ namespace Shared.ApiInterface
 
             switch (turnContext.Activity.ChannelId)
             {
-                case Channels.Emulator: return await this.dbContext.Users.FirstOrDefaultAsync(u => u.Name == userToken);
+                case Channels.Emulator:
                 case Channels.Sms: return await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
-                default: Debug.Fail("Missing channel type"); return null;
+                default: return null;
             }
         } 
 

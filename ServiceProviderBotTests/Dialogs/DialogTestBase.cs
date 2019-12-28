@@ -39,11 +39,14 @@ namespace ServiceProviderBotTests.Dialogs
             this.dialogs = new DialogSet(state.DialogContextAccessor);
             this.api = new EfInterface(DbModelFactory.CreateInMemory());
 
+            this.configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true)
+                .Build();
+
             this.adapter = new TestAdapter()
                 .Use(new TrimIncomingMessageMiddleware())
+                .Use(new UpdateUserLastActiveMiddleware(this.api))
                 .Use(new AutoSaveStateMiddleware(state.ConversationState));
-
-            this.configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Test.json", optional: false, reloadOnChange: true).Build();
 
             // Register prompts.
             Prompt.Register(this.dialogs, this.configuration);
@@ -121,9 +124,9 @@ namespace ServiceProviderBotTests.Dialogs
 
                 switch (turnContext.Activity.ChannelId)
                 {
-                    case Channels.Emulator: user.Name = userToken; break;
+                    case Channels.Emulator:
                     case Channels.Sms: user.PhoneNumber = userToken; break;
-                    default: Assert.True(false, "Missing channel type"); return;
+                    default: return;
                 }
 
                 await this.api.Update(user);

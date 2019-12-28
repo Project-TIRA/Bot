@@ -64,7 +64,7 @@ namespace ServiceProviderBot.Bot.Dialogs.Preferences
                         DateTimeHelpers.ParseHour((string)dialogContext.Result, out DateTime reminderTime);
 
                         // Update the user's reminder time.
-                        var user = await api.GetUser(dialogContext.Context);
+                        var user = await this.api.GetUser(dialogContext.Context);
                         user.ReminderTime = reminderTime.ToShortTimeString();
                         await this.api.Update(user);
 

@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using EntityModel;
-using EntityModel.Helpers;
+﻿using EntityModel;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Schema;
 using ServiceProviderBot.Bot.Dialogs;
 using Shared;
+using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace ServiceProviderBotTests.Dialogs
@@ -15,12 +14,13 @@ namespace ServiceProviderBotTests.Dialogs
         [Fact]
         public async Task InvalidChannel()
         {
-            await CreateTestFlow(MasterDialog.Name, user: null, channelOverride: Channels.Webchat)
-                .Send("test")
-                .StartTestAsync();
+            var testFlow = CreateTestFlow(MasterDialog.Name, user: null, channelOverride: Channels.Webchat)
+                .Send("test");
+            await testFlow.StartTestAsync();
 
-            // Can't access turnContext before the first turn, so must split the message and response apart.
-            await CreateTestFlow(MasterDialog.Name, user: null)
+            // Can't access turnContext before the first turn, so
+            // must split the message and response apart.
+            await testFlow
                 .AssertReply(Phrases.Greeting.InvalidChannel(this.turnContext))
                 .StartTestAsync();
         }
@@ -28,10 +28,12 @@ namespace ServiceProviderBotTests.Dialogs
         [Fact]
         public async Task EmulatorChannel()
         {
-            User user = await TestHelpers.CreateUser(this.api, organizationId: string.Empty);
+            var user = await TestHelpers.CreateUser(this.api, organizationId: string.Empty);
 
             await CreateTestFlow(MasterDialog.Name, user, channelOverride: Channels.Emulator)
-                .Test("test", Phrases.Greeting.NoOrganization)
+                .Send("test")
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Greeting.NoOrganization)
                 .StartTestAsync();
         }
 
@@ -41,7 +43,9 @@ namespace ServiceProviderBotTests.Dialogs
             User user = await TestHelpers.CreateUser(this.api, organizationId: string.Empty);
 
             await CreateTestFlow(MasterDialog.Name, user, channelOverride: Channels.Sms)
-                .Test("test", Phrases.Greeting.NoOrganization)
+                .Send("test")
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Greeting.NoOrganization)
                 .StartTestAsync();
         }
 
@@ -64,18 +68,34 @@ namespace ServiceProviderBotTests.Dialogs
             User user = await TestHelpers.CreateUser(this.api, organizationId: string.Empty);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test("test", Phrases.Greeting.NoOrganization)
+                .Send("test")
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Greeting.NoOrganization)
                 .StartTestAsync();
         }
 
         [Fact]
         public async Task OrganizationNotVerified()
         {
+            var user = await TestHelpers.CreateUser(this.api,organizationId: string.Empty);
+            user.LastActiveTime = DateTime.UtcNow;
+            await this.api.Update(user);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Test("test", Phrases.Greeting.NoOrganization)
+                .StartTestAsync();
+        }
+
+        [Fact]
+        public async Task NoWelcome()
+        {
             var organization = await TestHelpers.CreateOrganization(this.api, isVerified: false);
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test("test", Phrases.Greeting.UnverifiedOrganization)
+                .Send("test")
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Greeting.UnverifiedOrganization)
                 .StartTestAsync();
         }
 
@@ -90,7 +110,9 @@ namespace ServiceProviderBotTests.Dialogs
             var data = await TestHelpers.CreateServiceData(this.api, user.Id, service.Id, dataType);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Same, Phrases.Update.Closing)
+                .Send(Phrases.Keywords.Same)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Update.Closing)
                 .StartTestAsync();
 
             var resultData = await this.api.GetLatestServiceData(organization.Id, dataType, this.turnContext);
@@ -104,7 +126,9 @@ namespace ServiceProviderBotTests.Dialogs
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Feedback, Phrases.Feedback.GetFeedback)
+                .Send(Phrases.Keywords.Feedback)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Feedback.GetFeedback)
                 .Test(Phrases.Keywords.Feedback, Phrases.Feedback.Thanks)
                 .StartTestAsync();
         }
@@ -116,7 +140,9 @@ namespace ServiceProviderBotTests.Dialogs
             var user = await TestHelpers.CreateUser(this.api, organization.Id);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Enable, Phrases.Preferences.ContactEnabledUpdated(true))
+                .Send(Phrases.Keywords.Enable)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Preferences.ContactEnabledUpdated(true))
                 .StartTestAsync();
 
             user = await this.api.GetUser(this.turnContext);
@@ -133,7 +159,9 @@ namespace ServiceProviderBotTests.Dialogs
             await this.api.Update(user);
 
             await CreateTestFlow(MasterDialog.Name, user)
-                .Test(Phrases.Keywords.Disable, Phrases.Preferences.ContactEnabledUpdated(false))
+                .Send(Phrases.Keywords.Disable)
+                .AssertReply(Phrases.Greeting.Welcome(user))
+                .AssertReply(Phrases.Preferences.ContactEnabledUpdated(false))
                 .StartTestAsync();
 
             user = await this.api.GetUser(this.turnContext);
@@ -155,11 +183,29 @@ namespace ServiceProviderBotTests.Dialogs
                 var services = dataType.ServiceCategories()[0].Services;
 
                 await CreateTestFlow(MasterDialog.Name, user)
-                    .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(services[0].Name))
+                    .Send(Phrases.Keywords.Update)
+                    .AssertReply(Phrases.Greeting.Welcome(user))
+                    .AssertReply(Phrases.Capacity.GetOpenings(services[0].Name))
                     .Test(TestHelpers.DefaultTotal.ToString(), Phrases.Capacity.GetOpenings(services[1].Name))
                     .Test(Phrases.Keywords.Update, Phrases.Capacity.GetOpenings(services[0].Name))
                     .StartTestAsync();
             }
+        }
+
+        [Fact]
+        public async Task LastActiveUpdated()
+        {
+            var user = await TestHelpers.CreateUser(this.api, string.Empty);
+
+            await CreateTestFlow(MasterDialog.Name, user)
+                .Test("test", Phrases.Greeting.Welcome(user))
+                .StartTestAsync();
+
+            user = await this.api.GetUser(this.turnContext);
+
+            // Can't compare dates directly because there is a few millisecond difference.
+            Assert.Equal(DateTime.UtcNow.ToLongDateString(), user.LastActiveTime.ToLongDateString());
+            Assert.Equal(DateTime.UtcNow.ToLongTimeString(), user.LastActiveTime.ToLongTimeString());
         }
     }
 }

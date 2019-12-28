@@ -1,6 +1,7 @@
 ﻿using EntityModel.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System;
 
 namespace EntityModel
 {
@@ -29,6 +30,9 @@ namespace EntityModel
 
         [JsonProperty(PropertyName = "TODO")]
         public bool ContactEnabled { get; set; }
+
+        [JsonProperty(PropertyName = "TODO")]
+        public DateTime LastActiveTime { get; set; }
 
         public override IContractResolver ContractResolver() { return Resolver.Instance; }
         public override string TableName() { return TABLE_NAME; }

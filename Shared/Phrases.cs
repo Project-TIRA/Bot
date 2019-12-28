@@ -55,11 +55,6 @@ namespace Shared
             public static Activity NoOrganization = MessageFactory.Text($"It looks like you aren't connected with an organization. Visit {WebsiteUrl} to register your organization");
             public static Activity UnverifiedOrganization = MessageFactory.Text("It looks like your organization is still pending verification. You will be notified once your organization is verified");
 
-            private static string Welcome(User user)
-            {
-                return !string.IsNullOrEmpty(user.Name) ? $"Welcome {user.Name}!" : "Welcome!";
-            }
-
             public static Activity InvalidChannel(ITurnContext turnContext)
             {
                 return MessageFactory.Text($"Channel \"{turnContext.Activity.ChannelId}\" is not yet supported");
@@ -70,11 +65,14 @@ namespace Shared
                 return MessageFactory.Text($"It looks like you aren't registered for channel \"{turnContext.Activity.ChannelId}\". Visit {WebsiteUrl} for more information");
             }
 
-            public static Activity GetKeywordsShort(User user, bool welcomeUser = false)
+            public static string Welcome(User user)
             {
-                string greeting = welcomeUser ? (Welcome(user) + Helpers.NewLine) : string.Empty;
-                greeting += Keywords.HowToUpdateOrOptions;
-                return MessageFactory.Text(greeting);
+                return !string.IsNullOrEmpty(user.Name) ? $"Welcome {user.Name}!" : "Welcome!";
+            }
+
+            public static Activity GetKeywordsShort(User user)
+            {
+                return MessageFactory.Text(Keywords.HowToUpdateOrOptions);
             }
 
             public static Activity GetKeywordOptions(User user)
