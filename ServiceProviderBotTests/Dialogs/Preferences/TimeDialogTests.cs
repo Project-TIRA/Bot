@@ -37,7 +37,7 @@ namespace ServiceProviderBotTests.Dialogs.Preferences
         [MemberData(nameof(TestTimezoneOffsets))]
         public void TimezoneOffsets(DateTime utcTime, DateTime localTime, int expectedTimezoneOffset)
         {
-            var actualTimezoneOffset = DateTimeHelpers.ConvertToTimezoneOffset(localTime.ToShortTimeString(), utcTime);
+            var actualTimezoneOffset = DateTimeHelpers.ConvertToTimezoneOffset(localTime, utcTime);
             Assert.Equal(expectedTimezoneOffset, actualTimezoneOffset);
         }
 

@@ -38,9 +38,9 @@ namespace EntityModel.Helpers
             { DayFlags.Everyday, "Everyday" },
         };
 
-        public static DayFlags FromDateTime(DateTime dt)
+        public static DayFlags FromDateTime(DateTime dateTime)
         {
-            switch (dt.DayOfWeek)
+            switch (dateTime.DayOfWeek)
             {
                 case DayOfWeek.Sunday: return DayFlags.Sunday;
                 case DayOfWeek.Monday: return DayFlags.Monday;

@@ -35,15 +35,15 @@ namespace Shared
         /// <summary>
         /// Parses a datetime string to match one of the provided formats.
         /// </summary>
-        public static int ConvertToTimezoneOffset(string inputString, DateTime offsetTo)
+        public static int ConvertToTimezoneOffset(DateTime input, DateTime offsetTo)
         {
-            ParseHourAndMinute(inputString, out DateTime input);
+            // Make the dates the same day so that the comparison only considers the times.
+            input = new DateTime(offsetTo.Year, offsetTo.Month, offsetTo.Day, input.Hour, input.Minute, input.Second);
 
             var timezoneOffset = (input - offsetTo).Hours;
 
-            // Parsing the time can result in different days depending on the locale
-            // of the host machine, so if the result is out of the expected range, adjust
-            // it to get the correct difference.
+            // Keep timezone differences to 12 hours. If it is larger than 12 then it
+            // means they are two difference days, but we only care about the offset.
             if (timezoneOffset > 12)
             {
                 timezoneOffset -= 24;

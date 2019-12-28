@@ -38,7 +38,8 @@ namespace ServiceProviderBot.Bot.Dialogs.Preferences
                     async (dialogContext, cancellationToken) =>
                     {
                         // Get the result, which was already validated by the prompt, and convert to an offset.
-                        int timezoneOffset = DateTimeHelpers.ConvertToTimezoneOffset((string)dialogContext.Result, DateTime.UtcNow);
+                        DateTimeHelpers.ParseHourAndMinute((string)dialogContext.Result, out DateTime localTime);
+                        int timezoneOffset = DateTimeHelpers.ConvertToTimezoneOffset(localTime, DateTime.UtcNow);
 
                         // Update the user's timezone offset.
                         var user = await api.GetUser(dialogContext.Context);
