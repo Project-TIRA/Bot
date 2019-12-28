@@ -243,6 +243,41 @@ namespace Shared
             return data.Results.FirstOrDefault(r => r.EntityType == EntityType.Municipality)?.Position;
         }
 
+        public static string DayToGreeting(DateTime dateTime)
+        {
+            // Special greetings for holidays.
+            if (dateTime.Month == 1 && dateTime.Day == 1)
+            {
+                return "Happy New Year";
+            }
+            else if (dateTime.Month == 4 && dateTime.Day == 1)
+            {
+                return "Happy April Fools' Day - don't get fooled today";
+            }
+            else if (dateTime.Month == 5 && dateTime.Day == 4)
+            {
+                return "Happy Star Wars Day - May the 4th be with you";
+            }
+            else if (dateTime.Month == 10 && dateTime.Day == 31)
+            {
+                return "Happy Halloween";
+            }
+            else if (dateTime.Month == 12 && dateTime.Day == 25)
+            {
+                return "Merry Christmas";
+            }
+            else
+            {
+                // Generic greetings for the day of the week.
+                var localDay = DayFlagsHelpers.FromDateTime(dateTime);
+                switch (localDay)
+                {
+                    case DayFlags.Monday: return "Hope you had a great weekend";
+                    default: return $"Happy {localDay.ToString()}";
+                }
+            }
+        }
+
         public static void LogInfo(ILogger log, string text)
         {
             if (log != null)

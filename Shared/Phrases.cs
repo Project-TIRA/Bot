@@ -88,16 +88,12 @@ namespace Shared
                 return MessageFactory.Text(greeting);
             }
 
-            public static Activity RemindToUpdate(User user, DayFlags day, string latestUpdateString)
+            public static Activity RemindToUpdate(User user, string latestUpdateString)
             {
                 var name = !string.IsNullOrEmpty(user.Name) ? $", {user.Name}" : string.Empty;
-                var greeting = string.Empty;
 
-                switch (day)
-                {
-                    case DayFlags.Monday: greeting = $"Hope you had a great weekend{name}!"; break;
-                    default: greeting = $"Happy {day.ToString()}{name}!"; break;
-                }
+                DateTime localDateTime = DateTime.UtcNow.AddHours(user.TimezoneOffset);
+                var greeting = Helpers.DayToGreeting(localDateTime);
 
                 if (string.IsNullOrEmpty(latestUpdateString))
                 {

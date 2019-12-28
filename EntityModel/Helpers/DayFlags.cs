@@ -38,17 +38,9 @@ namespace EntityModel.Helpers
             { DayFlags.Everyday, "Everyday" },
         };
 
-        public static DayFlags CurrentDay(User forUser = null)
+        public static DayFlags FromDateTime(DateTime dt)
         {
-            DateTime today = DateTime.UtcNow;
-
-            if (forUser != null)
-            {
-                // Adjust to the user's time if provided.
-                today.AddHours(forUser.TimezoneOffset);
-            }
-
-            switch (today.DayOfWeek)
+            switch (dt.DayOfWeek)
             {
                 case DayOfWeek.Sunday: return DayFlags.Sunday;
                 case DayOfWeek.Monday: return DayFlags.Monday;

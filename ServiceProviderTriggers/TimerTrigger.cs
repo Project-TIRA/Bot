@@ -58,7 +58,8 @@ namespace ServiceProviderTriggers
 
                     foreach (var user in users)
                     {
-                        var localDay = DayFlagsHelpers.CurrentDay(user);
+                        DateTime localDateTime = DateTime.UtcNow.AddHours(user.TimezoneOffset);
+                        var localDay = DayFlagsHelpers.FromDateTime(localDateTime);
 
                         Helpers.LogInfo(log, $"User: {user.Name}, organization: {organization.Name}, " +
                             $"contact enabled: {user.ContactEnabled}, reminder days: {user.ReminderFrequency}, current local day: {localDay}");
