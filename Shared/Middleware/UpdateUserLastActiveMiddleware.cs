@@ -1,7 +1,5 @@
-﻿using EntityModel;
-using Microsoft.Bot.Builder;
+﻿using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
-using Microsoft.Extensions.Configuration;
 using Shared.ApiInterface;
 using System;
 using System.Threading;
