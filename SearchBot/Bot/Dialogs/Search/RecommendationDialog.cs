@@ -189,6 +189,6 @@ namespace SearchBot.Bot.Dialogs.Search
                 .Where(pair => (pair.Match1.OrganizationServiceFlags | pair.Match2.OrganizationServiceFlags).HasFlag(conversationContext.RequestedServiceFlags()))
                 .Select(pair => new List<MatchData>() { pair.Match1, pair.Match2 })
                 .ToList();
-        }       
+        }
     }
 }

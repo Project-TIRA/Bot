@@ -103,13 +103,13 @@ namespace Shared.ApiInterface
                 case Channels.Sms: return await this.dbContext.Users.FirstOrDefaultAsync(u => u.PhoneNumber == userToken);
                 default: Debug.Fail("Missing channel type"); return null;
             }
-        } 
+        }
 
         /// <summary>
         /// Gets an organization by ID.
         /// </summary>
         public async Task<Organization> GetOrganization(string organizationId)
-        {            
+        {
             if (!string.IsNullOrEmpty(organizationId))
             {
                 return await this.dbContext.Organizations.FirstOrDefaultAsync(o => o.Id == organizationId);
@@ -122,7 +122,7 @@ namespace Shared.ApiInterface
         /// Gets the count of an organization's services.
         /// </summary>
         public async Task<int> GetServiceCount(string organizationId)
-        { 
+        {
             if (!string.IsNullOrEmpty(organizationId))
             {
                 return await this.dbContext.Services.CountAsync(s => s.OrganizationId == organizationId);
@@ -161,7 +161,7 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the latest shapshot for a service.
+        /// Gets the latest snapshot for a service.
         /// </summary>
         /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
         public async Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null)
@@ -195,19 +195,49 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets all verified organizations.
+        /// Gets the latest snapshot for all services provided by an organizaton.
         /// </summary>
-        public async Task<List<Organization>> GetVerifiedOrganizations()
+        public async Task<Dictionary<ServiceType, ServiceData>> GetLatestServicesData(string organizationId)
         {
-            return await this.dbContext.Organizations.Where(o => o.IsVerified).ToListAsync();
+            Dictionary<ServiceType, ServiceData> ret = new Dictionary<ServiceType, ServiceData>();
+            var services = await GetServices(organizationId);
+            if (services != null)
+            {
+                foreach (Service service in services)
+                {
+                    IQueryable<ServiceData> query;
+
+                    switch (service.Type)
+                    {
+                        // TODO: can this be abstracted to where the type has the table name?
+                        case ServiceType.CaseManagement: query = this.dbContext.CaseManagementData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
+                        case ServiceType.Housing: query = this.dbContext.HousingData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
+                        case ServiceType.Employment: query = this.dbContext.EmploymentData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
+                        case ServiceType.MentalHealth: query = this.dbContext.MentalHealthData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
+                        case ServiceType.SubstanceUse: query = this.dbContext.SubstanceUseData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
+                        default: return null;
+                    }
+                    ret[service.Type] =  await query.FirstOrDefaultAsync();
+                }
+                return ret;
+            }
+            return null;
         }
 
-        /// <summary>
-        /// Gets all users for an organization.
-        /// </summary>
-        public async Task<List<User>> GetUsersForOrganization(Organization organization)
-        {
-            return await this.dbContext.Users.Where(u => u.OrganizationId == organization.Id).ToListAsync();
+            /// <summary>
+            /// Gets all verified organizations.
+            /// </summary>
+            public async Task<List<Organization>> GetVerifiedOrganizations()
+            {
+                return await this.dbContext.Organizations.Where(o => o.IsVerified).ToListAsync();
+            }
+
+            /// <summary>
+            /// Gets all users for an organization.
+            /// </summary>
+            public async Task<List<User>> GetUsersForOrganization(Organization organization)
+            {
+                return await this.dbContext.Users.Where(u => u.OrganizationId == organization.Id).ToListAsync();
+            }
         }
-    }    
-}
+    }

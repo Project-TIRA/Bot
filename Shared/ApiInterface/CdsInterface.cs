@@ -213,6 +213,36 @@ namespace Shared.ApiInterface
             return null;
         }
 
+
+        /// <summary>
+        /// Gets the latest shapshot for a service.
+        /// </summary>
+        public async Task<Dictionary<ServiceType, ServiceData>> GetLatestServicesData(string organizationId)
+        {
+            //FIXME!!
+            //TODO: This is implemented wrong;
+
+            Dictionary<ServiceType, ServiceData> ret = new Dictionary<ServiceType, ServiceData>();
+            var services = await GetServices(organizationId);
+
+            if (services != null)
+            {
+                foreach (Service service in services)
+                {
+                    if (service.Type != ServiceType.Invalid)
+                    {
+                        JObject response = await GetJsonData(service.TableName(), $"$filter={service.OrganizationId} eq {service.Id} &$orderby=createdon desc &$top=1");
+                        if (response != null && response["value"].HasValues)
+                        {
+                            ret[service.Type] =  JsonConvert.DeserializeObject<ServiceData>(response["value"][0].ToString(), GetJsonSettings(service.ContractResolver()));
+                        }
+                    }
+                }
+
+                return ret;
+            }
+            return null;
+        }
         /// <summary>
         /// Gets all verified organizations.
         /// </summary>

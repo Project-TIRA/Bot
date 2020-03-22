@@ -8,7 +8,7 @@ using Newtonsoft.Json.Converters;
 
 namespace WebAPI.Models
 {
-    public class ServiceDTO
+    public class ServicesDTO
     {
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
