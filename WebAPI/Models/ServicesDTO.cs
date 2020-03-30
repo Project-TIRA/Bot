@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-
-using System.Globalization;
 using EntityModel.Helpers;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace WebAPI.Models
 {
@@ -18,11 +13,5 @@ namespace WebAPI.Models
 
         [JsonProperty(PropertyName = "tira_servicetype")]
         public ServiceType Type { get; set; }
-
-
-
     }
-
-
-
 }

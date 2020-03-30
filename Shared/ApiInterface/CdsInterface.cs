@@ -184,7 +184,7 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the latest shapshot for a service.
+        /// Gets the latest snapshot for a service.
         /// </summary>
         /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
         public async Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null)
@@ -215,12 +215,12 @@ namespace Shared.ApiInterface
 
 
         /// <summary>
-        /// Gets the latest shapshot for a service.
+        /// Gets the latest snapshot of all services for an organization.
         /// </summary>
         public async Task<Dictionary<ServiceType, ServiceData>> GetLatestServicesData(string organizationId)
         {
             //FIXME!!
-            //TODO: This is implemented wrong;
+            //TODO: This might be implemented wrong;
 
             Dictionary<ServiceType, ServiceData> ret = new Dictionary<ServiceType, ServiceData>();
             var services = await GetServices(organizationId);
@@ -231,10 +231,10 @@ namespace Shared.ApiInterface
                 {
                     if (service.Type != ServiceType.Invalid)
                     {
-                        JObject response = await GetJsonData(service.TableName(), $"$filter={service.OrganizationId} eq {service.Id} &$orderby=createdon desc &$top=1");
+                        JObject response = await GetJsonData(service.TableName(), $"$filter={service.OrganizationId} eq {organizationId} &$orderby=createdon desc &$top=1");
                         if (response != null && response["value"].HasValues)
                         {
-                            ret[service.Type] =  JsonConvert.DeserializeObject<ServiceData>(response["value"][0].ToString(), GetJsonSettings(service.ContractResolver()));
+                            ret[service.Type] = JsonConvert.DeserializeObject<ServiceData>(response["value"][0].ToString(), GetJsonSettings(service.ContractResolver()));
                         }
                     }
                 }

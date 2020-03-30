@@ -1,12 +1,12 @@
 using EntityModel;
-using System;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 using Shared.ApiInterface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Models;
-using System.Collections.Generic;
-using Shared;
 
 namespace WebAPI.Controllers
 {
@@ -16,30 +16,24 @@ namespace WebAPI.Controllers
     {
         protected readonly IApiInterface api;
 
-        public ServicesController(EfInterface api)
-        {
-            this.api = api ?? throw new ArgumentNullException(nameof(api));
-        }
+        public ServicesController(EfInterface api) => this.api = api ?? throw new ArgumentNullException(nameof(api));
 
-        // GET: api/services/
+        // GET: api/services/lat={}&lon={}&services={}&distance={}
         [HttpGet]
-        public async Task<ActionResult<List<ServicesDTO>>> Get(string name, string Lat, string Lon, double distance = 25)
+        public async Task<ActionResult<List<ServicesDTO>>> Get(string lat = "", string lon = "", double distance = 25)
         {
 
 
-            var organizations = await this.api.GetVerifiedOrganizations();
+            var organizations = await api.GetVerifiedOrganizations();
 
 
 
             if (organizations != null)
             {
-                if (name != null)
+
+                if (!(String.IsNullOrEmpty(lat) && String.IsNullOrEmpty(lon)))
                 {
-                    organizations = organizations.Where(o => o.Name == name).ToList();
-                }
-                if ((Lat != null) && (Lon != null))
-                {
-                    Coordinates searchCoordinates = new Coordinates(Convert.ToDouble(Lat), Convert.ToDouble(Lon));
+                    Coordinates searchCoordinates = new Coordinates(Convert.ToDouble(lat), Convert.ToDouble(lon));
                     organizations = organizations.Where(o =>
                     {
                         Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(o.Latitude), Convert.ToDouble(o.Longitude));
@@ -51,11 +45,12 @@ namespace WebAPI.Controllers
 
                 foreach (var organization in organizations)
                 {
-                    var tempServices = await this.api.GetServices(organization.Id);
+                    var tempServices = await api.GetServices(organization.Id);
                     services.AddRange(tempServices);
 
                 }
 
+                services = services.Distinct(new Helpers.KeyEqualityComparer<Service>(a => a.Name)).ToList();
 
                 var servicesDTO = new List<ServicesDTO>();
 
@@ -75,6 +70,5 @@ namespace WebAPI.Controllers
             }
             return NotFound();
         }
-
     }
 }

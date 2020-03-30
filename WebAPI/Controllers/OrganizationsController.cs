@@ -1,13 +1,12 @@
 using EntityModel;
-using System;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 using Shared.ApiInterface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Models;
-using System.Collections.Generic;
-using Shared;
-using Newtonsoft.Json;
 
 namespace WebAPI.Controllers
 {
@@ -17,46 +16,47 @@ namespace WebAPI.Controllers
     {
         protected readonly IApiInterface api;
 
-        public OrganizationsController(EfInterface api)
-        {
-            this.api = api ?? throw new ArgumentNullException(nameof(api));
-        }
+        public OrganizationsController(EfInterface api) => this.api = api ?? throw new ArgumentNullException(nameof(api));
 
-        // GET: api/organizations/
+        // GET: api/organizations?name={}&lat={}&lon={}&services={}&distance={}
         [HttpGet]
-        public async Task<ActionResult<List<OrganizationDTO>>> Get(string name, string Lat, string Lon, string services, double distance = 25)
+        public async Task<ActionResult<List<OrganizationDTO>>> Get(string name = "", string lat = "", string lon = "", string services = "", double maxDistance = 25)
         {
-            var organizations = await this.api.GetVerifiedOrganizations();
+            var organizations = await api.GetVerifiedOrganizations();
 
 
             if (organizations != null)
             {
                 var orgsDTO = new List<OrganizationDTO>();
 
-                if (name != null)
+                if (!String.IsNullOrEmpty(name))
                 {
                     organizations = organizations.Where(o => o.Name == name).ToList();
                 }
-                if ((Lat != null) && (Lon != null))
+                if (!(String.IsNullOrEmpty(lat) && String.IsNullOrEmpty(lon)))
                 {
-                    Coordinates searchCoordinates = new Coordinates(Convert.ToDouble(Lat), Convert.ToDouble(Lon));
-                    organizations = organizations.Where(o =>
+                    Coordinates searchCoordinates = new Coordinates(Convert.ToDouble(lat), Convert.ToDouble(lon));
+
+                    List<Organization> tempList = new List<Organization>();
+
+                    foreach (Organization org in organizations)
                     {
-                        Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(o.Latitude), Convert.ToDouble(o.Longitude));
+                        Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(org.Latitude), Convert.ToDouble(org.Longitude));
                         var distanceTo = searchCoordinates.DistanceTo(organizationCoordinates, UnitOfLength.Miles);
-                        return distanceTo < distance;
-                    }).ToList();
+                        if (distanceTo < maxDistance) { tempList.Add(org); }
+                    }
+                    organizations = tempList;
                 }
-                if (services != null)
+                if (!String.IsNullOrEmpty(services))
                 {
                     List<Organization> tempList = new List<Organization>();
                     foreach (Organization org in organizations)
                     {
-                        var ServicesProvided = await this.api.GetServices(org.Id);
+                        var ServicesProvided = await api.GetServices(org.Id);
                         var ServicesName = ServicesProvided.Select(s => s.Name).ToList();
-                        var retServices = ServicesName.Intersect(services.Split(","));
+                        var retServices = ServicesName.Intersect(services.Split(",")).Any();
 
-                        if (retServices != null)
+                        if (retServices)
                         {
                             tempList.Add(org);
                         }
@@ -66,13 +66,15 @@ namespace WebAPI.Controllers
 
                 foreach (var org in organizations)
                 {
-                    var ServicesProvided = await this.api.GetServices(org.Id);
+                    var ServicesProvided = await api.GetServices(org.Id);
                     var tempOrg = new OrganizationDTO()
                     {
                         Id = org.Id,
                         Name = org.Name,
                         PhoneNumber = org.PhoneNumber,
                         Address = org.Address,
+                        Latitude = org.Latitude,
+                        Longitude = org.Longitude,
                         ServicesProvided = ServicesProvided.Select(service => service.Name).ToList()
                     };
                     orgsDTO.Add(tempOrg);
@@ -84,41 +86,37 @@ namespace WebAPI.Controllers
 
         //GET: api/organizations/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<OrganizationDTO>> Get(string id)
+        public async Task<ActionResult<OrganizationDTO>> GetID(string id)
         {
 
-            var organization = await this.api.GetOrganization(id);
+            var organization = await api.GetOrganization(id);
 
 
             if (organization != null)
             {
-                var Services = await this.api.GetLatestServicesData(organization.Id);
+                var OrgServices = await api.GetLatestServicesData(organization.Id);
 
-                var ServicesCategories = new Dictionary<string, ServiceCategoryDTO>();
+                var services = new Dictionary<string, Dictionary<string, Dictionary<string, object>>>();
 
 
-                foreach (var service in Services)
+                foreach (var service in OrgServices)
                 {
+                    services[service.Key.ToString()] = new Dictionary<string, Dictionary<string, object>>();
                     foreach (var serviceCategory in service.Value.ServiceCategories())
                     {
-                        if (serviceCategory != null)
+
+                        services[service.Key.ToString()][serviceCategory.Name] = new Dictionary<string, object>();
+                        foreach (var subService in serviceCategory.Services)
                         {
-                            var tempCategory = new ServiceCategoryDTO();
-                            var ServicesData = new Dictionary<string, ServiceDataDTO>();
 
-                            foreach (var subService in serviceCategory.Services)
-                            {
-                                var tempServicedata = new ServiceDataDTO();
-                                tempServicedata.TotalPropertyName = service.Value.GetProperty(subService.TotalPropertyName);
-                                tempServicedata.OpenPropertyName = service.Value.GetProperty(subService.OpenPropertyName);
-                                tempServicedata.HasWaitlistPropertyName = service.Value.GetProperty(subService.HasWaitlistPropertyName);
-                                tempServicedata.WaitlistIsOpenPropertyName = service.Value.GetProperty(subService.WaitlistIsOpenPropertyName);
-
-                                ServicesData[subService.Name] = tempServicedata;
-                            }
-                            tempCategory.ServicesData = ServicesData;
-                            ServicesCategories[serviceCategory.Name] = tempCategory;
+                            services[service.Key.ToString()][serviceCategory.Name][subService.Name] = new Dictionary<string, object>(){
+                                        {subService.TotalPropertyName,service.Value.GetProperty(subService.TotalPropertyName)},
+                                        {subService.OpenPropertyName,service.Value.GetProperty(subService.OpenPropertyName)},
+                                        {subService.HasWaitlistPropertyName,service.Value.GetProperty(subService.HasWaitlistPropertyName)},
+                                        {subService.WaitlistIsOpenPropertyName,service.Value.GetProperty(subService.WaitlistIsOpenPropertyName)}
+                                    };
                         }
+
                     }
                 }
 
@@ -128,16 +126,14 @@ namespace WebAPI.Controllers
                     Name = organization.Name,
                     PhoneNumber = organization.PhoneNumber,
                     Address = organization.Address,
-                    Services = ServicesCategories
+                    Latitude = organization.Latitude,
+                    Longitude = organization.Longitude,
+                    Services = services
 
                 };
                 return orgDTO;
             }
             return NotFound();
-
-
-
         }
-
     }
 }

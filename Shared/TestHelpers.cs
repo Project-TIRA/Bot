@@ -44,11 +44,27 @@ namespace Shared
                 Address = DefaultLocation,
                 Latitude = DefaultLocationPosition.Lat.ToString(),
                 Longitude = DefaultLocationPosition.Lon.ToString()
-        };
+            };
 
             await api.Create(organization);
             return organization;
         }
+        public static async Task<Organization> CreateOrganization(IApiInterface api, string name, string location, LocationPosition position, bool isVerified)
+        {
+            var organization = new Organization()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = name,
+                IsVerified = isVerified,
+                Address = location,
+                Latitude = position.Lat.ToString(),
+                Longitude = position.Lon.ToString()
+            };
+
+            await api.Create(organization);
+            return organization;
+        }
+
 
         public static async Task<User> CreateUser(IApiInterface api, string organizationId)
         {

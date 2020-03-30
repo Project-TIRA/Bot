@@ -11,7 +11,7 @@ namespace WebAPI
 {
     public class Startup
     {
-        private IConfiguration configuration;
+        private readonly IConfiguration configuration;
 
         public Startup(IWebHostEnvironment env)
         {
@@ -20,11 +20,7 @@ namespace WebAPI
                  .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
                  .AddEnvironmentVariables();
-            this.configuration = builder.Build();
-
-
-
-
+            configuration = builder.Build();
         }
 
         public IConfiguration Configuration { get; }
@@ -33,7 +29,7 @@ namespace WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             // Add the configuration.
-            services.AddSingleton(this.configuration);
+            services.AddSingleton(configuration);
 
             // Add the Common Data Service interface.
             //services.AddScoped(_ => new CdsInterface(this.configuration));
