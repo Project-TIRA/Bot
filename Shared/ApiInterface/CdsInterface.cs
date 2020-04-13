@@ -184,7 +184,7 @@ namespace Shared.ApiInterface
         }
 
         /// <summary>
-        /// Gets the latest shapshot for a service.
+        /// Gets the latest snapshot for a service.
         /// </summary>
         /// <param name="createdByUser">Optionally pass a turn context to get the latest data created by the user</param>
         public async Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null)
@@ -213,6 +213,36 @@ namespace Shared.ApiInterface
             return null;
         }
 
+
+        /// <summary>
+        /// Gets the latest snapshot of all services for an organization.
+        /// </summary>
+        public async Task<List<(ServiceType, ServiceData)>> GetLatestServicesData(string organizationId)
+        {
+            //FIXME!!
+            //TODO: This might be implemented wrong;
+
+            List<(ServiceType, ServiceData)> ret = new List<(ServiceType, ServiceData)>();
+            var services = await GetServices(organizationId);
+
+            if (services != null)
+            {
+                foreach (Service service in services)
+                {
+                    if (service.Type != ServiceType.Invalid)
+                    {
+                        JObject response = await GetJsonData(service.TableName(), $"$filter={service.OrganizationId} eq {organizationId} &$orderby=createdon desc &$top=1");
+                        if (response != null && response["value"].HasValues)
+                        {
+                            ret.Add((service.Type, JsonConvert.DeserializeObject<ServiceData>(response["value"][0].ToString(), GetJsonSettings(service.ContractResolver()))));
+                        }
+                    }
+                }
+
+                return ret;
+            }
+            return null;
+        }
         /// <summary>
         /// Gets all verified organizations.
         /// </summary>

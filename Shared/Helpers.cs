@@ -37,7 +37,7 @@ namespace Shared
                 case Channels.Sms: return PhoneNumberHelpers.Standardize(turnContext.Activity.From.Id);
                 default: Debug.Fail("Missing channel type"); return string.Empty;
             }
-        }        
+        }
 
         /// <summary>
         /// Creates a derived type of a type.
@@ -63,6 +63,14 @@ namespace Shared
             }
 
             return results;
+        }
+
+        public static bool organiztionWithinDistance(Organization org, string lat, string lon, double maxDistance)
+        {
+            Coordinates searchCoordinates = new Coordinates(Convert.ToDouble(lat), Convert.ToDouble(lon));
+            Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(org.Latitude), Convert.ToDouble(org.Longitude));
+            var distanceTo = searchCoordinates.DistanceTo(organizationCoordinates, UnitOfLength.Miles);
+            return distanceTo < maxDistance;
         }
 
         /// <summary>
@@ -108,7 +116,7 @@ namespace Shared
         {
             return GetSubtypes<ServiceData>(where: s => serviceTypes.Contains(s.ServiceType()), orderBy: s => s.ServiceTypeName())
                 .ToList();
-        }        
+        }
 
         /// <summary>
         /// Gets the first service whose type name matches the given type name.
@@ -243,6 +251,8 @@ namespace Shared
             return data.Results.FirstOrDefault(r => r.EntityType == EntityType.Municipality)?.Position;
         }
 
+
+
         public static void LogInfo(ILogger log, string text)
         {
             if (log != null)
@@ -256,6 +266,23 @@ namespace Shared
             if (log != null)
             {
                 log.LogError(exception, exception.Message);
+            }
+        }
+
+        public class KeyEqualityComparer<T> : IEqualityComparer<T>
+        {
+            public Func<T, object> Key { get; set; }
+            public KeyEqualityComparer(Func<T, object> key)
+            {
+                Key = key;
+            }
+            public bool Equals(T left, T right)
+            {
+                return Key(left).Equals(Key(right));
+            }
+            public int GetHashCode(T obj)
+            {
+                return Key(obj).GetHashCode();
             }
         }
     }
