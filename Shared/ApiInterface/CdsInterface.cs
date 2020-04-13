@@ -217,12 +217,12 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest snapshot of all services for an organization.
         /// </summary>
-        public async Task<Dictionary<ServiceType, ServiceData>> GetLatestServicesData(string organizationId)
+        public async Task<List<(ServiceType, ServiceData)>> GetLatestServicesData(string organizationId)
         {
             //FIXME!!
             //TODO: This might be implemented wrong;
 
-            Dictionary<ServiceType, ServiceData> ret = new Dictionary<ServiceType, ServiceData>();
+            List<(ServiceType, ServiceData)> ret = new List<(ServiceType, ServiceData)>();
             var services = await GetServices(organizationId);
 
             if (services != null)
@@ -234,7 +234,7 @@ namespace Shared.ApiInterface
                         JObject response = await GetJsonData(service.TableName(), $"$filter={service.OrganizationId} eq {organizationId} &$orderby=createdon desc &$top=1");
                         if (response != null && response["value"].HasValues)
                         {
-                            ret[service.Type] = JsonConvert.DeserializeObject<ServiceData>(response["value"][0].ToString(), GetJsonSettings(service.ContractResolver()));
+                            ret.Add((service.Type, JsonConvert.DeserializeObject<ServiceData>(response["value"][0].ToString(), GetJsonSettings(service.ContractResolver()))));
                         }
                     }
                 }

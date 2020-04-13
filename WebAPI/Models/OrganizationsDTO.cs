@@ -25,10 +25,13 @@ namespace WebAPI.Models
         public string Longitude { get; set; }
 
 #nullable enable
-        [JsonProperty("ServiceProvided", NullValueHandling = NullValueHandling.Ignore)]
+
+        [JsonProperty("ServicesProvided", NullValueHandling = NullValueHandling.Ignore)]
         public List<string>? ServicesProvided { get; set; }
 
         [JsonProperty(PropertyName = "Services", NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, Dictionary<string, Dictionary<string, object>>>? Services { get; set; }
+
+#nullable disable
     }
 }

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.ApiInterface;
 using Shared.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using WebAPI.Controllers;
@@ -17,10 +16,9 @@ namespace WebAPITests.Controllers
         protected readonly IApiInterface api;
 
         protected readonly ServicesController servicesController;
+        private readonly List<Organization> organizations = new List<Organization>();
 
-        List<Organization> organizations = new List<Organization>();
-
-        List<Service> services = new List<Service>();
+        private List<Service> services = new List<Service>();
 
         public ServicesControllerTests()
         {
@@ -44,7 +42,6 @@ namespace WebAPITests.Controllers
                 var tempServices = await api.GetServices(organization.Id);
                 organizations.Add(organization);
                 services.AddRange(tempServices);
-
             }
             services = services.Distinct(new Helpers.KeyEqualityComparer<Service>(a => a.Name)).ToList();
         }
@@ -75,26 +72,21 @@ namespace WebAPITests.Controllers
             //Given
             LocationPosition position = TestHelpers.DefaultLocationPosition;
             var maxDistance = 25;
-            Coordinates searchCoordinates = new Coordinates(position.Lat, position.Lon);
-            organizations = organizations.Where(o =>
-            {
-                Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(o.Latitude), Convert.ToDouble(o.Longitude));
-                var distanceTo = searchCoordinates.DistanceTo(organizationCoordinates, UnitOfLength.Miles);
-                return distanceTo < maxDistance;
-            }).ToList();
 
             services.Clear();
 
             foreach (var organization in organizations)
             {
+                if (!Helpers.organiztionWithinDistance(organization, position.Lat.ToString(), position.Lon.ToString(), maxDistance))
+                {
+                    continue;
+                }
                 var tempServices = await api.GetServices(organization.Id);
                 services.AddRange(tempServices);
-
             }
 
-            services = services.Distinct(new Helpers.KeyEqualityComparer<Service>(a => a.Name)).ToList();
             //When
-            var result = await servicesController.Get(lat: position.Lat.ToString(), lon: position.Lon.ToString(), distance: maxDistance);
+            var result = await servicesController.Get(lat: position.Lat.ToString(), lon: position.Lon.ToString(), maxDistance: maxDistance);
             //Then
             Assert.Equal(services.Count, result.Value.Count);
         }

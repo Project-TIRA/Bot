@@ -18,9 +18,9 @@ namespace WebAPITests.Controllers
 
         protected readonly OrganizationsController organizationsController;
 
-        readonly List<Organization> organizations = new List<Organization>();
+        private readonly List<Organization> organizations = new List<Organization>();
 
-        readonly List<Service> services = new List<Service>();
+        private readonly List<Service> services = new List<Service>();
 
         public OrganizationsControllerTests()
         {
@@ -105,9 +105,9 @@ namespace WebAPITests.Controllers
             //When
             var result = await organizationsController.Get(lat: position.Lat.ToString(), lon: position.Lon.ToString(), maxDistance: maxDistance);
             //Then
-            Assert.All(result.Value, x =>
+            Assert.All(result.Value, o =>
             {
-                Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(x.Latitude), Convert.ToDouble(x.Longitude));
+                Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(o.Latitude), Convert.ToDouble(o.Longitude));
                 var distance = searchCoordinates.DistanceTo(organizationCoordinates, UnitOfLength.Miles);
                 Assert.True(distance < maxDistance);
             });

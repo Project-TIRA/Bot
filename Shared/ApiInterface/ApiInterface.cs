@@ -54,10 +54,10 @@ namespace Shared.ApiInterface
         /// <param name="createdByUserTurnContext">Optionally pass a turn context to get the latest data created by the user</param>
         Task<ServiceData> GetLatestServiceData(string organizationId, ServiceData dataType, ITurnContext createdByUserTurnContext = null);
 
-         /// <summary>
+        /// <summary>
         /// Gets the latest snapshot for all services provided by an organization.
         /// </summary>
-        Task<Dictionary<ServiceType,ServiceData>> GetLatestServicesData(string organizationId);
+        Task<List<(ServiceType, ServiceData)>> GetLatestServicesData(string organizationId);
 
         /// <summary>
         /// Gets all verified organizations.

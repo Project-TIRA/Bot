@@ -1,4 +1,5 @@
 using EntityModel;
+using EntityModel.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.ApiInterface;
@@ -20,53 +21,52 @@ namespace WebAPI.Controllers
 
         // GET: api/services/lat={}&lon={}&services={}&distance={}
         [HttpGet]
-        public async Task<ActionResult<List<ServicesDTO>>> Get(string lat = "", string lon = "", double distance = 25)
+        public async Task<ActionResult<List<ServicesDTO>>> Get(string lat = "", string lon = "", double maxDistance = 25)
         {
-
-
             var organizations = await api.GetVerifiedOrganizations();
-
-
 
             if (organizations != null)
             {
-
-                if (!(String.IsNullOrEmpty(lat) && String.IsNullOrEmpty(lon)))
-                {
-                    Coordinates searchCoordinates = new Coordinates(Convert.ToDouble(lat), Convert.ToDouble(lon));
-                    organizations = organizations.Where(o =>
-                    {
-                        Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(o.Latitude), Convert.ToDouble(o.Longitude));
-                        var distanceTo = searchCoordinates.DistanceTo(organizationCoordinates, UnitOfLength.Miles);
-                        return distanceTo < distance;
-                    }).ToList();
-                }
-                var services = new List<Service>();
+                List<(ServiceType, ServiceData)> services = new List<(ServiceType, ServiceData)>();
 
                 foreach (var organization in organizations)
                 {
-                    var tempServices = await api.GetServices(organization.Id);
-                    services.AddRange(tempServices);
+                    if (!(String.IsNullOrEmpty(lat) && String.IsNullOrEmpty(lon)))
+                    {
+                        if (!Helpers.organiztionWithinDistance(organization, lat, lon, maxDistance))
+                        {
+                            continue;
+                        }
+                    }
 
+                    var serviceData = await api.GetLatestServicesData(organization.Id);
+                    services.AddRange(serviceData);
                 }
 
-                services = services.Distinct(new Helpers.KeyEqualityComparer<Service>(a => a.Name)).ToList();
-
-                var servicesDTO = new List<ServicesDTO>();
+                var servicesDTO = new Dictionary<string, ServicesDTO>();
 
                 foreach (var service in services)
                 {
-                    var tempService = new ServicesDTO()
+                    ServicesDTO current;
+                    if (!servicesDTO.ContainsKey(service.Item1.ToString()))
                     {
-                        Id = service.Id,
-                        Name = service.Name,
+                        current = servicesDTO[service.Item1.ToString()] = new ServicesDTO() { Name = service.Item1.ToString(), ServicesCategories = new Dictionary<string, HashSet<string>>() };
+                    }
 
+                    current = servicesDTO[service.Item1.ToString()];
 
-                    };
-                    servicesDTO.Add(tempService);
+                    foreach (var serviceCategory in service.Item2.ServiceCategories())
+
+                    {
+                        if (!current.ServicesCategories.ContainsKey(serviceCategory.Name)) { current.ServicesCategories[serviceCategory.Name] = new HashSet<string>(); }
+
+                        foreach (var subService in serviceCategory.Services)
+                        {
+                            current.ServicesCategories[serviceCategory.Name].Add(subService.Name);
+                        }
+                    }
                 }
-
-                return servicesDTO;
+                return servicesDTO.Values.ToList();
             }
             return NotFound();
         }

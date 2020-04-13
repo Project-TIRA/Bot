@@ -1,4 +1,3 @@
-using EntityModel;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.ApiInterface;
@@ -24,50 +23,36 @@ namespace WebAPI.Controllers
         {
             var organizations = await api.GetVerifiedOrganizations();
 
-
             if (organizations != null)
             {
                 var orgsDTO = new List<OrganizationDTO>();
 
-                if (!String.IsNullOrEmpty(name))
-                {
-                    organizations = organizations.Where(o => o.Name == name).ToList();
-                }
-                if (!(String.IsNullOrEmpty(lat) && String.IsNullOrEmpty(lon)))
-                {
-                    Coordinates searchCoordinates = new Coordinates(Convert.ToDouble(lat), Convert.ToDouble(lon));
-
-                    List<Organization> tempList = new List<Organization>();
-
-                    foreach (Organization org in organizations)
-                    {
-                        Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(org.Latitude), Convert.ToDouble(org.Longitude));
-                        var distanceTo = searchCoordinates.DistanceTo(organizationCoordinates, UnitOfLength.Miles);
-                        if (distanceTo < maxDistance) { tempList.Add(org); }
-                    }
-                    organizations = tempList;
-                }
-                if (!String.IsNullOrEmpty(services))
-                {
-                    List<Organization> tempList = new List<Organization>();
-                    foreach (Organization org in organizations)
-                    {
-                        var ServicesProvided = await api.GetServices(org.Id);
-                        var ServicesName = ServicesProvided.Select(s => s.Name).ToList();
-                        var retServices = ServicesName.Intersect(services.Split(",")).Any();
-
-                        if (retServices)
-                        {
-                            tempList.Add(org);
-                        }
-                    }
-                    organizations = tempList;
-                }
-
                 foreach (var org in organizations)
                 {
+                    if (!String.IsNullOrEmpty(name))
+                    {
+                        if (org.Name != name) { continue; }
+                    }
+
+                    if (!(String.IsNullOrEmpty(lat) || String.IsNullOrEmpty(lon)))
+                    {
+                        if (!Helpers.organiztionWithinDistance(org, lat, lon, maxDistance))
+                        {
+                            continue;
+                        }
+                    }
+
                     var ServicesProvided = await api.GetServices(org.Id);
-                    var tempOrg = new OrganizationDTO()
+
+                    if (!String.IsNullOrEmpty(services))
+                    {
+                        var ServicesName = ServicesProvided.Select(s => s.Type.ToString()).ToList();
+                        var retServices = ServicesName.Intersect(services.Split(",")).Any();
+
+                        if (!retServices) { continue; }
+                    }
+
+                    orgsDTO.Add(new OrganizationDTO()
                     {
                         Id = org.Id,
                         Name = org.Name,
@@ -75,9 +60,8 @@ namespace WebAPI.Controllers
                         Address = org.Address,
                         Latitude = org.Latitude,
                         Longitude = org.Longitude,
-                        ServicesProvided = ServicesProvided.Select(service => service.Name).ToList()
-                    };
-                    orgsDTO.Add(tempOrg);
+                        ServicesProvided = ServicesProvided.Select(service => service.Type.ToString()).ToList()
+                    });
                 }
                 return orgsDTO;
             }
@@ -88,9 +72,7 @@ namespace WebAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<OrganizationDTO>> GetID(string id)
         {
-
             var organization = await api.GetOrganization(id);
-
 
             if (organization != null)
             {
@@ -98,29 +80,25 @@ namespace WebAPI.Controllers
 
                 var services = new Dictionary<string, Dictionary<string, Dictionary<string, object>>>();
 
-
                 foreach (var service in OrgServices)
                 {
-                    services[service.Key.ToString()] = new Dictionary<string, Dictionary<string, object>>();
-                    foreach (var serviceCategory in service.Value.ServiceCategories())
+                    services[service.Item1.ToString()] = new Dictionary<string, Dictionary<string, object>>();
+                    foreach (var serviceCategory in service.Item2.ServiceCategories())
                     {
-
-                        services[service.Key.ToString()][serviceCategory.Name] = new Dictionary<string, object>();
+                        services[service.Item1.ToString()][serviceCategory.Name] = new Dictionary<string, object>();
                         foreach (var subService in serviceCategory.Services)
                         {
-
-                            services[service.Key.ToString()][serviceCategory.Name][subService.Name] = new Dictionary<string, object>(){
-                                        {subService.TotalPropertyName,service.Value.GetProperty(subService.TotalPropertyName)},
-                                        {subService.OpenPropertyName,service.Value.GetProperty(subService.OpenPropertyName)},
-                                        {subService.HasWaitlistPropertyName,service.Value.GetProperty(subService.HasWaitlistPropertyName)},
-                                        {subService.WaitlistIsOpenPropertyName,service.Value.GetProperty(subService.WaitlistIsOpenPropertyName)}
+                            services[service.Item1.ToString()][serviceCategory.Name][subService.Name] = new Dictionary<string, object>(){
+                                        {subService.TotalPropertyName,service.Item2.GetProperty(subService.TotalPropertyName)},
+                                        {subService.OpenPropertyName,service.Item2.GetProperty(subService.OpenPropertyName)},
+                                        {subService.HasWaitlistPropertyName,service.Item2.GetProperty(subService.HasWaitlistPropertyName)},
+                                        {subService.WaitlistIsOpenPropertyName,service.Item2.GetProperty(subService.WaitlistIsOpenPropertyName)}
                                     };
                         }
-
                     }
                 }
 
-                var orgDTO = new OrganizationDTO()
+                return new OrganizationDTO()
                 {
                     Id = organization.Id,
                     Name = organization.Name,
@@ -129,9 +107,7 @@ namespace WebAPI.Controllers
                     Latitude = organization.Latitude,
                     Longitude = organization.Longitude,
                     Services = services
-
-                };
-                return orgDTO;
+                }; ;
             }
             return NotFound();
         }

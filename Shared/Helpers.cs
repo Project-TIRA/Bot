@@ -65,6 +65,14 @@ namespace Shared
             return results;
         }
 
+        public static bool organiztionWithinDistance(Organization org, string lat, string lon, double maxDistance)
+        {
+            Coordinates searchCoordinates = new Coordinates(Convert.ToDouble(lat), Convert.ToDouble(lon));
+            Coordinates organizationCoordinates = new Coordinates(Convert.ToDouble(org.Latitude), Convert.ToDouble(org.Longitude));
+            var distanceTo = searchCoordinates.DistanceTo(organizationCoordinates, UnitOfLength.Miles);
+            return distanceTo < maxDistance;
+        }
+
         /// <summary>
         /// Gets the derived types of a type that meet a condition.
         /// </summary>

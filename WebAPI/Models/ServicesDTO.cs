@@ -1,17 +1,23 @@
 using EntityModel.Helpers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace WebAPI.Models
 {
     public class ServicesDTO
     {
-        [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
-
-        [JsonProperty(PropertyName = "name")]
+        [JsonProperty(PropertyName = "Name")]
         public string Name { get; set; }
 
-        [JsonProperty(PropertyName = "tira_servicetype")]
+        [JsonIgnoreAttribute]
+        [JsonProperty(PropertyName = "Type")]
         public ServiceType Type { get; set; }
+
+#nullable enable
+
+        [JsonProperty(PropertyName = "Categories")]
+        public Dictionary<string, HashSet<string>>? ServicesCategories { get; set; }
+
+#nullable disable
     }
 }

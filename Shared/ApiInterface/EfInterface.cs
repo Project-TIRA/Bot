@@ -197,9 +197,9 @@ namespace Shared.ApiInterface
         /// <summary>
         /// Gets the latest snapshot for all services provided by an organizaton.
         /// </summary>
-        public async Task<Dictionary<ServiceType, ServiceData>> GetLatestServicesData(string organizationId)
+        public async Task<List<(ServiceType, ServiceData)>> GetLatestServicesData(string organizationId)
         {
-            Dictionary<ServiceType, ServiceData> ret = new Dictionary<ServiceType, ServiceData>();
+            List<(ServiceType, ServiceData)> ret = new List<(ServiceType, ServiceData)>();
             var services = await GetServices(organizationId);
             if (services != null)
             {
@@ -217,27 +217,28 @@ namespace Shared.ApiInterface
                         case ServiceType.SubstanceUse: query = this.dbContext.SubstanceUseData.Where(s => s.ServiceId == service.Id).OrderByDescending(s => s.CreatedOn); break;
                         default: return null;
                     }
-                    ret[service.Type] =  await query.FirstOrDefaultAsync();
+
+                    ret.Add((service.Type, await query.FirstOrDefaultAsync()));
                 }
                 return ret;
             }
             return null;
         }
 
-            /// <summary>
-            /// Gets all verified organizations.
-            /// </summary>
-            public async Task<List<Organization>> GetVerifiedOrganizations()
-            {
-                return await this.dbContext.Organizations.Where(o => o.IsVerified).ToListAsync();
-            }
+        /// <summary>
+        /// Gets all verified organizations.
+        /// </summary>
+        public async Task<List<Organization>> GetVerifiedOrganizations()
+        {
+            return await this.dbContext.Organizations.Where(o => o.IsVerified).ToListAsync();
+        }
 
-            /// <summary>
-            /// Gets all users for an organization.
-            /// </summary>
-            public async Task<List<User>> GetUsersForOrganization(Organization organization)
-            {
-                return await this.dbContext.Users.Where(u => u.OrganizationId == organization.Id).ToListAsync();
-            }
+        /// <summary>
+        /// Gets all users for an organization.
+        /// </summary>
+        public async Task<List<User>> GetUsersForOrganization(Organization organization)
+        {
+            return await this.dbContext.Users.Where(u => u.OrganizationId == organization.Id).ToListAsync();
         }
     }
+}
